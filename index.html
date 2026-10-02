@@ -249,7 +249,7 @@ body.timer-on .app { padding-bottom: calc(200px + env(safe-area-inset-bottom, 0p
 .wbody .btn { margin-top: 12px; }
 
 /* Progress */
-.progview { display: grid; gap: 48px; margin-top: 26px; }
+.progview { display: grid; grid-template-columns: minmax(0, 1fr); gap: 48px; margin-top: 26px; }
 @media (min-width: 920px) { .progview { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); column-gap: 56px; align-items: start; } }
 .block > p.lead { margin: 0 0 14px; color: var(--ink-2); max-width: 60ch; }
 .block h2.bh { margin: 0 0 6px; font-family: var(--display); font-weight: 800; font-size: 34px; line-height: 1; }
@@ -334,7 +334,7 @@ body.timer-on .app { padding-bottom: calc(200px + env(safe-area-inset-bottom, 0p
 .coachnote { color: var(--mute); font-size: 13px; margin: 10px 0 0; }
 
 /* Plan view */
-.planview { display: grid; gap: 40px; max-width: 760px; }
+.planview { display: grid; grid-template-columns: minmax(0, 1fr); gap: 40px; max-width: 760px; }
 .plansum { list-style: none; margin: 0; padding: 0; }
 .plansum li { display: grid; grid-template-columns: 110px 1fr auto; gap: 12px; padding: 12px 0; border-top: 1px solid var(--line); align-items: baseline; }
 .plansum li:first-child { border-top: 0; }
@@ -369,7 +369,9 @@ pre.prompt { white-space: pre-wrap; margin: 0 0 12px; padding: 14px; border-radi
   min-height: 44px; padding: 9px 12px; border-radius: 10px; border: 1px solid var(--line-2); background: var(--surface); color: var(--ink);
 }
 .field input:focus, .field select:focus { outline: none; border-color: var(--ice-deep); }
-.two { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.two { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 12px; }
+.field { min-width: 0; }
+.field input, .field select { width: 100%; min-width: 0; }
 .toggle { display: flex; align-items: center; justify-content: space-between; gap: 14px; padding: 4px 0; }
 .toggle span { font-size: 15px; }
 .toggle span small { display: block; color: var(--mute); font-size: 13px; }
@@ -399,14 +401,14 @@ pre.prompt { white-space: pre-wrap; margin: 0 0 12px; padding: 14px; border-radi
 
 /* Bottom nav */
 .tabs {
-  position: fixed; left: 50%; bottom: 0; transform: translateX(-50%); z-index: 40; width: min(560px, 100%);
-  display: grid; grid-template-columns: repeat(5, 1fr);
+  position: fixed; left: 50%; bottom: 0; transform: translateX(-50%); z-index: 40; width: min(620px, 100%);
+  display: grid; grid-template-columns: repeat(6, 1fr);
   padding: 6px 6px calc(6px + env(safe-area-inset-bottom, 0px));
   background: rgba(0, 0, 0, 0.84); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
   border-top: 1px solid var(--line);
 }
 @media (min-width: 600px) { .tabs { bottom: 14px; border: 1px solid var(--line); border-radius: 22px; padding-bottom: 6px; } }
-.tab { position: relative; display: grid; justify-items: center; gap: 2px; padding: 8px 2px 6px; border: 0; background: transparent; color: var(--mute); font-size: 11.5px; font-weight: 600; border-radius: 14px; }
+.tab { position: relative; display: grid; justify-items: center; gap: 2px; padding: 8px 1px 6px; border: 0; background: transparent; color: var(--mute); font-size: 10.5px; font-weight: 600; border-radius: 14px; }
 .tab svg { width: 24px; height: 24px; }
 .tab[aria-current="page"] { color: var(--ice); }
 .tab[aria-current="page"]::before { content: ""; position: absolute; top: 0; width: 8px; height: 9px; background: var(--ice); clip-path: polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%); }
@@ -423,6 +425,79 @@ pre.prompt { white-space: pre-wrap; margin: 0 0 12px; padding: 14px; border-radi
 .summary { white-space: pre-wrap; margin: 12px 0 0; padding: 14px; border-radius: 14px; background: var(--surface); border: 1px solid var(--line); color: var(--ink-2); font-family: var(--text); font-size: 13px; max-height: 320px; overflow: auto; }
 .steps { margin: 0 0 16px; padding-left: 20px; color: var(--ink-2); }
 .steps li { margin: 4px 0; }
+
+/* ---- Check-in + body card ---- */
+.checkin { margin-top: 30px; padding-top: 22px; border-top: 1px solid var(--line); }
+.ci-row { display: grid; grid-template-columns: 96px 1fr; align-items: center; gap: 10px; margin: 8px 0; }
+.ci-l { color: var(--ink-2); font-size: 14px; }
+.ci-btns { display: flex; gap: 6px; }
+.ci-btn { flex: 1; min-height: 44px; max-width: 58px; border-radius: 12px; border: 1px solid var(--line-2); background: transparent; color: var(--ink-2); font-family: var(--display); font-weight: 700; font-size: 20px; transition: background 160ms, border-color 160ms; }
+.ci-btn[aria-pressed="true"] { background: var(--ice); border-color: var(--ice); color: var(--ice-ink); }
+.ci-scale { color: var(--mute); font-size: 12px; margin: 4px 0 0; }
+.ci-hint { color: var(--ink-2); font-size: 14px; margin: 12px 0 0; padding-left: 12px; border-left: 2px solid var(--ice); }
+.bodycard { margin-top: 30px; padding-top: 22px; border-top: 1px solid var(--line); }
+.bc-line { display: flex; justify-content: space-between; gap: 12px; padding: 6px 0; color: var(--ink-2); font-size: 15px; }
+.bc-line b { color: var(--ink); font-weight: 600; text-align: right; }
+.bc-line b.ok { color: var(--ice); }
+.bodycard .row { margin-top: 12px; }
+
+/* ---- Body tab ---- */
+.posegrid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin-top: 10px; max-width: 460px; }
+.pose { position: relative; aspect-ratio: 3 / 4; border-radius: 14px; border: 1px dashed var(--line-2); background: var(--surface); overflow: hidden; padding: 0; color: var(--ink-2); display: grid; place-items: center; }
+.pose img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.pose .pl { position: absolute; left: 0; right: 0; bottom: 0; padding: 22px 6px 6px; font-size: 12px; line-height: 1.25; text-align: center; background: linear-gradient(transparent, rgba(0,0,0,.88)); color: var(--ink); }
+.pose .plus { font-size: 34px; color: var(--mute); margin-bottom: 14px; }
+.pose.done { border-style: solid; border-color: var(--ice-deep); }
+.pose.due { border-color: var(--ice); }
+.pose.due .plus { color: var(--ice); }
+.photonote { color: var(--mute); font-size: 13px; margin: 10px 0 0; max-width: 56ch; }
+.chipsrow { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0 0; }
+.chipsrow .chip[aria-pressed="true"] { border-color: var(--ice); color: var(--ice); }
+.thumbs { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; margin-top: 12px; max-width: 460px; }
+.thumb { position: relative; aspect-ratio: 3 / 4; padding: 0; border: 0; border-radius: 10px; overflow: hidden; background: var(--surface); }
+.thumb img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.thumb span { position: absolute; left: 0; right: 0; bottom: 0; font-size: 11px; padding: 12px 2px 3px; text-align: center; background: linear-gradient(transparent, rgba(0,0,0,.88)); color: var(--ink); }
+.subh { margin: 26px 0 0; font-size: 17px; font-weight: 600; }
+.tlbox canvas { width: 100%; max-width: 360px; aspect-ratio: 3 / 4; border-radius: 14px; background: var(--surface); display: block; margin-top: 10px; }
+.tlctl { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-top: 10px; max-width: 360px; }
+.tlctl input[type=range] { flex: 1; min-width: 120px; accent-color: var(--ice); }
+.tlctl select { min-height: 38px; padding: 4px 8px; border-radius: 10px; border: 1px solid var(--line-2); background: var(--surface); color: var(--ink); }
+.cmpsel { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; max-width: 420px; margin-top: 10px; }
+.cmpsel select { width: 100%; min-height: 40px; padding: 6px 8px; border-radius: 10px; border: 1px solid var(--line-2); background: var(--surface); color: var(--ink); }
+.cmp { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; max-width: 420px; margin-top: 10px; }
+.cmp img { width: 100%; aspect-ratio: 3 / 4; object-fit: cover; border-radius: 12px; background: var(--surface); }
+.meas-list { list-style: none; margin: 14px 0 0; padding: 0; }
+.meas-list li { display: flex; justify-content: space-between; gap: 12px; padding: 9px 0; border-top: 1px solid var(--line); font-size: 14px; color: var(--ink-2); }
+.meas-list li:first-child { border-top: 0; }
+.meas-list li b { color: var(--ink); font-weight: 600; }
+.meas-list li span:last-child { text-align: right; }
+.vtag { color: var(--ice); font-family: var(--display); font-weight: 700; font-size: 22px; }
+
+/* ---- Overlays: camera, sheet, viewer ---- */
+.overlay { position: fixed; inset: 0; z-index: 90; background: #000; display: flex; flex-direction: column; gap: 10px; overflow: auto; padding: calc(10px + env(safe-area-inset-top, 0px)) 14px calc(12px + env(safe-area-inset-bottom, 0px)); }
+.ov-top { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+.ov-top strong { font-weight: 600; }
+.ov-top span { color: var(--mute); font-size: 14px; }
+.camwrap { position: relative; width: min(100%, calc((100vh - 280px) * 0.75)); aspect-ratio: 3 / 4; margin: 0 auto; border-radius: 16px; overflow: hidden; background: #0A0F14; flex: none; }
+.camwrap video, .camwrap img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.mirror { transform: scaleX(-1); }
+#camGhost { opacity: .35; pointer-events: none; }
+.countnum { position: absolute; inset: 0; display: grid; place-items: center; font-family: var(--display); font-weight: 800; font-size: min(34vw, 160px); color: var(--ice); text-shadow: 0 0 30px rgba(0,0,0,.85); pointer-events: none; }
+.camerr { position: absolute; inset: 0; margin: 0; display: grid; place-items: center; padding: 20px; text-align: center; color: var(--ink-2); background: rgba(10,15,20,.92); }
+.cam-ctl { display: flex; align-items: center; justify-content: center; gap: 14px; }
+.shutter { width: 74px; height: 74px; flex: none; border-radius: 50%; border: 4px solid var(--ice); background: radial-gradient(circle, #EAF4F8 0 56%, transparent 57%); padding: 0; }
+.shutter.counting { background: radial-gradient(circle, var(--warn) 0 38%, transparent 39%); }
+.cam-ctl2, .cam-review { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+.camhint { text-align: center; color: var(--mute); font-size: 13px; margin: 0; }
+.sheetov { justify-content: flex-end; background: rgba(0,0,0,.72); }
+.sheet { background: var(--surface-2); border: 1px solid var(--line-2); border-radius: 20px; padding: 18px; display: grid; gap: 12px; max-width: 520px; width: 100%; margin: 0 auto; }
+.sheet img { width: 100%; max-height: 42vh; object-fit: contain; border-radius: 12px; background: #000; }
+.sheet h3 { margin: 0; font-family: var(--display); font-size: 30px; line-height: 1; }
+.sheet p { margin: 0; color: var(--ink-2); font-size: 14px; }
+.viewimg { flex: 1; min-height: 0; width: 100%; max-height: calc(100vh - 200px); object-fit: contain; }
+.view-ctl { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+.tab.t6 { font-size: 10.5px; }
+
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; }
 }
@@ -460,6 +535,7 @@ pre.prompt { white-space: pre-wrap; margin: 0 0 12px; padding: 14px; border-radi
     <symbol id="i-cal" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><rect x="4" y="5" width="16" height="15" rx="2.5"/><path d="M4 10h16M8.5 3v4M15.5 3v4"/></g></symbol>
     <symbol id="i-up" viewBox="0 0 24 24"><path d="M12 19V6M6.5 11.5L12 6l5.5 5.5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
     <symbol id="i-dot" viewBox="0 0 24 24"><path d="M12 5l6 3.5v7L12 19l-6-3.5v-7z" fill="currentColor"/></symbol>
+    <symbol id="i-body" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="6.5" r="2.7"/><path d="M5.5 20v-4.2c0-2.6 2.3-4.3 6.5-4.3s6.5 1.7 6.5 4.3V20"/></g></symbol>
     <symbol id="i-img" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"><rect x="3.5" y="5" width="17" height="14" rx="2.5"/><path d="M3.5 16l5-5 4 4 3-3 5 5" stroke-linecap="round"/><circle cx="16" cy="9" r="1.5"/></g></symbol>
   </defs>
 </svg>
@@ -497,6 +573,22 @@ pre.prompt { white-space: pre-wrap; margin: 0 0 12px; padding: 14px; border-radi
           <div class="habits">
             <div class="shead"><h2>Jeden Tag</h2><span id="streak"></span></div>
             <div class="habit-list" id="habits"></div>
+          </div>
+
+          <div class="checkin" id="checkinCard">
+            <div class="shead"><h2>Check-in</h2><span id="cistate"></span></div>
+            <div class="ci-row"><span class="ci-l">Energie</span><div class="ci-btns" data-k="energy" role="group" aria-label="Energie von 1 bis 5"></div></div>
+            <div class="ci-row"><span class="ci-l">Muskelkater</span><div class="ci-btns" data-k="soreness" role="group" aria-label="Muskelkater von 1 bis 5"></div></div>
+            <p class="ci-scale">Energie: 1 leer, 5 voll. Muskelkater: 1 keiner, 5 sehr stark.</p>
+            <p class="ci-hint" id="cihint" hidden></p>
+          </div>
+
+          <div class="bodycard" id="bodyCard">
+            <div class="shead"><h2>Körper</h2><span id="bcstate"></span></div>
+            <div class="bc-line"><span>Tagesfotos</span><b id="bcPhotos">–</b></div>
+            <div class="bc-line"><span>Wochenfotos</span><b id="bcWeekly">–</b></div>
+            <div class="bc-line"><span>Wochenmessung</span><b id="bcMeasure">–</b></div>
+            <div class="row"><button class="btn small primary" id="bcCam">Fotos aufnehmen</button><button class="btn small" id="bcMeasureBtn">Messung eintragen</button></div>
           </div>
 
         </div>
@@ -579,6 +671,84 @@ pre.prompt { white-space: pre-wrap; margin: 0 0 12px; padding: 14px; border-radi
       </div>
     </section>
 
+    <!-- BODY -->
+    <section id="view-body" aria-label="Körper" hidden>
+      <h1 class="pagetitle">Körper</h1>
+      <p class="pagesub">Fotos, Messwerte und dein Check-in. Veränderung siehst du nicht von Tag zu Tag, sondern im Zeitraffer.</p>
+      <div class="progview">
+        <div class="block" id="photoBlock">
+          <h2 class="bh">Fotos des Tages</h2>
+          <p class="lead">Täglich vorne entspannt und angespannt. Seite und Rücken einmal pro Woche. Antippen zum Aufnehmen oder Hochladen.</p>
+          <div class="row"><button class="btn primary" id="shootAll">Fällige Fotos aufnehmen</button></div>
+          <div class="posegrid" id="posegrid"></div>
+          <p class="photonote" id="photoNote"></p>
+          <p class="photonote" id="photoOff" hidden>Fotos werden in diesem Browser nicht unterstützt oder der Speicher ist gesperrt. Messwerte und Check-in funktionieren trotzdem.</p>
+        </div>
+
+        <div class="block" id="galleryBlock">
+          <h2 class="bh">Verlauf der Fotos</h2>
+          <p class="lead">Wähle eine Pose. Du siehst alle Tage, einen Zeitraffer und einen Vorher-Nachher-Vergleich.</p>
+          <div class="chipsrow" id="gChips"></div>
+          <p class="photonote" id="gEmpty" hidden>Für diese Pose gibt es noch kein Foto.</p>
+          <div class="thumbs" id="thumbs"></div>
+          <div class="row" style="margin-top:10px"><button class="btn small" id="thumbsMore" hidden>Mehr anzeigen</button></div>
+
+          <div class="tlbox" id="tlBox" hidden>
+            <h3 class="subh">Zeitraffer</h3>
+            <canvas id="tlCanvas" width="405" height="540" aria-label="Zeitraffer deiner Fotos"></canvas>
+            <div class="tlctl">
+              <button class="btn small primary" id="tlPlay">Abspielen</button>
+              <label class="sr" for="tlSpeed">Geschwindigkeit</label>
+              <select id="tlSpeed"><option value="2">Langsam</option><option value="4" selected>Normal</option><option value="8">Schnell</option><option value="14">Sehr schnell</option></select>
+              <label class="sr" for="tlRange">Bild</label>
+              <input type="range" id="tlRange" min="0" max="0" value="0">
+            </div>
+            <div class="row" style="margin-top:10px"><button class="btn small" id="tlExport" hidden>Als Video speichern</button></div>
+            <p class="photonote" id="tlStatus" aria-live="polite"></p>
+          </div>
+
+          <div id="cmpBox" hidden>
+            <h3 class="subh">Vorher und Nachher</h3>
+            <div class="cmpsel">
+              <div><label class="sr" for="cmpL">Links</label><select id="cmpL"></select></div>
+              <div><label class="sr" for="cmpR">Rechts</label><select id="cmpR"></select></div>
+            </div>
+            <div class="cmp"><img id="cmpImgL" alt="Foto links"><img id="cmpImgR" alt="Foto rechts"></div>
+          </div>
+        </div>
+
+        <div class="block" id="measureBlock">
+          <h2 class="bh">Wochenmessung</h2>
+          <p class="lead">Einmal pro Woche, immer am gleichen Tag und morgens. Die Taille sagt dir mehr über deinen V-Taper als die Waage.</p>
+          <div class="two" id="measForm"></div>
+          <div class="row" style="margin-top:12px"><button class="btn primary" id="measSave">Messung speichern</button></div>
+          <div id="measOut">
+            <label class="sr" for="measSel">Verlauf</label>
+            <select class="chartsel" id="measSel" style="margin-top:16px"></select>
+            <div class="chartwrap" id="measChart"></div>
+            <ul class="meas-list" id="measList"></ul>
+          </div>
+        </div>
+
+        <div class="block">
+          <h2 class="bh">Check-ins</h2>
+          <p class="lead">Dein Gefühl der letzten Tage. Tippe auf „Heute“ jeden Tag kurz Energie und Muskelkater ein.</p>
+          <ul class="meas-list" id="ciList"></ul>
+        </div>
+
+        <div class="block">
+          <h2 class="bh">Foto-Backup</h2>
+          <p class="lead">Fotos liegen nur auf diesem Handy und sind nicht im normalen Backup. Sichere sie regelmäßig als ZIP-Datei, zum Beispiel in Google Drive.</p>
+          <div class="row">
+            <button class="btn primary" id="zipSave">Fotos sichern (ZIP)</button>
+            <input class="sr" type="file" id="zipFile" accept=".zip,application/zip">
+            <label class="btn" for="zipFile"><svg aria-hidden="true"><use href="#i-file"/></svg>ZIP laden</label>
+          </div>
+          <p class="photonote" id="zipInfo" aria-live="polite"></p>
+        </div>
+      </div>
+    </section>
+
     <!-- COACH -->
     <section id="view-coach" aria-label="Coach" hidden>
       <h1 class="pagetitle">Coach</h1>
@@ -655,6 +825,14 @@ pre.prompt { white-space: pre-wrap; margin: 0 0 12px; padding: 14px; border-radi
                 <input type="date" id="setStart">
               </div>
               <div class="field">
+                <label for="setEnd">Ende des Winter Arc</label>
+                <input type="date" id="setEnd">
+              </div>
+              <div class="field">
+                <label for="setLen">Dauer in Tagen</label>
+                <input type="number" inputmode="numeric" min="7" max="730" id="setLen">
+              </div>
+              <div class="field">
                 <label for="setBw">Körpergewicht in kg</label>
                 <input type="number" inputmode="decimal" min="30" max="200" step="0.5" id="setBw">
               </div>
@@ -703,9 +881,57 @@ pre.prompt { white-space: pre-wrap; margin: 0 0 12px; padding: 14px; border-radi
   <button class="tab" data-tab="today" aria-current="page"><svg aria-hidden="true"><use href="#i-today"/></svg>Heute</button>
   <button class="tab" data-tab="week"><svg aria-hidden="true"><use href="#i-week"/></svg>Woche</button>
   <button class="tab" data-tab="progress"><svg aria-hidden="true"><use href="#i-prog"/></svg>Fortschritt</button>
+  <button class="tab" data-tab="body"><svg aria-hidden="true"><use href="#i-body"/></svg>Körper</button>
   <button class="tab" data-tab="coach"><svg aria-hidden="true"><use href="#i-coach"/></svg>Coach</button>
   <button class="tab" data-tab="plan"><svg aria-hidden="true"><use href="#i-plan"/></svg>Plan</button>
 </nav>
+
+<div class="overlay" id="cam" role="dialog" aria-modal="true" aria-label="Kamera" hidden>
+  <div class="ov-top"><div><strong id="camTitle"></strong><span id="camSub"></span></div><button class="btn small" id="camClose">Schließen</button></div>
+  <div class="camwrap" id="camWrap">
+    <video id="camVideo" playsinline muted autoplay></video>
+    <img id="camGhost" alt="" hidden>
+    <img id="camShot" alt="Aufgenommenes Foto" hidden>
+    <div class="countnum" id="camCount" hidden aria-live="assertive"></div>
+    <p class="camerr" id="camErr" hidden></p>
+  </div>
+  <div class="cam-ctl" id="camCtl">
+    <button class="btn small" id="camFlip">Kamera wechseln</button>
+    <button class="shutter" id="camShutter" aria-label="Foto aufnehmen"></button>
+    <button class="btn small" id="camTimer">Timer 10 s</button>
+  </div>
+  <div class="cam-ctl2" id="camCtl2">
+    <button class="btn small" id="camGhostBtn">Hilfsbild an</button>
+    <input class="sr" type="file" id="camFile" accept="image/*">
+    <label class="btn small" for="camFile">Aus Galerie wählen</label>
+  </div>
+  <div class="cam-review" id="camReview" hidden>
+    <button class="btn" id="camRetake">Nochmal</button>
+    <button class="btn primary" id="camKeep">Behalten</button>
+  </div>
+  <p class="camhint" id="camHint">Stell das Handy fest hin. Das Hilfsbild zeigt dein letztes Foto dieser Pose.</p>
+</div>
+
+<div class="overlay sheetov" id="sheet" role="dialog" aria-modal="true" aria-labelledby="sheetTitle" hidden>
+  <div class="sheet">
+    <h3 id="sheetTitle"></h3>
+    <p id="sheetSub"></p>
+    <img id="sheetImg" alt="" hidden>
+    <div class="field"><label for="sheetDate">Datum</label><input type="date" id="sheetDate"><small>Für ältere Fotos ändere das Datum, bevor du das Foto wählst.</small></div>
+    <div class="row">
+      <button class="btn primary" id="sheetCam">Mit Kamera aufnehmen</button>
+      <input class="sr" type="file" id="sheetFile" accept="image/*">
+      <label class="btn" for="sheetFile">Foto wählen</label>
+    </div>
+    <div class="row"><button class="btn danger" id="sheetDel" hidden>Löschen</button><button class="btn" id="sheetClose">Schließen</button></div>
+  </div>
+</div>
+
+<div class="overlay" id="viewer" role="dialog" aria-modal="true" aria-label="Foto ansehen" hidden>
+  <div class="ov-top"><div><strong id="viewTitle"></strong><span id="viewSub"></span></div><button class="btn small" id="viewClose">Schließen</button></div>
+  <img class="viewimg" id="viewImg" alt="">
+  <div class="view-ctl"><button class="btn small" id="viewPrev">Zurück</button><button class="btn small" id="viewNext">Weiter</button><button class="btn small danger" id="viewDel">Löschen</button></div>
+</div>
 
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 <script>
@@ -1011,7 +1237,7 @@ pre.prompt { white-space: pre-wrap; margin: 0 0 12px; padding: 14px; border-radi
 
   // ================= State =================
   const LS_KEY = "winterarc.v2";
-  const state = { plan: null, settings: clone(DEFAULT_SETTINGS), logs: {}, skills: {}, tests: { entries: [] }, meta: {} };
+  const state = { plan: null, settings: clone(DEFAULT_SETTINGS), logs: {}, skills: {}, tests: { entries: [] }, meta: {}, body: { entries: [] } };
   const pendingNotes = {}; // date -> exId -> text
 
   function loadLocal() {
@@ -1026,6 +1252,7 @@ pre.prompt { white-space: pre-wrap; margin: 0 0 12px; padding: 14px; border-radi
         state.skills = d.skills || {};
         state.tests = d.tests && Array.isArray(d.tests.entries) ? d.tests : { entries: [] };
         state.meta = d.meta || {};
+        state.body = d.body && Array.isArray(d.body.entries) ? d.body : { entries: [] };
       }
     } catch (e) { /* storage unavailable */ }
   }
@@ -1472,6 +1699,7 @@ pre.prompt { white-space: pre-wrap; margin: 0 0 12px; padding: 14px; border-radi
     }
     renderHabits(dk);
     renderProtein(dk);
+    renderTodayExtras(dk);
   }
 
   function placeholderFor(e) {
@@ -1986,6 +2214,804 @@ pre.prompt { white-space: pre-wrap; margin: 0 0 12px; padding: 14px; border-radi
     if (body) body.hidden = !openDays[dow];
   });
 
+  // ================= Body: constants =================
+  const POSES = [
+    { k: "front-r", l: "Vorne entspannt", g: "Vorne", t: "entspannt" },
+    { k: "front-f", l: "Vorne angespannt", g: "Vorne", t: "angespannt" },
+    { k: "side-r", l: "Seite entspannt", g: "Seite", t: "entspannt" },
+    { k: "side-f", l: "Seite angespannt", g: "Seite", t: "angespannt" },
+    { k: "back-r", l: "Rücken entspannt", g: "Rücken", t: "entspannt" },
+    { k: "back-f", l: "Rücken angespannt", g: "Rücken", t: "angespannt" }
+  ];
+  const POSE_ORDER = ["front-r", "side-r", "back-r", "front-f", "side-f", "back-f"];
+  const SEQ_ORDER = ["front-r", "front-f", "side-r", "side-f", "back-r", "back-f"];
+  const DAILY_POSES = ["front-r", "front-f"];
+  const WEEKLY_POSES = ["side-r", "side-f", "back-r", "back-f"];
+  const poseLabel = (k) => (POSES.find((p) => p.k === k) || {}).l || k;
+  const MEAS = [
+    { k: "weight", l: "Gewicht", u: "kg", hint: "Morgens, nüchtern, nach dem Toilettengang", min: 30, max: 250 },
+    { k: "waist", l: "Taille", u: "cm", hint: "Auf Nabelhöhe, locker ausgeatmet", min: 40, max: 250 },
+    { k: "shoulders", l: "Schultern", u: "cm", hint: "Um die breiteste Stelle, Arme hängen locker", min: 60, max: 250 },
+    { k: "arm", l: "Oberarm", u: "cm", hint: "Rechter Arm, angespannt, dickste Stelle", min: 15, max: 80 }
+  ];
+
+  // ================= Check-in =================
+  function buildCheckin() {
+    document.querySelectorAll(".ci-btns").forEach((g) => {
+      const name = g.dataset.k === "energy" ? "Energie " : "Muskelkater ";
+      g.innerHTML = [1, 2, 3, 4, 5].map((n) => '<button class="ci-btn" data-n="' + n + '" aria-pressed="false" aria-label="' + name + n + ' von 5">' + n + "</button>").join("");
+    });
+  }
+  function checkinOf(dk) { const l = state.logs[dk]; return (l && l.checkin) || {}; }
+  function ciHintFor(dk) {
+    const c = checkinOf(dk);
+    const e = c.energy, s = c.soreness;
+    if (e && s && s >= 4 && e <= 2) return "Beides ist schlecht heute. Mach nur die halbe Einheit oder tausch sie gegen Mobility und einen Spaziergang.";
+    if (s && s >= 4) return "Starker Muskelkater: Wärm dich länger auf und geh bei den betroffenen Muskeln nicht ans Limit. Stechender Schmerz heißt Stopp.";
+    if (e && e <= 2) return "Wenig Energie: Reduzier heute die Sätze um ein Drittel und prüf Schlaf und Essen.";
+    const vals = [];
+    for (let i = 0; i < 3; i++) { const x = checkinOf(dateKey(addDays(parseKey(dk), -i))).energy; if (x) vals.push(x); }
+    if (vals.length === 3 && vals.reduce((a, b) => a + b, 0) / 3 <= 2.5) return "Drei Tage mit niedriger Energie. Zieh den Deload vor oder nimm einen zusätzlichen Ruhetag.";
+    return "";
+  }
+  function renderCheckin(dk) {
+    const c = checkinOf(dk);
+    document.querySelectorAll(".ci-btns").forEach((g) => {
+      const v = c[g.dataset.k];
+      g.querySelectorAll(".ci-btn").forEach((b) => b.setAttribute("aria-pressed", +b.dataset.n === v ? "true" : "false"));
+    });
+    $("cistate").textContent = c.energy && c.soreness ? "erledigt" : c.energy || c.soreness ? "fast" : "";
+    const hint = ciHintFor(dk);
+    $("cihint").hidden = !hint;
+    $("cihint").textContent = hint;
+  }
+  $("checkinCard").addEventListener("click", (ev) => {
+    const b = ev.target.closest(".ci-btn");
+    if (!b) return;
+    const k = b.parentElement.dataset.k, n = +b.dataset.n;
+    const dk = todayKey();
+    const l = ensureLog(dk);
+    l.checkin = l.checkin || {};
+    if (l.checkin[k] === n) delete l.checkin[k]; else l.checkin[k] = n;
+    saveLog(dk);
+    renderCheckin(dk);
+    buzz(8);
+  });
+  function renderCheckinList() {
+    const keys = Object.keys(state.logs).filter((k) => { const c = checkinOf(k); return c.energy || c.soreness; }).sort().reverse().slice(0, 10);
+    $("ciList").innerHTML = keys.length ? keys.map((k) => {
+      const c = checkinOf(k);
+      return "<li><span><b>" + esc(shortDate(parseKey(k))) + "</b></span><span>Energie " + (c.energy || "–") + ", Muskelkater " + (c.soreness || "–") + "</span></li>";
+    }).join("") : '<li><span>Noch keine Check-ins.</span><span></span></li>';
+  }
+
+  // ================= Measurements =================
+  const saveBody = () => writeDoc("body", { entries: state.body.entries, updatedAt: stamp() });
+  const bodyEntries = () => (state.body.entries || []).slice().sort((a, b) => (a.date < b.date ? -1 : 1));
+  const vRatio = (e) => (e && e.shoulders && e.waist ? e.shoulders / e.waist : null);
+  function lastMeasure() { const e = bodyEntries(); return e.length ? e[e.length - 1] : null; }
+  function measureDue(dk) { const l = lastMeasure(); return !l || daysBetween(parseKey(l.date), parseKey(dk)) >= 7; }
+  function buildMeasForm() {
+    const today = bodyEntries().find((e) => e.date === todayKey()) || {};
+    const prev = lastMeasure();
+    $("measForm").innerHTML = MEAS.map((m) => {
+      const ph = prev && prev[m.k] ? fmtN(prev[m.k]) : "";
+      return '<div class="field"><label for="m-' + m.k + '">' + m.l + " in " + m.u + '</label><input id="m-' + m.k + '" data-k="' + m.k + '" inputmode="decimal" placeholder="' + esc(ph) + '" value="' + (today[m.k] ? esc(fmtN(today[m.k])) : "") + '"><small>' + esc(m.hint) + "</small></div>";
+    }).join("");
+  }
+  $("measSave").addEventListener("click", () => {
+    const vals = {};
+    let bad = null;
+    $("measForm").querySelectorAll("input[data-k]").forEach((inp) => {
+      const raw = inp.value.trim();
+      if (!raw) return;
+      const m = MEAS.find((x) => x.k === inp.dataset.k);
+      const v = num(raw);
+      if (v == null || v < m.min || v > m.max) { bad = m; return; }
+      vals[m.k] = Math.round(v * 10) / 10;
+    });
+    if (bad) { toast(bad.l + ": Wert zwischen " + bad.min + " und " + bad.max + " " + bad.u + " eingeben."); return; }
+    if (!Object.keys(vals).length) { toast("Trag mindestens einen Wert ein."); return; }
+    const tk = todayKey();
+    const old = (state.body.entries || []).find((e) => e.date === tk) || {};
+    const entry = Object.assign({}, old, vals, { date: tk });
+    state.body.entries = (state.body.entries || []).filter((e) => e.date !== tk).concat([entry]).sort((a, b) => (a.date < b.date ? -1 : 1)).slice(-400);
+    saveBody();
+    let extra = "";
+    if (vals.weight) { S().bodyweight = vals.weight; saveSettings(); extra = " Körpergewicht für die Berechnungen aktualisiert."; }
+    toast("Messung gespeichert." + extra);
+    renderBody();
+    renderTodayExtras(tk);
+  });
+  let measChoice = "weight";
+  function renderMeasure() {
+    if (!$("measForm").querySelector("input:focus")) buildMeasForm();
+    const es = bodyEntries();
+    const opts = MEAS.filter((m) => es.some((e) => e[m.k])).map((m) => ({ v: m.k, l: m.l + " (" + m.u + ")" }));
+    if (es.some((e) => vRatio(e))) opts.push({ v: "ratio", l: "Schulter-Taille-Verhältnis" });
+    $("measOut").hidden = !es.length;
+    if (!es.length) return;
+    if (!opts.some((o) => o.v === measChoice)) measChoice = opts[0].v;
+    $("measSel").innerHTML = opts.map((o) => '<option value="' + o.v + '"' + (o.v === measChoice ? " selected" : "") + ">" + esc(o.l) + "</option>").join("");
+    const m = MEAS.find((x) => x.k === measChoice);
+    const pts = es.map((e) => {
+      const y = measChoice === "ratio" ? vRatio(e) : e[measChoice];
+      if (!y) return null;
+      return { date: e.date, y, pr: false, label: measChoice === "ratio" ? y.toFixed(2).replace(".", ",") : fmtN(y) + " " + m.u };
+    }).filter(Boolean);
+    $("measChart").innerHTML = chartSvg(pts, (v) => (measChoice === "ratio" ? v.toFixed(2).replace(".", ",") : fmtN(v)), false) +
+      '<p class="chartnote">' + esc(measChoice === "ratio" ? "Schultern geteilt durch Taille. Je höher, desto ausgeprägter dein V." : m.l + " in " + m.u) + (pts.length < 2 ? ". Ab zwei Messungen siehst du eine Linie." : "") + "</p>";
+    const rows = es.slice(-6).reverse();
+    $("measList").innerHTML = rows.map((e) => {
+      const parts = MEAS.filter((x) => e[x.k]).map((x) => x.l + " " + fmtN(e[x.k]) + " " + x.u);
+      const r = vRatio(e);
+      return "<li><span><b>" + esc(shortDate(parseKey(e.date))) + "</b></span><span>" + esc(parts.join(", ")) + (r ? ' <span class="vtag">V ' + r.toFixed(2).replace(".", ",") + "</span>" : "") + "</span></li>";
+    }).join("");
+  }
+  $("measSel").addEventListener("change", function () { measChoice = this.value; renderMeasure(); });
+
+  // ================= Photos: IndexedDB =================
+  let photosState = "loading"; // loading | ok | off
+  let pdb = null, pdbFailed = false;
+  const photoIdx = {};
+  const urlCache = {};
+  function pOpen() {
+    if (pdb) return Promise.resolve(pdb);
+    if (pdbFailed || !window.indexedDB) return Promise.reject(new Error("no-idb"));
+    return new Promise((resolve, reject) => {
+      let req;
+      try { req = indexedDB.open("winterarc-photos", 1); } catch (e) { pdbFailed = true; reject(e); return; }
+      req.onupgradeneeded = () => { const db = req.result; if (!db.objectStoreNames.contains("photos")) db.createObjectStore("photos", { keyPath: "id" }); };
+      req.onsuccess = () => { pdb = req.result; pdb.onclose = () => { pdb = null; }; resolve(pdb); };
+      req.onerror = () => { pdbFailed = true; reject(req.error); };
+      req.onblocked = () => reject(new Error("blocked"));
+    });
+  }
+  function pReq(mode, fn) {
+    return pOpen().then((db) => new Promise((resolve, reject) => {
+      let req;
+      const t = db.transaction("photos", mode);
+      try { req = fn(t.objectStore("photos")); } catch (e) { reject(e); return; }
+      t.oncomplete = () => resolve(req && req.result);
+      t.onerror = () => reject(t.error);
+      t.onabort = () => reject(t.error || new Error("abort"));
+    }));
+  }
+  function pLoadIndex() {
+    return pOpen().then((db) => new Promise((resolve, reject) => {
+      const t = db.transaction("photos", "readonly");
+      const req = t.objectStore("photos").openCursor();
+      req.onsuccess = () => { const c = req.result; if (c) { const v = c.value; photoIdx[v.id] = { id: v.id, date: v.date, pose: v.pose }; c.continue(); } };
+      t.oncomplete = () => resolve();
+      t.onerror = () => reject(t.error);
+    }));
+  }
+  const pPut = (rec) => pReq("readwrite", (st) => st.put(rec)).then(() => { photoIdx[rec.id] = { id: rec.id, date: rec.date, pose: rec.pose }; revokeUrl(rec.id); });
+  const pGet = (id) => pReq("readonly", (st) => st.get(id));
+  const pDel = (id) => pReq("readwrite", (st) => st.delete(id)).then(() => { delete photoIdx[id]; revokeUrl(id); });
+  function revokeUrl(id) { if (urlCache[id]) { URL.revokeObjectURL(urlCache[id]); delete urlCache[id]; } }
+  function urlFor(id) {
+    if (urlCache[id]) return Promise.resolve(urlCache[id]);
+    return pGet(id).then((rec) => {
+      if (!rec || !rec.blob) return null;
+      if (!urlCache[id]) urlCache[id] = URL.createObjectURL(rec.blob);
+      return urlCache[id];
+    }).catch(() => null);
+  }
+  const savePhoto = (date, pose, blob) => pPut({ id: date + "|" + pose, date, pose, blob, ts: Date.now() });
+  const listFor = (pose) => Object.keys(photoIdx).map((k) => photoIdx[k]).filter((p) => p.pose === pose).sort((a, b) => (a.date < b.date ? -1 : 1));
+  const photoCount = () => Object.keys(photoIdx).length;
+
+  function cropTo34(src, sw, sh) {
+    const cv = document.createElement("canvas");
+    cv.width = 810; cv.height = 1080;
+    const ctx = cv.getContext("2d");
+    const target = 0.75;
+    let cw = sw, ch = sh;
+    if (sw / sh > target) cw = Math.round(sh * target); else ch = Math.round(sw / target);
+    ctx.drawImage(src, (sw - cw) / 2, (sh - ch) / 2, cw, ch, 0, 0, 810, 1080);
+    return new Promise((res, rej) => cv.toBlob((b) => (b ? res(b) : rej(new Error("blob"))), "image/jpeg", 0.8));
+  }
+  async function fileToBlob(file) {
+    let bmp;
+    try { bmp = await createImageBitmap(file, { imageOrientation: "from-image" }); } catch (e) { bmp = await createImageBitmap(file); }
+    try { return await cropTo34(bmp, bmp.width, bmp.height); } finally { if (bmp.close) bmp.close(); }
+  }
+
+  // ---- due logic ----
+  function dueWeeklyPoses(dk) {
+    const cutoff = dateKey(addDays(parseKey(dk), -6));
+    return WEEKLY_POSES.filter((p) => !Object.keys(photoIdx).some((id) => photoIdx[id].pose === p && photoIdx[id].date >= cutoff));
+  }
+  function todayQueue(dk) {
+    const due = dueWeeklyPoses(dk);
+    return SEQ_ORDER.filter((p) => !photoIdx[dk + "|" + p] && (DAILY_POSES.indexOf(p) >= 0 || due.indexOf(p) >= 0));
+  }
+
+  // ================= Today extras =================
+  function renderTodayExtras(dk) {
+    renderCheckin(dk);
+    const card = $("bodyCard");
+    const due = measureDue(dk);
+    $("bcMeasure").textContent = due ? "fällig" : "erledigt";
+    $("bcMeasure").classList.toggle("ok", !due);
+    if (photosState === "ok") {
+      const daily = DAILY_POSES.filter((p) => photoIdx[dk + "|" + p]).length;
+      const wDue = dueWeeklyPoses(dk).length;
+      $("bcPhotos").textContent = daily + " von 2";
+      $("bcPhotos").classList.toggle("ok", daily === 2);
+      $("bcWeekly").textContent = wDue ? wDue + " fällig" : "erledigt";
+      $("bcWeekly").classList.toggle("ok", !wDue);
+      const q = todayQueue(dk);
+      $("bcCam").hidden = !q.length;
+      $("bcCam").textContent = "Fotos aufnehmen (" + q.length + ")";
+      $("bcstate").textContent = !q.length && !due ? "alles erledigt" : "";
+    } else {
+      $("bcPhotos").textContent = photosState === "loading" ? "lädt" : "nicht verfügbar";
+      $("bcWeekly").textContent = "–";
+      $("bcCam").hidden = true;
+      $("bcstate").textContent = "";
+    }
+    $("bcMeasureBtn").hidden = !due;
+  }
+  $("bcCam").addEventListener("click", () => { const q = todayQueue(todayKey()); if (q.length) openCam(q, todayKey()); });
+  $("bcMeasureBtn").addEventListener("click", () => { showTab("body"); setTimeout(() => $("measureBlock").scrollIntoView({ block: "start" }), 60); });
+  $("bodyCard").addEventListener("click", (ev) => { if (ev.target.closest(".shead")) showTab("body"); });
+
+  // ================= Body tab: poses grid =================
+  function renderPoseGrid() {
+    const wrap = $("posegrid");
+    $("photoOff").hidden = photosState !== "off";
+    $("shootAll").hidden = photosState !== "ok";
+    if (photosState !== "ok") { wrap.innerHTML = ""; $("photoNote").textContent = photosState === "loading" ? "Fotos werden geladen." : ""; return; }
+    const dk = todayKey();
+    const due = dueWeeklyPoses(dk);
+    const done = SEQ_ORDER.filter((p) => photoIdx[dk + "|" + p]).length;
+    wrap.innerHTML = POSE_ORDER.map((k) => {
+      const p = POSES.find((x) => x.k === k);
+      const id = dk + "|" + k;
+      const has = !!photoIdx[id];
+      const isDue = !has && (DAILY_POSES.indexOf(k) >= 0 || due.indexOf(k) >= 0);
+      return '<button class="pose' + (has ? " done" : "") + (isDue ? " due" : "") + '" data-pose="' + k + '" aria-label="' + esc(p.l + (has ? ", heute aufgenommen" : isDue ? ", fällig" : "")) + '">' +
+        (has ? '<img alt="" data-id="' + esc(id) + '">' : '<span class="plus" aria-hidden="true">+</span>') +
+        '<span class="pl">' + esc(p.g) + "<br>" + esc(p.t) + "</span></button>";
+    }).join("");
+    wrap.querySelectorAll("img[data-id]").forEach((img) => urlFor(img.dataset.id).then((u) => { if (u) img.src = u; }));
+    const q = todayQueue(dk);
+    $("shootAll").disabled = !q.length;
+    $("shootAll").textContent = q.length ? "Fällige Fotos aufnehmen (" + q.length + ")" : "Alle fälligen Fotos erledigt";
+    $("photoNote").textContent = "Heute " + done + " von 6 Fotos. " + photoCount() + " Fotos insgesamt auf diesem Handy.";
+  }
+  $("posegrid").addEventListener("click", (ev) => { const b = ev.target.closest(".pose"); if (b) openSheet(b.dataset.pose, todayKey()); });
+  $("shootAll").addEventListener("click", () => { const q = todayQueue(todayKey()); if (q.length) openCam(q, todayKey()); });
+
+  // ================= Sheet (single pose) =================
+  let sheetCtx = null;
+  function openSheet(pose, date) {
+    sheetCtx = { pose, date: date || todayKey() };
+    $("sheetTitle").textContent = poseLabel(pose);
+    $("sheetDate").value = sheetCtx.date;
+    $("sheetDate").max = todayKey();
+    $("sheetDel").textContent = "Löschen";
+    $("sheet").hidden = false;
+    refreshSheet();
+    $("sheetCam").focus();
+  }
+  async function refreshSheet() {
+    if (!sheetCtx) return;
+    const id = sheetCtx.date + "|" + sheetCtx.pose;
+    const has = !!photoIdx[id];
+    $("sheetSub").textContent = has ? "Für diesen Tag ist schon ein Foto gespeichert. Ein neues ersetzt es." : "Für diesen Tag ist noch kein Foto gespeichert.";
+    $("sheetDel").hidden = !has;
+    const img = $("sheetImg");
+    if (has) { const u = await urlFor(id); if (u && sheetCtx && sheetCtx.date + "|" + sheetCtx.pose === id) { img.src = u; img.hidden = false; } } else img.hidden = true;
+  }
+  function closeSheet() { $("sheet").hidden = true; sheetCtx = null; }
+  $("sheetClose").addEventListener("click", closeSheet);
+  $("sheetDate").addEventListener("change", function () {
+    if (!sheetCtx || !/^\d{4}-\d{2}-\d{2}$/.test(this.value)) return;
+    if (this.value > todayKey()) { toast("Das Datum liegt in der Zukunft."); this.value = sheetCtx.date; return; }
+    sheetCtx.date = this.value; $("sheetDel").textContent = "Löschen"; refreshSheet();
+  });
+  $("sheetCam").addEventListener("click", () => { if (!sheetCtx) return; const c = sheetCtx; closeSheet(); openCam([c.pose], c.date); });
+  $("sheetFile").addEventListener("change", async (ev) => {
+    const f = ev.target.files && ev.target.files[0];
+    ev.target.value = "";
+    if (!f || !sheetCtx) return;
+    const c = sheetCtx;
+    try {
+      const blob = await fileToBlob(f);
+      await savePhoto(c.date, c.pose, blob);
+      toast("Foto gespeichert");
+      if (sheetCtx) refreshSheet();
+      renderBody(); renderTodayExtras(todayKey());
+    } catch (e) { toast("Das Foto konnte nicht gespeichert werden. Nimm ein JPG oder PNG."); }
+  });
+  $("sheetDel").addEventListener("click", async function () {
+    if (!sheetCtx) return;
+    if (this.textContent !== "Wirklich löschen?") { this.textContent = "Wirklich löschen?"; return; }
+    const id = sheetCtx.date + "|" + sheetCtx.pose;
+    try { await pDel(id); toast("Foto gelöscht"); } catch (e) { toast("Löschen hat nicht geklappt."); }
+    this.textContent = "Löschen";
+    refreshSheet(); renderBody(); renderTodayExtras(todayKey());
+  });
+
+  // ================= Camera =================
+  const cam = { stream: null, facing: "user", timer: 10, ghost: true, queue: [], i: 0, date: "", counting: null, shotBlob: null, shotUrl: null, open: false };
+  function mirrorUpdate() {
+    const m = cam.facing === "user";
+    $("camVideo").classList.toggle("mirror", m);
+    $("camGhost").classList.toggle("mirror", m);
+  }
+  function camError(msg) { $("camErr").textContent = msg; $("camErr").hidden = false; }
+  function stopStream() {
+    if (cam.stream) { cam.stream.getTracks().forEach((t) => t.stop()); cam.stream = null; }
+    const v = $("camVideo"); try { v.srcObject = null; } catch (e) { /* ignore */ }
+  }
+  async function startStream() {
+    stopStream();
+    $("camErr").hidden = true;
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) { camError("Die Kamera ist hier nicht verfügbar. Wähle ein Foto aus der Galerie."); return; }
+    try {
+      const s = await navigator.mediaDevices.getUserMedia({ video: { facingMode: cam.facing, width: { ideal: 1080 }, height: { ideal: 1440 } }, audio: false });
+      if (!cam.open) { s.getTracks().forEach((t) => t.stop()); return; }
+      cam.stream = s;
+      const v = $("camVideo");
+      v.srcObject = s;
+      await v.play().catch(() => {});
+      mirrorUpdate();
+    } catch (e) {
+      camError(e && e.name === "NotAllowedError" ? "Der Kamerazugriff wurde abgelehnt. Erlaub ihn in den Seiteneinstellungen oder wähle ein Foto aus der Galerie." : "Die Kamera konnte nicht gestartet werden. Wähle ein Foto aus der Galerie.");
+    }
+  }
+  function updateCamButtons() {
+    $("camTimer").textContent = cam.timer > 0 ? "Timer " + cam.timer + " s" : "Kein Timer";
+    $("camGhostBtn").textContent = cam.ghost ? "Hilfsbild an" : "Hilfsbild aus";
+  }
+  function openCam(poses, date) {
+    if (!poses || !poses.length || photosState !== "ok") return;
+    const m = state.meta || {};
+    cam.queue = poses.slice(); cam.i = 0; cam.date = date || todayKey();
+    cam.facing = m.camFacing || "user";
+    cam.timer = m.camTimer != null ? m.camTimer : 10;
+    cam.ghost = m.camGhost !== false;
+    cam.open = true;
+    $("cam").hidden = false;
+    document.body.style.overflow = "hidden";
+    updateCamButtons();
+    camStep();
+    startStream();
+    $("camClose").focus();
+  }
+  async function camStep() {
+    const pose = cam.queue[cam.i];
+    cancelCount();
+    $("camTitle").textContent = poseLabel(pose);
+    $("camSub").textContent = " · Foto " + (cam.i + 1) + " von " + cam.queue.length;
+    $("camReview").hidden = true;
+    $("camShot").hidden = true;
+    $("camCtl").hidden = false; $("camCtl2").hidden = false;
+    $("camVideo").hidden = false;
+    $("camGhost").hidden = true;
+    const prev = listFor(pose).filter((p) => p.date !== cam.date);
+    const last = prev[prev.length - 1];
+    if (last) {
+      const u = await urlFor(last.id);
+      if (u && cam.open && cam.queue[cam.i] === pose) { $("camGhost").src = u; $("camGhost").hidden = !cam.ghost; mirrorUpdate(); }
+    }
+    $("camHint").textContent = last ? "Das Hilfsbild zeigt dein Foto vom " + shortDate(parseKey(last.date)) + ". Stell dich deckungsgleich hin." : "Stell das Handy fest hin. Ab dem nächsten Mal hilft dir ein Hilfsbild beim Ausrichten.";
+  }
+  function closeCam() {
+    cam.open = false;
+    cancelCount();
+    stopStream();
+    $("cam").hidden = true;
+    document.body.style.overflow = "";
+    if (cam.shotUrl) { URL.revokeObjectURL(cam.shotUrl); cam.shotUrl = null; }
+    cam.shotBlob = null;
+  }
+  $("camClose").addEventListener("click", closeCam);
+  $("camFlip").addEventListener("click", () => {
+    cam.facing = cam.facing === "user" ? "environment" : "user";
+    state.meta = state.meta || {}; state.meta.camFacing = cam.facing; saveLocal();
+    startStream();
+  });
+  $("camTimer").addEventListener("click", () => {
+    cam.timer = cam.timer === 10 ? 5 : cam.timer === 5 ? 0 : 10;
+    state.meta = state.meta || {}; state.meta.camTimer = cam.timer; saveLocal();
+    updateCamButtons();
+  });
+  $("camGhostBtn").addEventListener("click", () => {
+    cam.ghost = !cam.ghost;
+    state.meta = state.meta || {}; state.meta.camGhost = cam.ghost; saveLocal();
+    $("camGhost").hidden = !cam.ghost || !$("camGhost").src;
+    updateCamButtons();
+  });
+  function tickSound(freq) {
+    try {
+      if (!audioCtx) return;
+      const t0 = audioCtx.currentTime;
+      const o = audioCtx.createOscillator(), g = audioCtx.createGain();
+      o.type = "sine"; o.frequency.value = freq;
+      g.gain.setValueAtTime(0.0001, t0);
+      g.gain.exponentialRampToValueAtTime(0.2, t0 + 0.01);
+      g.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.18);
+      o.connect(g); g.connect(audioCtx.destination);
+      o.start(t0); o.stop(t0 + 0.2);
+    } catch (e) { /* ignore */ }
+  }
+  function showCount(n) { $("camCount").textContent = n; $("camCount").hidden = false; }
+  function cancelCount() {
+    if (cam.counting) { clearInterval(cam.counting); cam.counting = null; }
+    $("camCount").hidden = true;
+    $("camShutter").classList.remove("counting");
+  }
+  $("camShutter").addEventListener("click", () => {
+    primeAudio();
+    if (cam.counting) { cancelCount(); return; }
+    if (!cam.stream) { toast("Keine Kamera aktiv. Wähle ein Foto aus der Galerie."); return; }
+    if (cam.timer <= 0) { capture(); return; }
+    let n = cam.timer;
+    showCount(n); tickSound(660);
+    $("camShutter").classList.add("counting");
+    cam.counting = setInterval(() => {
+      n--;
+      if (n <= 0) { cancelCount(); tickSound(1320); capture(); }
+      else { showCount(n); tickSound(n <= 3 ? 990 : 660); }
+    }, 1000);
+  });
+  async function capture() {
+    const v = $("camVideo");
+    if (!v.videoWidth) { toast("Die Kamera ist noch nicht bereit."); return; }
+    try {
+      const blob = await cropTo34(v, v.videoWidth, v.videoHeight);
+      buzz(30);
+      showReview(blob);
+    } catch (e) { toast("Das Foto konnte nicht aufgenommen werden."); }
+  }
+  function showReview(blob) {
+    cam.shotBlob = blob;
+    if (cam.shotUrl) URL.revokeObjectURL(cam.shotUrl);
+    cam.shotUrl = URL.createObjectURL(blob);
+    $("camShot").src = cam.shotUrl;
+    $("camShot").hidden = false;
+    $("camGhost").hidden = true;
+    $("camCtl").hidden = true; $("camCtl2").hidden = true;
+    $("camReview").hidden = false;
+    $("camHint").textContent = "So sieht das Foto später aus. Bei der Frontkamera ist es spiegelverkehrt zur Vorschau.";
+  }
+  $("camRetake").addEventListener("click", () => { camStep(); });
+  $("camKeep").addEventListener("click", async () => {
+    if (!cam.shotBlob) return;
+    const pose = cam.queue[cam.i];
+    try { await savePhoto(cam.date, pose, cam.shotBlob); }
+    catch (e) { toast("Speichern nicht möglich. Der Speicher ist voll oder gesperrt."); return; }
+    cam.shotBlob = null;
+    cam.i++;
+    if (cam.i >= cam.queue.length) { closeCam(); toast("Fotos gespeichert"); renderBody(); renderTodayExtras(todayKey()); }
+    else camStep();
+  });
+  $("camFile").addEventListener("change", async (ev) => {
+    const f = ev.target.files && ev.target.files[0];
+    ev.target.value = "";
+    if (!f) return;
+    try { const blob = await fileToBlob(f); showReview(blob); }
+    catch (e) { toast("Das Foto konnte nicht gelesen werden. Nimm ein JPG oder PNG."); }
+  });
+  document.addEventListener("visibilitychange", () => { if (document.hidden && cam.open) { cancelCount(); stopStream(); } else if (!document.hidden && cam.open && $("camReview").hidden) startStream(); });
+
+  // ================= Gallery =================
+  let gPose = "front-r", gLimit = 24, gSig = "";
+  const tl = { ids: [], i: 0, playing: false, fps: 4, sig: "" };
+  let cmpL = "", cmpR = "";
+  function fmtShort(date) { const d = parseKey(date); return d.getDate() + "." + (d.getMonth() + 1) + "."; }
+  function renderGallery() {
+    const on = photosState === "ok";
+    $("galleryBlock").hidden = !on;
+    if (!on) return;
+    $("gChips").innerHTML = POSES.map((p) => '<button class="chip" data-pose="' + p.k + '" aria-pressed="' + (p.k === gPose) + '">' + esc(p.l) + " (" + listFor(p.k).length + ")</button>").join("");
+    const list = listFor(gPose);
+    $("gEmpty").hidden = list.length > 0;
+    const newest = list.slice().reverse().slice(0, gLimit);
+    $("thumbs").innerHTML = newest.map((p) => '<button class="thumb" data-id="' + esc(p.id) + '" aria-label="' + esc(poseLabel(p.pose) + " vom " + shortDate(parseKey(p.date))) + '"><img alt="" data-id="' + esc(p.id) + '"><span>' + esc(fmtShort(p.date)) + "</span></button>").join("");
+    $("thumbs").querySelectorAll("img[data-id]").forEach((img) => urlFor(img.dataset.id).then((u) => { if (u) img.src = u; }));
+    $("thumbsMore").hidden = list.length <= gLimit;
+    // timelapse
+    const ids = list.map((p) => p.id);
+    const sig = gPose + "|" + ids.join(",");
+    $("tlBox").hidden = ids.length < 2;
+    if (sig !== tl.sig) {
+      tl.sig = sig; tl.ids = ids; tl.playing = false; tl.i = Math.max(0, ids.length - 1);
+      $("tlRange").max = Math.max(0, ids.length - 1);
+      updatePlayBtn();
+      if (ids.length >= 2) tlShow(tl.i);
+    }
+    $("tlExport").hidden = !(window.MediaRecorder && HTMLCanvasElement.prototype.captureStream);
+    // compare
+    $("cmpBox").hidden = ids.length < 2;
+    if (ids.length >= 2) {
+      if (!ids.includes(cmpL)) cmpL = ids[0];
+      if (!ids.includes(cmpR)) cmpR = ids[ids.length - 1];
+      const optHtml = (sel) => list.map((p) => '<option value="' + esc(p.id) + '"' + (p.id === sel ? " selected" : "") + ">" + esc(shortDate(parseKey(p.date))) + "</option>").join("");
+      $("cmpL").innerHTML = optHtml(cmpL); $("cmpR").innerHTML = optHtml(cmpR);
+      urlFor(cmpL).then((u) => { if (u) $("cmpImgL").src = u; });
+      urlFor(cmpR).then((u) => { if (u) $("cmpImgR").src = u; });
+    }
+  }
+  $("gChips").addEventListener("click", (ev) => { const c = ev.target.closest(".chip"); if (!c) return; gPose = c.dataset.pose; gLimit = 24; cmpL = ""; cmpR = ""; renderGallery(); });
+  $("thumbsMore").addEventListener("click", () => { gLimit += 24; renderGallery(); });
+  $("cmpL").addEventListener("change", function () { cmpL = this.value; urlFor(cmpL).then((u) => { if (u) $("cmpImgL").src = u; }); });
+  $("cmpR").addEventListener("change", function () { cmpR = this.value; urlFor(cmpR).then((u) => { if (u) $("cmpImgR").src = u; }); });
+
+  // ---- timelapse ----
+  async function drawFrame(ctx, W, H, id) {
+    const rec = await pGet(id);
+    if (!rec || !rec.blob) return;
+    const bmp = await createImageBitmap(rec.blob);
+    ctx.fillStyle = "#0A0F14"; ctx.fillRect(0, 0, W, H);
+    ctx.drawImage(bmp, 0, 0, W, H);
+    if (bmp.close) bmp.close();
+    const meta = photoIdx[id] || rec;
+    const d = parseKey(meta.date), n = arcDay(d);
+    const label = (n >= 1 ? "Tag " + n + "   " : "") + d.getDate() + "." + (d.getMonth() + 1) + "." + d.getFullYear();
+    const bar = Math.round(H * 0.085);
+    ctx.fillStyle = "rgba(0,0,0,0.6)"; ctx.fillRect(0, H - bar, W, bar);
+    ctx.font = "700 " + Math.round(H * 0.042) + "px 'Big Shoulders Display', 'Arial Narrow', sans-serif";
+    ctx.textBaseline = "middle"; ctx.fillStyle = "#8EEBF8";
+    ctx.fillText(label, Math.round(W * 0.04), H - Math.round(bar / 2));
+  }
+  async function tlShow(i) {
+    if (!tl.ids.length) return;
+    tl.i = Math.max(0, Math.min(tl.ids.length - 1, i));
+    $("tlRange").value = tl.i;
+    const c = $("tlCanvas");
+    try { await drawFrame(c.getContext("2d"), c.width, c.height, tl.ids[tl.i]); } catch (e) { /* ignore */ }
+  }
+  function updatePlayBtn() { $("tlPlay").textContent = tl.playing ? "Pause" : "Abspielen"; }
+  async function tlLoop() {
+    while (tl.playing) {
+      const t0 = Date.now();
+      await tlShow(tl.i);
+      if (!tl.playing) break;
+      if (tl.i >= tl.ids.length - 1) { tl.playing = false; break; }
+      tl.i++;
+      await sleep(Math.max(0, 1000 / tl.fps - (Date.now() - t0)));
+    }
+    updatePlayBtn();
+  }
+  $("tlPlay").addEventListener("click", () => {
+    if (tl.playing) { tl.playing = false; updatePlayBtn(); return; }
+    if (tl.i >= tl.ids.length - 1) tl.i = 0;
+    tl.playing = true; updatePlayBtn(); tlLoop();
+  });
+  $("tlSpeed").addEventListener("change", function () { tl.fps = +this.value || 4; });
+  $("tlRange").addEventListener("input", function () { tl.i = +this.value; tlShow(tl.i); });
+  function pickMime() {
+    if (!window.MediaRecorder) return null;
+    const c = ["video/mp4;codecs=avc1.42E01E", "video/mp4", "video/webm;codecs=vp9", "video/webm;codecs=vp8", "video/webm"];
+    return c.find((m) => { try { return MediaRecorder.isTypeSupported(m); } catch (e) { return false; } }) || null;
+  }
+  function saveBlobFile(blob, name, tryShare) {
+    const finish = () => {
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url; a.download = name; document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 8000);
+      return "download";
+    };
+    if (tryShare && navigator.canShare && navigator.share) {
+      try {
+        const f = new File([blob], name, { type: blob.type });
+        if (navigator.canShare({ files: [f] })) return navigator.share({ files: [f], title: name }).then(() => "shared").catch((e) => (e && e.name === "AbortError" ? "cancelled" : finish()));
+      } catch (e) { /* fall through */ }
+    }
+    return Promise.resolve(finish());
+  }
+  let exporting = false;
+  $("tlExport").addEventListener("click", async () => {
+    if (exporting || tl.ids.length < 2) return;
+    const mime = pickMime();
+    if (!mime) { toast("Video-Export wird hier nicht unterstützt."); return; }
+    exporting = true; tl.playing = false; updatePlayBtn();
+    const st = $("tlStatus"), btn = $("tlExport");
+    btn.disabled = true;
+    try {
+      const off = document.createElement("canvas");
+      off.width = 810; off.height = 1080;
+      const ctx = off.getContext("2d");
+      const fps = Math.min(30, tl.fps);
+      const stream = off.captureStream(fps);
+      const rec = new MediaRecorder(stream, { mimeType: mime, videoBitsPerSecond: 4000000 });
+      const chunks = [];
+      rec.ondataavailable = (e) => { if (e.data && e.data.size) chunks.push(e.data); };
+      const stopped = new Promise((r) => { rec.onstop = r; });
+      await drawFrame(ctx, 810, 1080, tl.ids[0]);
+      rec.start(250);
+      for (let i = 0; i < tl.ids.length; i++) {
+        st.textContent = "Video wird erstellt: " + (i + 1) + " von " + tl.ids.length;
+        const t0 = Date.now();
+        await drawFrame(ctx, 810, 1080, tl.ids[i]);
+        await sleep(Math.max(0, 1000 / fps - (Date.now() - t0)));
+      }
+      await sleep(400);
+      rec.stop();
+      await stopped;
+      const type = mime.split(";")[0];
+      const blob = new Blob(chunks, { type });
+      const name = "winter-arc-zeitraffer-" + gPose + "-" + todayKey() + (type === "video/mp4" ? ".mp4" : ".webm");
+      const res = await saveBlobFile(blob, name, true);
+      st.textContent = res === "cancelled" ? "" : "Video gespeichert: " + name;
+    } catch (e) { st.textContent = "Das Video konnte nicht erstellt werden."; }
+    exporting = false; btn.disabled = false;
+  });
+
+  // ---- viewer ----
+  const view = { ids: [], i: 0 };
+  async function openViewer(id) {
+    const p = photoIdx[id];
+    if (!p) return;
+    view.ids = listFor(p.pose).map((x) => x.id);
+    view.i = Math.max(0, view.ids.indexOf(id));
+    $("viewer").hidden = false;
+    document.body.style.overflow = "hidden";
+    $("viewDel").textContent = "Löschen";
+    showViewer();
+    $("viewClose").focus();
+  }
+  async function showViewer() {
+    const id = view.ids[view.i];
+    const p = photoIdx[id];
+    if (!p) { closeViewer(); return; }
+    $("viewTitle").textContent = poseLabel(p.pose);
+    const d = parseKey(p.date), n = arcDay(d);
+    $("viewSub").textContent = " · " + shortDate(d) + (n >= 1 ? ", Tag " + n : "");
+    $("viewPrev").disabled = view.i <= 0;
+    $("viewNext").disabled = view.i >= view.ids.length - 1;
+    const u = await urlFor(id);
+    if (u && view.ids[view.i] === id) $("viewImg").src = u;
+  }
+  function closeViewer() { $("viewer").hidden = true; document.body.style.overflow = ""; }
+  $("thumbs").addEventListener("click", (ev) => { const b = ev.target.closest(".thumb"); if (b) openViewer(b.dataset.id); });
+  $("viewClose").addEventListener("click", closeViewer);
+  $("viewPrev").addEventListener("click", () => { if (view.i > 0) { view.i--; $("viewDel").textContent = "Löschen"; showViewer(); } });
+  $("viewNext").addEventListener("click", () => { if (view.i < view.ids.length - 1) { view.i++; $("viewDel").textContent = "Löschen"; showViewer(); } });
+  $("viewDel").addEventListener("click", async function () {
+    if (this.textContent !== "Wirklich löschen?") { this.textContent = "Wirklich löschen?"; return; }
+    const id = view.ids[view.i];
+    try { await pDel(id); } catch (e) { toast("Löschen hat nicht geklappt."); return; }
+    this.textContent = "Löschen";
+    view.ids.splice(view.i, 1);
+    if (!view.ids.length) closeViewer(); else { view.i = Math.min(view.i, view.ids.length - 1); showViewer(); }
+    renderBody(); renderTodayExtras(todayKey());
+  });
+  document.addEventListener("keydown", (ev) => {
+    if (ev.key !== "Escape") return;
+    if (!$("viewer").hidden) closeViewer(); else if (!$("cam").hidden) closeCam(); else if (!$("sheet").hidden) closeSheet();
+  });
+
+  // ================= ZIP backup of photos =================
+  const CRC_T = (() => { const t = new Uint32Array(256); for (let n = 0; n < 256; n++) { let c = n; for (let k = 0; k < 8; k++) c = c & 1 ? 0xEDB88320 ^ (c >>> 1) : c >>> 1; t[n] = c >>> 0; } return t; })();
+  function crc32(u8) { let c = 0xFFFFFFFF; for (let i = 0; i < u8.length; i++) c = CRC_T[(c ^ u8[i]) & 255] ^ (c >>> 8); return (c ^ 0xFFFFFFFF) >>> 0; }
+  function dosDT(d) { return { time: (d.getHours() << 11) | (d.getMinutes() << 5) | (d.getSeconds() >> 1), date: ((d.getFullYear() - 1980) << 9) | ((d.getMonth() + 1) << 5) | d.getDate() }; }
+  function makeZip(files) {
+    const enc = new TextEncoder();
+    const parts = [], central = [];
+    let offset = 0, cdSize = 0;
+    const dt = dosDT(new Date());
+    files.forEach((f) => {
+      const name = enc.encode(f.name), crc = crc32(f.data), size = f.data.length;
+      const lh = new DataView(new ArrayBuffer(30));
+      lh.setUint32(0, 0x04034b50, true); lh.setUint16(4, 20, true); lh.setUint16(6, 0x0800, true); lh.setUint16(8, 0, true);
+      lh.setUint16(10, dt.time, true); lh.setUint16(12, dt.date, true); lh.setUint32(14, crc, true); lh.setUint32(18, size, true); lh.setUint32(22, size, true);
+      lh.setUint16(26, name.length, true); lh.setUint16(28, 0, true);
+      parts.push(lh.buffer, name, f.data);
+      const ch = new DataView(new ArrayBuffer(46));
+      ch.setUint32(0, 0x02014b50, true); ch.setUint16(4, 20, true); ch.setUint16(6, 20, true); ch.setUint16(8, 0x0800, true); ch.setUint16(10, 0, true);
+      ch.setUint16(12, dt.time, true); ch.setUint16(14, dt.date, true); ch.setUint32(16, crc, true); ch.setUint32(20, size, true); ch.setUint32(24, size, true);
+      ch.setUint16(28, name.length, true); ch.setUint32(42, offset, true);
+      central.push(ch.buffer, name);
+      cdSize += 46 + name.length;
+      offset += 30 + name.length + size;
+    });
+    const end = new DataView(new ArrayBuffer(22));
+    end.setUint32(0, 0x06054b50, true); end.setUint16(8, files.length, true); end.setUint16(10, files.length, true); end.setUint32(12, cdSize, true); end.setUint32(16, offset, true);
+    return new Blob(parts.concat(central, [end.buffer]), { type: "application/zip" });
+  }
+  async function readZip(file) {
+    const buf = new Uint8Array(await file.arrayBuffer());
+    const dv = new DataView(buf.buffer);
+    let e = -1;
+    for (let i = buf.length - 22; i >= Math.max(0, buf.length - 66000); i--) { if (dv.getUint32(i, true) === 0x06054b50) { e = i; break; } }
+    if (e < 0) throw new Error("zip");
+    const count = dv.getUint16(e + 10, true);
+    let p = dv.getUint32(e + 16, true);
+    const out = [];
+    const dec = new TextDecoder();
+    for (let n = 0; n < count; n++) {
+      if (dv.getUint32(p, true) !== 0x02014b50) break;
+      const method = dv.getUint16(p + 10, true), csize = dv.getUint32(p + 20, true);
+      const nl = dv.getUint16(p + 28, true), el = dv.getUint16(p + 30, true), cl = dv.getUint16(p + 32, true), lo = dv.getUint32(p + 42, true);
+      const name = dec.decode(buf.subarray(p + 46, p + 46 + nl));
+      p += 46 + nl + el + cl;
+      if (method !== 0) continue;
+      if (dv.getUint32(lo, true) !== 0x04034b50) continue;
+      const start = lo + 30 + dv.getUint16(lo + 26, true) + dv.getUint16(lo + 28, true);
+      out.push({ name, data: buf.subarray(start, start + csize) });
+    }
+    return out;
+  }
+  let zipMsg = "";
+  const zipInfoProxy = { set textContent(v) { zipMsg = v; $("zipInfo").textContent = v; } };
+  $("zipSave").addEventListener("click", async () => {
+    const ids = Object.keys(photoIdx).sort();
+    const info = zipInfoProxy, btn = $("zipSave");
+    if (!ids.length) { info.textContent = "Es sind noch keine Fotos gespeichert."; return; }
+    btn.disabled = true;
+    try {
+      const files = [];
+      for (let i = 0; i < ids.length; i++) {
+        info.textContent = "Wird gepackt: " + (i + 1) + " von " + ids.length;
+        const rec = await pGet(ids[i]);
+        if (!rec || !rec.blob) continue;
+        files.push({ name: rec.date + "_" + rec.pose + ".jpg", data: new Uint8Array(await rec.blob.arrayBuffer()) });
+      }
+      const blob = makeZip(files);
+      const name = "winter-arc-fotos-" + todayKey() + ".zip";
+      await saveBlobFile(blob, name, false);
+      state.meta = state.meta || {}; state.meta.lastPhotoBackup = stamp(); saveLocal();
+      info.textContent = files.length + " Fotos gesichert in " + name + ". Leg die Datei zusätzlich in Google Drive ab.";
+    } catch (e) { info.textContent = "Das Backup hat nicht geklappt. Eventuell ist zu wenig Speicher frei."; }
+    btn.disabled = false;
+  });
+  $("zipFile").addEventListener("change", async (ev) => {
+    const f = ev.target.files && ev.target.files[0];
+    ev.target.value = "";
+    if (!f) return;
+    const info = zipInfoProxy;
+    try {
+      const files = await readZip(f);
+      let n = 0, skipped = 0;
+      for (const it of files) {
+        const m = it.name.split("/").pop().match(/^(\d{4}-\d{2}-\d{2})_((?:front|side|back)-[rf])\.jpg$/);
+        if (!m) { skipped++; continue; }
+        info.textContent = "Wird geladen: " + (n + 1);
+        await savePhoto(m[1], m[2], new Blob([it.data], { type: "image/jpeg" }));
+        n++;
+      }
+      info.textContent = n + " Fotos geladen" + (skipped ? ", " + skipped + " Dateien übersprungen" : "") + ".";
+      renderBody(); renderTodayExtras(todayKey());
+    } catch (e) { info.textContent = "Die Datei konnte nicht gelesen werden. Nimm eine ZIP-Datei aus dieser App."; }
+  });
+  function renderPhotoInfo() {
+    if (zipMsg) return;
+    const lb = state.meta && state.meta.lastPhotoBackup;
+    const days = lb ? daysBetween(new Date(lb), today()) : null;
+    $("zipInfo").textContent = lb ? "Letztes Foto-Backup: " + (days === 0 ? "heute" : days === 1 ? "gestern" : "vor " + days + " Tagen") + "." : "Du hast noch kein Foto-Backup gespeichert.";
+  }
+
+  // ================= Coach data =================
+  function bodyForCoach() {
+    const es = bodyEntries();
+    const fmt = (e) => { const o = { datum: shortDate(parseKey(e.date)) }; MEAS.forEach((m) => { if (e[m.k]) o[m.l + " (" + m.u + ")"] = e[m.k]; }); const r = vRatio(e); if (r) o["Schulter-Taille"] = Math.round(r * 100) / 100; return o; };
+    const cis = [];
+    for (let i = 13; i >= 0; i--) { const dk = dateKey(addDays(today(), -i)); const c = checkinOf(dk); if (c.energy || c.soreness) cis.push({ datum: shortDate(parseKey(dk)), energie: c.energy || null, muskelkater: c.soreness || null }); }
+    return { letzteMessungen: es.slice(-3).map(fmt), checkins14Tage: cis, fotosGesamt: photoCount() };
+  }
+
+  // ================= Render body tab =================
+  function renderBody() {
+    renderPoseGrid();
+    renderGallery();
+    renderMeasure();
+    renderCheckinList();
+    renderPhotoInfo();
+  }
+
+  // ================= Boot =================
+  buildCheckin();
+  pLoadIndex().then(() => { photosState = "ok"; renderBody(); renderTodayExtras(todayKey()); })
+    .catch(() => { photosState = "off"; renderBody(); renderTodayExtras(todayKey()); });
+
   // ================= Progress: arc grid =================
   let selCell = null;
   function renderArcGrid() {
@@ -2309,7 +3335,8 @@ pre.prompt { white-space: pre-wrap; margin: 0 0 12px; padding: 14px; border-radi
       plan: planToText(state.plan),
       letzte14Tage: days,
       tests,
-      skills
+      skills,
+      koerper: bodyForCoach()
     }, null, 1);
   }
   function summaryText() {
@@ -2338,7 +3365,7 @@ pre.prompt { white-space: pre-wrap; margin: 0 0 12px; padding: 14px; border-radi
 
   // ================= Backup =================
   function backupPayload() {
-    return { app: "winter-arc", version: 2, exportedAt: stamp(), data: { plan: state.plan, settings: state.settings, logs: state.logs, skills: state.skills, tests: state.tests } };
+    return { app: "winter-arc", version: 2, exportedAt: stamp(), data: { plan: state.plan, settings: state.settings, logs: state.logs, skills: state.skills, tests: state.tests, body: state.body } };
   }
   function markBackup() { state.meta = state.meta || {}; state.meta.lastBackup = stamp(); saveLocal(); renderBackupInfo(); }
   function saveBackup() {
@@ -2376,6 +3403,7 @@ pre.prompt { white-space: pre-wrap; margin: 0 0 12px; padding: 14px; border-radi
       Object.keys(logs).forEach((k) => { state.logs[k] = logs[k]; });
       state.skills = data.skills || state.skills;
       state.tests = data.tests && Array.isArray(data.tests.entries) ? data.tests : state.tests;
+      if (data.body && Array.isArray(data.body.entries)) state.body = data.body;
       todaySig = "";
       saveLocal();
       renderAll();
@@ -2417,6 +3445,8 @@ pre.prompt { white-space: pre-wrap; margin: 0 0 12px; padding: 14px; border-radi
     const setv = (id, v) => { const el = $(id); if (document.activeElement !== el && el.value !== String(v)) el.value = String(v); };
     setv("setRest", S().rest || 120);
     setv("setStart", S().arcStart || DEFAULT_SETTINGS.arcStart);
+    setv("setEnd", dateKey(arcLastDate()));
+    setv("setLen", S().arcLength || 90);
     setv("setBw", S().bodyweight || 75);
     setv("setProtein", S().proteinTarget || 120);
     setv("setHabits", (S().habits || []).join(", "));
@@ -2550,6 +3580,20 @@ pre.prompt { white-space: pre-wrap; margin: 0 0 12px; padding: 14px; border-radi
   function settingChanged(msg) { saveSettings(); todaySig = ""; renderAll(); if (msg) toast(msg); }
   $("setRest").addEventListener("change", function () { S().rest = +this.value || 120; settingChanged("Pausenzeit gespeichert"); });
   $("setStart").addEventListener("change", function () { if (/^\d{4}-\d{2}-\d{2}$/.test(this.value)) { S().arcStart = this.value; settingChanged("Startdatum gespeichert"); } });
+  $("setEnd").addEventListener("change", function () {
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(this.value)) return;
+    const len = daysBetween(arcStartDate(), parseKey(this.value)) + 1;
+    if (len < 7) { toast("Das Ende muss mindestens 7 Tage nach dem Start liegen."); this.value = dateKey(arcLastDate()); return; }
+    if (len > 730) { toast("Maximal 730 Tage (zwei Jahre)."); this.value = dateKey(arcLastDate()); return; }
+    S().arcLength = len;
+    settingChanged("Ende gespeichert: " + len + " Tage");
+  });
+  $("setLen").addEventListener("change", function () {
+    const len = Math.round(num(this.value) || 0);
+    if (len < 7 || len > 730) { toast("Wähle eine Dauer zwischen 7 und 730 Tagen."); this.value = S().arcLength || 90; return; }
+    S().arcLength = len;
+    settingChanged("Dauer gespeichert: " + len + " Tage");
+  });
   $("setBw").addEventListener("change", function () { const v = num(this.value); if (v && v >= 30 && v <= 200) { S().bodyweight = v; settingChanged("Körpergewicht gespeichert"); } });
   $("setProtein").addEventListener("change", function () { const v = Math.round(num(this.value) || 0); if (v >= 30 && v <= 300) { S().proteinTarget = v; settingChanged("Proteinziel gespeichert"); } });
   $("setHabits").addEventListener("change", function () {
@@ -2587,7 +3631,7 @@ pre.prompt { white-space: pre-wrap; margin: 0 0 12px; padding: 14px; border-radi
   });
 
   // ================= Tabs =================
-  const TABS = ["today", "week", "progress", "coach", "plan"];
+  const TABS = ["today", "week", "progress", "body", "coach", "plan"];
   let currentTab = "today";
   function showTab(name) {
     if (TABS.indexOf(name) < 0) name = "today";
@@ -2597,6 +3641,7 @@ pre.prompt { white-space: pre-wrap; margin: 0 0 12px; padding: 14px; border-radi
     try { localStorage.setItem("winterarc.tab", name); } catch (e) { /* ignore */ }
     if (name === "week") renderWeek();
     if (name === "progress") renderProgress();
+    if (name === "body") renderBody();
     if (name === "plan") renderPlanView();
     if (name === "today") fitDayname();
     window.scrollTo(0, 0);
@@ -2653,6 +3698,7 @@ pre.prompt { white-space: pre-wrap; margin: 0 0 12px; padding: 14px; border-radi
     renderToday();
     if (currentTab === "week") renderWeek();
     if (currentTab === "progress") renderProgress();
+    if (currentTab === "body") renderBody();
     if (currentTab === "plan") renderPlanView();
   }
   let lastDay = todayKey();
