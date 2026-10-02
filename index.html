@@ -426,6 +426,27 @@ pre.prompt { white-space: pre-wrap; margin: 0 0 12px; padding: 14px; border-radi
 .steps { margin: 0 0 16px; padding-left: 20px; color: var(--ink-2); }
 .steps li { margin: 4px 0; }
 
+/* ---- Collapsible cards, sleep, review ---- */
+.collbtn { background: none; border: 0; padding: 0; color: inherit; font: inherit; display: inline-flex; align-items: center; gap: 8px; cursor: pointer; text-align: left; letter-spacing: inherit; }
+.collbtn svg { width: 16px; height: 16px; flex: none; color: var(--mute); transition: transform 200ms; }
+.collbtn[aria-expanded="false"] svg { transform: rotate(-90deg); }
+.is-collapsed > *:not(.shead) { display: none !important; }
+.is-collapsed { padding-bottom: 0 !important; }
+.sleepin { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto; gap: 8px; align-items: center; }
+.sleepin .inp { min-height: 44px; text-align: center; }
+.sleepin .btn { min-width: 46px; padding: 8px; }
+.review { margin-top: 44px; padding-top: 24px; border-top: 1px solid var(--line); }
+.revnav { display: flex; gap: 8px; margin: 4px 0 6px; }
+.revsub { color: var(--mute); font-size: 12px; display: block; text-align: right; }
+.revfield { margin-top: 16px; }
+
+/* ---- Drink tracker ---- */
+.drink { margin-top: 30px; padding-top: 22px; border-top: 1px solid var(--line); }
+.dpace { color: var(--ink-2); font-size: 14px; margin: 0 0 12px; }
+.dpace.behind { color: var(--warn); }
+.drink .row { margin-top: 2px; }
+.drink .pips i { width: 24px; height: 27px; }
+
 /* ---- Check-in + body card ---- */
 .checkin { margin-top: 30px; padding-top: 22px; border-top: 1px solid var(--line); }
 .ci-row { display: grid; grid-template-columns: 96px 1fr; align-items: center; gap: 10px; margin: 8px 0; }
@@ -552,6 +573,7 @@ pre.prompt { white-space: pre-wrap; margin: 0 0 12px; padding: 14px; border-radi
     <section id="view-today" aria-label="Heute">
       <div class="today">
         <div class="today-left">
+          <div class="banner" id="sundayBanner" hidden><span><b>Dein Wochenrückblick ist bereit.</b> Schau dir deine Woche an.</span><button class="btn small primary" id="sundayBtn">Ansehen</button></div>
           <div class="hero" id="hero">
             <canvas class="snow" id="snow" aria-hidden="true"></canvas>
             <h1 class="dayname" id="dayname"></h1>
@@ -575,15 +597,47 @@ pre.prompt { white-space: pre-wrap; margin: 0 0 12px; padding: 14px; border-radi
             <div class="habit-list" id="habits"></div>
           </div>
 
-          <div class="checkin" id="checkinCard">
+          <div class="drink" id="drinkCard" data-coll="drink">
+            <div class="shead"><h2>Trinken</h2><span id="dstate"></span></div>
+            <div class="pmeter"><strong id="dtotal">0</strong><span id="dunit">l von 3 l</span></div>
+            <div class="pbar" id="dbar"><i></i></div>
+            <div class="pips" id="dhex" aria-hidden="true"></div>
+            <p class="dpace" id="dpace" aria-live="polite"></p>
+            <div class="row"><button class="btn primary" id="dBtn">+ Shaker</button></div>
+            <div class="pfoods" id="dquick" style="margin-top:10px">
+              <button class="pfood" data-ml="250">Glas<b>+250 ml</b></button>
+              <button class="pfood" data-ml="330">Dose<b>+330 ml</b></button>
+              <button class="pfood" data-ml="500">Flasche<b>+500 ml</b></button>
+            </div>
+            <div class="pcustom">
+              <label class="sr" for="dinput">Eigene Menge in Millilitern</label>
+              <input type="number" inputmode="numeric" min="10" max="2000" id="dinput" placeholder="ml">
+              <button class="btn small" id="dadd">Hinzufügen</button>
+              <button class="btn small" id="dundo">Rückgängig</button>
+            </div>
+            <p class="plog" id="dlog"></p>
+          </div>
+
+          <div class="checkin" id="checkinCard" data-coll="checkin">
             <div class="shead"><h2>Check-in</h2><span id="cistate"></span></div>
             <div class="ci-row"><span class="ci-l">Energie</span><div class="ci-btns" data-k="energy" role="group" aria-label="Energie von 1 bis 5"></div></div>
             <div class="ci-row"><span class="ci-l">Muskelkater</span><div class="ci-btns" data-k="soreness" role="group" aria-label="Muskelkater von 1 bis 5"></div></div>
-            <p class="ci-scale">Energie: 1 leer, 5 voll. Muskelkater: 1 keiner, 5 sehr stark.</p>
+            <div class="ci-row"><span class="ci-l">Schlaf</span>
+              <div class="sleepin">
+                <label class="sr" for="sleepDur">Schlafdauer</label>
+                <input class="inp" id="sleepDur" inputmode="text" placeholder="7:30 h" autocomplete="off">
+                <label class="sr" for="sleepScore">Garmin Schlaf-Score</label>
+                <input class="inp" id="sleepScore" inputmode="numeric" placeholder="Score" autocomplete="off">
+                <button class="btn small" id="sleepShot" aria-label="Garmin-Screenshot hinzufügen" hidden><svg aria-hidden="true"><use href="#i-img"/></svg></button>
+                <input class="sr" type="file" id="sleepFile" accept="image/*" tabindex="-1">
+              </div>
+            </div>
+            <p class="ci-scale">Energie: 1 leer, 5 voll. Muskelkater: 1 keiner, 5 sehr stark. Schlaf: Dauer und Score aus Garmin, dazu auf Wunsch ein Screenshot.</p>
+            <p class="ci-scale" id="sleepInfo"></p>
             <p class="ci-hint" id="cihint" hidden></p>
           </div>
 
-          <div class="bodycard" id="bodyCard">
+          <div class="bodycard" id="bodyCard" data-coll="body">
             <div class="shead"><h2>Körper</h2><span id="bcstate"></span></div>
             <div class="bc-line"><span>Tagesfotos</span><b id="bcPhotos">–</b></div>
             <div class="bc-line"><span>Wochenfotos</span><b id="bcWeekly">–</b></div>
@@ -610,7 +664,7 @@ pre.prompt { white-space: pre-wrap; margin: 0 0 12px; padding: 14px; border-radi
             <div class="shead"><h2>Diese Woche</h2></div>
             <p class="rest-note" id="nextsession" style="margin-top:6px"></p>
           </div>
-          <div class="protein">
+          <div class="protein" data-coll="protein">
             <div class="shead"><h2>Protein</h2><span id="ptarget"></span></div>
             <div class="pmeter"><strong id="ptotal">0</strong><span id="punit">g von 120 g</span></div>
             <div class="pbar" id="pbar"><i></i></div>
@@ -632,6 +686,18 @@ pre.prompt { white-space: pre-wrap; margin: 0 0 12px; padding: 14px; border-radi
       <h1 class="pagetitle" id="weektitle">Diese Woche</h1>
       <div class="week-stats" id="weekstats"></div>
       <ul class="weeklist" id="weeklist"></ul>
+
+      <div class="review" id="reviewBlock">
+        <div class="shead"><h2>Wochenrückblick</h2><span id="revWeekLabel"></span></div>
+        <div class="revnav"><button class="btn small" id="revPrev">Vorherige Woche</button><button class="btn small" id="revNext">Nächste Woche</button></div>
+        <ul class="meas-list" id="revList"></ul>
+        <p class="photonote" id="revFoot"></p>
+        <div class="field revfield">
+          <label for="revInput">Was änderst du nächste Woche?</label>
+          <input class="inp" id="revInput" maxlength="200" placeholder="z. B. früher ins Bett, abends mehr Protein" autocomplete="off">
+          <small>Wird bei der Zusammenfassung für Claude mit berücksichtigt.</small>
+        </div>
+      </div>
     </section>
 
     <!-- PROGRESS -->
@@ -736,6 +802,15 @@ pre.prompt { white-space: pre-wrap; margin: 0 0 12px; padding: 14px; border-radi
           <ul class="meas-list" id="ciList"></ul>
         </div>
 
+        <div class="block" id="sleepBlock">
+          <h2 class="bh">Schlaf und Training</h2>
+          <p class="lead">Trag Dauer und Score im Check-in auf der Startseite ein. Hier siehst du die letzten Tage nebeneinander.</p>
+          <p class="photonote" id="sleepInsight"></p>
+          <ul class="meas-list" id="sleepList"></ul>
+          <h3 class="subh" id="sleepShotsH" hidden>Garmin-Screenshots</h3>
+          <div class="thumbs" id="sleepThumbs"></div>
+        </div>
+
         <div class="block">
           <h2 class="bh">Foto-Backup</h2>
           <p class="lead">Fotos liegen nur auf diesem Handy und sind nicht im normalen Backup. Sichere sie regelmäßig als ZIP-Datei, zum Beispiel in Google Drive.</p>
@@ -805,6 +880,12 @@ pre.prompt { white-space: pre-wrap; margin: 0 0 12px; padding: 14px; border-radi
         </div>
 
         <div class="block">
+          <h2 class="bh">Trink-Erinnerungen</h2>
+          <p class="lead">Eine installierte Web-App kann dich nicht zuverlässig erinnern, wenn sie geschlossen ist. Am besten stellst du dir diese Zeiten als wiederkehrende Wecker in der Uhr-App deines Handys. Die Zeiten sind so verteilt, dass du bis zum Ende deines Trinkfensters dein Ziel schaffst.</p>
+          <ul class="callist" id="drinkTimes"></ul>
+        </div>
+
+        <div class="block">
           <h2 class="bh">Einstellungen</h2>
           <div class="settings">
             <div class="toggle"><span>Laufplan automatisch steigern<small>Passt die Kilometer jede Woche an den 90-Tage-Plan an, ab Woche 5 mit lockerem Sonntagslauf.</small></span><button class="switch" role="switch" aria-checked="true" id="swRun" aria-label="Laufplan automatisch steigern"></button></div>
@@ -840,11 +921,27 @@ pre.prompt { white-space: pre-wrap; margin: 0 0 12px; padding: 14px; border-radi
                 <label for="setProtein">Proteinziel in g</label>
                 <input type="number" inputmode="numeric" min="30" max="300" id="setProtein">
               </div>
+              <div class="field">
+                <label for="setDrink">Trinkziel in ml</label>
+                <input type="number" inputmode="numeric" min="500" max="8000" step="100" id="setDrink">
+              </div>
+              <div class="field">
+                <label for="setBottle">Shaker in ml</label>
+                <input type="number" inputmode="numeric" min="100" max="2000" step="50" id="setBottle">
+              </div>
+              <div class="field">
+                <label for="setDrinkFrom">Trinken ab (Uhr)</label>
+                <input type="number" inputmode="numeric" min="0" max="23" id="setDrinkFrom">
+              </div>
+              <div class="field">
+                <label for="setDrinkTo">Trinken bis (Uhr)</label>
+                <input type="number" inputmode="numeric" min="1" max="24" id="setDrinkTo">
+              </div>
             </div>
             <div class="field">
               <label for="setHabits">Tägliche Gewohnheiten</label>
               <input type="text" id="setHabits">
-              <small>Mit Komma trennen. Eine Gewohnheit mit „Protein“ im Namen hakt sich automatisch ab, wenn du dein Proteinziel erreichst.</small>
+              <small>Mit Komma trennen. Eine Gewohnheit mit „Protein“ im Namen hakt sich automatisch ab, wenn du dein Proteinziel erreichst. Dasselbe gilt für „Trinken“, „Wasser“ oder „Liter“ beim Trinkziel.</small>
             </div>
             <div class="row">
               <button class="btn" id="exportPlan" hidden>Plan als Textdatei sichern</button>
@@ -957,6 +1054,10 @@ pre.prompt { white-space: pre-wrap; margin: 0 0 12px; padding: 14px; border-radi
     arcLength: 90,
     bodyweight: 75,
     proteinTarget: 120,
+    drinkTarget: 3000,
+    bottle: 600,
+    drinkFrom: 8,
+    drinkTo: 21,
     autoRun: true,
     autoDeload: true,
     habits: ["10.000 Schritte", "Kalt duschen", "10 Seiten lesen", "Kreatin", "120 g Protein"]
@@ -2203,6 +2304,7 @@ pre.prompt { white-space: pre-wrap; margin: 0 0 12px; padding: 14px; border-radi
       '<div class="stat"><strong>' + completed + "<small>/" + planned + "</small></strong><span>Einheiten</span></div>" +
       '<div class="stat"><strong>' + (kmDone ? fmtN(kmDone) : setsDone) + "</strong><span>" + (kmDone ? "km gelaufen" : "Sätze") + "</span></div>" +
       '<div class="stat"><strong>' + pct + "<small>%</small></strong><span>Gewohnheiten</span></div>";
+    renderReview();
   }
   $("weeklist").addEventListener("click", (ev) => {
     const b = ev.target.closest(".wday-btn");
@@ -2227,7 +2329,7 @@ pre.prompt { white-space: pre-wrap; margin: 0 0 12px; padding: 14px; border-radi
   const SEQ_ORDER = ["front-r", "front-f", "side-r", "side-f", "back-r", "back-f"];
   const DAILY_POSES = ["front-r", "front-f"];
   const WEEKLY_POSES = ["side-r", "side-f", "back-r", "back-f"];
-  const poseLabel = (k) => (POSES.find((p) => p.k === k) || {}).l || k;
+  const poseLabel = (k) => (k === "sleep" ? "Garmin-Werte" : (POSES.find((p) => p.k === k) || {}).l || k);
   const MEAS = [
     { k: "weight", l: "Gewicht", u: "kg", hint: "Morgens, nüchtern, nach dem Toilettengang", min: 30, max: 250 },
     { k: "waist", l: "Taille", u: "cm", hint: "Auf Nabelhöhe, locker ausgeatmet", min: 40, max: 250 },
@@ -2249,6 +2351,8 @@ pre.prompt { white-space: pre-wrap; margin: 0 0 12px; padding: 14px; border-radi
     if (e && s && s >= 4 && e <= 2) return "Beides ist schlecht heute. Mach nur die halbe Einheit oder tausch sie gegen Mobility und einen Spaziergang.";
     if (s && s >= 4) return "Starker Muskelkater: Wärm dich länger auf und geh bei den betroffenen Muskeln nicht ans Limit. Stechender Schmerz heißt Stopp.";
     if (e && e <= 2) return "Wenig Energie: Reduzier heute die Sätze um ein Drittel und prüf Schlaf und Essen.";
+    const sl = (state.logs[dk] && state.logs[dk].sleep) || {};
+    if (sl.min && sl.min < 360) return "Kurze Nacht (unter 6 Stunden): Mach heute etwas weniger Volumen, geh heute früh schlafen und trink genug.";
     const vals = [];
     for (let i = 0; i < 3; i++) { const x = checkinOf(dateKey(addDays(parseKey(dk), -i))).energy; if (x) vals.push(x); }
     if (vals.length === 3 && vals.reduce((a, b) => a + b, 0) / 3 <= 2.5) return "Drei Tage mit niedriger Energie. Zieh den Deload vor oder nimm einen zusätzlichen Ruhetag.";
@@ -2260,7 +2364,7 @@ pre.prompt { white-space: pre-wrap; margin: 0 0 12px; padding: 14px; border-radi
       const v = c[g.dataset.k];
       g.querySelectorAll(".ci-btn").forEach((b) => b.setAttribute("aria-pressed", +b.dataset.n === v ? "true" : "false"));
     });
-    $("cistate").textContent = c.energy && c.soreness ? "erledigt" : c.energy || c.soreness ? "fast" : "";
+    $("cistate").textContent = c.energy && c.soreness ? "erledigt" : c.energy || c.soreness ? "fast" : "offen";
     const hint = ciHintFor(dk);
     $("cihint").hidden = !hint;
     $("cihint").textContent = hint;
@@ -2400,7 +2504,7 @@ pre.prompt { white-space: pre-wrap; margin: 0 0 12px; padding: 14px; border-radi
   }
   const savePhoto = (date, pose, blob) => pPut({ id: date + "|" + pose, date, pose, blob, ts: Date.now() });
   const listFor = (pose) => Object.keys(photoIdx).map((k) => photoIdx[k]).filter((p) => p.pose === pose).sort((a, b) => (a.date < b.date ? -1 : 1));
-  const photoCount = () => Object.keys(photoIdx).length;
+  const photoCount = () => Object.keys(photoIdx).filter((id) => photoIdx[id].pose !== "sleep").length;
 
   function cropTo34(src, sw, sh) {
     const cv = document.createElement("canvas");
@@ -2428,9 +2532,118 @@ pre.prompt { white-space: pre-wrap; margin: 0 0 12px; padding: 14px; border-radi
     return SEQ_ORDER.filter((p) => !photoIdx[dk + "|" + p] && (DAILY_POSES.indexOf(p) >= 0 || due.indexOf(p) >= 0));
   }
 
+
+  // ================= Drink tracker =================
+  const drinkList = (dk) => (state.logs[dk] && state.logs[dk].drinks) || [];
+  const drinkTotal = (dk) => drinkList(dk).reduce((a, x) => a + (+x.ml || 0), 0);
+  const fmtL = (ml) => String(Math.round(ml / 10) / 100).replace(".", ",") + " l";
+  const drinkCfg = () => ({
+    target: +S().drinkTarget || 3000,
+    bottle: +S().bottle || 600,
+    from: S().drinkFrom != null ? +S().drinkFrom : 8,
+    to: +S().drinkTo || 21
+  });
+  function drinkExpected(now) {
+    const c = drinkCfg();
+    const h = now.getHours() + now.getMinutes() / 60;
+    return Math.round(c.target * Math.max(0, Math.min(1, (h - c.from) / (c.to - c.from))));
+  }
+  function setDrinkHabit(l, on) {
+    (S().habits || []).forEach((h) => { if (/trink|wasser|liter/i.test(h)) { if (on) l.habits[h] = true; else delete l.habits[h]; } });
+  }
+  function renderDrink(dk) {
+    const c = drinkCfg();
+    const total = drinkTotal(dk);
+    const list = drinkList(dk);
+    $("dtotal").textContent = fmtL(total).replace(" l", "");
+    $("dunit").textContent = "l von " + fmtL(c.target);
+    $("dbar").querySelector("i").style.width = (Math.min(1, total / c.target) * 100).toFixed(1) + "%";
+    $("dbar").classList.toggle("full", total >= c.target);
+    $("dstate").innerHTML = total >= c.target ? "<b>Ziel erreicht</b>" : "noch " + fmtL(c.target - total);
+    const n = Math.max(1, Math.min(14, Math.round(c.target / c.bottle)));
+    const full = Math.floor(total / c.bottle + 0.02);
+    $("dhex").innerHTML = Array.from({ length: n }, (_, i) => '<i class="' + (i < full ? "on" : "") + '"></i>').join("");
+    $("dBtn").textContent = "+ Shaker (" + c.bottle + " ml)";
+    const now = today();
+    const pace = $("dpace");
+    pace.classList.remove("behind");
+    if (dk !== todayKey()) pace.textContent = "";
+    else if (total >= c.target) pace.textContent = "Ziel erreicht. Trink den Rest des Tages nach Durst.";
+    else if (now.getHours() < c.from) pace.textContent = "Dein Trinkfenster startet um " + c.from + " Uhr. Bis dahin ein Glas Wasser schadet nicht.";
+    else if (now.getHours() >= c.to) pace.textContent = "Das Trinkfenster ist zu Ende. Trink nur noch nach Durst, damit die Nacht ruhig bleibt.";
+    else {
+      const exp = drinkExpected(now);
+      const diff = exp - total;
+      if (diff > c.bottle * 0.5) { pace.textContent = "Du liegst " + diff + " ml hinter dem Plan (Soll jetzt: " + fmtL(exp) + "). Trink jetzt einen Shaker."; pace.classList.add("behind"); }
+      else pace.textContent = "Du liegst im Plan (Soll jetzt: " + fmtL(exp) + ").";
+    }
+    $("dundo").disabled = !list.length;
+    $("dlog").textContent = list.length ? "Heute: " + list.slice(-5).map((x) => x.t + " " + x.ml + " ml").join(", ") + (list.length > 5 ? " und mehr" : "") : "";
+  }
+  function addDrink(ml) {
+    ml = Math.round(ml);
+    if (!(ml >= 10 && ml <= 2000)) { toast("Gib eine Menge zwischen 10 und 2000 ml ein."); return; }
+    const dk = todayKey();
+    const l = ensureLog(dk);
+    l.drinks = l.drinks || [];
+    const c = drinkCfg();
+    const before = drinkTotal(dk);
+    const now = today();
+    l.drinks.push({ ml, t: pad(now.getHours()) + ":" + pad(now.getMinutes()) });
+    if (before < c.target && before + ml >= c.target) { setDrinkHabit(l, true); toast("Trinkziel erreicht: " + fmtL(before + ml)); buzz([20, 40, 20]); }
+    else buzz(10);
+    saveLog(dk);
+    renderDrink(dk); renderHabits(dk);
+  }
+  $("dBtn").addEventListener("click", () => addDrink(drinkCfg().bottle));
+  $("dquick").addEventListener("click", (ev) => { const b = ev.target.closest("[data-ml]"); if (b) addDrink(+b.dataset.ml); });
+  $("dadd").addEventListener("click", () => { const v = num($("dinput").value); if (!v) { toast("Gib eine Menge in ml ein."); return; } addDrink(v); $("dinput").value = ""; });
+  $("dinput").addEventListener("keydown", (ev) => { if (ev.key === "Enter") $("dadd").click(); });
+  $("dundo").addEventListener("click", () => {
+    const dk = todayKey();
+    const l = ensureLog(dk);
+    if (!l.drinks || !l.drinks.length) return;
+    l.drinks.pop();
+    if (drinkTotal(dk) < drinkCfg().target) setDrinkHabit(l, false);
+    saveLog(dk);
+    renderDrink(dk); renderHabits(dk);
+  });
+  function drinkSchedule() {
+    const c = drinkCfg();
+    const n = Math.max(1, Math.round(c.target / c.bottle));
+    const out = [];
+    for (let i = 0; i < n; i++) {
+      const hh = c.from + ((i + 1) * (c.to - c.from)) / n;
+      let mins = Math.round((hh * 60) / 5) * 5;
+      out.push({ i: i + 1, t: pad(Math.floor(mins / 60) % 24) + ":" + pad(mins % 60) });
+    }
+    return out;
+  }
+  function renderDrinkTimes() {
+    const c = drinkCfg();
+    $("drinkTimes").innerHTML = drinkSchedule().map((x) => '<li><span class="l"><b>' + x.t + " Uhr</b><span>Shaker " + x.i + " von " + Math.max(1, Math.round(c.target / c.bottle)) + " leer (" + fmtL(x.i * c.bottle) + ")</span></span></li>").join("");
+  }
+  function drinkSetting(id, key, min, max, label, extra) {
+    $(id).addEventListener("change", function () {
+      const v = Math.round(num(this.value) || 0);
+      const c = drinkCfg();
+      const bad = v < min || v > max || (extra && !extra(v, c));
+      if (bad) { toast(label + ": Wert zwischen " + min + " und " + max + " eingeben."); this.value = S()[key] != null ? S()[key] : ""; return; }
+      S()[key] = v;
+      settingChanged(label + " gespeichert");
+    });
+  }
+  drinkSetting("setDrink", "drinkTarget", 500, 8000, "Trinkziel");
+  drinkSetting("setBottle", "bottle", 100, 2000, "Shaker-Größe");
+  drinkSetting("setDrinkFrom", "drinkFrom", 0, 23, "Trinken ab", (v, c) => v < c.to);
+  drinkSetting("setDrinkTo", "drinkTo", 1, 24, "Trinken bis", (v, c) => v > c.from);
+
   // ================= Today extras =================
   function renderTodayExtras(dk) {
+    renderDrink(dk);
     renderCheckin(dk);
+    renderSleepRow(dk);
+    renderSundayBanner();
     const card = $("bodyCard");
     const due = measureDue(dk);
     $("bcMeasure").textContent = due ? "fällig" : "erledigt";
@@ -2445,7 +2658,8 @@ pre.prompt { white-space: pre-wrap; margin: 0 0 12px; padding: 14px; border-radi
       const q = todayQueue(dk);
       $("bcCam").hidden = !q.length;
       $("bcCam").textContent = "Fotos aufnehmen (" + q.length + ")";
-      $("bcstate").textContent = !q.length && !due ? "alles erledigt" : "";
+      const open = (2 - daily) + (wDue ? 1 : 0) + (due ? 1 : 0);
+      $("bcstate").textContent = open ? open + " offen" : "alles erledigt";
     } else {
       $("bcPhotos").textContent = photosState === "loading" ? "lädt" : "nicht verfügbar";
       $("bcWeekly").textContent = "–";
@@ -2972,7 +3186,7 @@ pre.prompt { white-space: pre-wrap; margin: 0 0 12px; padding: 14px; border-radi
       const files = await readZip(f);
       let n = 0, skipped = 0;
       for (const it of files) {
-        const m = it.name.split("/").pop().match(/^(\d{4}-\d{2}-\d{2})_((?:front|side|back)-[rf])\.jpg$/);
+        const m = it.name.split("/").pop().match(/^(\d{4}-\d{2}-\d{2})_((?:front|side|back)-[rf]|sleep)\.jpg$/);
         if (!m) { skipped++; continue; }
         info.textContent = "Wird geladen: " + (n + 1);
         await savePhoto(m[1], m[2], new Blob([it.data], { type: "image/jpeg" }));
@@ -2987,6 +3201,260 @@ pre.prompt { white-space: pre-wrap; margin: 0 0 12px; padding: 14px; border-radi
     const lb = state.meta && state.meta.lastPhotoBackup;
     const days = lb ? daysBetween(new Date(lb), today()) : null;
     $("zipInfo").textContent = lb ? "Letztes Foto-Backup: " + (days === 0 ? "heute" : days === 1 ? "gestern" : "vor " + days + " Tagen") + "." : "Du hast noch kein Foto-Backup gespeichert.";
+  }
+
+
+  // ================= Sleep =================
+  const fmtSleep = (m) => Math.floor(m / 60) + ":" + pad(m % 60) + " h";
+  function parseSleep(s) {
+    s = String(s || "").trim().toLowerCase().replace(",", ".");
+    if (!s) return 0;
+    let m = s.match(/^(\d{1,2})\s*(?:h|:|std\.?|stunden?)\s*(\d{1,2})?\s*(?:m|min\.?)?$/);
+    if (m) return +m[1] * 60 + (m[2] ? +m[2] : 0);
+    m = s.match(/^(\d+(?:\.\d+)?)\s*(?:h|std\.?)?$/);
+    if (m) { const v = parseFloat(m[1]); return v <= 16 ? Math.round(v * 60) : Math.round(v); }
+    return 0;
+  }
+  function saveSleepFields() {
+    const dk = todayKey();
+    const raw = $("sleepDur").value.trim(), rawS = $("sleepScore").value.trim();
+    const l = ensureLog(dk);
+    if (!raw && !rawS) { delete l.sleep; saveLog(dk); renderSleepRow(dk); renderCheckin(dk); return; }
+    const sl = {};
+    if (raw) {
+      const min = parseSleep(raw);
+      if (min < 60 || min > 1000) { toast("Schlafdauer bitte so eingeben: 7:30, 7,5 oder 450 (Minuten)."); return; }
+      sl.min = min;
+    }
+    if (rawS) {
+      const sc = Math.round(num(rawS) || 0);
+      if (sc < 1 || sc > 100) { toast("Der Score liegt zwischen 1 und 100."); return; }
+      sl.score = sc;
+    }
+    l.sleep = sl;
+    saveLog(dk);
+    renderSleepRow(dk); renderCheckin(dk);
+  }
+  $("sleepDur").addEventListener("change", saveSleepFields);
+  $("sleepScore").addEventListener("change", saveSleepFields);
+  $("sleepShot").addEventListener("click", () => $("sleepFile").click());
+  async function fileToBlobKeep(file, maxLong) {
+    let bmp;
+    try { bmp = await createImageBitmap(file, { imageOrientation: "from-image" }); } catch (e) { bmp = await createImageBitmap(file); }
+    try {
+      const sc = Math.min(1, maxLong / Math.max(bmp.width, bmp.height));
+      const cv = document.createElement("canvas");
+      cv.width = Math.max(1, Math.round(bmp.width * sc)); cv.height = Math.max(1, Math.round(bmp.height * sc));
+      cv.getContext("2d").drawImage(bmp, 0, 0, cv.width, cv.height);
+      return await new Promise((res, rej) => cv.toBlob((b) => (b ? res(b) : rej(new Error("blob"))), "image/jpeg", 0.85));
+    } finally { if (bmp.close) bmp.close(); }
+  }
+  $("sleepFile").addEventListener("change", async (ev) => {
+    const f = ev.target.files && ev.target.files[0];
+    ev.target.value = "";
+    if (!f) return;
+    try {
+      const blob = await fileToBlobKeep(f, 1600);
+      await savePhoto(todayKey(), "sleep", blob);
+      toast("Screenshot gespeichert");
+      renderSleepRow(todayKey()); renderSleepBlock();
+    } catch (e) { toast("Der Screenshot konnte nicht gespeichert werden. Nimm ein JPG oder PNG."); }
+  });
+  function renderSleepRow(dk) {
+    const sl = (state.logs[dk] && state.logs[dk].sleep) || {};
+    if (document.activeElement !== $("sleepDur")) $("sleepDur").value = sl.min ? fmtSleep(sl.min).replace(" h", "") : "";
+    if (document.activeElement !== $("sleepScore")) $("sleepScore").value = sl.score ? String(sl.score) : "";
+    $("sleepShot").hidden = photosState !== "ok";
+    $("sleepInfo").textContent = photoIdx[dk + "|sleep"] ? "Garmin-Screenshot von heute ist gespeichert." : "";
+  }
+  function sleepRows(days) {
+    const rows = [];
+    for (let i = 0; i < days; i++) {
+      const d = addDays(today(), -i), dk = dateKey(d);
+      const l = state.logs[dk] || {};
+      const sl = l.sleep || {};
+      const c = l.checkin || {};
+      const s = effSession(d);
+      let pct = null;
+      if (s) { const pr = sessionProgress(dk, s); if (pr.total && dk <= todayKey() && pr.done > 0) pct = Math.round((pr.done / pr.total) * 100); }
+      if (sl.min || sl.score || c.energy || c.soreness || pct != null) rows.push({ dk, d, min: sl.min || 0, score: sl.score || 0, energy: c.energy || 0, soreness: c.soreness || 0, pct });
+    }
+    return rows;
+  }
+  const avgOf = (arr) => (arr.length ? arr.reduce((a, b) => a + b, 0) / arr.length : null);
+  const fmtAvg = (v, d) => (v == null ? "–" : String(Math.round(v * Math.pow(10, d)) / Math.pow(10, d)).replace(".", ","));
+  function sleepInsightText() {
+    const rows = sleepRows(60).filter((r) => r.min);
+    const good = rows.filter((r) => r.min >= 420), poor = rows.filter((r) => r.min < 420);
+    if (good.length < 3 || poor.length < 3) return "Noch zu wenig Daten für Zusammenhänge. Ab je drei Tagen mit mindestens 7 Stunden und mit weniger Schlaf zeige ich dir hier den Vergleich. Bisher: " + good.length + " und " + poor.length + " Tage.";
+    const g = (arr, k) => avgOf(arr.filter((r) => r[k]).map((r) => r[k]));
+    return "Tage mit mindestens 7 Stunden Schlaf (" + good.length + "): Energie Ø " + fmtAvg(g(good, "energy"), 1) + ", Einheiten Ø " + fmtAvg(g(good, "pct"), 0) + " % der Sätze. Tage mit weniger (" + poor.length + "): Energie Ø " + fmtAvg(g(poor, "energy"), 1) + ", Einheiten Ø " + fmtAvg(g(poor, "pct"), 0) + " %. Kleine Stichprobe, nimm es als Hinweis und nicht als Beweis.";
+  }
+  function renderSleepBlock() {
+    const rows = sleepRows(14);
+    $("sleepInsight").textContent = sleepInsightText();
+    $("sleepList").innerHTML = rows.length ? rows.map((r) => {
+      const parts = [];
+      if (r.min) parts.push(fmtSleep(r.min));
+      if (r.score) parts.push("Score " + r.score);
+      if (r.energy) parts.push("Energie " + r.energy);
+      if (r.soreness) parts.push("Kater " + r.soreness);
+      if (r.pct != null) parts.push(r.pct + " % Sätze");
+      return "<li><span><b>" + esc(shortDate(r.d)) + "</b></span><span>" + esc(parts.join(", ")) + "</span></li>";
+    }).join("") : '<li><span>Noch keine Daten.</span><span></span></li>';
+    const shots = listFor("sleep").slice().reverse().slice(0, 12);
+    $("sleepShotsH").hidden = !shots.length;
+    $("sleepThumbs").innerHTML = shots.map((p) => '<button class="thumb" data-id="' + esc(p.id) + '" aria-label="Garmin-Screenshot vom ' + esc(shortDate(parseKey(p.date))) + '"><img alt="" data-id="' + esc(p.id) + '"><span>' + esc(fmtShort(p.date)) + "</span></button>").join("");
+    $("sleepThumbs").querySelectorAll("img[data-id]").forEach((img) => urlFor(img.dataset.id).then((u) => { if (u) img.src = u; }));
+  }
+  $("sleepThumbs").addEventListener("click", (ev) => { const b = ev.target.closest(".thumb"); if (b) openViewer(b.dataset.id); });
+
+  // ================= Weekly review =================
+  let revOffset = 0;
+  function volFamily(name) {
+    const n = String(name || "").toLowerCase();
+    if (/\brow|rudern|curl|crush|press|raise|flag|lever|squat|kreuz/.test(n)) return null;
+    if (/klimmz[uü]g|chin|pull-?up/.test(n)) return { k: "pull", f: 1 };
+    if (/\bdip/.test(n)) return { k: "dips", f: 1 };
+    if (/liegest|push-?up/.test(n)) return { k: "push", f: 0.65 };
+    return null;
+  }
+  const fmtKg = (kg) => (kg >= 10000 ? String(Math.round(kg / 100) / 10).replace(".", ",") + " t" : Math.round(kg).toLocaleString("de-DE") + " kg");
+  function weekStats(ws) {
+    const bw = +S().bodyweight || 75;
+    const tk = todayKey(), asKey = S().arcStart || DEFAULT_SETTINGS.arcStart;
+    const st = { days: 0, planned: 0, done: 0, sets: 0, setsDone: 0, km: 0, runSec: 0, runs: 0, prot: [], protGoal: 0, water: [], waterGoal: 0, en: [], so: [], sleepMin: [], sleepScore: [], habitHit: 0, habitSlots: 0, vol: { pull: { reps: 0, kg: 0 }, dips: { reps: 0, kg: 0 }, push: { reps: 0, kg: 0 } } };
+    const pt = +S().proteinTarget || 120, dtgt = drinkCfg().target;
+    for (let i = 0; i < 7; i++) {
+      const d = addDays(ws, i), dk = dateKey(d);
+      if (dk > tk || dk < asKey) continue;
+      st.days++;
+      const s = effSession(d);
+      if (s) { st.planned++; const pr = sessionProgress(dk, s); st.sets += pr.total; st.setsDone += pr.done; if (pr.total && pr.done === pr.total) st.done++; }
+      const l = state.logs[dk] || {};
+      Object.keys(l.runs || {}).forEach((id) => { const r = l.runs[id]; if (r && r.km) { st.km += r.km; st.runs++; if (r.sec) st.runSec += r.sec; } });
+      const p = proteinTotal(dk); if (p > 0) { st.prot.push(p); if (p >= pt) st.protGoal++; }
+      const w = drinkTotal(dk); if (w > 0) { st.water.push(w); if (w >= dtgt) st.waterGoal++; }
+      const c = l.checkin || {}; if (c.energy) st.en.push(c.energy); if (c.soreness) st.so.push(c.soreness);
+      const sl = l.sleep || {}; if (sl.min) st.sleepMin.push(sl.min); if (sl.score) st.sleepScore.push(sl.score);
+      const hs = habitStats(dk); st.habitSlots += hs.total; st.habitHit += hs.n;
+      Object.keys(l.exercises || {}).forEach((id) => {
+        const x = l.exercises[id];
+        if (!x || !x.name || !x.note) return;
+        const fam = volFamily(x.name);
+        if (!fam) return;
+        const perf = parsePerf(x.note);
+        if (!perf || perf.secs) return;
+        const reps = perf.reps.reduce((a, b) => a + b, 0);
+        const load = Math.max(0, bw * fam.f + perf.weight);
+        st.vol[fam.k].reps += reps; st.vol[fam.k].kg += reps * load;
+      });
+    }
+    return st;
+  }
+  function reviewRows(st, ws) {
+    const rows = [];
+    const bw = +S().bodyweight || 75;
+    rows.push(["Einheiten", st.planned ? st.done + " von " + st.planned + " geschafft" : "–"]);
+    rows.push(["Sätze", st.sets ? st.setsDone + " von " + st.sets : "–"]);
+    rows.push(["Gelaufen", st.km ? fmtN(st.km) + " km in " + st.runs + (st.runs === 1 ? " Lauf" : " Läufen") + (st.runSec ? ", Ø " + fmtPace(st.runSec / st.km) + " /km" : "") : "–"]);
+    const tot = st.vol.pull.kg + st.vol.dips.kg + st.vol.push.kg;
+    rows.push(["Bewegtes Gewicht", tot ? fmtKg(tot) : "–"]);
+    [["pull", "Klimmzüge und Chin-ups"], ["dips", "Dips"], ["push", "Liegestütze"]].forEach(([k, l]) => { if (st.vol[k].reps) rows.push(["   " + l, st.vol[k].reps + " Wdh., " + fmtKg(st.vol[k].kg)]); });
+    rows.push(["Protein", st.prot.length ? "Ø " + Math.round(avgOf(st.prot)) + " g, Ziel an " + st.protGoal + " von " + st.prot.length + " Tagen" : "–"]);
+    rows.push(["Wasser", st.water.length ? "Ø " + fmtL(avgOf(st.water)) + ", Ziel an " + st.waterGoal + " von " + st.water.length + " Tagen" : "–"]);
+    rows.push(["Check-in", st.en.length || st.so.length ? "Energie Ø " + fmtAvg(avgOf(st.en), 1) + ", Muskelkater Ø " + fmtAvg(avgOf(st.so), 1) : "–"]);
+    rows.push(["Schlaf", st.sleepMin.length || st.sleepScore.length ? (st.sleepMin.length ? "Ø " + fmtSleep(Math.round(avgOf(st.sleepMin))) : "") + (st.sleepMin.length && st.sleepScore.length ? ", " : "") + (st.sleepScore.length ? "Score Ø " + Math.round(avgOf(st.sleepScore)) : "") : "–"]);
+    rows.push(["Gewohnheiten", st.habitSlots ? Math.round((st.habitHit / st.habitSlots) * 100) + " %" : "–"]);
+    const we = dateKey(addDays(ws, 6)), wsk = dateKey(ws);
+    const inWeek = bodyEntries().filter((e) => e.date >= wsk && e.date <= we);
+    if (inWeek.length) {
+      const e = inWeek[inWeek.length - 1];
+      const prev = bodyEntries().filter((x) => x.date < wsk).pop();
+      const parts = [];
+      MEAS.forEach((m) => { if (e[m.k]) { const dv = prev && prev[m.k] ? e[m.k] - prev[m.k] : null; parts.push(m.l + " " + fmtN(e[m.k]) + " " + m.u + (dv != null && Math.abs(dv) >= 0.05 ? " (" + (dv > 0 ? "+" : "−") + fmtN(Math.abs(dv)) + ")" : "")); } });
+      rows.push(["Körper", parts.join(", ")]);
+    }
+    return rows;
+  }
+  function renderReview() {
+    const ws = addDays(startOfWeek(today()), -7 * revOffset);
+    const wn = arcWeek(ws);
+    const we = addDays(ws, 6);
+    $("revWeekLabel").textContent = (wn ? "Woche " + wn + ", " : "") + ws.getDate() + "." + (ws.getMonth() + 1) + ". bis " + we.getDate() + "." + (we.getMonth() + 1) + ".";
+    const st = weekStats(ws);
+    const rows = reviewRows(st, ws);
+    $("revList").innerHTML = rows.map((r) => "<li><span>" + esc(r[0]).replace(/^(\s+)/, "&nbsp;&nbsp;&nbsp;") + "</span><span><b>" + esc(r[1]) + "</b></span></li>").join("");
+    const bw = +S().bodyweight || 75;
+    $("revFoot").textContent = st.days ? "Bewegtes Gewicht = Wiederholungen mal Körpergewicht (" + fmtN(bw) + " kg) plus Zusatzgewicht. Liegestütze zählen mit 65 %, Klimmzüge und Dips mit 100 % des Körpergewichts. Nur Übungen, bei denen du Wiederholungen eingetragen hast." : "In dieser Woche gibt es noch keine Daten.";
+    $("revPrev").disabled = addDays(ws, -7) < startOfWeek(arcStartDate());
+    $("revNext").disabled = revOffset === 0;
+    const sunKey = dateKey(we);
+    const inp = $("revInput");
+    const note = (state.logs[sunKey] && state.logs[sunKey].reviewNote) || "";
+    if (document.activeElement !== inp) inp.value = note;
+    inp.dataset.key = sunKey;
+  }
+  $("revPrev").addEventListener("click", () => { revOffset++; renderReview(); });
+  $("revNext").addEventListener("click", () => { if (revOffset > 0) { revOffset--; renderReview(); } });
+  $("revInput").addEventListener("change", function () {
+    const key = this.dataset.key;
+    if (!key) return;
+    const l = ensureLog(key);
+    const v = this.value.trim();
+    if (v) l.reviewNote = v; else delete l.reviewNote;
+    saveLog(key);
+    renderSundayBanner();
+    toast("Gespeichert");
+  });
+  function renderSundayBanner() {
+    const dk = todayKey();
+    const show = dowOf(today()) === 7 && !((state.logs[dk] && state.logs[dk].reviewNote)) && arcWeek(today()) >= 1;
+    $("sundayBanner").hidden = !show;
+  }
+  $("sundayBtn").addEventListener("click", () => { revOffset = 0; showTab("week"); setTimeout(() => $("reviewBlock").scrollIntoView({ block: "start" }), 80); });
+  function statsForCoach(ws) {
+    const st = weekStats(ws);
+    const o = { woche: shortDate(ws) + " bis " + shortDate(addDays(ws, 6)), einheiten: st.done + "/" + st.planned, saetze: st.setsDone + "/" + st.sets };
+    if (st.km) o.kmGelaufen = Math.round(st.km * 10) / 10;
+    const tot = st.vol.pull.kg + st.vol.dips.kg + st.vol.push.kg;
+    if (tot) o.bewegtesGewichtKg = Math.round(tot);
+    if (st.prot.length) o.proteinDurchschnittG = Math.round(avgOf(st.prot));
+    if (st.water.length) o.wasserDurchschnittMl = Math.round(avgOf(st.water));
+    if (st.en.length) o.energieDurchschnitt = Math.round(avgOf(st.en) * 10) / 10;
+    if (st.so.length) o.muskelkaterDurchschnitt = Math.round(avgOf(st.so) * 10) / 10;
+    if (st.sleepMin.length) o.schlafDurchschnitt = fmtSleep(Math.round(avgOf(st.sleepMin)));
+    if (st.sleepScore.length) o.schlafScoreDurchschnitt = Math.round(avgOf(st.sleepScore));
+    const note = (state.logs[dateKey(addDays(ws, 6))] || {}).reviewNote;
+    if (note) o.vorsatzFuerNaechsteWoche = note;
+    return o;
+  }
+  function weeksForCoach() {
+    const ws = startOfWeek(today());
+    return { aktuell: statsForCoach(ws), letzte: statsForCoach(addDays(ws, -7)) };
+  }
+
+  // ================= Collapsible cards =================
+  const CHEV = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  function initCollapsibles() {
+    state.meta = state.meta || {};
+    document.querySelectorAll("[data-coll]").forEach((card) => {
+      const h2 = card.querySelector(".shead h2");
+      if (!h2 || h2.querySelector("button")) return;
+      const key = card.dataset.coll;
+      const label = h2.textContent;
+      h2.innerHTML = '<button class="collbtn" type="button" aria-expanded="true">' + esc(label) + CHEV + "</button>";
+      const btn = h2.querySelector("button");
+      const apply = (collapsed) => { card.classList.toggle("is-collapsed", collapsed); btn.setAttribute("aria-expanded", collapsed ? "false" : "true"); };
+      apply(!!(state.meta.collapsed && state.meta.collapsed[key]));
+      btn.addEventListener("click", () => {
+        const collapsed = !card.classList.contains("is-collapsed");
+        apply(collapsed);
+        state.meta.collapsed = state.meta.collapsed || {};
+        state.meta.collapsed[key] = collapsed;
+        saveLocal();
+      });
+    });
   }
 
   // ================= Coach data =================
@@ -3004,6 +3472,7 @@ pre.prompt { white-space: pre-wrap; margin: 0 0 12px; padding: 14px; border-radi
     renderGallery();
     renderMeasure();
     renderCheckinList();
+    renderSleepBlock();
     renderPhotoInfo();
   }
 
@@ -3049,6 +3518,10 @@ pre.prompt { white-space: pre-wrap; margin: 0 0 12px; padding: 14px; border-radi
     else parts.push("Ruhetag");
     parts.push(hs.n + " von " + hs.total + " Gewohnheiten");
     if (p) parts.push(Math.round(p) + " g Protein");
+    const dr = drinkTotal(dk);
+    if (dr) parts.push(fmtL(dr) + " Wasser");
+    const slp = (state.logs[dk] || {}).sleep;
+    if (slp && slp.min) parts.push(fmtSleep(slp.min) + " Schlaf");
     const runs = (state.logs[dk] && state.logs[dk].runs) || {};
     Object.keys(runs).forEach((k) => { const r = runs[k]; if (r.km) parts.push(fmtN(r.km) + " km" + (r.sec ? " in " + fmtDur(r.sec) : "")); });
     $("celldetail").innerHTML = "<b>" + esc(shortDate(d)) + "</b> " + esc(parts.join(", ")) + (dk > todayKey() ? " (geplant)" : "");
@@ -3313,6 +3786,10 @@ pre.prompt { white-space: pre-wrap; margin: 0 0 12px; padding: 14px; border-radi
       row.gewohnheiten = hs.n + "/" + hs.total;
       const p = proteinTotal(dk);
       if (p) row.proteinG = Math.round(p);
+      const dr = drinkTotal(dk);
+      if (dr) row.wasserMl = Math.round(dr);
+      const slp = l && l.sleep;
+      if (slp && slp.min) row.schlaf = { dauer: fmtSleep(slp.min), score: slp.score || null };
       days.push(row);
     }
     const s = effSession(now);
@@ -3336,7 +3813,8 @@ pre.prompt { white-space: pre-wrap; margin: 0 0 12px; padding: 14px; border-radi
       letzte14Tage: days,
       tests,
       skills,
-      koerper: bodyForCoach()
+      koerper: bodyForCoach(),
+      wochen: weeksForCoach()
     }, null, 1);
   }
   function summaryText() {
@@ -3449,6 +3927,11 @@ pre.prompt { white-space: pre-wrap; margin: 0 0 12px; padding: 14px; border-radi
     setv("setLen", S().arcLength || 90);
     setv("setBw", S().bodyweight || 75);
     setv("setProtein", S().proteinTarget || 120);
+    setv("setDrink", S().drinkTarget || 3000);
+    setv("setBottle", S().bottle || 600);
+    setv("setDrinkFrom", S().drinkFrom != null ? S().drinkFrom : 8);
+    setv("setDrinkTo", S().drinkTo || 21);
+    renderDrinkTimes();
     setv("setHabits", (S().habits || []).join(", "));
     $("swRun").setAttribute("aria-checked", S().autoRun ? "true" : "false");
     $("swDeload").setAttribute("aria-checked", S().autoDeload ? "true" : "false");
@@ -3712,6 +4195,7 @@ pre.prompt { white-space: pre-wrap; margin: 0 0 12px; padding: 14px; border-radi
   try { if (document.fonts && document.fonts.ready) document.fonts.ready.then(fitDayname); } catch (e) { /* ignore */ }
 
   loadLocal();
+  initCollapsibles();
   let savedTab = "today";
   try { savedTab = localStorage.getItem("winterarc.tab") || "today"; } catch (e) { /* ignore */ }
   renderAll();
