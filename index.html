@@ -644,6 +644,8 @@ body.train-mode .ex:not(.is-next):not(.is-done) { opacity: .6; }
   --hi: #C9F8FF; --hi-2: #2FAFC6;
   --tint-rgb: 63, 196, 218; --acc-rgb: 142, 235, 248; --snow-rgb: 201, 248, 255;
   --cell-0: #121B23; --tick: #33475A; --seg-off: #16212B;
+  --fl-o0: #1B6FE0; --fl-o1: #2FC4E8; --fl-o2: #8EF0FF; --fl-m0: #2FAFC6; --fl-m1: #9CEBFF; --fl-i0: #B8F4FF; --fl-i1: #F2FDFF;
+  --fl-glow: 56,200,235; --fl-num: #D6F7FF; --fl-lbl: #B5ECFA; --fl-btn: #7FDDF2;
 }
 :root[data-accent="aurora"] {
   --surface: #08110D; --surface-2: #0E1A15; --line: #16241E; --line-2: #203129;
@@ -652,6 +654,8 @@ body.train-mode .ex:not(.is-next):not(.is-done) { opacity: .6; }
   --hi: #CFFCE6; --hi-2: #22A872; --glow: rgba(134, 242, 192, 0.30);
   --tint-rgb: 52, 201, 138; --acc-rgb: 134, 242, 192; --snow-rgb: 207, 252, 230; --cell-0: #111C17;
   --tick: #2E4A3E; --seg-off: #13211B;
+  --fl-o0: #0E9F63; --fl-o1: #34D69A; --fl-o2: #9BFFD2; --fl-m0: #22B87C; --fl-m1: #B4FFDD; --fl-i0: #D2FFEA; --fl-i1: #F4FFF9;
+  --fl-glow: 52,215,150; --fl-num: #D8FFEC; --fl-lbl: #B4F5D4; --fl-btn: #86F2C0;
 }
 :root[data-accent="violett"] {
   --surface: #0C0A14; --surface-2: #14111F; --line: #1D1A2B; --line-2: #2A2539;
@@ -660,6 +664,8 @@ body.train-mode .ex:not(.is-next):not(.is-done) { opacity: .6; }
   --hi: #E6DDFF; --hi-2: #7353E0; --glow: rgba(191, 169, 255, 0.32);
   --tint-rgb: 139, 108, 240; --acc-rgb: 191, 169, 255; --snow-rgb: 230, 221, 255; --cell-0: #17142A;
   --tick: #3E3858; --seg-off: #1A1729;
+  --fl-o0: #5B35D6; --fl-o1: #9A6CFF; --fl-o2: #D4B8FF; --fl-m0: #7B55F0; --fl-m1: #DDC9FF; --fl-i0: #EBDEFF; --fl-i1: #FBF7FF;
+  --fl-glow: 150,110,255; --fl-num: #EEE4FF; --fl-lbl: #D5C4FF; --fl-btn: #BFA9FF;
 }
 :root[data-accent="glut"] {
   --surface: #120D09; --surface-2: #1B140F; --line: #261C15; --line-2: #34271D;
@@ -668,6 +674,8 @@ body.train-mode .ex:not(.is-next):not(.is-done) { opacity: .6; }
   --hi: #FFE2C2; --hi-2: #E06A22; --glow: rgba(255, 184, 112, 0.30); --warn: #FF8A9A;
   --tint-rgb: 242, 128, 58; --acc-rgb: 255, 184, 112; --snow-rgb: 255, 226, 194; --cell-0: #1E1610;
   --tick: #4A3A2C; --seg-off: #221911;
+  --fl-o0: #FF4A1F; --fl-o1: #FF8A1F; --fl-o2: #FFC247; --fl-m0: #FF9A1F; --fl-m1: #FFD76A; --fl-i0: #FFE08A; --fl-i1: #FFF6D6;
+  --fl-glow: 255,120,30; --fl-num: #FFE2B8; --fl-lbl: #FFD7A8; --fl-btn: #FFC48A;
 }
 :root[data-accent="schnee"] {
   --surface: #0B0B0B; --surface-2: #141414; --line: #1E1E1E; --line-2: #2B2B2B;
@@ -676,6 +684,8 @@ body.train-mode .ex:not(.is-next):not(.is-done) { opacity: .6; }
   --hi: #FFFFFF; --hi-2: #8C8C8C; --glow: rgba(255, 255, 255, 0.22);
   --tint-rgb: 168, 168, 168; --acc-rgb: 242, 242, 242; --snow-rgb: 255, 255, 255; --cell-0: #161616;
   --tick: #444444; --seg-off: #1A1A1A;
+  --fl-o0: #7A7A7A; --fl-o1: #C4C4C4; --fl-o2: #FFFFFF; --fl-m0: #B0B0B0; --fl-m1: #F2F2F2; --fl-i0: #F6F6F6; --fl-i1: #FFFFFF;
+  --fl-glow: 235,235,235; --fl-num: #FFFFFF; --fl-lbl: #E4E4E4; --fl-btn: #D8D8D8;
 }
 
 .accents { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 8px; }
@@ -736,6 +746,60 @@ main > section:not([hidden]) { animation: viewIn 220ms cubic-bezier(.2, .8, .2, 
 .pt-line.turn .btns button { border-color: var(--ice-deep); }
 .flabel { display: block; color: var(--ink-2); font-size: 14px; font-weight: 600; }
 .fhint { display: block; margin-top: 8px; color: var(--mute); font-size: 13px; }
+
+/* ===== v5: Flamme, Haptik-Labor ===== */
+.flame { position: fixed; inset: 0; z-index: 90; display: grid; place-items: center; padding: 24px; background: rgba(0, 0, 0, .92); animation: flameBg 260ms ease-out; cursor: pointer; }
+@keyframes flameBg { from { opacity: 0; } to { opacity: 1; } }
+.flame-box { display: grid; justify-items: center; text-align: center; max-width: 340px; }
+.flame-svg { width: 176px; height: 220px; overflow: visible; filter: drop-shadow(0 0 34px rgba(var(--fl-glow), .55)); animation: flameIn 700ms cubic-bezier(.2, 1.3, .3, 1) both; }
+@keyframes flameIn { 0% { transform: scale(.2) translateY(30px); opacity: 0; } 60% { opacity: 1; } 100% { transform: scale(1) translateY(0); opacity: 1; } }
+.fl-outer, .fl-mid, .fl-inner { transform-box: fill-box; transform-origin: 50% 100%; }
+.fl-outer { animation: flick1 1.1s ease-in-out infinite alternate; }
+.fl-mid { animation: flick2 .8s ease-in-out infinite alternate; }
+.fl-inner { animation: flick3 .6s ease-in-out infinite alternate; }
+@keyframes flick1 { 0% { transform: scale(1, 1) skewX(0); } 50% { transform: scale(.97, 1.04) skewX(-2deg); } 100% { transform: scale(1.02, .98) skewX(2deg); } }
+@keyframes flick2 { 0% { transform: scale(1, 1) skewX(0); } 100% { transform: scale(.94, 1.07) skewX(3deg); } }
+@keyframes flick3 { 0% { transform: scale(1, 1); } 100% { transform: scale(.9, 1.1) skewX(-3deg); } }
+.flame-num { margin-top: 6px; font-family: var(--display); font-weight: 900; font-size: 96px; line-height: .9; color: var(--fl-num); text-shadow: 0 0 36px rgba(var(--fl-glow), .6); animation: numPop 500ms cubic-bezier(.2, 1.4, .4, 1) 380ms both; }
+@keyframes numPop { from { transform: scale(.4); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+.flame-lbl { margin-top: 4px; font-size: 20px; font-weight: 600; color: var(--fl-lbl); animation: numPop 500ms ease-out 520ms both; }
+.flame-sub { margin: 10px 0 0; color: var(--ink-2); font-size: 15px; animation: numPop 500ms ease-out 700ms both; }
+.flame-hint { margin: 18px 0 0; color: var(--mute); font-size: 13px; }
+
+/* ===== v6: Wochenziel, Rekord, Schritte, Notiz ===== */
+.goalcard, .steps { margin-top: 30px; padding-top: 22px; border-top: 1px solid var(--line); }
+.goalrings { display: flex; justify-content: space-around; gap: 12px; margin-top: 14px; }
+.gring { position: relative; display: grid; justify-items: center; gap: 6px; color: var(--ink-2); font-size: 13px; font-weight: 600; }
+.gring svg { width: 84px; height: 84px; transform: rotate(-90deg); }
+.gring .gtrack { fill: none; stroke: var(--seg-off); stroke-width: 9; }
+.gring .gbar { fill: none; stroke: var(--ice-2); stroke-width: 9; stroke-linecap: round; transition: stroke-dashoffset 600ms cubic-bezier(.2, .8, .2, 1), stroke 300ms; }
+.gring.closed .gbar { stroke: var(--ice); filter: drop-shadow(0 0 6px var(--glow)); }
+.gring .gnum { position: absolute; top: 0; left: 0; width: 84px; height: 84px; display: grid; place-items: center; font-family: var(--display); font-weight: 800; font-size: 20px; color: var(--ink); }
+.gring.closed .gnum { color: var(--ice); }
+.gring .gnum small { font-size: 13px; color: var(--ink-2); font-weight: 600; }
+.sessnote { margin-top: 18px; }
+.sessnote label { display: block; margin-bottom: 6px; color: var(--ink-2); font-size: 14px; font-weight: 600; }
+.sessnote textarea { width: 100%; box-sizing: border-box; min-height: 64px; padding: 12px 14px; border-radius: 12px; border: 1px solid var(--line-2); background: transparent; color: var(--ink); font: inherit; font-size: 15px; resize: vertical; }
+.sessnote textarea:focus { outline: none; border-color: var(--ice); }
+.wnote { margin: 8px 0 0; padding: 8px 12px; border-left: 2px solid var(--ice-2); color: var(--ink-2); font-size: 14px; }
+.wnote b { color: var(--ink); }
+.rec { position: fixed; inset: 0; z-index: 91; display: grid; place-items: center; padding: 24px; background: rgba(0, 0, 0, .8); animation: flameBg 220ms ease-out; cursor: pointer; }
+.rec-box { display: grid; justify-items: center; text-align: center; max-width: 340px; }
+.rec-svg { width: 150px; height: 155px; overflow: visible; filter: drop-shadow(0 0 30px rgba(var(--acc-rgb), .6)); animation: recPop 760ms cubic-bezier(.2, 1.4, .3, 1) both; }
+@keyframes recPop { 0% { transform: scale(.1) rotate(-80deg); opacity: 0; } 70% { opacity: 1; } 100% { transform: scale(1) rotate(0); opacity: 1; } }
+.rec-k { margin: 14px 0 0; color: var(--ice); font-size: 15px; font-weight: 700; letter-spacing: .18em; text-transform: uppercase; animation: numPop 450ms ease-out 380ms both; }
+.rec-name { margin: 6px 0 0; font-size: 22px; font-weight: 700; animation: numPop 450ms ease-out 480ms both; }
+.rec-val { margin-top: 6px; font-family: var(--display); font-weight: 900; font-size: 64px; line-height: 1; color: var(--hi); text-shadow: 0 0 30px rgba(var(--acc-rgb), .5); animation: numPop 500ms cubic-bezier(.2, 1.4, .4, 1) 560ms both; }
+.rec-prev { margin: 10px 0 0; color: var(--ink-2); font-size: 15px; animation: numPop 450ms ease-out 760ms both; }
+@media (max-width: 919px) {
+  #goalCard { order: 4; margin-top: 30px; }
+  .steps { order: 6; }
+}
+
+.hlab { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+.hlab button { min-height: 44px; padding: 0 14px; border-radius: 12px; border: 1px solid var(--line-2); background: transparent; color: var(--ink); font-size: 14px; font-weight: 600; }
+.hlab button:active { border-color: var(--ice); background: var(--surface-2); }
+.hlab button.flamebtn { border-color: rgba(var(--fl-glow), .6); color: var(--fl-btn); }
 </style>
 </head>
 <body>
@@ -814,9 +878,29 @@ main > section:not([hidden]) { animation: viewIn 220ms cubic-bezier(.2, .8, .2, 
             <div><h3 id="ampelTitle">Noch keine Daten</h3><p id="ampelText"></p><p class="why" id="ampelWhy" hidden></p></div>
           </div>
 
+          <div class="goalcard" id="goalCard" data-coll="goal">
+            <div class="shead"><h2>Wochenziel</h2><span id="goalState"></span></div>
+            <div class="goalrings" id="goalRings"></div>
+          </div>
+
           <div class="habits">
             <div class="shead"><h2>Jeden Tag</h2><span id="streak"></span></div>
             <div class="habit-list" id="habits"></div>
+          </div>
+
+          <div class="steps" id="stepsCard" data-coll="steps">
+            <div class="shead"><h2>Schritte</h2><span id="stState"></span></div>
+            <div class="pmeter"><strong id="stTotal">0</strong><span id="stUnit">von 10.000</span></div>
+            <div class="pbar" id="stBar"><i></i></div>
+            <div class="pfoods" id="stQuick"></div>
+            <div class="pcustom">
+              <label class="sr" for="stInput">Eigene Schrittzahl</label>
+              <input type="number" inputmode="numeric" min="1" max="60000" id="stInput" placeholder="Schritte">
+              <button class="btn small" id="stAdd">Hinzufügen</button>
+              <button class="btn small" id="stUndo">Rückgängig</button>
+            </div>
+            <p class="plog" id="stLog"></p>
+            <p class="plog" style="opacity:.8">Eine Gassi-Runde zählt als Schätzung mit 100 Schritten pro Minute. Deinen echten Garmin-Wert kannst du als eigene Menge dazugeben.</p>
           </div>
 
           <div class="drink" id="drinkCard" data-coll="drink">
@@ -882,6 +966,10 @@ main > section:not([hidden]) { animation: viewIn 220ms cubic-bezier(.2, .8, .2, 
             <div class="shead"><h2>Übungen</h2><span id="listcount"></span></div>
             <div class="row exbar"><button class="btn small" id="exAdd">+ Übung hinzufügen</button><button class="btn small" id="exSkipRest">Rest überspringen</button></div>
             <ol class="exlist" id="exlist"></ol>
+            <div class="sessnote">
+              <label for="sessNote">Notiz zur Einheit</label>
+              <textarea id="sessNote" rows="2" maxlength="400" placeholder="z. B. Schulter zwickt links, Pausen kürzer, fühlte sich stark an"></textarea>
+            </div>
           </div>
           <div id="today-rest" hidden>
             <div class="shead"><h2>Diese Woche</h2></div>
@@ -912,7 +1000,7 @@ main > section:not([hidden]) { animation: viewIn 220ms cubic-bezier(.2, .8, .2, 
 
       <div class="review" id="reviewBlock">
         <div class="shead"><h2>Wochenrückblick</h2><span id="revWeekLabel"></span></div>
-        <div class="revnav"><button class="btn small" id="revPrev">Vorherige Woche</button><button class="btn small" id="revNext">Nächste Woche</button></div>
+        <div class="revnav"><button class="btn small" id="revPrev">Vorherige Woche</button><button class="btn small" id="revNext">Nächste Woche</button><button class="btn small primary" id="revShare">Als Bild teilen</button></div>
         <ul class="meas-list" id="revList"></ul>
         <p class="photonote" id="revFoot"></p>
         <div class="field revfield">
@@ -1217,6 +1305,8 @@ main > section:not([hidden]) { animation: viewIn 220ms cubic-bezier(.2, .8, .2, 
         <div class="block">
           <h2 class="bh">Einstellungen</h2>
           <div class="settings">
+            <div class="field"><label for="setHaptic">Haptik (Vibration)</label><select id="setHaptic"><option value="aus">Aus</option><option value="leicht">Leicht</option><option value="normal">Normal</option><option value="kraeftig">Kräftig</option></select><div class="hlab" id="hlab" role="group" aria-label="Haptik ausprobieren"></div><small class="fhint">Tipp auf ein Muster zum Ausprobieren. Spürst du nichts, prüf in den Handy-Einstellungen unter Töne und Vibration, dass die Vibrationsstärke nicht auf null steht.</small></div>
+            <div class="toggle"><span>Töne<small>Piepen im EMOM und bei der Mobility, Klang bei Pausenende und Flamme.</small></span><button class="switch" role="switch" aria-checked="true" id="swSound" aria-label="Töne"></button></div>
             <div class="field"><span class="flabel" id="accentLabel">Farbe der App</span><div class="accents" id="accents" role="group" aria-labelledby="accentLabel"></div><small class="fhint">Der Hintergrund bleibt echtes Schwarz, ideal für dein OLED-Display.</small></div>
             <div class="toggle"><span>Laufplan automatisch steigern<small>Passt die Kilometer jede Woche an den 90-Tage-Plan an, ab Woche 5 mit lockerem Sonntagslauf.</small></span><button class="switch" role="switch" aria-checked="true" id="swRun" aria-label="Laufplan automatisch steigern"></button></div>
             <div class="toggle"><span>Deload in Woche 4, 8 und 12<small>Halbiert in diesen Wochen die Sätze und verkürzt die Läufe.</small></span><button class="switch" role="switch" aria-checked="true" id="swDeload" aria-label="Deload-Wochen"></button></div>
@@ -1295,6 +1385,38 @@ main > section:not([hidden]) { animation: viewIn 220ms cubic-bezier(.2, .8, .2, 
       </div>
     </section>
   </main>
+</div>
+
+<div class="rec" id="rec" hidden role="dialog" aria-modal="true" aria-label="Neuer Rekord">
+  <div class="rec-box">
+    <svg class="rec-svg" viewBox="0 0 120 124" aria-hidden="true">
+      <defs><linearGradient id="recG" x1="0" y1="1" x2="0" y2="0"><stop offset="0" style="stop-color:var(--ice-2)"/><stop offset="1" style="stop-color:var(--hi)"/></linearGradient></defs>
+      <path fill="url(#recG)" stroke="var(--hi)" stroke-width="3" stroke-linejoin="round" d="M60.0 8.0 L73.5 43.4 L111.4 45.3 L81.9 69.1 L91.7 105.7 L60.0 85.0 L28.3 105.7 L38.1 69.1 L8.6 45.3 L46.5 43.4Z"/>
+    </svg>
+    <p class="rec-k">Neuer Rekord</p>
+    <h2 class="rec-name" id="recName"></h2>
+    <div class="rec-val" id="recVal"></div>
+    <p class="rec-prev" id="recPrev"></p>
+  </div>
+</div>
+
+<div class="flame" id="flame" hidden role="dialog" aria-modal="true" aria-label="Serie">
+  <div class="flame-box">
+    <svg class="flame-svg" viewBox="0 0 120 150" aria-hidden="true">
+      <defs>
+        <linearGradient id="flOuter" x1="0" y1="1" x2="0" y2="0"><stop offset="0" style="stop-color:var(--fl-o0)"/><stop offset="0.6" style="stop-color:var(--fl-o1)"/><stop offset="1" style="stop-color:var(--fl-o2)"/></linearGradient>
+        <linearGradient id="flMid" x1="0" y1="1" x2="0" y2="0"><stop offset="0" style="stop-color:var(--fl-m0)"/><stop offset="1" style="stop-color:var(--fl-m1)"/></linearGradient>
+        <linearGradient id="flInner" x1="0" y1="1" x2="0" y2="0"><stop offset="0" style="stop-color:var(--fl-i0)"/><stop offset="1" style="stop-color:var(--fl-i1)"/></linearGradient>
+      </defs>
+      <path class="fl-outer" fill="url(#flOuter)" d="M60 4C67 30 99 48 99 88C99 121 81 144 60 144C39 144 21 121 21 88C21 66 36 54 44 38C46 51 52 58 57 58C54 40 52 22 60 4Z"/>
+      <path class="fl-mid" fill="url(#flMid)" d="M60 46C66 64 84 74 84 102C84 124 73 140 60 140C47 140 36 124 36 102C36 86 50 76 53 62C55 70 58 72 60 72C58 62 57 54 60 46Z"/>
+      <path class="fl-inner" fill="url(#flInner)" d="M60 84C66 98 76 104 76 120C76 133 69 141 60 141C51 141 44 133 44 120C44 108 55 100 60 84Z"/>
+    </svg>
+    <div class="flame-num" id="flameNum">1</div>
+    <div class="flame-lbl" id="flameLbl">Tage in Folge</div>
+    <p class="flame-sub" id="flameSub"></p>
+    <p class="flame-hint">Tippen zum Schließen</p>
+  </div>
 </div>
 
 <div class="pad" id="pad" hidden role="dialog" aria-modal="true" aria-labelledby="padName">
@@ -1417,6 +1539,8 @@ main > section:not([hidden]) { animation: viewIn 220ms cubic-bezier(.2, .8, .2, 
     autoRun: true,
     autoDeload: true,
     easyHr: 155,
+    haptic: "normal",
+    sound: true,
     emom: { name: "Klimmzüge", dur: 20, reps: 5 },
     gtgItems: [{ n: "Klimmzüge", r: 3 }, { n: "Dips", r: 5 }, { n: "Liegestütze", r: 10 }, { n: "Chin-ups", r: 3 }],
     partner: { me: "", name: "Kollege", start: null, target: 0 },
@@ -2470,7 +2594,7 @@ main > section:not([hidden]) { animation: viewIn 220ms cubic-bezier(.2, .8, .2, 
   }
   function chime() {
     try {
-      if (!audioCtx) return;
+      if (!audioCtx || !soundOn()) return;
       const t0 = audioCtx.currentTime;
       [0, 0.18].forEach((off, i) => {
         const o = audioCtx.createOscillator(), g = audioCtx.createGain();
@@ -2483,7 +2607,17 @@ main > section:not([hidden]) { animation: viewIn 220ms cubic-bezier(.2, .8, .2, 
       });
     } catch (e) { /* ignore */ }
   }
-  const buzz = (p) => { try { if (navigator.vibrate) navigator.vibrate(p); } catch (e) { /* ignore */ } };
+  const soundOn = () => S().sound !== false;
+  const hapScale = () => { const k = S().haptic; return k === "aus" ? 0 : k === "leicht" ? 0.7 : k === "kraeftig" ? 1.5 : 1; };
+  const buzz = (p) => {
+    try {
+      if (!navigator.vibrate) return;
+      const f = hapScale();
+      if (!f) return;
+      const arr = [].concat(p);
+      navigator.vibrate(arr.map((v, i) => (i % 2 === 0 ? Math.max(4, Math.round(v * f)) : v)));
+    } catch (e) { /* ignore */ }
+  };
 
   function todaySessionEx(id) {
     const s = effSession(today());
@@ -2520,6 +2654,7 @@ main > section:not([hidden]) { animation: viewIn 220ms cubic-bezier(.2, .8, .2, 
       const pr = sessionProgress(dk, session);
       if (pr.done === pr.total) { stopTimer(); celebrate(dk); }
       else if (n > 1) startTimer(S().rest || 120);
+      checkGoals();
     }
   }
 
@@ -2540,7 +2675,7 @@ main > section:not([hidden]) { animation: viewIn 220ms cubic-bezier(.2, .8, .2, 
     const id = inp.closest(".ex").dataset.id;
     const dk = todayKey();
     if (inp.dataset.rf) return;
-    if (pendingNotes[dk] && pendingNotes[dk][id] != null) { clearTimeout(noteTimers[id]); commitNote(dk, id); }
+    if (pendingNotes[dk] && pendingNotes[dk][id] != null) { clearTimeout(noteTimers[id]); commitNote(dk, id, true); }
   });
   $("exlist").addEventListener("change", (ev) => {
     const inp = ev.target;
@@ -2549,7 +2684,7 @@ main > section:not([hidden]) { animation: viewIn 220ms cubic-bezier(.2, .8, .2, 
     saveRunFromPanel(li);
   });
 
-  function commitNote(dk, id) {
+  function commitNote(dk, id, final) {
     const e = todaySessionEx(id);
     if (!e) return;
     const text = pendingNotes[dk] && pendingNotes[dk][id];
@@ -2572,6 +2707,14 @@ main > section:not([hidden]) { animation: viewIn 220ms cubic-bezier(.2, .8, .2, 
         buzz([20, 40, 20]);
         const li = $("exlist").querySelector('[data-id="' + CSS.escape(id) + '"]');
         if (li && !reduced()) { li.classList.remove("pr-flash"); void li.offsetWidth; li.classList.add("pr-flash"); }
+      }
+    }
+    if (final && it && isPRItem(items, it)) {
+      const rk = dk + "|" + id;
+      if (recShown[rk] !== it.met.label) {
+        recShown[rk] = it.met.label;
+        const pb = bestBefore(items, dk);
+        showRecord(e.name, it.met.label, pb ? pb.met.label : "");
       }
     }
     patchExList(dk, effSession(today()) || { exercises: [] });
@@ -2601,6 +2744,7 @@ main > section:not([hidden]) { animation: viewIn 220ms cubic-bezier(.2, .8, .2, 
     renderToday();
     const pr = sessionProgress(dk, effSession(today()));
     if (pr.total && pr.done === pr.total) celebrate(dk);
+    checkGoals();
   }
 
   // Garmin screenshot (Claude reads the image)
@@ -2664,7 +2808,8 @@ main > section:not([hidden]) { animation: viewIn 220ms cubic-bezier(.2, .8, .2, 
     if (l.habits[h]) delete l.habits[h]; else { l.habits[h] = true; buzz(10); }
     saveLog(dk);
     renderHabits(dk);
-    if (habitsDone(dk) && l.habits[h]) toast("Alle Gewohnheiten für heute erledigt.");
+    if (habitsDone(dk) && l.habits[h]) { if (!checkFlame()) toast("Alle Gewohnheiten für heute erledigt."); }
+    checkGoals();
   });
 
   function syncProteinHabit(l, total) {
@@ -2682,8 +2827,9 @@ main > section:not([hidden]) { animation: viewIn 220ms cubic-bezier(.2, .8, .2, 
     syncProteinHabit(l, total);
     saveLog(dk);
     renderProtein(dk); renderHabits(dk);
+    setTimeout(checkGoals, 700);
     const target = +S().proteinTarget || 120;
-    if (before < target && total >= target) { toast("Proteinziel erreicht: " + Math.round(total) + " g"); buzz([20, 40, 20]); }
+    if (before < target && total >= target) { toast("Proteinziel erreicht: " + Math.round(total) + " g"); buzz([20, 40, 20]); setTimeout(checkFlame, 600); }
   }
   $("pfoods").addEventListener("click", (ev) => {
     const b = ev.target.closest(".pfood");
@@ -2812,7 +2958,7 @@ main > section:not([hidden]) { animation: viewIn 220ms cubic-bezier(.2, .8, .2, 
       if (s) {
         html += '<div class="wbody"' + (openDays[dow] ? "" : " hidden") + "><ul>" +
           s.exercises.map((e) => "<li><span>" + esc(e.name) + "</span><span>" + esc(exSpec(e)) + "</span></li>").join("") +
-          "</ul>" + (isToday ? '<button class="btn" data-goto="today">Zur Einheit</button>' : "") + "</div>";
+          "</ul>" + ((state.logs[dk] && state.logs[dk].sessionNote) ? '<p class="wnote"><b>Notiz:</b> ' + esc(state.logs[dk].sessionNote) + "</p>" : "") + (isToday ? '<button class="btn" data-goto="today">Zur Einheit</button>' : "") + "</div>";
       }
       html += "</li>";
     }
@@ -3159,6 +3305,9 @@ main > section:not([hidden]) { animation: viewIn 220ms cubic-bezier(.2, .8, .2, 
 
   // ================= Today extras =================
   function renderTodayExtras(dk) {
+    renderSteps(dk);
+    renderGoal();
+    renderSessNote(dk);
     renderDrink(dk);
     renderCheckin(dk);
     renderSleepRow(dk);
@@ -3950,6 +4099,9 @@ main > section:not([hidden]) { animation: viewIn 220ms cubic-bezier(.2, .8, .2, 
     if (st.so.length) o.muskelkaterDurchschnitt = Math.round(avgOf(st.so) * 10) / 10;
     if (st.sleepMin.length) o.schlafDurchschnitt = fmtSleep(Math.round(avgOf(st.sleepMin)));
     if (st.sleepScore.length) o.schlafScoreDurchschnitt = Math.round(avgOf(st.sleepScore));
+    const sn = [];
+    for (let i = 0; i < 7; i++) { const l = state.logs[dateKey(addDays(ws, i))]; if (l && l.sessionNote) sn.push(shortDate(addDays(ws, i)) + ": " + l.sessionNote); }
+    if (sn.length) o.notizenZuEinheiten = sn;
     const note = (state.logs[dateKey(addDays(ws, 6))] || {}).reviewNote;
     if (note) o.vorsatzFuerNaechsteWoche = note;
     return o;
@@ -4546,6 +4698,8 @@ main > section:not([hidden]) { animation: viewIn 220ms cubic-bezier(.2, .8, .2, 
     setv("setHabits", (S().habits || []).join(", "));
     $("swRun").setAttribute("aria-checked", S().autoRun ? "true" : "false");
     $("swDeload").setAttribute("aria-checked", S().autoDeload ? "true" : "false");
+    $("setHaptic").value = S().haptic || "normal";
+    $("swSound").setAttribute("aria-checked", soundOn() ? "true" : "false");
     setSync();
   }
   function gcalLink(day) {
@@ -4743,7 +4897,7 @@ main > section:not([hidden]) { animation: viewIn 220ms cubic-bezier(.2, .8, .2, 
     window.scrollTo(0, 0);
     snow.toggle(name === "today");
   }
-  document.querySelector(".tabs").addEventListener("click", (ev) => { const b = ev.target.closest(".tab"); if (b) showTab(b.dataset.tab); });
+  document.querySelector(".tabs").addEventListener("click", (ev) => { const b = ev.target.closest(".tab"); if (b) { hap("tab"); showTab(b.dataset.tab); } });
   document.addEventListener("click", (ev) => { const g = ev.target.closest("[data-goto]"); if (g) showTab(g.dataset.goto); });
 
   // ================= Snow =================
@@ -4809,7 +4963,7 @@ main > section:not([hidden]) { animation: viewIn 220ms cubic-bezier(.2, .8, .2, 
   function beep(freq, ms, vol) {
     try {
       primeAudio();
-      if (!audioCtx) return;
+      if (!audioCtx || !soundOn()) return;
       const t0 = audioCtx.currentTime, o = audioCtx.createOscillator(), g = audioCtx.createGain();
       const dur = (ms || 150) / 1000;
       o.type = "sine"; o.frequency.value = freq || 880;
@@ -5254,6 +5408,7 @@ main > section:not([hidden]) { animation: viewIn 220ms cubic-bezier(.2, .8, .2, 
       chime(); buzz([100, 60, 100]);
       toast("Mobility erledigt. Deine Hamstrings sagen danke.");
       renderToday();
+      setTimeout(checkFlame, 900);
     }
     renderMobIdle();
   }
@@ -5563,7 +5718,7 @@ main > section:not([hidden]) { animation: viewIn 220ms cubic-bezier(.2, .8, .2, 
       if (numpad.showKg) parts.weight = numpad.kg;
       pendingNotes[dk] = pendingNotes[dk] || {};
       pendingNotes[dk][e.id] = buildNote(parts);
-      commitNote(dk, e.id);
+      commitNote(dk, e.id, true);
     }
     closePad();
     const li = $("exlist").querySelector('[data-id="' + CSS.escape(numpad.id) + '"]');
@@ -5605,6 +5760,127 @@ main > section:not([hidden]) { animation: viewIn 220ms cubic-bezier(.2, .8, .2, 
     else if (ev.key === "Enter" && numpad.val) savePad(true);
   });
 
+  // ================= v5: Haptik, Flamme =================
+  const HAP = {
+    tick: [7],
+    tab: [6],
+    tap: [10],
+    set: [14, 28, 22],
+    herz: [30, 90, 60],
+    pr: [18, 36, 18, 36, 40, 60, 70],
+    rollen: [14, 40, 12, 55, 10, 75, 8, 105, 6, 150, 5],
+    flame: [8, 70, 8, 58, 10, 46, 12, 36, 16, 28, 20, 22, 26, 16, 34, 12, 44, 10, 58, 120, 100],
+    flameBig: [8, 70, 8, 58, 10, 46, 12, 36, 16, 28, 20, 22, 26, 16, 34, 12, 44, 10, 58, 120, 100, 160, 14, 60, 18, 60, 24, 60, 90]
+  };
+  const hap = (name) => buzz(HAP[name] || HAP.tap);
+
+  function flameSound() {
+    try {
+      primeAudio();
+      if (!audioCtx || !soundOn()) return;
+      const t0 = audioCtx.currentTime;
+      const len = Math.floor(audioCtx.sampleRate * 1.1);
+      const buf = audioCtx.createBuffer(1, len, audioCtx.sampleRate);
+      const d = buf.getChannelData(0);
+      for (let i = 0; i < len; i++) d[i] = (Math.random() * 2 - 1) * (1 - i / len);
+      const src = audioCtx.createBufferSource();
+      src.buffer = buf;
+      const bp = audioCtx.createBiquadFilter();
+      bp.type = "bandpass"; bp.Q.value = 0.9;
+      bp.frequency.setValueAtTime(260, t0);
+      bp.frequency.exponentialRampToValueAtTime(2600, t0 + 0.7);
+      const g = audioCtx.createGain();
+      g.gain.setValueAtTime(0.0001, t0);
+      g.gain.exponentialRampToValueAtTime(0.28, t0 + 0.35);
+      g.gain.exponentialRampToValueAtTime(0.0001, t0 + 1.0);
+      src.connect(bp); bp.connect(g); g.connect(audioCtx.destination);
+      src.start(t0); src.stop(t0 + 1.1);
+      [523.25, 659.25, 783.99, 1046.5].forEach((f, i) => {
+        const o = audioCtx.createOscillator(), og = audioCtx.createGain();
+        const st = t0 + 0.6 + i * 0.1;
+        o.type = "triangle"; o.frequency.value = f;
+        og.gain.setValueAtTime(0.0001, st);
+        og.gain.exponentialRampToValueAtTime(0.22, st + 0.02);
+        og.gain.exponentialRampToValueAtTime(0.0001, st + 0.5);
+        o.connect(og); og.connect(audioCtx.destination);
+        o.start(st); o.stop(st + 0.55);
+      });
+    } catch (e) { /* ignore */ }
+  }
+
+  const FLAME_TEXT = { 1: "Die Serie startet. Morgen wieder.", 3: "Drei Tage am Stück. Jetzt wird es eine Gewohnheit.", 7: "Eine ganze Woche. Das hat Charakter.", 14: "Zwei Wochen ohne Lücke.", 21: "Drei Wochen. Das ist kein Zufall mehr.", 30: "Dreißig Tage. Du bist jetzt ein anderer Mensch als am Anfang.", 45: "Fünfundvierzig Tage. Die meisten hören viel früher auf.", 60: "Sechzig Tage. Fast am Ziel.", 75: "Noch fünfzehn Tage. Zieh es durch.", 90: "Der ganze Winter Arc. Ohne Lücke." };
+  let flameTimer = 0, flameCount = 0;
+  function showFlame(n) {
+    const el = $("flame");
+    clearTimeout(flameTimer); clearInterval(flameCount);
+    const big = !!FLAME_TEXT[n] && n > 1;
+    $("flameLbl").textContent = n === 1 ? "Tag in Folge" : "Tage in Folge";
+    $("flameSub").textContent = FLAME_TEXT[n] || (n < 7 ? "Alle Gewohnheiten erledigt. Bleib dran." : "Alle Gewohnheiten erledigt. Weiter so.");
+    const numEl = $("flameNum");
+    numEl.textContent = "1";
+    el.hidden = false;
+    document.body.style.overflow = "hidden";
+    if (n > 1) {
+      let c = 1;
+      const steps = Math.min(n, 24), stepMs = Math.max(18, Math.round(520 / steps));
+      setTimeout(() => {
+        flameCount = setInterval(() => {
+          c = Math.min(n, c + Math.max(1, Math.ceil(n / steps)));
+          numEl.textContent = c;
+          if (c >= n) clearInterval(flameCount);
+        }, stepMs);
+      }, 380);
+    }
+    hap(big ? "flameBig" : "flame");
+    flameSound();
+    flameTimer = setTimeout(closeFlame, big ? 6000 : 4200);
+  }
+  function closeFlame() {
+    clearTimeout(flameTimer); clearInterval(flameCount);
+    $("flame").hidden = true;
+    document.body.style.overflow = "";
+  }
+  $("flame").addEventListener("click", closeFlame);
+  document.addEventListener("keydown", (ev) => { if (!$("flame").hidden && (ev.key === "Escape" || ev.key === "Enter")) closeFlame(); });
+  function checkFlame() {
+    const dk = todayKey();
+    state.meta = state.meta || {};
+    if (!habitsDone(dk) || state.meta.flameDay === dk) return false;
+    state.meta.flameDay = dk;
+    saveLocal();
+    showFlame(streak());
+    return true;
+  }
+
+  const HAP_LAB = [
+    { n: "Tick", p: "tick" }, { n: "Tab-Tipp", p: "tab" }, { n: "Tippen", p: "tap" }, { n: "Satz geschafft", p: "set" },
+    { n: "Herzschlag", p: "herz" }, { n: "Rekord", p: "pr" }, { n: "Ausrollen", p: "rollen" }, { n: "Anschwellen", p: "flame" }
+  ];
+  function buildHapLab() {
+    $("hlab").innerHTML = HAP_LAB.map((h) => '<button data-p="' + h.p + '">' + esc(h.n) + "</button>").join("") + '<button class="flamebtn" data-act="flame">Flamme ansehen</button><button class="flamebtn" data-act="rec">Rekord ansehen</button>';
+  }
+  $("hlab").addEventListener("click", (ev) => {
+    const b = ev.target.closest("button");
+    if (!b) return;
+    primeAudio();
+    if (b.dataset.act === "rec") { showRecord("Klimmzüge", "9 Wdh.", "8 Wdh."); return; }
+    if (b.dataset.act === "flame") { showFlame(Math.max(1, streak() || 7)); return; }
+    hap(b.dataset.p);
+  });
+  $("setHaptic").addEventListener("change", function () {
+    S().haptic = this.value;
+    saveSettings();
+    hap("set");
+    toast(this.value === "aus" ? "Haptik aus" : "Haptik: " + this.options[this.selectedIndex].text);
+  });
+  $("swSound").addEventListener("click", () => {
+    S().sound = !soundOn();
+    saveSettings();
+    $("swSound").setAttribute("aria-checked", soundOn() ? "true" : "false");
+    if (soundOn()) { primeAudio(); chime(); }
+    toast(soundOn() ? "Töne an" : "Töne aus");
+  });
+
   // ================= Render all + boot =================
   function renderAll() {
     renderHeader();
@@ -5615,6 +5891,314 @@ main > section:not([hidden]) { animation: viewIn 220ms cubic-bezier(.2, .8, .2, 
     if (currentTab === "tools") renderTools();
     if (currentTab === "plan") renderPlanView();
   }
+
+  // ================= v6: Wochenziel, Rekord, Schritte, Notiz, Teilen =================
+  const fmtInt = (n) => Math.round(n).toLocaleString("de-DE");
+
+  // --- Wochenziel ---
+  function weekGoals() {
+    const ws = startOfWeek(today()), tk = todayKey(), asKey = S().arcStart || DEFAULT_SETTINGS.arcStart;
+    const g = { sess: { d: 0, t: 0 }, runs: { d: 0, t: 0 }, days: { d: 0, t: 0 } };
+    for (let i = 0; i < 7; i++) {
+      const d = addDays(ws, i), dk = dateKey(d);
+      if (dk < asKey) continue;
+      g.days.t++;
+      if (dk <= tk && habitsDone(dk)) g.days.d++;
+      const s = effSession(d);
+      if (!s || s.free) continue;
+      const act = s.exercises.filter((e) => !e.skipped);
+      if (!act.length) continue;
+      g.sess.t++;
+      const pr = sessionProgress(dk, s);
+      if (pr.total > 0 && pr.done === pr.total) g.sess.d++;
+      act.filter(isRun).forEach((e) => { g.runs.t++; if (exLog(dk, e).done.every(Boolean)) g.runs.d++; });
+    }
+    return g;
+  }
+  const GOAL_LBL = { sess: "Einheiten", runs: "Läufe", days: "Gewohnheiten" };
+  function goalFlags(g) {
+    const wk = dateKey(startOfWeek(today()));
+    state.meta = state.meta || {};
+    let m = state.meta.goals;
+    if (!m || m.wk !== wk) {
+      m = { wk };
+      Object.keys(g).forEach((k) => { m[k] = g[k].t > 0 && g[k].d >= g[k].t; });
+      state.meta.goals = m;
+      saveLocal();
+    }
+    return m;
+  }
+  function renderGoal() {
+    const g = weekGoals();
+    goalFlags(g);
+    const keys = ["sess", "runs", "days"].filter((k) => g[k].t > 0);
+    const C = 2 * Math.PI * 34;
+    $("goalRings").innerHTML = keys.map((k) => {
+      const f = Math.min(1, g[k].d / g[k].t), closed = g[k].d >= g[k].t;
+      return '<div class="gring' + (closed ? " closed" : "") + '" role="img" aria-label="' + GOAL_LBL[k] + ": " + g[k].d + " von " + g[k].t + '">' +
+        '<svg viewBox="0 0 84 84" aria-hidden="true"><circle class="gtrack" cx="42" cy="42" r="34"/><circle class="gbar" cx="42" cy="42" r="34" stroke-dasharray="' + C.toFixed(1) + '" stroke-dashoffset="' + (C * (1 - f)).toFixed(1) + '"/></svg>' +
+        '<div class="gnum" aria-hidden="true"><span>' + g[k].d + "<small>/" + g[k].t + "</small></span></div>" +
+        "<span>" + GOAL_LBL[k] + "</span></div>";
+    }).join("");
+    const all = keys.length && keys.every((k) => g[k].d >= g[k].t);
+    $("goalState").innerHTML = all ? "<b>Alle geschlossen</b>" : keys.length ? "diese Woche" : "";
+    $("goalCard").hidden = !keys.length;
+  }
+  function checkGoals() {
+    const g = weekGoals();
+    const m = goalFlags(g);
+    const fresh = [];
+    Object.keys(g).forEach((k) => {
+      const closed = g[k].t > 0 && g[k].d >= g[k].t;
+      if (closed && !m[k]) { m[k] = true; fresh.push(GOAL_LBL[k]); }
+    });
+    if (fresh.length) {
+      saveLocal();
+      toast("Wochenziel geschafft: " + fresh.join(", "));
+      hap("pr");
+    }
+    renderGoal();
+  }
+
+  // --- Rekord-Moment ---
+  const recShown = {};
+  function recordSound() {
+    try {
+      primeAudio();
+      if (!audioCtx || !soundOn()) return;
+      const t0 = audioCtx.currentTime;
+      [659.25, 830.61, 987.77, 1318.5].forEach((f, i) => {
+        const o = audioCtx.createOscillator(), g = audioCtx.createGain(), st = t0 + i * 0.09;
+        o.type = "triangle"; o.frequency.value = f;
+        g.gain.setValueAtTime(0.0001, st);
+        g.gain.exponentialRampToValueAtTime(0.2, st + 0.02);
+        g.gain.exponentialRampToValueAtTime(0.0001, st + 0.5);
+        o.connect(g); g.connect(audioCtx.destination);
+        o.start(st); o.stop(st + 0.55);
+      });
+    } catch (e) { /* ignore */ }
+  }
+  let recTimer = 0;
+  function showRecord(name, val, prev) {
+    $("recName").textContent = name;
+    $("recVal").textContent = val;
+    $("recPrev").textContent = prev ? "Vorher: " + prev : "";
+    $("rec").hidden = false;
+    hap("pr");
+    recordSound();
+    clearTimeout(recTimer);
+    recTimer = setTimeout(closeRecord, 3600);
+  }
+  function closeRecord() { clearTimeout(recTimer); $("rec").hidden = true; }
+  $("rec").addEventListener("click", closeRecord);
+
+  // --- Schritte / Gassi-Runde ---
+  const STEPS_PER_MIN = 100;
+  function stepGoal() {
+    const h = (S().habits || []).find((x) => /schritte/i.test(x));
+    const m = h && h.match(/(\d[\d.]*)/);
+    const v = m ? parseInt(m[1].replace(/\./g, ""), 10) : 0;
+    return v >= 1000 ? v : 10000;
+  }
+  const stepsTotal = (dk) => ((state.logs[dk] && state.logs[dk].steps) || []).reduce((a, x) => a + (+x.n || 0), 0);
+  function renderSteps(dk) {
+    const goal = stepGoal(), total = stepsTotal(dk);
+    const q = $("stQuick");
+    if (!q.dataset.built) {
+      q.innerHTML = [15, 30, 45, 60].map((m) => '<button class="pfood" data-min="' + m + '">Gassi-Runde ' + m + " min<b>+" + fmtInt(m * STEPS_PER_MIN) + "</b></button>").join("");
+      q.dataset.built = "1";
+    }
+    $("stTotal").textContent = fmtInt(total);
+    $("stUnit").textContent = "von " + fmtInt(goal);
+    $("stBar").querySelector("i").style.width = (Math.min(1, total / goal) * 100).toFixed(1) + "%";
+    $("stBar").classList.toggle("full", total >= goal);
+    $("stState").innerHTML = total >= goal ? "<b>Ziel erreicht</b>" : "noch " + fmtInt(Math.max(0, goal - total));
+    const list = (state.logs[dk] && state.logs[dk].steps) || [];
+    $("stUndo").disabled = !list.length;
+    $("stLog").textContent = list.length ? "Heute: " + list.slice(-6).map((x) => x.l).join(", ") + (list.length > 6 ? " und mehr" : "") : "";
+  }
+  function addSteps(label, n) {
+    const dk = todayKey();
+    const l = ensureLog(dk);
+    l.steps = l.steps || [];
+    const goal = stepGoal(), before = stepsTotal(dk);
+    l.steps.push({ l: label, n });
+    const total = before + n;
+    let ticked = false;
+    if (before < goal && total >= goal) {
+      (S().habits || []).forEach((h) => { if (/schritte/i.test(h) && !l.habits[h]) { l.habits[h] = true; ticked = true; } });
+      if (ticked) l.stepsAuto = true;
+      toast("Schrittziel erreicht: " + fmtInt(total));
+      buzz([20, 40, 20]);
+    }
+    saveLog(dk);
+    renderSteps(dk); renderHabits(dk);
+    if (ticked) setTimeout(() => { checkFlame(); checkGoals(); }, 600);
+  }
+  $("stQuick").addEventListener("click", (ev) => {
+    const b = ev.target.closest(".pfood");
+    if (!b) return;
+    const m = +b.dataset.min;
+    addSteps("Gassi " + m + " min", m * STEPS_PER_MIN);
+    hap("tap");
+  });
+  $("stAdd").addEventListener("click", () => {
+    const n = Math.round(num($("stInput").value) || 0);
+    if (n <= 0 || n > 60000) { toast("Gib eine Zahl zwischen 1 und 60.000 ein."); return; }
+    addSteps("+" + fmtInt(n), n);
+    $("stInput").value = "";
+  });
+  $("stInput").addEventListener("keydown", (ev) => { if (ev.key === "Enter") $("stAdd").click(); });
+  $("stUndo").addEventListener("click", () => {
+    const dk = todayKey();
+    const l = ensureLog(dk);
+    if (!l.steps || !l.steps.length) return;
+    l.steps.pop();
+    if (stepsTotal(dk) < stepGoal() && l.stepsAuto) {
+      (S().habits || []).forEach((h) => { if (/schritte/i.test(h)) delete l.habits[h]; });
+      l.stepsAuto = false;
+    }
+    saveLog(dk);
+    renderSteps(dk); renderHabits(dk);
+  });
+
+  // --- Notiz zur Einheit ---
+  function renderSessNote(dk) {
+    const ta = $("sessNote");
+    if (document.activeElement === ta) return;
+    const v = (state.logs[dk] && state.logs[dk].sessionNote) || "";
+    if (ta.value !== v) ta.value = v;
+  }
+  let snTimer = 0;
+  function commitSessNote() {
+    const dk = todayKey();
+    const v = $("sessNote").value.trim();
+    const cur = (state.logs[dk] && state.logs[dk].sessionNote) || "";
+    if (v === cur) return;
+    const l = ensureLog(dk);
+    if (v) l.sessionNote = v; else delete l.sessionNote;
+    saveLog(dk);
+  }
+  $("sessNote").addEventListener("input", () => { clearTimeout(snTimer); snTimer = setTimeout(commitSessNote, 700); });
+  $("sessNote").addEventListener("blur", () => { clearTimeout(snTimer); commitSessNote(); });
+
+  // --- Wochenrückblick als Bild ---
+  const cssv = (n) => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+  function weekRecords(ws) {
+    const hist = buildHistory(), a = dateKey(ws), b = dateKey(addDays(ws, 6)), out = {};
+    Object.keys(hist).forEach((k) => {
+      const items = hist[k].items;
+      items.forEach((it) => { if (it.date >= a && it.date <= b && isPRItem(items, it)) out[k] = { name: hist[k].name, label: it.met.label }; });
+    });
+    return Object.keys(out).map((k) => out[k]);
+  }
+  function streakFrom(d) {
+    let n = 0;
+    if (!habitsDone(dateKey(d)) && dateKey(d) === todayKey()) d = addDays(d, -1);
+    for (let i = 0; i < 400; i++) { if (habitsDone(dateKey(d))) { n++; d = addDays(d, -1); } else break; }
+    return n;
+  }
+  function buildWeekCard(ws, st) {
+    const W = 1080, H = 1350;
+    const c = document.createElement("canvas");
+    c.width = W; c.height = H;
+    const x = c.getContext("2d");
+    const bg = cssv("--surface") || "#000", ice = cssv("--ice"), ice2 = cssv("--ice-2"), ink = cssv("--ink"), ink2 = cssv("--ink-2"), mute = cssv("--mute"), line = cssv("--line-2"), rgb = cssv("--acc-rgb") || "142,235,248";
+    const fam = getComputedStyle(document.body).fontFamily, disp = cssv("--display") || fam;
+    x.fillStyle = bg; x.fillRect(0, 0, W, H);
+    const gl = x.createRadialGradient(W / 2, 0, 0, W / 2, 0, 950);
+    gl.addColorStop(0, "rgba(" + rgb + ",.26)"); gl.addColorStop(1, "rgba(" + rgb + ",0)");
+    x.fillStyle = gl; x.fillRect(0, 0, W, H);
+    const we = addDays(ws, 6), wn = arcWeek(ws);
+    let endD = we; if (dateKey(endD) > todayKey()) endD = today();
+    let dayN = Math.floor((startOfDay(endD) - startOfDay(arcStartDate())) / 86400000) + 1;
+    dayN = Math.max(1, Math.min(90, dayN));
+    x.textBaseline = "alphabetic";
+    x.fillStyle = ice; x.font = "700 34px " + fam; x.textAlign = "left";
+    try { x.letterSpacing = "8px"; } catch (e) { /* ignore */ }
+    x.fillText("WINTER ARC", 56, 108);
+    try { x.letterSpacing = "0px"; } catch (e) { /* ignore */ }
+    x.fillStyle = ink2; x.font = "600 34px " + fam; x.textAlign = "right";
+    x.fillText("Tag " + dayN + " von 90", W - 56, 108);
+    x.textAlign = "left"; x.fillStyle = ink; x.font = "900 150px " + disp;
+    x.fillText(wn ? "Woche " + wn : "Woche", 52, 290);
+    x.fillStyle = ink2; x.font = "500 40px " + fam;
+    x.fillText(ws.getDate() + "." + (ws.getMonth() + 1) + ". bis " + we.getDate() + "." + (we.getMonth() + 1) + "." + we.getFullYear(), 56, 352);
+    const tot = st.vol.pull.kg + st.vol.dips.kg + st.vol.push.kg;
+    const tiles = [
+      [st.planned ? st.done + "/" + st.planned : st.free ? String(st.free) : "–", "Einheiten" + (st.free && st.planned ? " (+" + st.free + " frei)" : "")],
+      [st.km ? fmtN(st.km) + " km" : "–", st.km ? "gelaufen, " + st.runs + (st.runs === 1 ? " Lauf" : " Läufe") : "Gelaufen"],
+      [tot ? fmtKg(tot) : "–", "Bewegtes Gewicht"],
+      [st.habitSlots ? Math.round((st.habitHit / st.habitSlots) * 100) + " %" : "–", "Gewohnheiten"]
+    ];
+    const rr = (px, py, w, h, r) => { x.beginPath(); if (x.roundRect) x.roundRect(px, py, w, h, r); else x.rect(px, py, w, h); };
+    tiles.forEach((t, i) => {
+      const px = 56 + (i % 2) * 492, py = 420 + Math.floor(i / 2) * 274;
+      rr(px, py, 468, 250, 32);
+      x.fillStyle = "rgba(" + rgb + ",.08)"; x.fill();
+      x.strokeStyle = line; x.lineWidth = 2; x.stroke();
+      let fs = 104;
+      x.font = "800 " + fs + "px " + disp;
+      while (x.measureText(t[0]).width > 410 && fs > 40) { fs -= 4; x.font = "800 " + fs + "px " + disp; }
+      x.fillStyle = ice; x.textAlign = "left";
+      x.fillText(t[0], px + 34, py + 134);
+      x.fillStyle = ink2; x.font = "600 32px " + fam;
+      x.fillText(t[1], px + 34, py + 196);
+    });
+    // Serie mit Flamme
+    const sk = streakFrom(endD);
+    if (sk > 0) {
+      x.save(); x.translate(60, 1002); x.scale(0.56, 0.56);
+      [["M60 4C67 30 99 48 99 88C99 121 81 144 60 144C39 144 21 121 21 88C21 66 36 54 44 38C46 51 52 58 57 58C54 40 52 22 60 4Z", "--fl-o0", "--fl-o1", "--fl-o2", 144, 4],
+       ["M60 46C66 64 84 74 84 102C84 124 73 140 60 140C47 140 36 124 36 102C36 86 50 76 53 62C55 70 58 72 60 72C58 62 57 54 60 46Z", "--fl-m0", "--fl-m0", "--fl-m1", 140, 46],
+       ["M60 84C66 98 76 104 76 120C76 133 69 141 60 141C51 141 44 133 44 120C44 108 55 100 60 84Z", "--fl-i0", "--fl-i0", "--fl-i1", 141, 84]].forEach((f) => {
+        const gr = x.createLinearGradient(0, f[4], 0, f[5]);
+        gr.addColorStop(0, cssv(f[1]) || ice2); gr.addColorStop(0.6, cssv(f[2]) || ice2); gr.addColorStop(1, cssv(f[3]) || ice);
+        x.fillStyle = gr; x.fill(new Path2D(f[0]));
+      });
+      x.restore();
+      x.fillStyle = ink; x.font = "800 56px " + disp; x.textAlign = "left";
+      x.fillText(sk + (sk === 1 ? " Tag" : " Tage") + " Serie", 150, 1066);
+    }
+    // Rekorde
+    const recs = weekRecords(ws).slice(0, 3);
+    if (recs.length) {
+      x.fillStyle = ice; x.font = "700 30px " + fam; x.textAlign = "left";
+      try { x.letterSpacing = "5px"; } catch (e) { /* ignore */ }
+      x.fillText("NEUE REKORDE", 56, 1150);
+      try { x.letterSpacing = "0px"; } catch (e) { /* ignore */ }
+      recs.forEach((r, i) => {
+        x.fillStyle = ink; x.font = "600 38px " + fam; x.textAlign = "left";
+        let nm = r.name; while (x.measureText(nm).width > 600 && nm.length > 4) nm = nm.slice(0, -2);
+        x.fillText(nm === r.name ? nm : nm + "…", 56, 1204 + i * 52);
+        x.fillStyle = ice; x.font = "800 38px " + disp; x.textAlign = "right";
+        x.fillText(r.label, W - 56, 1204 + i * 52);
+      });
+    }
+    x.textAlign = "left";
+    const note = (state.logs[dateKey(we)] || {}).reviewNote;
+    if (note && !recs.length) {
+      x.fillStyle = mute; x.font = "500 34px " + fam;
+      let t = "Nächste Woche: " + note; while (x.measureText(t).width > W - 112 && t.length > 8) t = t.slice(0, -2);
+      x.fillText(t, 56, 1220);
+    }
+    return c;
+  }
+  $("revShare").addEventListener("click", () => {
+    const ws = addDays(startOfWeek(today()), -7 * revOffset);
+    const st = weekStats(ws);
+    if (!st.days) { toast("In dieser Woche gibt es noch keine Daten."); return; }
+    hap("tap");
+    const cv = buildWeekCard(ws, st);
+    cv.toBlob((b) => {
+      if (!b) { toast("Das Bild konnte nicht erstellt werden."); return; }
+      const wn = arcWeek(ws);
+      saveBlobFile(b, "winter-arc-woche-" + (wn || "x") + ".png", true).then((r) => {
+        toast(r === "shared" ? "Geteilt" : r === "download" ? "Bild gespeichert" : "Abgebrochen");
+      });
+    }, "image/png");
+  });
+
   let lastDay = todayKey();
   setInterval(() => {
     const k = todayKey();
@@ -5626,6 +6210,7 @@ main > section:not([hidden]) { animation: viewIn 220ms cubic-bezier(.2, .8, .2, 
   try { if (document.fonts && document.fonts.ready) document.fonts.ready.then(fitDayname); } catch (e) { /* ignore */ }
 
   loadLocal();
+  buildHapLab();
   applyAccent();
   const deepHandled = handleDeepLink();
   initCollapsibles();
