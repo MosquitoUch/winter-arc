@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#000000">
-<script>try{var a=localStorage.getItem("winterarc.accent");if(a&&a!=="eis")document.documentElement.setAttribute("data-accent",a)}catch(e){}</script>
+<script>try{var a=localStorage.getItem("winterarc.accent"),v=localStorage.getItem("winterarc.accentVars");if(v)document.documentElement.style.cssText=v;else if(a&&a!=="eis")document.documentElement.setAttribute("data-accent",a)}catch(e){}</script>
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Winter Arc">
@@ -680,6 +680,15 @@ body.train-mode .ex:not(.is-next):not(.is-done) { opacity: .6; }
 .accent-btn { display: grid; justify-items: center; gap: 6px; min-width: 64px; padding: 10px 6px 8px; border-radius: 14px; border: 1px solid var(--line-2); background: transparent; color: var(--ink-2); font-size: 12px; font-weight: 600; }
 .accent-btn i { width: 26px; height: 26px; clip-path: polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%); }
 .accent-btn[aria-pressed="true"] { border-color: var(--ice); color: var(--ink); }
+.accent-btn i.rainbow { background: conic-gradient(#FF2E3E, #FFC23D, #B8FF2E, #3DFFD0, #4D7CFF, #B66CFF, #FF3FD0, #FF2E3E); }
+.acc-custom { margin-top: 14px; padding: 14px; border-radius: 14px; border: 1px solid var(--line-2); }
+.acc-row { display: grid; grid-template-columns: 1fr auto 80px; align-items: center; gap: 12px; margin-bottom: 12px; }
+.acc-row label { font-size: 15px; font-weight: 600; color: var(--ink); }
+.acc-row label small { display: block; font-size: 12px; font-weight: 500; color: var(--mute); }
+.acc-row input[type=color] { width: 52px; height: 44px; padding: 0; border: 1px solid var(--line-2); border-radius: 12px; background: transparent; }
+.acc-row input[type=color]::-webkit-color-swatch-wrapper { padding: 4px; }
+.acc-row input[type=color]::-webkit-color-swatch { border: 0; border-radius: 8px; }
+.acc-row code { font-size: 13px; color: var(--ink-2); }
 
 /* Sanfte Übergänge */
 @keyframes viewIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
@@ -1295,7 +1304,13 @@ main > section:not([hidden]) { animation: viewIn 220ms cubic-bezier(.2, .8, .2, 
           <div class="settings">
             <div class="field"><label for="setHaptic">Haptik (Vibration)</label><select id="setHaptic"><option value="aus">Aus</option><option value="leicht">Leicht</option><option value="normal">Normal</option><option value="kraeftig">Kräftig</option></select><div class="hlab" id="hlab" role="group" aria-label="Haptik ausprobieren"></div><small class="fhint">Tipp auf ein Muster zum Ausprobieren. Spürst du nichts, prüf in den Handy-Einstellungen unter Töne und Vibration, dass die Vibrationsstärke nicht auf null steht.</small></div>
             <div class="toggle"><span>Töne<small>Piepen im EMOM und bei der Mobility, Klang bei Pausenende und Flamme.</small></span><button class="switch" role="switch" aria-checked="true" id="swSound" aria-label="Töne"></button></div>
-            <div class="field"><span class="flabel" id="accentLabel">Farbe der App</span><div class="accents" id="accents" role="group" aria-labelledby="accentLabel"></div><small class="fhint">Der Hintergrund bleibt echtes Schwarz, ideal für dein OLED-Display.</small></div>
+            <div class="field"><span class="flabel" id="accentLabel">Farbe der App</span><div class="accents" id="accents" role="group" aria-labelledby="accentLabel"></div>
+              <div class="acc-custom" id="accCustom" hidden>
+                <div class="acc-row"><label for="accA">Hauptfarbe<small>Ring, Haken, Knöpfe, Linien</small></label><input type="color" id="accA" value="#FF2E3E"><code id="accAHex">#FF2E3E</code></div>
+                <div class="acc-row"><label for="accB">Zweitfarbe<small>Große Zahlen, Flammenspitze, Rekord</small></label><input type="color" id="accB" value="#FFFFFF"><code id="accBHex">#FFFFFF</code></div>
+                <div class="row"><button class="btn small" id="accSwap">Tauschen</button><button class="btn small" id="accRand">Zufall</button></div>
+              </div>
+              <small class="fhint">Der Hintergrund bleibt echtes Schwarz, ideal für dein OLED-Display. Unter „Eigene" wählst du zwei Farben, daraus berechnet die App alle Töne selbst.</small></div>
             <div class="toggle"><span>Laufplan automatisch steigern<small>Passt die Kilometer jede Woche an den 90-Tage-Plan an, ab Woche 5 mit lockerem Sonntagslauf.</small></span><button class="switch" role="switch" aria-checked="true" id="swRun" aria-label="Laufplan automatisch steigern"></button></div>
             <div class="toggle"><span>Deload in Woche 4, 8 und 12<small>Halbiert in diesen Wochen die Sätze und verkürzt die Läufe.</small></span><button class="switch" role="switch" aria-checked="true" id="swDeload" aria-label="Deload-Wochen"></button></div>
             <div class="two">
@@ -5609,22 +5624,136 @@ main > section:not([hidden]) { animation: viewIn 220ms cubic-bezier(.2, .8, .2, 
     { k: "aurora", n: "Aurora", c: "#86F2C0" },
     { k: "violett", n: "Violett", c: "#BFA9FF" },
     { k: "glut", n: "Glut", c: "#FFB870" },
-    { k: "schnee", n: "Schnee", c: "#F2F2F2" }
+    { k: "schnee", n: "Schnee", c: "#F2F2F2" },
+    { k: "blut", n: "Blutrot", a: "#FF2E3E", b: "#FFFFFF" },
+    { k: "gold", n: "Gold", a: "#FFC23D", b: "#FFF3D1" },
+    { k: "neon", n: "Neon", a: "#FF3FD0", b: "#7FE7FF" },
+    { k: "toxic", n: "Toxic", a: "#B8FF2E", b: "#F2FFD9" },
+    { k: "nacht", n: "Mitternacht", a: "#4D7CFF", b: "#D6E0FF" },
+    { k: "eigen", n: "Eigene", custom: true }
   ];
+  // ---- Farb-Generator: aus zwei Farben alle Töne berechnen ----
+  const hex2rgb = (h) => { h = String(h || "").replace("#", ""); if (h.length === 3) h = h.split("").map((c) => c + c).join(""); const n = parseInt(h, 16); return isNaN(n) ? [255, 255, 255] : [(n >> 16) & 255, (n >> 8) & 255, n & 255]; };
+  const rgb2hex = (r) => "#" + r.map((v) => Math.max(0, Math.min(255, Math.round(v))).toString(16).padStart(2, "0")).join("").toUpperCase();
+  function rgb2hsl(r) {
+    let [R, G, B] = r.map((v) => v / 255);
+    const mx = Math.max(R, G, B), mn = Math.min(R, G, B), l = (mx + mn) / 2;
+    let h = 0, s2 = 0;
+    if (mx !== mn) {
+      const d = mx - mn;
+      s2 = l > 0.5 ? d / (2 - mx - mn) : d / (mx + mn);
+      h = mx === R ? (G - B) / d + (G < B ? 6 : 0) : mx === G ? (B - R) / d + 2 : (R - G) / d + 4;
+      h /= 6;
+    }
+    return [h, s2, l];
+  }
+  function hsl2rgb(h, s2, l) {
+    if (!s2) return [l * 255, l * 255, l * 255];
+    const q = l < 0.5 ? l * (1 + s2) : l + s2 - l * s2, p = 2 * l - q;
+    const f = (t) => { if (t < 0) t += 1; if (t > 1) t -= 1; return t < 1 / 6 ? p + (q - p) * 6 * t : t < 1 / 2 ? q : t < 2 / 3 ? p + (q - p) * (2 / 3 - t) * 6 : p; };
+    return [f(h + 1 / 3) * 255, f(h) * 255, f(h - 1 / 3) * 255];
+  }
+  const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+  const mixRgb = (a, b, t) => a.map((v, i) => v + (b[i] - v) * t);
+  const rgbStr = (r) => r.map((v) => Math.round(v)).join(", ");
+  function genTheme(a, b) {
+    const A = hex2rgb(a), B = hex2rgb(b);
+    const [h, sA, lA] = rgb2hsl(A);
+    const s2 = sA;
+    const ice = hsl2rgb(h, s2, clamp(lA, 0.56, 0.8));
+    const lIce = rgb2hsl(ice)[2];
+    const ice2 = hsl2rgb(h, s2, clamp(lIce - 0.12, 0.4, 0.66));
+    const deep = hsl2rgb(h, Math.min(s2, 0.85), 0.2);
+    const ink = hsl2rgb(h, Math.min(s2, 0.6), 0.05);
+    const [hB, sB, lB] = rgb2hsl(B);
+    const hi = hsl2rgb(hB, sB, clamp(lB, 0.72, 1));
+    const W = [255, 255, 255];
+    const v = {
+      "--ice": rgb2hex(ice), "--ice-2": rgb2hex(ice2), "--ice-deep": rgb2hex(deep), "--ice-ink": rgb2hex(ink),
+      "--hi": rgb2hex(hi), "--hi-2": rgb2hex(hsl2rgb(h, s2, clamp(lIce - 0.18, 0.34, 0.6))),
+      "--glow": "rgba(" + rgbStr(ice) + ", 0.32)", "--tint-rgb": rgbStr(ice2), "--acc-rgb": rgbStr(ice),
+      "--fl-o0": rgb2hex(hsl2rgb(h, s2, 0.36)), "--fl-o1": rgb2hex(ice2), "--fl-o2": rgb2hex(ice),
+      "--fl-m0": rgb2hex(ice), "--fl-m1": rgb2hex(mixRgb(ice, hi, 0.55)),
+      "--fl-i0": rgb2hex(mixRgb(hi, W, 0.25)), "--fl-i1": rgb2hex(mixRgb(hi, W, 0.8)),
+      "--fl-glow": rgbStr(ice2), "--fl-num": rgb2hex(mixRgb(hi, W, 0.35)), "--fl-lbl": rgb2hex(mixRgb(ice, W, 0.45)), "--fl-btn": rgb2hex(ice)
+    };
+    return v;
+  }
+  const GEN_KEYS = Object.keys(genTheme("#FF0000", "#FFFFFF"));
+  function accentPair(k) {
+    if (k === "eigen") { const c = S().customAccent || {}; return { a: c.a || "#FF2E3E", b: c.b || "#FFFFFF" }; }
+    const p = ACCENTS.find((x) => x.k === k);
+    return p && p.a ? { a: p.a, b: p.b } : null;
+  }
   function applyAccent() {
     const k = S().accent || "eis";
-    if (k === "eis") document.documentElement.removeAttribute("data-accent");
-    else document.documentElement.setAttribute("data-accent", k);
-    try { localStorage.setItem("winterarc.accent", k); } catch (e) { /* ignore */ }
+    const root = document.documentElement;
+    GEN_KEYS.forEach((n) => root.style.removeProperty(n));
+    const pair = accentPair(k);
+    let varsStr = "";
+    if (pair) {
+      root.removeAttribute("data-accent");
+      const v = genTheme(pair.a, pair.b);
+      Object.keys(v).forEach((n) => root.style.setProperty(n, v[n]));
+      varsStr = Object.keys(v).map((n) => n + ":" + v[n]).join(";");
+    } else if (k === "eis") root.removeAttribute("data-accent");
+    else root.setAttribute("data-accent", k);
+    try {
+      localStorage.setItem("winterarc.accent", k);
+      if (varsStr) localStorage.setItem("winterarc.accentVars", varsStr); else localStorage.removeItem("winterarc.accentVars");
+    } catch (e) { /* ignore */ }
   }
   function renderAccents() {
     const cur = S().accent || "eis";
-    $("accents").innerHTML = ACCENTS.map((a) => '<button class="accent-btn" data-k="' + a.k + '" aria-pressed="' + (a.k === cur ? "true" : "false") + '"><i style="background:' + a.c + '"></i>' + a.n + "</button>").join("");
+    $("accents").innerHTML = ACCENTS.map((a) => {
+      let sw;
+      if (a.custom) sw = '<i class="rainbow"></i>';
+      else if (a.a) sw = '<i style="background:linear-gradient(135deg,' + a.a + " 55%," + a.b + ' 55%)"></i>';
+      else sw = '<i style="background:' + a.c + '"></i>';
+      return '<button class="accent-btn" data-k="' + a.k + '" aria-pressed="' + (a.k === cur ? "true" : "false") + '">' + sw + a.n + "</button>";
+    }).join("");
+    const isC = cur === "eigen";
+    $("accCustom").hidden = !isC;
+    if (isC) {
+      const pr = accentPair("eigen");
+      if (document.activeElement !== $("accA")) $("accA").value = pr.a.toLowerCase();
+      if (document.activeElement !== $("accB")) $("accB").value = pr.b.toLowerCase();
+      $("accAHex").textContent = pr.a.toUpperCase();
+      $("accBHex").textContent = pr.b.toUpperCase();
+    }
   }
+  let accRaf = 0;
+  function setCustom(a, b, save) {
+    S().customAccent = { a: a.toUpperCase(), b: b.toUpperCase() };
+    S().accent = "eigen";
+    $("accAHex").textContent = a.toUpperCase();
+    $("accBHex").textContent = b.toUpperCase();
+    cancelAnimationFrame(accRaf);
+    accRaf = requestAnimationFrame(() => { applyAccent(); snow.recolor(); });
+    if (save) { saveSettings(); renderArcGrid(); }
+  }
+  ["accA", "accB"].forEach((id) => {
+    $(id).addEventListener("input", () => setCustom($("accA").value, $("accB").value, false));
+    $(id).addEventListener("change", () => setCustom($("accA").value, $("accB").value, true));
+  });
+  $("accSwap").addEventListener("click", () => {
+    const a = $("accA").value, b = $("accB").value;
+    $("accA").value = b; $("accB").value = a;
+    setCustom(b, a, true); hap("tap");
+  });
+  $("accRand").addEventListener("click", () => {
+    const h = Math.random();
+    const a = rgb2hex(hsl2rgb(h, 0.9 + Math.random() * 0.1, 0.58 + Math.random() * 0.08));
+    const mode = Math.random();
+    const b = mode < 0.35 ? "#FFFFFF" : rgb2hex(hsl2rgb((h + (mode < 0.7 ? 0.08 : 0.5)) % 1, 0.9, 0.82));
+    $("accA").value = a.toLowerCase(); $("accB").value = b.toLowerCase();
+    setCustom(a, b, true); hap("tap");
+  });
   $("accents").addEventListener("click", (ev) => {
     const b = ev.target.closest(".accent-btn");
     if (!b) return;
     S().accent = b.dataset.k;
+    if (b.dataset.k === "eigen" && !S().customAccent) { const cur = accentPair("blut"); S().customAccent = { a: cur.a, b: cur.b }; }
     applyAccent();
     snow.recolor();
     saveSettings();
