@@ -797,6 +797,64 @@ main > section:not([hidden]) { animation: viewIn 220ms cubic-bezier(.2, .8, .2, 
 .hlab button { min-height: 44px; padding: 0 14px; border-radius: 12px; border: 1px solid var(--line-2); background: transparent; color: var(--ink); font-size: 14px; font-weight: 600; }
 .hlab button:active { border-color: var(--ice); background: var(--surface-2); }
 .hlab button.flamebtn { border-color: rgba(var(--fl-glow), .6); color: var(--fl-btn); }
+
+/* ===== v7: Aufräumen, Info-Knöpfe, Gruppen, Hintergrund ===== */
+.ambient { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; }
+.app { position: relative; z-index: 1; }
+#stepsCard { padding-left: 0; color: inherit; }
+.block h2.bh { font-size: 28px; margin-bottom: 8px; }
+.progview { gap: 40px; }
+.pfoods { flex-wrap: nowrap; overflow-x: auto; overscroll-behavior-x: contain; scrollbar-width: none; margin: 0 -20px; padding: 2px 20px; scroll-padding: 0 20px;
+  -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 18px, #000 calc(100% - 30px), transparent); mask-image: linear-gradient(90deg, transparent 0, #000 18px, #000 calc(100% - 30px), transparent); }
+.pfoods::-webkit-scrollbar { display: none; }
+.pfood { flex: none; white-space: nowrap; }
+@media (min-width: 920px) { .pfoods { flex-wrap: wrap; margin: 0; padding: 0; -webkit-mask-image: none; mask-image: none; } }
+.ex-ctl { margin-top: 0; display: flex; justify-content: flex-end; }
+.linkbtn { text-decoration: none; padding: 6px 0; font-size: 12.5px; }
+.exhint { display: flex; gap: 8px; align-items: flex-start; margin: 4px 0 2px; color: var(--mute); font-size: 13px; }
+.exhint svg { width: 14px; height: 14px; flex: none; margin-top: 3px; color: var(--ice); }
+.skill .btn[data-act="up"] { border-color: var(--ice-deep); color: var(--ice); }
+.is-done > .shead > span { color: var(--ice); }
+.is-done.is-collapsed > .shead h2 .collbtn { color: var(--ink-2); }
+
+.ibtn { display: inline-grid; place-items: center; width: 20px; height: 20px; margin-left: 10px; padding: 0; border-radius: 50%; border: 1px solid var(--line-2);
+  background: transparent; color: var(--mute); font: italic 600 12px/1 Georgia, "Times New Roman", serif; letter-spacing: 0; vertical-align: 0.18em; cursor: pointer; flex: none; }
+.ibtn[aria-expanded="true"] { border-color: var(--ice-deep); color: var(--ice); }
+.infop:not([hidden]) { animation: infoIn 200ms ease-out; }
+@keyframes infoIn { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: none; } }
+
+.grps { border-top: 1px solid var(--line); }
+.grp { border-bottom: 1px solid var(--line); }
+.grp > summary { list-style: none; display: flex; align-items: center; justify-content: space-between; gap: 14px; padding: 18px 2px; cursor: pointer; }
+.grp > summary::-webkit-details-marker { display: none; }
+.grp > summary .gt { display: grid; gap: 3px; font-family: var(--display); font-weight: 700; font-size: 24px; line-height: 1.05; letter-spacing: 0.01em; }
+.grp > summary .gt small { font-family: var(--text); font-size: 13px; font-weight: 500; color: var(--mute); letter-spacing: 0; }
+.grp > summary::after { content: ""; width: 9px; height: 9px; margin-right: 6px; border-right: 2px solid var(--mute); border-bottom: 2px solid var(--mute); transform: rotate(-45deg); transition: transform 200ms, border-color 200ms; flex: none; }
+.grp[open] > summary::after { transform: rotate(45deg); border-color: var(--ice); }
+.grp > summary:active .gt { color: var(--ice); }
+.gbody { display: grid; gap: 26px; padding: 2px 0 26px; }
+.gbody.settings { gap: 18px; }
+.grp[open] > .gbody { animation: viewIn 220ms cubic-bezier(.2, .8, .2, 1); }
+.block.sub h3 { margin: 0 0 8px; font-size: 17px; font-weight: 600; }
+.mini { margin-top: 6px; }
+.mini > summary { cursor: pointer; color: var(--ink-2); font-size: 14px; font-weight: 600; padding: 6px 0; }
+
+/* ===== v7.1: kleine Animationen ===== */
+.pbar i { overflow: hidden; }
+.pbar i::after { content: ""; position: absolute; inset: 0; background: linear-gradient(90deg, transparent, rgba(255, 255, 255, .55), transparent); transform: translateX(-100%); opacity: 0; }
+.pbar.shine i::after { animation: barShine 900ms ease-out 260ms; }
+@keyframes barShine { 0% { transform: translateX(-100%); opacity: 1; } 100% { transform: translateX(100%); opacity: 0; } }
+main[data-dir="r"] > section:not([hidden]) { animation: viewInR 260ms cubic-bezier(.2, .8, .2, 1); }
+main[data-dir="l"] > section:not([hidden]) { animation: viewInL 260ms cubic-bezier(.2, .8, .2, 1); }
+@keyframes viewInR { from { opacity: 0; transform: translateX(26px); } to { opacity: 1; transform: none; } }
+@keyframes viewInL { from { opacity: 0; transform: translateX(-26px); } to { opacity: 1; transform: none; } }
+.set .shard { position: absolute; left: 50%; top: 50%; width: 10px; height: 11px; margin: -5.5px -5px; z-index: 2; pointer-events: none;
+  clip-path: polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%); background: linear-gradient(160deg, var(--hi), var(--ice));
+  animation: shardFly 700ms cubic-bezier(.15, .7, .3, 1) forwards; }
+@keyframes shardFly { 0% { transform: translate(0, 0) rotate(0) scale(1); opacity: 1; } 60% { opacity: .9; } 100% { transform: translate(var(--dx), var(--dy)) rotate(var(--rot)) scale(.35); opacity: 0; } }
+.set.just .hex { animation: hexPop 380ms cubic-bezier(.2, 1.5, .4, 1); }
+@keyframes hexPop { 0% { transform: scale(.82); } 100% { transform: scale(1); } }
+@media (prefers-reduced-motion: reduce) { .pbar.shine i::after, .set .shard, .set.just .hex { animation: none !important; } }
 </style>
 </head>
 <body>
@@ -837,6 +895,7 @@ main > section:not([hidden]) { animation: viewIn 220ms cubic-bezier(.2, .8, .2, 
   </defs>
 </svg>
 
+<canvas class="ambient" id="ambient" aria-hidden="true"></canvas>
 <div class="app">
   <header class="top">
     <div class="brand"><svg aria-hidden="true"><use href="#i-flake"/></svg>Winter Arc</div>
@@ -851,7 +910,6 @@ main > section:not([hidden]) { animation: viewIn 220ms cubic-bezier(.2, .8, .2, 
         <div class="today-left">
           <div class="banner" id="sundayBanner" hidden><span><b>Dein Wochenrückblick ist bereit.</b> Schau dir deine Woche an.</span><button class="btn small primary" id="sundayBtn">Ansehen</button></div>
           <div class="hero" id="hero">
-            <canvas class="snow" id="snow" aria-hidden="true"></canvas>
             <h1 class="dayname" id="dayname"></h1>
             <p class="datestr" id="datestr"></p>
             <p class="sessname" id="sessname"></p>
@@ -897,7 +955,7 @@ main > section:not([hidden]) { animation: viewIn 220ms cubic-bezier(.2, .8, .2, 
               <button class="btn small" id="stUndo">Rückgängig</button>
             </div>
             <p class="plog" id="stLog"></p>
-            <p class="plog" style="opacity:.8">Eine Gassi-Runde zählt als Schätzung mit 100 Schritten pro Minute. Deinen echten Garmin-Wert kannst du als eigene Menge dazugeben.</p>
+            <p class="plog explain">Eine Gassi-Runde zählt als Schätzung mit 100 Schritten pro Minute. Deinen echten Garmin-Wert kannst du als eigene Menge dazugeben.</p>
           </div>
 
           <div class="drink" id="drinkCard" data-coll="drink">
@@ -956,12 +1014,13 @@ main > section:not([hidden]) { animation: viewIn 220ms cubic-bezier(.2, .8, .2, 
             <p>Füge deinen Trainingsplan als Text ein oder starte direkt mit dem Winter-Plan.</p>
             <div class="row">
               <button class="btn primary" id="loadTemplate1">Winter-Plan laden</button>
-              <button class="btn" data-goto="plan">Plan einfügen</button>
+              <button class="btn" data-goto="plan" data-open="grpPlan">Plan einfügen</button>
             </div>
           </div>
           <div id="today-list-wrap" hidden>
             <div class="shead"><h2>Übungen</h2><span id="listcount"></span></div>
             <div class="row exbar"><button class="btn small" id="exAdd">+ Übung hinzufügen</button><button class="btn small" id="exSkipRest">Rest überspringen</button></div>
+            <p class="exhint" id="exHint" hidden><svg aria-hidden="true"><use href="#i-up"/></svg><span>Trag nach den Sätzen ein, was du geschafft hast, zum Beispiel 8/8/7 mit +10 kg. Dann bekommst du bei jeder Übung Steigerungsvorschläge.</span></p>
             <ol class="exlist" id="exlist"></ol>
             <div class="sessnote">
               <label for="sessNote">Notiz zur Einheit</label>
@@ -1266,9 +1325,13 @@ main > section:not([hidden]) { animation: viewIn 220ms cubic-bezier(.2, .8, .2, 
           <ul class="plansum" id="plansum"></ul>
         </div>
 
-        <div class="block">
-          <h2 class="bh">Neuen Plan einfügen</h2>
-          <p class="lead">Kopier den Plan von deiner KI hier hinein oder lade eine Textdatei. Tage, Uhrzeiten und Übungen werden automatisch erkannt.</p>
+        <div class="grps">
+          <details class="grp" id="grpPlan">
+            <summary><span class="gt">Plan ändern<small>Neuen Plan einfügen, Prompt für deine KI</small></span></summary>
+            <div class="gbody">
+              <div class="block sub">
+                <h3>Neuen Plan einfügen</h3>
+                <p class="lead">Kopier den Plan von deiner KI hier hinein oder lade eine Textdatei. Tage, Uhrzeiten und Übungen werden automatisch erkannt.</p>
           <label class="sr" for="importText">Plan als Text</label>
           <textarea class="import" id="importText" spellcheck="false" placeholder="Montag — Winter A — 19:00&#10;- Klimmzüge: 4 × 6–8&#10;- Dips: 3 × 8–12"></textarea>
           <div class="row" style="margin-top:12px">
@@ -1278,42 +1341,33 @@ main > section:not([hidden]) { animation: viewIn 220ms cubic-bezier(.2, .8, .2, 
             <button class="btn" id="aiConvert" hidden>Mit Claude umwandeln</button>
           </div>
           <div class="preview" id="preview" hidden></div>
-        </div>
-
-        <div class="block">
-          <h2 class="bh">Prompt für deine KI</h2>
-          <p class="lead">Gib diesen Text einer KI zusammen mit deinem Wunsch. Ihre Antwort kannst du dann direkt oben einfügen.</p>
+              </div>
+              <div class="block sub">
+                <h3>Prompt für deine KI</h3>
+                <p class="lead">Gib diesen Text einer KI zusammen mit deinem Wunsch. Ihre Antwort kannst du dann direkt oben einfügen.</p>
           <pre class="prompt" id="aiPrompt"></pre>
           <button class="btn" id="copyPrompt">Prompt kopieren</button>
-        </div>
-
-        <div class="block">
-          <h2 class="bh">Erinnerungen</h2>
-          <p class="lead">Trag jede Einheit einmal als wöchentlichen Termin in deinen Google Kalender ein. Dein Handy erinnert dich dann zur passenden Uhrzeit, auch wenn die App geschlossen ist.</p>
-          <ul class="callist" id="callist"></ul>
-        </div>
-
-        <div class="block">
-          <h2 class="bh">Trink-Erinnerungen</h2>
-          <p class="lead">Eine installierte Web-App kann dich nicht zuverlässig erinnern, wenn sie geschlossen ist. Am besten stellst du dir diese Zeiten als wiederkehrende Wecker in der Uhr-App deines Handys. Die Zeiten sind so verteilt, dass du bis zum Ende deines Trinkfensters dein Ziel schaffst.</p>
-          <ul class="callist" id="drinkTimes"></ul>
-        </div>
-
-        <div class="block">
-          <h2 class="bh">Einstellungen</h2>
-          <div class="settings">
-            <div class="field"><label for="setHaptic">Haptik (Vibration)</label><select id="setHaptic"><option value="aus">Aus</option><option value="leicht">Leicht</option><option value="normal">Normal</option><option value="kraeftig">Kräftig</option></select><div class="hlab" id="hlab" role="group" aria-label="Haptik ausprobieren"></div><small class="fhint">Tipp auf ein Muster zum Ausprobieren. Spürst du nichts, prüf in den Handy-Einstellungen unter Töne und Vibration, dass die Vibrationsstärke nicht auf null steht.</small></div>
-            <div class="toggle"><span>Töne<small>Piepen im EMOM und bei der Mobility, Klang bei Pausenende und Flamme.</small></span><button class="switch" role="switch" aria-checked="true" id="swSound" aria-label="Töne"></button></div>
-            <div class="field"><span class="flabel" id="accentLabel">Farbe der App</span><div class="accents" id="accents" role="group" aria-labelledby="accentLabel"></div>
+              </div>
+            </div>
+          </details>
+          <details class="grp" id="grpLook">
+            <summary><span class="gt">Aussehen und Gefühl<small>Farbe, Töne, Vibration</small></span></summary>
+            <div class="gbody settings">
+              <div class="field"><span class="flabel" id="accentLabel">Farbe der App</span><div class="accents" id="accents" role="group" aria-labelledby="accentLabel"></div>
               <div class="acc-custom" id="accCustom" hidden>
                 <div class="acc-row"><label for="accA">Hauptfarbe<small>Ring, Haken, Knöpfe, Linien</small></label><input type="color" id="accA" value="#FF2E3E"><code id="accAHex">#FF2E3E</code></div>
                 <div class="acc-row"><label for="accB">Zweitfarbe<small>Große Zahlen, Flammenspitze, Rekord</small></label><input type="color" id="accB" value="#FFFFFF"><code id="accBHex">#FFFFFF</code></div>
                 <div class="row"><button class="btn small" id="accSwap">Tauschen</button><button class="btn small" id="accRand">Zufall</button></div>
               </div>
               <small class="fhint">Der Hintergrund bleibt echtes Schwarz, ideal für dein OLED-Display. Unter „Eigene" wählst du zwei Farben, daraus berechnet die App alle Töne selbst.</small></div>
-            <div class="toggle"><span>Laufplan automatisch steigern<small>Passt die Kilometer jede Woche an den 90-Tage-Plan an, ab Woche 5 mit lockerem Sonntagslauf.</small></span><button class="switch" role="switch" aria-checked="true" id="swRun" aria-label="Laufplan automatisch steigern"></button></div>
-            <div class="toggle"><span>Deload in Woche 4, 8 und 12<small>Halbiert in diesen Wochen die Sätze und verkürzt die Läufe.</small></span><button class="switch" role="switch" aria-checked="true" id="swDeload" aria-label="Deload-Wochen"></button></div>
-            <div class="two">
+              <div class="toggle"><span>Töne<small>Piepen im EMOM und bei der Mobility, Klang bei Pausenende und Flamme.</small></span><button class="switch" role="switch" aria-checked="true" id="swSound" aria-label="Töne"></button></div>
+              <div class="field"><label for="setHaptic">Haptik (Vibration)</label><select id="setHaptic"><option value="aus">Aus</option><option value="leicht">Leicht</option><option value="normal">Normal</option><option value="kraeftig">Kräftig</option></select><details class="mini"><summary>Muster ausprobieren</summary><div class="hlab" id="hlab" role="group" aria-label="Haptik ausprobieren"></div><small class="fhint">Tipp auf ein Muster zum Ausprobieren. Spürst du nichts, prüf in den Handy-Einstellungen unter Töne und Vibration, dass die Vibrationsstärke nicht auf null steht.</small></details></div>
+            </div>
+          </details>
+          <details class="grp" id="grpTrain">
+            <summary><span class="gt">Training<small>Pausen, Zeitraum, Laufplan, Deload</small></span></summary>
+            <div class="gbody settings">
+              <div class="two">
               <div class="field">
                 <label for="setRest">Pause zwischen Sätzen</label>
                 <select id="setRest">
@@ -1336,6 +1390,15 @@ main > section:not([hidden]) { animation: viewIn 220ms cubic-bezier(.2, .8, .2, 
                 <label for="setLen">Dauer in Tagen</label>
                 <input type="number" inputmode="numeric" min="7" max="730" id="setLen">
               </div>
+              </div>
+              <div class="toggle"><span>Laufplan automatisch steigern<small>Passt die Kilometer jede Woche an den 90-Tage-Plan an, ab Woche 5 mit lockerem Sonntagslauf.</small></span><button class="switch" role="switch" aria-checked="true" id="swRun" aria-label="Laufplan automatisch steigern"></button></div>
+              <div class="toggle"><span>Deload in Woche 4, 8 und 12<small>Halbiert in diesen Wochen die Sätze und verkürzt die Läufe.</small></span><button class="switch" role="switch" aria-checked="true" id="swDeload" aria-label="Deload-Wochen"></button></div>
+            </div>
+          </details>
+          <details class="grp" id="grpGoals">
+            <summary><span class="gt">Ziele<small>Gewicht, Protein, Trinken, Gewohnheiten</small></span></summary>
+            <div class="gbody settings">
+              <div class="two">
               <div class="field">
                 <label for="setBw">Körpergewicht in kg</label>
                 <input type="number" inputmode="decimal" min="30" max="200" step="0.5" id="setBw">
@@ -1360,30 +1423,52 @@ main > section:not([hidden]) { animation: viewIn 220ms cubic-bezier(.2, .8, .2, 
                 <label for="setDrinkTo">Trinken bis (Uhr)</label>
                 <input type="number" inputmode="numeric" min="1" max="24" id="setDrinkTo">
               </div>
-            </div>
-            <div class="field">
+              </div>
+              <div class="field">
               <label for="setHabits">Tägliche Gewohnheiten</label>
               <input type="text" id="setHabits">
               <small>Mit Komma trennen. Eine Gewohnheit mit „Protein“ im Namen hakt sich automatisch ab, wenn du dein Proteinziel erreichst. Dasselbe gilt für „Trinken“, „Wasser“ oder „Liter“ beim Trinkziel.</small>
             </div>
-            <div class="row">
-              <button class="btn" id="exportPlan" hidden>Plan als Textdatei sichern</button>
-              <button class="btn" id="loadTemplate2">Winter-Plan wiederherstellen</button>
             </div>
-            <div class="sync" id="sync"><i></i><span></span></div>
-          </div>
-        </div>
-
-        <div class="block">
-          <h2 class="bh">Backup</h2>
-          <p class="lead">Deine Daten liegen nur auf diesem Handy. Speicher regelmäßig ein Backup, zum Beispiel in Google Drive. Beim Handywechsel lädst du es hier wieder hoch.</p>
+          </details>
+          <details class="grp" id="grpRemind">
+            <summary><span class="gt">Erinnerungen<small>Kalender und Trinkzeiten</small></span></summary>
+            <div class="gbody">
+              <div class="block sub">
+                <h3>Trainings im Kalender</h3>
+                <p class="lead">Trag jede Einheit einmal als wöchentlichen Termin in deinen Google Kalender ein. Dein Handy erinnert dich dann zur passenden Uhrzeit, auch wenn die App geschlossen ist.</p>
+          <ul class="callist" id="callist"></ul>
+              </div>
+              <div class="block sub">
+                <h3>Trinkzeiten</h3>
+                <p class="lead">Eine installierte Web-App kann dich nicht zuverlässig erinnern, wenn sie geschlossen ist. Am besten stellst du dir diese Zeiten als wiederkehrende Wecker in der Uhr-App deines Handys. Die Zeiten sind so verteilt, dass du bis zum Ende deines Trinkfensters dein Ziel schaffst.</p>
+          <ul class="callist" id="drinkTimes"></ul>
+              </div>
+            </div>
+          </details>
+          <details class="grp" id="grpData">
+            <summary><span class="gt">Daten und Backup<small>Sichern, laden, Plan zurücksetzen</small></span></summary>
+            <div class="gbody">
+              <div class="block sub">
+                <h3>Backup</h3>
+                <p class="lead">Deine Daten liegen nur auf diesem Handy. Speicher regelmäßig ein Backup, zum Beispiel in Google Drive. Beim Handywechsel lädst du es hier wieder hoch.</p>
           <div class="row">
             <button class="btn primary" id="backupSave">Backup speichern</button>
             <input class="sr" type="file" id="backupFile" accept=".json,application/json">
             <label class="btn" for="backupFile"><svg aria-hidden="true"><use href="#i-file"/></svg>Backup laden</label>
           </div>
           <p class="lead" id="backupInfo" style="margin-top:12px"></p>
-          </div>
+              </div>
+              <div class="block sub">
+                <h3>Plan</h3>
+                <div class="row">
+                  <button class="btn" id="exportPlan" hidden>Plan als Textdatei sichern</button>
+              <button class="btn" id="loadTemplate2">Winter-Plan wiederherstellen</button>
+                </div>
+                <div class="sync" id="sync"><i></i><span></span></div>
+              </div>
+            </div>
+          </details>
         </div>
       </div>
     </section>
@@ -1754,6 +1839,51 @@ main > section:not([hidden]) { animation: viewIn 220ms cubic-bezier(.2, .8, .2, 
   const esc = (s) => String(s == null ? "" : s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
   const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
   const reduced = () => !!(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches);
+  // v7.1: Zahlen zählen hoch, Balken glänzen beim Füllen. Beim ersten Anzeigen (App-Start) passiert nichts.
+  const animSeen = new WeakMap();
+  function countTo(el, v, fmt) {
+    if (!el) return;
+    const prev = animSeen.has(el) ? animSeen.get(el) : null;
+    animSeen.set(el, v);
+    if (el._cntRaf) { cancelAnimationFrame(el._cntRaf); el._cntRaf = 0; }
+    if (prev === null || prev === v || reduced() || document.hidden) { el.textContent = fmt(v); return; }
+    const t0 = performance.now(), dur = 520, from = prev;
+    const step = (t) => {
+      const k = Math.min(1, Math.max(0, (t - t0) / dur));
+      const e = 1 - Math.pow(1 - k, 3);
+      el.textContent = fmt(k < 1 ? from + (v - from) * e : v);
+      el._cntRaf = k < 1 ? requestAnimationFrame(step) : 0;
+    };
+    el._cntRaf = requestAnimationFrame(step);
+  }
+  function barTo(bar, frac) {
+    if (!bar) return;
+    const pct = Math.max(0, Math.min(1, frac)) * 100;
+    const i = bar.querySelector("i");
+    if (i) i.style.width = pct.toFixed(1) + "%";
+    const prev = animSeen.has(bar) ? animSeen.get(bar) : null;
+    animSeen.set(bar, pct);
+    if (prev !== null && pct > prev + 0.05 && !reduced()) {
+      bar.classList.remove("shine"); void bar.offsetWidth; bar.classList.add("shine");
+      clearTimeout(bar._sh); bar._sh = setTimeout(() => bar.classList.remove("shine"), 1300);
+    }
+  }
+  function shards(btn) {
+    if (!btn || reduced()) return;
+    btn.classList.remove("just"); void btn.offsetWidth; btn.classList.add("just");
+    const n = 7;
+    for (let k = 0; k < n; k++) {
+      const a = (k / n) * Math.PI * 2 + Math.random() * 0.6, d = 26 + Math.random() * 16;
+      const sp = document.createElement("span");
+      sp.className = "shard";
+      sp.style.setProperty("--dx", (Math.cos(a) * d).toFixed(1) + "px");
+      sp.style.setProperty("--dy", (Math.sin(a) * d).toFixed(1) + "px");
+      sp.style.setProperty("--rot", Math.round(Math.random() * 240 - 120) + "deg");
+      btn.appendChild(sp);
+      setTimeout(() => sp.remove(), 760);
+    }
+    setTimeout(() => btn.classList.remove("just"), 420);
+  }
   const fmtN = (n) => { const r = Math.round(n * 10) / 10; return String(r).replace(".", ","); };
   const shortDate = (d) => DOW_SHORT[dowOf(d) - 1] + ", " + d.getDate() + "." + (d.getMonth() + 1) + ".";
   const longDate = (d) => new Intl.DateTimeFormat("de-DE", { day: "numeric", month: "long" }).format(d);
@@ -2269,7 +2399,7 @@ main > section:not([hidden]) { animation: viewIn 220ms cubic-bezier(.2, .8, .2, 
     if (!rng) return null;
     const unit = rng.secs ? " s" : " Wdh.";
     const items = historyFor(e.name, hist).filter((i) => i.date < dk);
-    if (!items.length) return { up: false, text: "Trag nach den Sätzen deine Werte ein, dann bekommst du hier Steigerungsvorschläge." };
+    if (!items.length) return { up: false, nodata: true, text: "Trag nach den Sätzen deine Werte ein, dann bekommst du hier Steigerungsvorschläge." };
     const n = e.baseSets || e.sets || 1;
     const topped = (it) => { const rr = it.perf.reps.slice(0, n); return rr.length >= n && rr.every((x) => x >= rng.high); };
     const last = items[items.length - 1];
@@ -2488,6 +2618,7 @@ main > section:not([hidden]) { animation: viewIn 220ms cubic-bezier(.2, .8, .2, 
   function patchExList(dk, session) {
     const ol = $("exlist");
     const hist = buildHistory();
+    let noData = 0;
     session.exercises.forEach((e) => {
       const li = ol.querySelector('[data-id="' + CSS.escape(e.id) + '"]');
       if (!li || e.skipped) return;
@@ -2498,7 +2629,8 @@ main > section:not([hidden]) { animation: viewIn 220ms cubic-bezier(.2, .8, .2, 
       li.classList.toggle("is-done", lg.done.every(Boolean));
       const tip = tipFor(e, dk, session.deload, hist);
       const tipEl = li.querySelector(".ex-tip");
-      if (tip) { tipEl.hidden = false; tipEl.classList.toggle("up", !!tip.up); tipEl.querySelector("span").textContent = tip.text; }
+      if (tip && tip.nodata && !isRun(e)) noData++;
+      if (tip && !tip.nodata) { tipEl.hidden = false; tipEl.classList.toggle("up", !!tip.up); tipEl.querySelector("span").textContent = tip.text; }
       else tipEl.hidden = true;
       if (isRun(e)) { patchRunPanel(li, dk, e); return; }
       const inp = li.querySelector(".exlog input");
@@ -2529,6 +2661,7 @@ main > section:not([hidden]) { animation: viewIn 220ms cubic-bezier(.2, .8, .2, 
       li.classList.toggle("is-next", isNext);
       if (isNext) nextFound = true;
     });
+    const xh = $("exHint"); if (xh) xh.hidden = !noData;
   }
 
   function patchRunPanel(li, dk, e) {
@@ -2571,12 +2704,13 @@ main > section:not([hidden]) { animation: viewIn 220ms cubic-bezier(.2, .8, .2, 
   function renderProtein(dk) {
     const target = +S().proteinTarget || 120;
     const total = proteinTotal(dk);
-    $("ptotal").textContent = Math.round(total);
+    countTo($("ptotal"), Math.round(total), (x) => String(Math.round(x)));
     $("punit").textContent = "g von " + target + " g";
     const pct = Math.min(1, total / target);
-    $("pbar").querySelector("i").style.width = (pct * 100).toFixed(1) + "%";
+    barTo($("pbar"), pct);
     $("pbar").classList.toggle("full", total >= target);
     $("ptarget").innerHTML = total >= target ? "<b>Ziel erreicht</b>" : "noch " + Math.max(0, Math.round(target - total)) + " g";
+    doneColl("protein", total >= target);
     const pf = $("pfoods");
     if (!pf.dataset.built) {
       pf.innerHTML = FOODS.map((f, i) => '<button class="pfood" data-f="' + i + '">' + esc(f.l) + "<b>+" + f.g + " g</b></button>").join("");
@@ -2654,6 +2788,7 @@ main > section:not([hidden]) { animation: viewIn 220ms cubic-bezier(.2, .8, .2, 
     renderToday();
     if (x.done[i]) {
       buzz(12);
+      shards(li.querySelector('.set[data-i="' + i + '"]') || btn);
       const pr = sessionProgress(dk, session);
       if (pr.done === pr.total) { stopTimer(); celebrate(dk); }
       else if (n > 1) startTimer(S().rest || 120);
@@ -3032,6 +3167,7 @@ main > section:not([hidden]) { animation: viewIn 220ms cubic-bezier(.2, .8, .2, 
       g.querySelectorAll(".ci-btn").forEach((b) => b.setAttribute("aria-pressed", +b.dataset.n === v ? "true" : "false"));
     });
     $("cistate").textContent = c.energy && c.soreness ? "erledigt" : c.energy || c.soreness ? "fast" : "offen";
+    doneColl("checkin", !!(c.energy && c.soreness));
     const hint = ciHintFor(dk);
     $("cihint").hidden = !hint;
     $("cihint").textContent = hint;
@@ -3223,11 +3359,12 @@ main > section:not([hidden]) { animation: viewIn 220ms cubic-bezier(.2, .8, .2, 
     const c = drinkCfg();
     const total = drinkTotal(dk);
     const list = drinkList(dk);
-    $("dtotal").textContent = fmtL(total).replace(" l", "");
+    countTo($("dtotal"), total, (x) => fmtL(x).replace(" l", ""));
     $("dunit").textContent = "l von " + fmtL(c.target);
-    $("dbar").querySelector("i").style.width = (Math.min(1, total / c.target) * 100).toFixed(1) + "%";
+    barTo($("dbar"), total / c.target);
     $("dbar").classList.toggle("full", total >= c.target);
     $("dstate").innerHTML = total >= c.target ? "<b>Ziel erreicht</b>" : "noch " + fmtL(c.target - total);
+    doneColl("drink", total >= c.target);
     const n = Math.max(1, Math.min(14, Math.round(c.target / c.bottle)));
     const full = Math.floor(total / c.bottle + 0.02);
     $("dhex").innerHTML = Array.from({ length: n }, (_, i) => '<i class="' + (i < full ? "on" : "") + '"></i>').join("");
@@ -3332,6 +3469,7 @@ main > section:not([hidden]) { animation: viewIn 220ms cubic-bezier(.2, .8, .2, 
       $("bcCam").textContent = "Fotos aufnehmen (" + q.length + ")";
       const open = (2 - daily) + (wDue ? 1 : 0) + (due ? 1 : 0);
       $("bcstate").textContent = open ? open + " offen" : "alles erledigt";
+      doneColl("body", !open);
     } else {
       $("bcPhotos").textContent = photosState === "loading" ? "lädt" : "nicht verfügbar";
       $("bcWeekly").textContent = "–";
@@ -4206,13 +4344,69 @@ main > section:not([hidden]) { animation: viewIn 220ms cubic-bezier(.2, .8, .2, 
       const btn = h2.querySelector("button");
       const apply = (collapsed) => { card.classList.toggle("is-collapsed", collapsed); btn.setAttribute("aria-expanded", collapsed ? "false" : "true"); };
       apply(!!(state.meta.collapsed && state.meta.collapsed[key]));
-      btn.addEventListener("click", () => {
+      btn.addEventListener("click", (ev) => {
+        ev.stopPropagation();
         const collapsed = !card.classList.contains("is-collapsed");
         apply(collapsed);
         state.meta.collapsed = state.meta.collapsed || {};
-        state.meta.collapsed[key] = collapsed;
+        if (card.classList.contains("is-done")) {
+          state.meta.openDone = state.meta.openDone || {};
+          state.meta.openDone[key] = collapsed ? null : todayKey();
+          if (!collapsed) state.meta.collapsed[key] = false;
+        } else state.meta.collapsed[key] = collapsed;
         saveLocal();
       });
+    });
+  }
+
+  // Erledigte Karten klappen beim Öffnen der App zu. Wer gerade fertig wird, behält die Karte offen.
+  const doneSeen = {}, justDone = {};
+  function doneColl(key, done) {
+    const card = document.querySelector('[data-coll="' + key + '"]');
+    if (!card) return;
+    const btn = card.querySelector(".collbtn");
+    const m = state.meta || {};
+    const prev = doneSeen[key];
+    doneSeen[key] = !!done;
+    if (done && prev === false) justDone[key] = true;
+    if (!done) justDone[key] = false;
+    const manual = !!(m.collapsed && m.collapsed[key]);
+    const openToday = !!(m.openDone && m.openDone[key] === todayKey());
+    const coll = done ? !(openToday || justDone[key]) : manual;
+    card.classList.toggle("is-done", !!done);
+    card.classList.toggle("is-collapsed", coll);
+    if (btn) btn.setAttribute("aria-expanded", coll ? "false" : "true");
+  }
+
+  // Erklärtexte hinter ein kleines i
+  function infoHead(p) {
+    const box = p.closest(".field, .block, .tcard, [data-coll]");
+    if (!box) return null;
+    if (box.classList.contains("field")) return box.querySelector(":scope > label, :scope > .flabel");
+    return box.querySelector(":scope > h2.bh, :scope > h3, :scope > .shead h2");
+  }
+  function initInfos() {
+    document.querySelectorAll("p.lead:not([id]), p.tlead:not([id]), p.ci-scale:not([id]), small.fhint, p.explain, .field > small:not([id])").forEach((p) => {
+      if (p.dataset.info || p.closest("#measForm, .acc-custom, .preview, details.mini, .revfield")) return;
+      const head = infoHead(p);
+      if (!head) return;
+      p.dataset.info = "1";
+      p.classList.add("infop");
+      p.hidden = true;
+      const b = document.createElement("button");
+      b.type = "button";
+      b.className = "ibtn";
+      b.textContent = "i";
+      b.setAttribute("aria-expanded", "false");
+      b.setAttribute("aria-label", "Erklärung anzeigen");
+      b.addEventListener("click", (ev) => {
+        ev.preventDefault(); ev.stopPropagation();
+        const show = p.hidden;
+        p.hidden = !show;
+        b.setAttribute("aria-expanded", show ? "true" : "false");
+        hap("tap");
+      });
+      head.appendChild(b);
     });
   }
 
@@ -4408,7 +4602,7 @@ main > section:not([hidden]) { animation: viewIn 220ms cubic-bezier(.2, .8, .2, 
       const goal = mastered ? "Gemeistert. Halte die Form mit regelmäßigem Training." : "<b>" + esc(sk.levels[lv][0]) + "</b>: " + esc(sk.levels[lv][1]);
       return '<div class="skill" data-k="' + sk.key + '"><div class="skill-top"><h3>' + esc(sk.name) + "</h3><span>Stufe " + Math.min(lv + 1, sk.levels.length) + " von " + sk.levels.length + "</span></div>" +
         '<div class="pips" aria-hidden="true">' + pips + '</div><p class="skill-goal">' + (mastered ? goal : "Ziel: " + goal) + "</p>" +
-        '<div class="row">' + (mastered ? "" : '<button class="btn small primary" data-act="up">Stufe geschafft</button>') +
+        '<div class="row">' + (mastered ? "" : '<button class="btn small" data-act="up">Stufe geschafft</button>') +
         (lv > 0 ? '<button class="btn small" data-act="down">Eine Stufe zurück</button>' : "") + "</div></div>";
     }).join("");
   }
@@ -4680,7 +4874,8 @@ main > section:not([hidden]) { animation: viewIn 220ms cubic-bezier(.2, .8, .2, 
     const blocksNote = state.plan && state.plan.blocks && state.plan.blocks.length ? " Ab " + state.plan.blocks.map((bl) => "Woche " + bl.from).join(" und ") + " wechselt der Plan automatisch auf den nächsten Block." : "";
     $("plansumintro").textContent = days.length
       ? days.length + (days.length === 1 ? " Trainingstag" : " Trainingstage") + " pro Woche. Laufkilometer und Deload-Wochen passt die App automatisch an." + blocksNote
-      : "Du hast noch keinen Plan. Füge unten deinen Plan ein oder stell den Winter-Plan wieder her.";
+      : "Du hast noch keinen Plan. Füge ihn unter „Plan ändern“ ein oder stell den Winter-Plan unter „Daten und Backup“ wieder her.";
+    if (!days.length && $("grpPlan")) $("grpPlan").open = true;
     $("plansum").innerHTML = days.map((d) => '<li><span class="d">' + DOW_NAMES[d.dow - 1] + '</span><span class="n">' + esc(d.name) + ", " + d.exercises.length + (d.exercises.length === 1 ? " Übung" : " Übungen") + '</span><span class="t">' + esc(d.time || "") + "</span></li>").join("");
     $("callist").innerHTML = days.length ? days.map((d) =>
       '<li><span class="l"><b>' + DOW_NAMES[d.dow - 1] + (d.time ? ", " + d.time + " Uhr" : "") + "</b><span>" + esc(d.name) + "</span></span>" +
@@ -4887,6 +5082,9 @@ main > section:not([hidden]) { animation: viewIn 220ms cubic-bezier(.2, .8, .2, 
   let currentTab = "today";
   function showTab(name) {
     if (TABS.indexOf(name) < 0) name = "today";
+    const dir = TABS.indexOf(name) - TABS.indexOf(currentTab);
+    const mainEl = document.querySelector("main");
+    if (mainEl) mainEl.dataset.dir = dir > 0 ? "r" : dir < 0 ? "l" : "";
     currentTab = name;
     TABS.forEach((t) => { $("view-" + t).hidden = t !== name; });
     document.querySelectorAll(".tab").forEach((b) => { if (b.dataset.tab === name) b.setAttribute("aria-current", "page"); else b.removeAttribute("aria-current"); });
@@ -4901,50 +5099,259 @@ main > section:not([hidden]) { animation: viewIn 220ms cubic-bezier(.2, .8, .2, 
     snow.toggle(name === "today");
   }
   document.querySelector(".tabs").addEventListener("click", (ev) => { const b = ev.target.closest(".tab"); if (b) { hap("tab"); showTab(b.dataset.tab); } });
-  document.addEventListener("click", (ev) => { const g = ev.target.closest("[data-goto]"); if (g) showTab(g.dataset.goto); });
+  document.addEventListener("click", (ev) => {
+    const g = ev.target.closest("[data-goto]");
+    if (!g) return;
+    showTab(g.dataset.goto);
+    const d = g.dataset.open && $(g.dataset.open);
+    if (d) { d.open = true; setTimeout(() => d.scrollIntoView({ block: "start", behavior: "smooth" }), 80); }
+  });
 
-  // ================= Snow =================
+  // ================= Hintergrund (v7): eine Stimmung pro Farbe, lebt mit deinem Tag =================
+  // Name "snow" bleibt, damit showTab und die Farbwahl unverändert weiterrufen können.
   const snow = (() => {
-    const cv = $("snow"), ctx = cv.getContext && cv.getContext("2d");
-    let flakes = [], raf = 0, running = false, visible = true, wanted = true, w = 0, h = 0, rgb = "201,248,255";
-    const recolor = () => { try { rgb = getComputedStyle(document.documentElement).getPropertyValue("--snow-rgb").trim() || "201,248,255"; } catch (e) { /* ignore */ } };
-    recolor();
-    function size() {
-      const r = cv.getBoundingClientRect();
-      const dpr = Math.min(window.devicePixelRatio || 1, 2);
-      w = r.width; h = r.height;
-      cv.width = Math.max(1, Math.round(w * dpr)); cv.height = Math.max(1, Math.round(h * dpr));
-      if (ctx) ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    const cv = $("ambient"), ctx = cv && cv.getContext && cv.getContext("2d");
+    const MODES = { eis: "snow", schnee: "snow", aurora: "aurora", violett: "nebula", glut: "embers", blut: "embers", gold: "dust", neon: "grid", toxic: "spores", nacht: "stars" };
+    const COUNT = { snow: 70, embers: 44, dust: 64, spores: 24, stars: 120, aurora: 70, nebula: 70, grid: 40 };
+    let P = [], B = [], raf = 0, running = false, w = 0, h = 0, last = 0, mode = "", onToday = true;
+    let acc = "142,235,248", wht = "225,232,236", life = 0.3, lifeT = 0.3, lifeAt = 0, shot = null, shotAt = 0;
+    const rnd = (x, y) => x + Math.random() * (y - x);
+    const wrap = (v, m) => ((v % m) + m) % m;
+    function hue(str) {
+      const c = str.split(",").map((x) => +x / 255);
+      const mx = Math.max(...c), mn = Math.min(...c), d = mx - mn;
+      if (d < 0.08) return -1;
+      let hh = mx === c[0] ? ((c[1] - c[2]) / d) % 6 : mx === c[1] ? (c[2] - c[0]) / d + 2 : (c[0] - c[1]) / d + 4;
+      hh *= 60;
+      return hh < 0 ? hh + 360 : hh;
+    }
+    function pickMode() {
+      let k = "eis";
+      try { k = S().accent || "eis"; } catch (e) { /* noch nicht geladen */ }
+      if (MODES[k]) return MODES[k];
+      const hh = hue(acc);
+      if (hh < 0) return "snow";
+      if (hh < 48 || hh >= 335) return "embers";
+      if (hh < 75) return "dust";
+      if (hh < 165) return "spores";
+      if (hh < 255) return "snow";
+      return "nebula";
+    }
+    const pType = () => (mode === "aurora" || mode === "nebula" || mode === "grid" ? "stars" : mode);
+    function mk(t) {
+      if (t === "snow") { const z = Math.random(); return { x: rnd(0, w), y: rnd(0, h), z, r: 0.5 + z * 1.9, v: 0.12 + z * 0.6, s: rnd(0, 6.3), a: 0.1 + z * 0.36 }; }
+      if (t === "embers") return { x: rnd(0, w), y: rnd(h * 0.2, h + 30), r: rnd(0.7, 2), v: rnd(0.25, 0.85), s: rnd(0, 6.3), a: rnd(0.3, 0.75) };
+      if (t === "dust") return { x: rnd(0, w), y: rnd(0, h), z: Math.random(), r: rnd(0.4, 1.3), vx: rnd(-0.07, 0.07), vy: rnd(-0.1, -0.02), s: rnd(0, 6.3), tw: rnd(0.008, 0.035), a: rnd(0.18, 0.5) };
+      if (t === "spores") return { x: rnd(0, w), y: rnd(0, h), r: rnd(1.3, 3.8), vx: rnd(-0.1, 0.1), vy: rnd(-0.16, 0.05), s: rnd(0, 6.3), a: rnd(0.12, 0.3) };
+      const top = mode === "grid" ? h * 0.6 : mode === "aurora" ? h * 0.75 : h;
+      return { x: rnd(0, w), y: rnd(0, top), z: Math.random(), r: rnd(0.35, 1.25), s: rnd(0, 6.3), tw: rnd(0.006, 0.03), a: rnd(0.15, 0.6) };
     }
     function seed() {
-      flakes = [];
-      const n = Math.round(Math.min(46, Math.max(18, w / 9)));
-      for (let i = 0; i < n; i++) flakes.push({ x: Math.random() * w, y: Math.random() * h, r: 0.5 + Math.random() * 1.5, v: 0.12 + Math.random() * 0.38, s: Math.random() * Math.PI * 2, a: 0.15 + Math.random() * 0.35 });
+      if (!w || !ctx) return;
+      const f = Math.min(1.4, Math.max(0.6, (w * h) / (412 * 915)));
+      const n = Math.round((COUNT[mode] || 40) * f);
+      P = [];
+      for (let i = 0; i < n; i++) P.push(mk(pType()));
+      B = [];
+      if (mode === "nebula") for (let i = 0; i < 4; i++) B.push({ x: rnd(0, w), y: rnd(0, h), R: rnd(0.35, 0.6) * Math.max(w, h), vx: rnd(-0.05, 0.05), vy: rnd(-0.04, 0.04), a: rnd(0.022, 0.042) });
+      shot = null; shotAt = 0;
     }
-    function frame() {
-      ctx.clearRect(0, 0, w, h);
-      for (const f of flakes) {
-        f.y += f.v; f.s += 0.008; f.x += Math.sin(f.s) * 0.18;
-        if (f.y > h + 4) { f.y = -4; f.x = Math.random() * w; }
-        ctx.beginPath(); ctx.fillStyle = "rgba(" + rgb + "," + f.a + ")"; ctx.arc(f.x, f.y, f.r, 0, Math.PI * 2); ctx.fill();
+    function size() {
+      const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
+      w = window.innerWidth; h = window.innerHeight;
+      cv.width = Math.max(1, Math.round(w * dpr)); cv.height = Math.max(1, Math.round(h * dpr));
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    }
+    function dot(x, y, r, rgb, a) { ctx.beginPath(); ctx.fillStyle = "rgba(" + rgb + "," + a.toFixed(3) + ")"; ctx.arc(x, y, r, 0, 6.2832); ctx.fill(); }
+    function glow(t, am) {
+      // Alles erledigt: unten glimmt es in deiner Farbe
+      const g = Math.max(0, (life - 0.85) / 0.15);
+      if (g <= 0) return;
+      const pulse = (0.07 + 0.03 * Math.sin(t / 1500)) * g * am;
+      const gr = ctx.createRadialGradient(w / 2, h * 1.08, 0, w / 2, h * 1.08, h * 0.7);
+      gr.addColorStop(0, "rgba(" + acc + "," + pulse.toFixed(3) + ")");
+      gr.addColorStop(1, "rgba(" + acc + ",0)");
+      ctx.fillStyle = gr; ctx.fillRect(0, 0, w, h);
+    }
+    function stars(t, k, am, sy, n) {
+      for (let i = 0; i < n; i++) {
+        const p = P[i];
+        p.s += p.tw * k;
+        const y = wrap(p.y - sy * (0.02 + p.z * 0.05), h);
+        dot(p.x, y, p.r, wht, p.a * am * (0.55 + 0.45 * Math.sin(p.s)));
       }
+    }
+    function shooting(t, k, am) {
+      if (!shot && t > shotAt) {
+        const fromLeft = Math.random() < 0.5;
+        shot = { x: fromLeft ? rnd(-20, w * 0.4) : rnd(w * 0.6, w + 20), y: rnd(0, h * 0.35), vx: (fromLeft ? 1 : -1) * rnd(7, 10), vy: rnd(2.5, 4), l: 1 };
+      }
+      if (!shot) return;
+      shot.x += shot.vx * k; shot.y += shot.vy * k; shot.l -= 0.022 * k;
+      if (shot.l <= 0 || shot.x < -60 || shot.x > w + 60 || shot.y > h) { shot = null; shotAt = t + rnd(6000, 15000) / (0.6 + 0.6 * life); return; }
+      const tx = shot.x - shot.vx * 9, ty = shot.y - shot.vy * 9;
+      const g = ctx.createLinearGradient(shot.x, shot.y, tx, ty);
+      g.addColorStop(0, "rgba(" + wht + "," + (0.85 * shot.l * am).toFixed(3) + ")");
+      g.addColorStop(1, "rgba(" + acc + ",0)");
+      ctx.strokeStyle = g; ctx.lineWidth = 1.4; ctx.lineCap = "round";
+      ctx.beginPath(); ctx.moveTo(shot.x, shot.y); ctx.lineTo(tx, ty); ctx.stroke();
+    }
+    function draw(t, dt) {
+      if (!ctx || !w) return;
+      const k = Math.min(4, dt / 16.7);
+      if (t - lifeAt > 2000) {
+        lifeAt = t;
+        try { lifeT = Math.max(0, Math.min(1, dayScore(today()))); } catch (e) { lifeT = 0.3; }
+      }
+      life += (lifeT - life) * Math.min(1, dt / 1500);
+      const am = (0.5 + 0.5 * life) * (onToday ? 1 : 0.6);
+      const sy = window.scrollY || 0;
+      const n = Math.min(P.length, Math.ceil(P.length * (0.35 + 0.65 * life)));
+      ctx.clearRect(0, 0, w, h);
+      glow(t, am);
+      if (mode === "snow") {
+        for (let i = 0; i < n; i++) {
+          const p = P[i];
+          p.y += p.v * k; p.s += 0.01 * k; p.x += Math.sin(p.s) * 0.2 * k;
+          if (p.y > h + 6) { p.y = -6; p.x = rnd(0, w); }
+          dot(p.x, wrap(p.y - sy * (0.04 + p.z * 0.22), h + 12) - 6, p.r, wht, p.a * am);
+        }
+      } else if (mode === "embers") {
+        for (let i = 0; i < n; i++) {
+          const p = P[i];
+          p.y -= p.v * k * (0.8 + 0.4 * life); p.s += 0.03 * k; p.x += Math.sin(p.s) * 0.35 * k;
+          const f = p.y / h;
+          if (f < 0.12) { p.y = h + rnd(0, 40); p.x = rnd(0, w); continue; }
+          const a = p.a * am * Math.min(1, (f - 0.12) * 1.6) * (0.72 + 0.28 * Math.sin(t / 90 + p.s * 7));
+          dot(p.x, p.y, p.r * 3.2, acc, a * 0.18);
+          dot(p.x, p.y, p.r, acc, a);
+        }
+      } else if (mode === "dust") {
+        for (let i = 0; i < n; i++) {
+          const p = P[i];
+          p.x += p.vx * k; p.y += p.vy * k; p.s += p.tw * k;
+          if (p.y < -4) { p.y = h + 4; p.x = rnd(0, w); }
+          if (p.x < -4) p.x = w + 4; else if (p.x > w + 4) p.x = -4;
+          const y = wrap(p.y - sy * (0.03 + p.z * 0.12), h);
+          const tw = Math.sin(p.s), a = p.a * am * (0.35 + 0.65 * Math.max(0, tw));
+          dot(p.x, y, p.r, acc, a);
+          if (tw > 0.97) {
+            const L = 3 + p.r * 3, ga = ((tw - 0.97) / 0.03) * 0.6 * am;
+            ctx.strokeStyle = "rgba(" + wht + "," + ga.toFixed(3) + ")"; ctx.lineWidth = 0.8;
+            ctx.beginPath(); ctx.moveTo(p.x - L, y); ctx.lineTo(p.x + L, y); ctx.moveTo(p.x, y - L); ctx.lineTo(p.x, y + L); ctx.stroke();
+          }
+        }
+      } else if (mode === "spores") {
+        for (let i = 0; i < n; i++) {
+          const p = P[i];
+          p.s += 0.012 * k; p.x += (p.vx + Math.sin(p.s) * 0.12) * k; p.y += (p.vy + Math.cos(p.s * 0.7) * 0.08) * k;
+          if (p.y < -10) p.y = h + 10; else if (p.y > h + 10) p.y = -10;
+          if (p.x < -10) p.x = w + 10; else if (p.x > w + 10) p.x = -10;
+          const y = wrap(p.y - sy * 0.08, h + 20) - 10;
+          const a = p.a * am * (0.6 + 0.4 * Math.sin(p.s * 2.3));
+          dot(p.x, y, p.r * 2.4, acc, a * 0.22);
+          dot(p.x, y, p.r, acc, a);
+        }
+      } else if (mode === "stars") {
+        stars(t, k, am, sy, n);
+        shooting(t, k, am);
+      } else if (mode === "aurora") {
+        stars(t, k, am, sy, Math.ceil(n * 0.6));
+        for (let bnd = 0; bnd < 3; bnd++) {
+          const base = h * (0.1 + bnd * 0.085), amp = h * 0.045, thick = h * (0.1 + bnd * 0.02), sp = 5200 + bnd * 1700;
+          const g = ctx.createLinearGradient(0, base - amp, 0, base + amp + thick);
+          const al = (0.05 + 0.08 * life) * am * (bnd === 1 ? 1 : 0.7);
+          g.addColorStop(0, "rgba(" + acc + ",0)");
+          g.addColorStop(0.45, "rgba(" + acc + "," + al.toFixed(3) + ")");
+          g.addColorStop(1, "rgba(" + acc + ",0)");
+          ctx.fillStyle = g;
+          ctx.beginPath();
+          const pts = [];
+          for (let i = 0; i <= 24; i++) {
+            const x = (w * i) / 24;
+            const y = base + Math.sin((x / w) * 3.1 + t / sp + bnd * 2.1) * amp + Math.sin((x / w) * 7.3 + t / (sp * 0.6)) * amp * 0.3;
+            pts.push([x, y]);
+            if (i) ctx.lineTo(x, y); else ctx.moveTo(x, y);
+          }
+          for (let i = 24; i >= 0; i--) ctx.lineTo(pts[i][0], pts[i][1] + thick * (0.75 + 0.25 * Math.sin(i * 0.9 + t / 2300)));
+          ctx.closePath(); ctx.fill();
+        }
+      } else if (mode === "nebula") {
+        for (const b of B) {
+          b.x += b.vx * k; b.y += b.vy * k;
+          if (b.x < -b.R * 0.3 || b.x > w + b.R * 0.3) b.vx *= -1;
+          if (b.y < -b.R * 0.3 || b.y > h + b.R * 0.3) b.vy *= -1;
+          const g = ctx.createRadialGradient(b.x, b.y, 0, b.x, b.y, b.R);
+          g.addColorStop(0, "rgba(" + acc + "," + (b.a * am * (0.6 + 0.6 * life)).toFixed(3) + ")");
+          g.addColorStop(1, "rgba(" + acc + ",0)");
+          ctx.fillStyle = g; ctx.fillRect(0, 0, w, h);
+        }
+        stars(t, k, am, sy, n);
+      } else if (mode === "grid") {
+        stars(t, k, am, sy, Math.ceil(n * 0.5));
+        const y0 = h * 0.64, ph = (t / (3200 - 1400 * life)) % 1;
+        const hg = ctx.createLinearGradient(0, y0 - h * 0.08, 0, y0 + h * 0.05);
+        hg.addColorStop(0, "rgba(" + acc + ",0)");
+        hg.addColorStop(0.6, "rgba(" + acc + "," + (0.1 * am).toFixed(3) + ")");
+        hg.addColorStop(1, "rgba(" + acc + ",0)");
+        ctx.fillStyle = hg; ctx.fillRect(0, y0 - h * 0.08, w, h * 0.13);
+        ctx.lineWidth = 1;
+        for (let i = 0; i < 16; i++) {
+          const z = (i + ph) / 16, y = y0 + (h - y0) * Math.pow(z, 2.2);
+          ctx.strokeStyle = "rgba(" + acc + "," + ((0.02 + 0.2 * z) * am).toFixed(3) + ")";
+          ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(w, y); ctx.stroke();
+        }
+        for (let j = -12; j <= 12; j++) {
+          const xb = w / 2 + j * w * 0.17, xt = w / 2 + j * w * 0.012;
+          const g = ctx.createLinearGradient(0, y0, 0, h);
+          g.addColorStop(0, "rgba(" + acc + ",0)");
+          g.addColorStop(1, "rgba(" + acc + "," + (0.16 * am).toFixed(3) + ")");
+          ctx.strokeStyle = g;
+          ctx.beginPath(); ctx.moveTo(xt, y0); ctx.lineTo(xb, h); ctx.stroke();
+        }
+      }
+    }
+    function frame(t) {
       raf = requestAnimationFrame(frame);
+      if (t - last < 32) return;
+      const dt = Math.min(100, t - last || 16.7);
+      last = t;
+      draw(t, dt);
+    }
+    function still() { if (!ctx) return; if (!w) { size(); seed(); } draw(performance.now(), 16.7); }
+    function recolor() {
+      if (!ctx) return;
+      try {
+        const cs = getComputedStyle(document.documentElement);
+        acc = cs.getPropertyValue("--acc-rgb").trim() || acc;
+        wht = cs.getPropertyValue("--snow-rgb").trim() || wht;
+      } catch (e) { /* ignore */ }
+      const m = pickMode();
+      if (m !== mode) { mode = m; seed(); }
+      if (!running) still();
     }
     function update() {
-      const go = wanted && visible && !document.hidden && !reduced() && !!ctx;
-      if (go && !running) { running = true; size(); if (!flakes.length) seed(); raf = requestAnimationFrame(frame); }
+      const go = !!ctx && !document.hidden && !reduced();
+      if (go && !running) { running = true; if (!w) size(); if (!P.length) seed(); last = performance.now(); raf = requestAnimationFrame(frame); }
       else if (!go && running) { running = false; cancelAnimationFrame(raf); }
+      if (!go && ctx && !document.hidden) still();
     }
-    if ("ResizeObserver" in window) {
-      new ResizeObserver(() => {
-        if (!running) return;
-        const r = cv.getBoundingClientRect();
-        if (Math.abs(r.height - h) > 2 || Math.abs(r.width - w) > 2) { size(); seed(); }
-      }).observe(cv);
+    if (ctx) {
+      size();
+      window.addEventListener("resize", () => {
+        const ow = w;
+        size();
+        if (Math.abs(ow - w) > 2 || !P.length) seed();
+        if (!running) still();
+      });
+      document.addEventListener("visibilitychange", update);
+      recolor();
     }
-    if ("IntersectionObserver" in window) new IntersectionObserver((es) => { visible = es[0].isIntersecting; update(); }).observe(cv);
-    document.addEventListener("visibilitychange", update);
-    return { toggle: (on) => { wanted = on; update(); }, recolor };
+    return {
+      toggle: (on) => { onToday = on; update(); },
+      recolor,
+      peek: () => ({ mode, life, lifeT, n: P.length, running }),
+    };
   })();
 
   // ================= v3: Tools, Ampel, Lauf-Check, Prognose =================
@@ -6122,14 +6529,15 @@ main > section:not([hidden]) { animation: viewIn 220ms cubic-bezier(.2, .8, .2, 
     const goal = stepGoal(), total = stepsTotal(dk);
     const q = $("stQuick");
     if (!q.dataset.built) {
-      q.innerHTML = [15, 30, 45, 60].map((m) => '<button class="pfood" data-min="' + m + '">Gassi-Runde ' + m + " min<b>+" + fmtInt(m * STEPS_PER_MIN) + "</b></button>").join("");
+      q.innerHTML = [15, 30, 45, 60].map((m) => '<button class="pfood" data-min="' + m + '">Gassi ' + m + " min<b>+" + fmtInt(m * STEPS_PER_MIN) + "</b></button>").join("");
       q.dataset.built = "1";
     }
-    $("stTotal").textContent = fmtInt(total);
+    countTo($("stTotal"), total, (x) => fmtInt(x));
     $("stUnit").textContent = "von " + fmtInt(goal);
-    $("stBar").querySelector("i").style.width = (Math.min(1, total / goal) * 100).toFixed(1) + "%";
+    barTo($("stBar"), total / goal);
     $("stBar").classList.toggle("full", total >= goal);
     $("stState").innerHTML = total >= goal ? "<b>Ziel erreicht</b>" : "noch " + fmtInt(Math.max(0, goal - total));
+    doneColl("steps", total >= goal);
     const list = (state.logs[dk] && state.logs[dk].steps) || [];
     $("stUndo").disabled = !list.length;
     $("stLog").textContent = list.length ? "Heute: " + list.slice(-6).map((x) => x.l).join(", ") + (list.length > 6 ? " und mehr" : "") : "";
@@ -6329,8 +6737,10 @@ main > section:not([hidden]) { animation: viewIn 220ms cubic-bezier(.2, .8, .2, 
   loadLocal();
   buildHapLab();
   applyAccent();
+  snow.recolor();
   const deepHandled = handleDeepLink();
   initCollapsibles();
+  initInfos();
   let savedTab = "today";
   try { savedTab = localStorage.getItem("winterarc.tab") || "today"; } catch (e) { /* ignore */ }
   if (deepHandled) savedTab = "tools";

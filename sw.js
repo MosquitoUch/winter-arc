@@ -1,5 +1,5 @@
 // Winter Arc service worker: works offline, updates itself when online.
-const CACHE = "winter-arc-v3";
+const CACHE = "winter-arc-v4";
 const SHELL = ["./", "./index.html", "./manifest.webmanifest", "./icon-192.png", "./icon-512.png", "./icon-maskable.png"];
 
 self.addEventListener("install", (e) => {
