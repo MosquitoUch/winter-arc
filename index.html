@@ -621,6 +621,14 @@ pre.prompt { white-space: pre-wrap; margin: 0 0 12px; padding: 14px; border-radi
 .runverdict { margin: 10px 0 0; padding: 10px 12px; border-radius: 12px; border: 1px solid var(--line-2); font-size: 14px; color: var(--ink-2); }
 .runverdict.ok { border-color: rgba(110, 231, 168, .45); color: #B5F2D2; }
 .runverdict.mid { border-color: rgba(255, 211, 107, .45); color: #FFE6A6; }
+.calfrow { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; margin: 10px 0 0; }
+.calfl { font-size: 13px; color: var(--ink-2); }
+.calfbtns { display: flex; gap: 6px; }
+.calfbtn { min-height: 36px; padding: 0 12px; border-radius: 999px; border: 1px solid var(--line-2); background: transparent; color: var(--ink-2); font: inherit; font-size: 13px; }
+.calfbtn[aria-pressed="true"] { background: var(--ice); color: var(--ice-ink); border-color: var(--ice); }
+.calfhint { margin: 8px 0 0; font-size: 13px; color: var(--ink-2); }
+.pkcal { margin: 8px 0 0; font-size: 13px; color: var(--ink-2); }
+.pkcal:empty { display: none; }
 .runverdict.bad { border-color: rgba(255, 138, 122, .5); color: #FFC2B8; }
 .chip { display: inline-block; padding: 2px 10px; border-radius: 999px; border: 1px solid var(--line-2); font-size: 12px; font-weight: 600; white-space: nowrap; }
 .chip.ok { border-color: rgba(110, 231, 168, .5); color: #B5F2D2; }
@@ -1035,10 +1043,13 @@ main[data-dir="l"] > section:not([hidden]) { animation: viewInL 260ms cubic-bezi
             <div class="shead"><h2>Protein</h2><span id="ptarget"></span></div>
             <div class="pmeter"><strong id="ptotal">0</strong><span id="punit">g von 120 g</span></div>
             <div class="pbar" id="pbar"><i></i></div>
+            <p class="pkcal" id="pkcal"></p>
             <div class="pfoods" id="pfoods"></div>
             <div class="pcustom">
               <label class="sr" for="pinput">Eigene Menge in Gramm Protein</label>
               <input type="number" inputmode="numeric" min="1" max="200" id="pinput" placeholder="g">
+              <label class="sr" for="pkin">Kalorien, optional</label>
+              <input type="number" inputmode="numeric" min="1" max="3000" id="pkin" placeholder="kcal">
               <button class="btn small" id="padd">Hinzufügen</button>
               <button class="btn small" id="pundo">Rückgängig</button>
             </div>
@@ -1408,6 +1419,10 @@ main[data-dir="l"] > section:not([hidden]) { animation: viewInL 260ms cubic-bezi
                 <input type="number" inputmode="numeric" min="30" max="300" id="setProtein">
               </div>
               <div class="field">
+                <label for="setKcal">Kalorienziel pro Tag</label>
+                <input type="number" inputmode="numeric" min="1200" max="6000" step="50" id="setKcal">
+              </div>
+              <div class="field">
                 <label for="setDrink">Trinkziel in ml</label>
                 <input type="number" inputmode="numeric" min="500" max="8000" step="100" id="setDrink">
               </div>
@@ -1620,6 +1635,7 @@ main[data-dir="l"] > section:not([hidden]) { animation: viewInL 260ms cubic-bezi
     arcLength: 90,
     bodyweight: 75,
     proteinTarget: 120,
+    kcalTarget: 3200,
     drinkTarget: 3000,
     bottle: 600,
     drinkFrom: 8,
@@ -1643,9 +1659,10 @@ main[data-dir="l"] > section:not([hidden]) { animation: viewInL 260ms cubic-bezi
   const RUN_MAINTAIN = [6, 6, 12, 4];
   const TEST_WEEKS = [1, 5, 9, 13];
   const FOODS = [
-    { l: "Quark 250 g", g: 30 }, { l: "3 Eier", g: 18 }, { l: "Hüttenkäse 200 g", g: 24 },
-    { l: "Linsen 100 g", g: 24 }, { l: "Skyr 150 g", g: 16 }, { l: "Milch 300 ml", g: 10 },
-    { l: "Haferflocken 80 g", g: 10 }
+    { l: "Quark 250 g", g: 30, k: 170 }, { l: "3 Eier", g: 18, k: 230 }, { l: "Hüttenkäse 200 g", g: 24, k: 200 },
+    { l: "Linsen 100 g", g: 24, k: 350 }, { l: "Skyr 150 g", g: 16, k: 100 }, { l: "Milch 300 ml", g: 10, k: 200 },
+    { l: "Haferflocken 80 g", g: 10, k: 300 }, { l: "Whey-Shake", g: 25, k: 130 }, { l: "Brot 2 Scheiben", g: 8, k: 200 },
+    { l: "Nüsse 50 g", g: 10, k: 300 }, { l: "Erdnussbutter 30 g", g: 8, k: 190 }, { l: "Reis oder Nudeln 100 g", g: 12, k: 360 }
   ];
   const SKILLS = [
     { key: "handstand", name: "Handstand", levels: [
@@ -2433,7 +2450,7 @@ main[data-dir="l"] > section:not([hidden]) { animation: viewInL 260ms cubic-bezi
       const runs = (state.logs[date] || {}).runs || {};
       Object.keys(runs).forEach((id) => {
         const r = runs[id];
-        if (r && r.km && r.sec) out.push({ date, km: r.km, sec: r.sec, pace: r.sec / r.km, avg: r.avg || null, max: r.max || null });
+        if (r && r.km && r.sec) out.push({ date, km: r.km, sec: r.sec, pace: r.sec / r.km, avg: r.avg || null, max: r.max || null, calf: r.calf == null ? null : r.calf });
       });
     });
     return out;
@@ -2598,6 +2615,7 @@ main[data-dir="l"] > section:not([hidden]) { animation: viewInL 260ms cubic-bezi
               '<div class="rf"><label for="rm-' + e.id + '">Max. Puls</label><input class="inp" data-rf="max" id="rm-' + e.id + '" inputmode="numeric" placeholder="172"></div>' +
             "</div>" +
             '<div class="runsum"></div><div class="runverdict" hidden></div>' +
+            '<div class="calfrow"><span class="calfl" id="cl-' + e.id + '">Waden und Sprunggelenk</span><div class="calfbtns" role="group" aria-labelledby="cl-' + e.id + '"><button class="calfbtn" data-c="0" aria-pressed="false">Ok</button><button class="calfbtn" data-c="1" aria-pressed="false">Zwickt</button><button class="calfbtn" data-c="2" aria-pressed="false">Schmerzt</button></div></div><div class="calfhint" hidden></div>' +
             '<div class="row"><button class="btn small garmin" hidden><svg aria-hidden="true"><use href="#i-img"/></svg>Garmin-Screenshot auslesen</button></div>' +
             '<span class="runstatus" aria-live="polite"></span>' +
           "</div>";
@@ -2664,6 +2682,22 @@ main[data-dir="l"] > section:not([hidden]) { animation: viewInL 260ms cubic-bezi
     const xh = $("exHint"); if (xh) xh.hidden = !noData;
   }
 
+  function calfAdvice(c) {
+    if (c === 0) return "Gut. Bleib bei der geplanten Strecke und steigere sie langsam.";
+    if (c === 1) return "Kürz den nächsten Lauf um ein Drittel, nimm kurze Schritte und lauf nur locker. Zwickt es morgen noch, ersetz den Lauf durch Gehen.";
+    return "Lauf nicht weiter. Pausier, bis du zwei Tage schmerzfrei bist. Bleibt der Schmerz länger, lass ihn abklären.";
+  }
+  function lastCalf(dk) {
+    const base = parseKey(dk);
+    for (let i = 1; i <= 14; i++) {
+      const k = dateKey(addDays(base, -i));
+      const runs = (state.logs[k] || {}).runs || {};
+      let m = null;
+      Object.keys(runs).forEach((id) => { const c = runs[id] && runs[id].calf; if (c != null && (m == null || c > m)) m = c; });
+      if (m != null) return { date: k, c: m };
+    }
+    return null;
+  }
   function patchRunPanel(li, dk, e) {
     const l = state.logs[dk];
     const r = (l && l.runs && l.runs[e.id]) || {};
@@ -2680,6 +2714,14 @@ main[data-dir="l"] > section:not([hidden]) { animation: viewInL 260ms cubic-bezi
         (r.cad ? "<span><b>" + r.cad + "</b>Kadenz</span>" : "") +
         (r.vo2 ? "<span><b>" + r.vo2 + "</b>VO2max</span>" : "");
     } else sum.innerHTML = "";
+    li.querySelectorAll(".calfbtn").forEach((b) => b.setAttribute("aria-pressed", String(r.calf != null && +b.dataset.c === r.calf)));
+    const cH = li.querySelector(".calfhint");
+    if (cH) {
+      let t = "";
+      if (r.calf != null) t = calfAdvice(r.calf);
+      else { const lc = lastCalf(dk); if (lc && lc.c >= 1) t = "Beim letzten Lauf (" + shortDate(parseKey(lc.date)) + ") hat es " + (lc.c === 1 ? "gezwickt" : "geschmerzt") + ". Prüf vor dem Start, ob die Waden wieder frei sind."; }
+      cH.hidden = !t; cH.textContent = t;
+    }
     const vEl = li.querySelector(".runverdict");
     if (vEl) { const v = runVerdict(r); vEl.hidden = !v; if (v) { vEl.className = "runverdict " + v.c; vEl.textContent = v.t; } }
   }
@@ -2713,10 +2755,13 @@ main[data-dir="l"] > section:not([hidden]) { animation: viewInL 260ms cubic-bezi
     doneColl("protein", total >= target);
     const pf = $("pfoods");
     if (!pf.dataset.built) {
-      pf.innerHTML = FOODS.map((f, i) => '<button class="pfood" data-f="' + i + '">' + esc(f.l) + "<b>+" + f.g + " g</b></button>").join("");
+      pf.innerHTML = FOODS.map((f, i) => '<button class="pfood" data-f="' + i + '">' + esc(f.l) + "<b>+" + f.g + " g" + (f.k ? ", " + f.k + " kcal" : "") + "</b></button>").join("");
       pf.dataset.built = "1";
     }
     const list = (state.logs[dk] && state.logs[dk].protein) || [];
+    const kt = +S().kcalTarget || 3200;
+    const ksum = list.reduce((a, p) => a + (p.k || 0), 0), nk = list.filter((p) => !p.k).length;
+    $("pkcal").textContent = list.length ? "Etwa " + Math.round(ksum).toLocaleString("de-DE") + " kcal von " + kt.toLocaleString("de-DE") + (nk ? ". " + nk + (nk === 1 ? " Eintrag" : " Einträge") + " ohne kcal" : "") + "." : "";
     $("pundo").disabled = !list.length;
     $("plog").textContent = list.length ? "Heute: " + list.slice(-6).map((p) => p.l).join(", ") + (list.length > 6 ? " und mehr" : "") : "";
   }
@@ -2765,7 +2810,21 @@ main[data-dir="l"] > section:not([hidden]) { animation: viewInL 260ms cubic-bezi
     const btn = ev.target.closest(".set");
     if (btn) { if (trainMode && btn.getAttribute("aria-pressed") !== "true" && openPad(btn)) return; onSetClick(btn); return; }
     const gb = ev.target.closest(".garmin");
-    if (gb) { garminTarget = gb.closest(".ex").dataset.id; $("garminFile").click(); }
+    if (gb) { garminTarget = gb.closest(".ex").dataset.id; $("garminFile").click(); return; }
+    const cb = ev.target.closest(".calfbtn");
+    if (cb) {
+      const li = cb.closest(".ex"), dk = todayKey(), id = li.dataset.id;
+      const e = todaySessionEx(id);
+      if (!e) return;
+      const l = ensureLog(dk);
+      l.runs = l.runs || {};
+      const cur = l.runs[id] || {};
+      const c = +cb.dataset.c;
+      l.runs[id] = Object.assign({}, cur, { calf: cur.calf === c ? null : c });
+      saveLog(dk);
+      patchRunPanel(li, dk, e);
+      buzz(8);
+    }
   });
   function onSetClick(btn) {
     primeAudio();
@@ -2956,11 +3015,11 @@ main[data-dir="l"] > section:not([hidden]) { animation: viewInL 260ms cubic-bezi
       if (/protein/i.test(h)) { if (total >= target) l.habits[h] = true; else delete l.habits[h]; }
     });
   }
-  function addProtein(label, g) {
+  function addProtein(label, g, k) {
     const dk = todayKey();
     const l = ensureLog(dk);
     const before = proteinTotal(dk);
-    l.protein.push({ l: label, g });
+    l.protein.push(k ? { l: label, g, k } : { l: label, g });
     const total = before + g;
     syncProteinHabit(l, total);
     saveLog(dk);
@@ -2973,13 +3032,14 @@ main[data-dir="l"] > section:not([hidden]) { animation: viewInL 260ms cubic-bezi
     const b = ev.target.closest(".pfood");
     if (!b) return;
     const f = FOODS[+b.dataset.f];
-    if (f) addProtein(f.l, f.g);
+    if (f) addProtein(f.l, f.g, f.k);
   });
   $("padd").addEventListener("click", () => {
     const g = Math.round(num($("pinput").value) || 0);
     if (g <= 0 || g > 300) { toast("Gib eine Menge zwischen 1 und 300 g ein."); return; }
-    addProtein("+" + g + " g", g);
-    $("pinput").value = "";
+    const kc = Math.round(num($("pkin").value) || 0);
+    addProtein("+" + g + " g", g, kc > 0 && kc <= 3000 ? kc : 0);
+    $("pinput").value = ""; $("pkin").value = "";
   });
   $("pinput").addEventListener("keydown", (ev) => { if (ev.key === "Enter") $("padd").click(); });
   $("pundo").addEventListener("click", () => {
@@ -4129,11 +4189,25 @@ main[data-dir="l"] > section:not([hidden]) { animation: viewInL 260ms cubic-bezi
     if (/liegest|push-?up/.test(n)) return { k: "push", f: 0.65 };
     return null;
   }
+  const MG = ["Rücken", "Brust", "Schultern", "Bizeps", "Trizeps", "Beine", "Core"];
+  function muscleOf(name) {
+    const n = String(name || "").toLowerCase();
+    if (/\b(lauf|laufen|run|joggen)\b/.test(n)) return [];
+    if (/bulgar|squat|kniebeuge|kreuzheb|wadenheb|calf|lunge|ausfall|pistol/.test(n)) return [["Beine", 1]];
+    if (/leg raise|l-sit|dragon|flag|hlr|plank|core|bauch/.test(n)) return [["Core", 1]];
+    if (/liegest|push-?up/.test(n)) return [["Brust", 1], ["Trizeps", 0.5], ["Schultern", 0.5]];
+    if (/dip/.test(n)) return [["Brust", 1], ["Trizeps", 1], ["Schultern", 0.5]];
+    if (/pike|handstand|schulterdr|shoulder|raise/.test(n)) return [["Schultern", 1], ["Trizeps", 0.5]];
+    if (/jm press|crush|trizeps|extension/.test(n)) return [["Trizeps", 1]];
+    if (/curl|bizeps/.test(n)) return [["Bizeps", 1]];
+    if (/klimmz|chin|pull|row|ruder|lever|hang/.test(n)) return [["Rücken", 1], ["Bizeps", 0.5]];
+    return [];
+  }
   const fmtKg = (kg) => (kg >= 10000 ? String(Math.round(kg / 100) / 10).replace(".", ",") + " t" : Math.round(kg).toLocaleString("de-DE") + " kg");
   function weekStats(ws) {
     const bw = +S().bodyweight || 75;
     const tk = todayKey(), asKey = S().arcStart || DEFAULT_SETTINGS.arcStart;
-    const st = { free: 0, days: 0, planned: 0, done: 0, sets: 0, setsDone: 0, km: 0, runSec: 0, runs: 0, prot: [], protGoal: 0, water: [], waterGoal: 0, en: [], so: [], sleepMin: [], sleepScore: [], habitHit: 0, habitSlots: 0, vol: { pull: { reps: 0, kg: 0 }, dips: { reps: 0, kg: 0 }, push: { reps: 0, kg: 0 } } };
+    const st = { free: 0, days: 0, planned: 0, done: 0, sets: 0, setsDone: 0, km: 0, runSec: 0, runs: 0, calf: [], mg: {}, prot: [], protGoal: 0, water: [], waterGoal: 0, en: [], so: [], sleepMin: [], sleepScore: [], habitHit: 0, habitSlots: 0, vol: { pull: { reps: 0, kg: 0 }, dips: { reps: 0, kg: 0 }, push: { reps: 0, kg: 0 } } };
     const pt = +S().proteinTarget || 120, dtgt = drinkCfg().target;
     for (let i = 0; i < 7; i++) {
       const d = addDays(ws, i), dk = dateKey(d);
@@ -4147,7 +4221,7 @@ main[data-dir="l"] > section:not([hidden]) { animation: viewInL 260ms cubic-bezi
         if (s.free) { if (comp) st.free++; } else { st.planned++; if (comp) st.done++; }
       }
       const l = state.logs[dk] || {};
-      Object.keys(l.runs || {}).forEach((id) => { const r = l.runs[id]; if (r && r.km) { st.km += r.km; st.runs++; if (r.sec) st.runSec += r.sec; } });
+      Object.keys(l.runs || {}).forEach((id) => { const r = l.runs[id]; if (r && r.km) { st.km += r.km; st.runs++; if (r.sec) st.runSec += r.sec; } if (r && r.calf != null) st.calf.push(r.calf); });
       const p = proteinTotal(dk); if (p > 0) { st.prot.push(p); if (p >= pt) st.protGoal++; }
       const w = drinkTotal(dk); if (w > 0) { st.water.push(w); if (w >= dtgt) st.waterGoal++; }
       const c = l.checkin || {}; if (c.energy) st.en.push(c.energy); if (c.soreness) st.so.push(c.soreness);
@@ -4155,6 +4229,10 @@ main[data-dir="l"] > section:not([hidden]) { animation: viewInL 260ms cubic-bezi
       const hs = habitStats(dk); st.habitSlots += hs.total; st.habitHit += hs.n;
       Object.keys(l.exercises || {}).forEach((id) => {
         const x = l.exercises[id];
+        if (x && x.name) {
+          const nd = (x.done || []).filter(Boolean).length;
+          if (nd) muscleOf(x.name).forEach(([g, w]) => { st.mg[g] = (st.mg[g] || 0) + nd * w; });
+        }
         if (!x || !x.name || !x.note) return;
         const fam = volFamily(x.name);
         if (!fam) return;
@@ -4167,20 +4245,40 @@ main[data-dir="l"] > section:not([hidden]) { animation: viewInL 260ms cubic-bezi
     }
     return st;
   }
+  function weightTrend(untilKey) {
+    const es = bodyEntries().filter((e) => e.weight && e.date <= untilKey && daysBetween(parseKey(e.date), parseKey(untilKey)) <= 35).slice(-5);
+    if (es.length < 2) return null;
+    const x0 = parseKey(es[0].date);
+    const xs = es.map((e) => daysBetween(x0, parseKey(e.date))), ys = es.map((e) => e.weight);
+    if (xs[xs.length - 1] - xs[0] < 5) return null;
+    const perWeek = linreg(xs, ys).b * 7;
+    const txt = (perWeek >= 0 ? "+" : "−") + fmtN(Math.abs(Math.round(perWeek * 100) / 100)) + " kg pro Woche. ";
+    if (perWeek < 0.1) return txt + "Zu wenig für Muskelaufbau, iss etwa 200 bis 300 kcal mehr am Tag.";
+    if (perWeek > 0.5) return txt + "Etwas zu schnell, ein Teil davon ist wohl Fett. Iss etwa 150 kcal weniger.";
+    return txt + "Im Zielbereich von 0,1 bis 0,5 kg pro Woche.";
+  }
   function reviewRows(st, ws) {
     const rows = [];
     const bw = +S().bodyweight || 75;
     rows.push(["Einheiten", (st.planned ? st.done + " von " + st.planned + " geschafft" : st.free ? "" : "–") + (st.free ? (st.planned ? " " : "") + "(+" + st.free + " frei)" : "")]);
     rows.push(["Sätze", st.sets ? st.setsDone + " von " + st.sets : "–"]);
     rows.push(["Gelaufen", st.km ? fmtN(st.km) + " km in " + st.runs + (st.runs === 1 ? " Lauf" : " Läufen") + (st.runSec ? ", Ø " + fmtPace(st.runSec / st.km) + " /km" : "") : "–"]);
+    if (st.calf.length) { const mx = Math.max.apply(null, st.calf); rows.push(["Waden", mx === 0 ? "Alles ok" : mx === 1 ? "Zwicken bei einem Lauf, nächste Woche vorsichtig steigern" : "Schmerz gemeldet, Pause und im Zweifel abklären lassen"]); }
     const tot = st.vol.pull.kg + st.vol.dips.kg + st.vol.push.kg;
     rows.push(["Bewegtes Gewicht", tot ? fmtKg(tot) : "–"]);
     [["pull", "Klimmzüge und Chin-ups"], ["dips", "Dips"], ["push", "Liegestütze"]].forEach(([k, l]) => { if (st.vol[k].reps) rows.push(["   " + l, st.vol[k].reps + " Wdh., " + fmtKg(st.vol[k].kg)]); });
+    if (Object.keys(st.mg).length) {
+      const full = st.days >= 7, low = full ? MG.filter((g) => (st.mg[g] || 0) < 6) : [];
+      MG.forEach((g) => { const v = st.mg[g] || 0; rows.push(["   " + g, fmtN(Math.round(v * 2) / 2) + " Sätze" + (full && v < 6 ? " (wenig)" : v > 20 ? " (viel)" : "")]); });
+      rows.push(["Muskelgruppen", !full ? "Woche läuft noch. Richtwert 10 bis 20 Sätze pro Gruppe." : low.length ? "Zu wenig: " + low.join(", ") + ". Richtwert 10 bis 20 Sätze pro Woche." : "Alle Gruppen gut abgedeckt."]);
+    }
     rows.push(["Protein", st.prot.length ? "Ø " + Math.round(avgOf(st.prot)) + " g, Ziel an " + st.protGoal + " von " + st.prot.length + " Tagen" : "–"]);
     rows.push(["Wasser", st.water.length ? "Ø " + fmtL(avgOf(st.water)) + ", Ziel an " + st.waterGoal + " von " + st.water.length + " Tagen" : "–"]);
     rows.push(["Check-in", st.en.length || st.so.length ? "Energie Ø " + fmtAvg(avgOf(st.en), 1) + ", Muskelkater Ø " + fmtAvg(avgOf(st.so), 1) : "–"]);
     rows.push(["Schlaf", st.sleepMin.length || st.sleepScore.length ? (st.sleepMin.length ? "Ø " + fmtSleep(Math.round(avgOf(st.sleepMin))) : "") + (st.sleepMin.length && st.sleepScore.length ? ", " : "") + (st.sleepScore.length ? "Score Ø " + Math.round(avgOf(st.sleepScore)) : "") : "–"]);
     rows.push(["Gewohnheiten", st.habitSlots ? Math.round((st.habitHit / st.habitSlots) * 100) + " %" : "–"]);
+    const wt = weightTrend(dateKey(addDays(ws, 6)));
+    if (wt) rows.push(["Gewichtstrend", wt]);
     const we = dateKey(addDays(ws, 6)), wsk = dateKey(ws);
     const inWeek = bodyEntries().filter((e) => e.date >= wsk && e.date <= we);
     if (inWeek.length) {
@@ -4888,6 +4986,7 @@ main[data-dir="l"] > section:not([hidden]) { animation: viewInL 260ms cubic-bezi
     setv("setLen", S().arcLength || 90);
     setv("setBw", S().bodyweight || 75);
     setv("setProtein", S().proteinTarget || 120);
+    setv("setKcal", S().kcalTarget || 3200);
     setv("setDrink", S().drinkTarget || 3000);
     setv("setBottle", S().bottle || 600);
     setv("setDrinkFrom", S().drinkFrom != null ? S().drinkFrom : 8);
@@ -5042,6 +5141,7 @@ main[data-dir="l"] > section:not([hidden]) { animation: viewInL 260ms cubic-bezi
     settingChanged("Dauer gespeichert: " + len + " Tage");
   });
   $("setBw").addEventListener("change", function () { const v = num(this.value); if (v && v >= 30 && v <= 200) { S().bodyweight = v; settingChanged("Körpergewicht gespeichert"); } });
+  $("setKcal").addEventListener("change", function () { const v = Math.round(num(this.value) || 0); if (v >= 1200 && v <= 6000) { S().kcalTarget = v; settingChanged("Kalorienziel gespeichert"); } });
   $("setProtein").addEventListener("change", function () { const v = Math.round(num(this.value) || 0); if (v >= 30 && v <= 300) { S().proteinTarget = v; settingChanged("Proteinziel gespeichert"); } });
   $("setHabits").addEventListener("change", function () {
     S().habits = this.value.split(",").map((s) => s.trim()).filter(Boolean).slice(0, 10);
@@ -5510,7 +5610,8 @@ main[data-dir="l"] > section:not([hidden]) { animation: viewInL 260ms cubic-bezi
       const v = runVerdict(r);
       return '<li><span class="rn">' + esc(shortDate(parseKey(r.date))) + ": " + fmtN(r.km) + " km, " + esc(fmtPace(r.pace)) + " min/km</span>" +
         '<span class="rv">' + (r.avg ? r.avg + " bpm" : "–") + "</span>" +
-        '<span class="rd">' + (v ? '<span class="chip ' + v.c + '">' + esc(v.short) + "</span>" : "Kein Puls eingetragen") + "</span></li>";
+        '<span class="rd">' + (v ? '<span class="chip ' + v.c + '">' + esc(v.short) + "</span>" : "Kein Puls eingetragen") +
+        (r.calf != null ? ' <span class="chip ' + ["ok", "mid", "bad"][r.calf] + '">' + ["Waden ok", "Waden zwickt", "Waden Schmerz"][r.calf] + "</span>" : "") + "</span></li>";
     }).join("");
   }
   $("easyHrSave").addEventListener("click", () => {
