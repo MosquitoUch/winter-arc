@@ -5211,7 +5211,7 @@ main[data-dir="l"] > section:not([hidden]) { animation: viewInL 260ms cubic-bezi
   // Name "snow" bleibt, damit showTab und die Farbwahl unverändert weiterrufen können.
   const snow = (() => {
     const cv = $("ambient"), ctx = cv && cv.getContext && cv.getContext("2d");
-    const MODES = { eis: "snow", schnee: "snow", aurora: "aurora", violett: "nebula", glut: "embers", blut: "embers", gold: "dust", neon: "grid", toxic: "spores", nacht: "stars" };
+    const MODES = { eis: "snow", schnee: "snow", aurora: "aurora", violett: "nebula", glut: "embers", blut: "embers", gold: "dust", neon: "grid", toxic: "spores", nacht: "stars", echidna: "dust", titan: "embers" };
     const COUNT = { snow: 70, embers: 44, dust: 64, spores: 24, stars: 120, aurora: 70, nebula: 70, grid: 40 };
     let P = [], B = [], raf = 0, running = false, w = 0, h = 0, last = 0, mode = "", onToday = true;
     let acc = "142,235,248", wht = "225,232,236", life = 0.3, lifeT = 0.3, lifeAt = 0, shot = null, shotAt = 0;
@@ -6138,6 +6138,8 @@ main[data-dir="l"] > section:not([hidden]) { animation: viewInL 260ms cubic-bezi
     { k: "neon", n: "Neon", a: "#FF3FD0", b: "#7FE7FF" },
     { k: "toxic", n: "Toxic", a: "#B8FF2E", b: "#F2FFD9" },
     { k: "nacht", n: "Mitternacht", a: "#4D7CFF", b: "#D6E0FF" },
+    { k: "echidna", n: "Echidna", a: "#B7A6E6", b: "#FFFFFF", line: "Teestunde. Neugier ist erlaubt, Gier auch." },
+    { k: "titan", n: "Titan", a: "#8FB36B", b: "#F3E6C8", line: "Hinaus über die Mauer. Heute zählt jeder Satz." },
     { k: "eigen", n: "Eigene", custom: true }
   ];
   // ---- Farb-Generator: aus zwei Farben alle Töne berechnen ----
@@ -6261,6 +6263,8 @@ main[data-dir="l"] > section:not([hidden]) { animation: viewInL 260ms cubic-bezi
     const b = ev.target.closest(".accent-btn");
     if (!b) return;
     S().accent = b.dataset.k;
+    const picked = ACCENTS.find((x) => x.k === b.dataset.k);
+    if (picked && picked.line) toast(picked.line);
     if (b.dataset.k === "eigen" && !S().customAccent) { const cur = accentPair("blut"); S().customAccent = { a: cur.a, b: cur.b }; }
     applyAccent();
     snow.recolor();
