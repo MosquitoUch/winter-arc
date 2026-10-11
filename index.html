@@ -675,6 +675,24 @@ pre.prompt { white-space: pre-wrap; margin: 0 0 12px; padding: 14px; border-radi
 .ranklist .rbar, .ranklist .rnext { grid-column: 2 / -1; }
 .ranklist .rnext { color: var(--mute); font-size: 13px; margin-top: -2px; }
 .ranklist li.none .rname, .ranklist li.none .rval { color: var(--mute); }
+.ranklist li.editable { cursor: pointer; }
+.ranklist li.editable:active { background: rgba(255, 255, 255, .04); }
+.relist { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; max-height: 38vh; overflow: auto; }
+.relist li { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 8px 0; border-top: 1px solid var(--line); }
+.relist li:first-child { border-top: 0; }
+.relist .rl { display: grid; gap: 2px; min-width: 0; }
+.relist .rl small { color: var(--mute); font-size: 12px; overflow-wrap: anywhere; }
+.relist li.ign .rl { opacity: .45; text-decoration: line-through; }
+.rbadge.r6 { --rc: linear-gradient(135deg, #FFFFFF, #FF9BE8 40%, #8F7BFF); background: var(--rc); filter: drop-shadow(0 0 12px rgba(190, 140, 255, .75)); font-size: 15px; }
+.rbadge.big.r6 { font-size: 34px; }
+.rankchip .rbadge.r6 { font-size: 12px; }
+.wheels { position: relative; display: flex; align-items: center; justify-content: center; gap: 6px; height: 200px; perspective: 520px; user-select: none; }
+.whbar { position: absolute; left: 12%; right: 12%; top: 50%; height: 44px; margin-top: -22px; border-radius: 12px; background: rgba(255, 255, 255, .07); border: 1px solid var(--line-2); pointer-events: none; }
+.wheel { position: relative; width: 84px; height: 200px; overflow-y: auto; scroll-snap-type: y mandatory; scrollbar-width: none; overscroll-behavior: contain; touch-action: pan-y; -webkit-overflow-scrolling: touch; }
+.wheel::-webkit-scrollbar { display: none; }
+.wheel .wi { height: 44px; display: grid; place-items: center; scroll-snap-align: center; font-family: var(--display); font-size: 30px; font-variant-numeric: tabular-nums; will-change: transform, opacity; }
+.wheel .wpad { height: 78px; }
+.whsep { font-family: var(--display); font-size: 30px; color: var(--mute); z-index: 1; }
 .rankchip { display: inline-flex; align-items: center; gap: 8px; margin: 10px 0 0; padding: 4px 12px 4px 4px; min-height: 40px; border-radius: 999px; border: 1px solid var(--line-2); background: rgba(0, 0, 0, .3); color: var(--ink); font: inherit; font-size: 14px; font-weight: 600; }
 .rankchip .rbadge { width: 26px; height: 30px; font-size: 15px; }
 .rankup .rec-box { display: grid; justify-items: center; gap: 6px; }
@@ -1058,7 +1076,7 @@ main[data-dir="l"] > section:not([hidden]) { animation: viewInL 260ms cubic-bezi
             <div class="ci-row"><span class="ci-l">Schlaf</span>
               <div class="sleepin">
                 <label class="sr" for="sleepDur">Schlafdauer</label>
-                <input class="inp" id="sleepDur" inputmode="text" placeholder="7:30 h" autocomplete="off">
+                <input class="inp" id="sleepDur" inputmode="none" readonly placeholder="7:30 h" autocomplete="off">
                 <label class="sr" for="sleepScore">Garmin Schlaf-Score</label>
                 <input class="inp" id="sleepScore" inputmode="numeric" placeholder="Score" autocomplete="off">
                 <button class="btn small" id="sleepCam" aria-label="Garmin-Bild mit Kamera aufnehmen" hidden><svg aria-hidden="true"><use href="#i-cam"/></svg></button>
@@ -1150,7 +1168,7 @@ main[data-dir="l"] > section:not([hidden]) { animation: viewInL 260ms cubic-bezi
       <div class="progview">
         <div class="block" id="rankBlock">
           <h2 class="bh">Dein Rang</h2>
-          <p class="lead">Von E bis S, aus deinen besten Leistungen. Zusatzgewicht wird in Wiederholungen umgerechnet. Ränge fallen nie wieder ab.</p>
+          <p class="lead">Von E bis S+, aus deinen besten Leistungen. Zusatzgewicht wird in Wiederholungen umgerechnet: 10 kg extra zählen deutlich mehr als eine reine Körpergewichts-Wiederholung. Stimmt ein Wert nicht, tipp auf die Zeile und korrigiere ihn.</p>
           <div class="rankhero" id="rankHero"></div>
           <ul class="ranklist" id="rankList"></ul>
         </div>
@@ -1702,6 +1720,29 @@ main[data-dir="l"] > section:not([hidden]) { animation: viewInL 260ms cubic-bezi
       <div class="field"><label for="axSets">Sätze</label><input id="axSets" inputmode="numeric" autocomplete="off" placeholder="automatisch"><small>Leer lassen, wenn du die Leistung einträgst</small></div>
     </div>
     <div class="row"><button class="btn primary" id="axSave">Hinzufügen</button><button class="btn" id="axClose">Abbrechen</button></div>
+  </div>
+</div>
+
+<div class="overlay sheetov" id="rankEdit" role="dialog" aria-modal="true" aria-labelledby="reTitle" hidden>
+  <div class="sheet">
+    <h3 id="reTitle">Rang korrigieren</h3>
+    <p>Falsch erfasste Werte kannst du ignorieren. Oder du trägst deinen echten Bestwert selbst ein. Das zählt dann wie eine Leistung.</p>
+    <ul class="relist" id="reList"></ul>
+    <div class="field"><label for="reVal">Eigener Bestwert</label><div class="row"><input id="reVal" class="inp" inputmode="numeric" autocomplete="off" placeholder="z. B. 45"><button class="btn primary" id="reSet">Setzen</button></div><small id="reUnit"></small></div>
+    <div class="row"><button class="btn" id="reClose">Fertig</button></div>
+  </div>
+</div>
+
+<div class="overlay sheetov" id="sleepWheel" role="dialog" aria-modal="true" aria-label="Schlafdauer wählen" hidden>
+  <div class="sheet">
+    <h3>Schlafdauer</h3>
+    <div class="wheels" id="wheels">
+      <div class="whbar" aria-hidden="true"></div>
+      <div class="wheel" id="whH" role="listbox" aria-label="Stunden"></div>
+      <span class="whsep" aria-hidden="true">:</span>
+      <div class="wheel" id="whM" role="listbox" aria-label="Minuten"></div>
+    </div>
+    <div class="row"><button class="btn primary" id="whOk">Übernehmen</button><button class="btn" id="whCancel">Abbrechen</button><button class="btn" id="whClear">Leeren</button></div>
   </div>
 </div>
 
@@ -2487,7 +2528,7 @@ main[data-dir="l"] > section:not([hidden]) { animation: viewInL 260ms cubic-bezi
         const key = normName(x.name);
         const h = map[key] || (map[key] = { name: x.name, items: [] });
         h.name = x.name;
-        h.items.push({ date, perf, met, note });
+        h.items.push({ date, perf, met, note, id });
       });
     });
     return map;
@@ -4237,6 +4278,79 @@ main[data-dir="l"] > section:not([hidden]) { animation: viewInL 260ms cubic-bezi
     renderSleepRow(dk); renderCheckin(dk);
   }
   $("sleepDur").addEventListener("change", saveSleepFields);
+  // ---- Wheel-Picker für die Schlafdauer ----
+  const WH = 44;
+  const wheel = {
+    cols: [], vals: [0, 0],
+    build(el, from, to, fmt) {
+      const items = [];
+      for (let v = from; v <= to; v++) items.push(v);
+      el.innerHTML = '<div class="wpad"></div>' + items.map((v) => '<div class="wi" role="option">' + fmt(v) + "</div>").join("") + '<div class="wpad"></div>';
+      const col = { el, from, to, n: items.length, idx: 0, nodes: Array.prototype.slice.call(el.querySelectorAll(".wi")), raf: 0 };
+      const paint = () => {
+        col.raf = 0;
+        const pos = el.scrollTop / WH;
+        const i0 = Math.max(0, Math.floor(pos) - 4), i1 = Math.min(col.n - 1, Math.ceil(pos) + 4);
+        for (let i = i0; i <= i1; i++) {
+          const d = i - pos, a = Math.abs(d);
+          const n = col.nodes[i];
+          n.style.transform = "rotateX(" + (-d * 26).toFixed(1) + "deg) scale(" + (1 - Math.min(a, 3) * 0.1).toFixed(3) + ")";
+          n.style.opacity = Math.max(0.12, 1 - a * 0.3).toFixed(2);
+        }
+      };
+      col.paint = paint;
+      el.addEventListener("scroll", () => {
+        if (!col.raf) col.raf = requestAnimationFrame(paint);
+        const i = Math.max(0, Math.min(col.n - 1, Math.round(el.scrollTop / WH)));
+        if (i !== col.idx) { col.idx = i; wheel.tick(); }
+      }, { passive: true });
+      return col;
+    },
+    set(col, v, instant) {
+      const i = Math.max(0, Math.min(col.n - 1, v - col.from));
+      col.idx = i;
+      col.el.scrollTo({ top: i * WH, behavior: instant ? "auto" : "smooth" });
+      col.paint();
+    },
+    val(col) { return col.from + col.idx; },
+    tick() {
+      buzz(4);
+      if (!soundOn()) return;
+      try {
+        if (!audioCtx) primeAudio();
+        if (!audioCtx) return;
+        const t0 = audioCtx.currentTime;
+        const o = audioCtx.createOscillator(), g = audioCtx.createGain();
+        o.type = "triangle"; o.frequency.setValueAtTime(2100, t0); o.frequency.exponentialRampToValueAtTime(900, t0 + 0.03);
+        g.gain.setValueAtTime(0.0001, t0);
+        g.gain.exponentialRampToValueAtTime(0.09, t0 + 0.004);
+        g.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.045);
+        o.connect(g); g.connect(audioCtx.destination);
+        o.start(t0); o.stop(t0 + 0.06);
+      } catch (e) { /* ignore */ }
+    }
+  };
+  function openSleepWheel() {
+    primeAudio();
+    if (!wheel.cols.length) {
+      wheel.cols = [wheel.build($("whH"), 2, 14, (v) => v), wheel.build($("whM"), 0, 59, (v) => pad(v))];
+    }
+    const m = parseSleep($("sleepDur").value) || 450;
+    const h = Math.max(2, Math.min(14, Math.floor(m / 60)));
+    $("sleepWheel").hidden = false;
+    requestAnimationFrame(() => { wheel.set(wheel.cols[0], h, true); wheel.set(wheel.cols[1], m % 60, true); wheel.cols[0].paint(); wheel.cols[1].paint(); });
+  }
+  const closeSleepWheel = () => { $("sleepWheel").hidden = true; };
+  $("sleepDur").addEventListener("click", openSleepWheel);
+  $("whCancel").addEventListener("click", closeSleepWheel);
+  $("whClear").addEventListener("click", () => { $("sleepDur").value = ""; closeSleepWheel(); saveSleepFields(); });
+  $("sleepWheel").addEventListener("click", (ev) => { if (ev.target === $("sleepWheel")) closeSleepWheel(); });
+  $("whOk").addEventListener("click", () => {
+    const h = wheel.val(wheel.cols[0]), m = wheel.val(wheel.cols[1]);
+    $("sleepDur").value = h + ":" + pad(m);
+    closeSleepWheel(); hap("set");
+    saveSleepFields();
+  });
   $("sleepScore").addEventListener("change", saveSleepFields);
   $("sleepShot").addEventListener("click", () => $("sleepFile").click());
   async function fileToBlobKeep(file, maxLong) {
@@ -5362,6 +5476,32 @@ main[data-dir="l"] > section:not([hidden]) { animation: viewInL 260ms cubic-bezi
     snow.toggle(name === "today");
   }
   document.querySelector(".tabs").addEventListener("click", (ev) => { const b = ev.target.closest(".tab"); if (b) { hap("tab"); showTab(b.dataset.tab); } });
+  // Wischen links/rechts wechselt den Tab
+  (() => {
+    let sx = null, sy = 0, st = 0, tgt = null;
+    const hScroll = (el) => {
+      for (; el && el !== document.body; el = el.parentElement) {
+        if (el.scrollWidth > el.clientWidth + 4) { const ox = getComputedStyle(el).overflowX; if (ox === "auto" || ox === "scroll") return true; }
+      }
+      return false;
+    };
+    document.addEventListener("touchstart", (e) => {
+      if (e.touches.length !== 1) { sx = null; return; }
+      const t = e.touches[0]; sx = t.clientX; sy = t.clientY; st = Date.now(); tgt = e.target;
+    }, { passive: true });
+    document.addEventListener("touchend", (e) => {
+      if (sx == null) return;
+      const t = e.changedTouches[0], dx = t.clientX - sx, dy = t.clientY - sy, x0 = sx;
+      sx = null;
+      if (Date.now() - st > 650 || Math.abs(dx) < 72 || Math.abs(dx) < Math.abs(dy) * 2) return;
+      if (x0 < 28 || x0 > window.innerWidth - 28) return;
+      if (document.querySelector('[role="dialog"]:not([hidden]), .overlay:not([hidden])')) return;
+      if (!tgt || !tgt.closest || tgt.closest("input, textarea, select, canvas, .wheel, [data-noswipe]") || hScroll(tgt)) return;
+      const n = TABS.indexOf(currentTab) + (dx < 0 ? 1 : -1);
+      if (n < 0 || n >= TABS.length) return;
+      hap("tab"); showTab(TABS[n]);
+    }, { passive: true });
+  })();
   document.addEventListener("click", (ev) => {
     const g = ev.target.closest("[data-goto]");
     if (!g) return;
@@ -7286,49 +7426,65 @@ main[data-dir="l"] > section:not([hidden]) { animation: viewInL 260ms cubic-bezi
     if (!b) return;
     const sel = { protein: '[data-coll="protein"]', drink: "#drinkCard", sleep: "#sleepDur", checkin: "#checkinCard", habits: "#habits" }[b.dataset.go];
     const el = sel && document.querySelector(sel);
-    if (el) { el.scrollIntoView({ block: "center", behavior: "smooth" }); if (el.tagName === "INPUT") setTimeout(() => el.focus({ preventScroll: true }), 400); }
+    if (el) { el.scrollIntoView({ block: "center", behavior: "smooth" }); if (el.tagName === "INPUT") setTimeout(() => { if (el.readOnly) el.click(); else el.focus({ preventScroll: true }); }, 400); }
   });
 
   // ---------- Ränge ----------
-  const RANK_L = ["E", "D", "C", "B", "A", "S"];
-  const RANK_T = ["Rekrut", "Kämpfer", "Veteran", "Elite", "Meister", "Legende"];
+  const RANK_L = ["E", "D", "C", "B", "A", "S", "S+"];
+  const RANK_T = ["Rekrut", "Kämpfer", "Veteran", "Elite", "Meister", "Legende", "Mythos"];
+  const MAXR = 6;
   function rankScore(v, pts) {
-    for (let i = 0; i < 5; i++) {
+    const top = pts.length - 1;
+    for (let i = 0; i < top; i++) {
       const a = pts[i], b = pts[i + 1];
       const inSeg = a < b ? v < b : v > b;
       if (inSeg) return Math.max(0, i + (v - a) / (b - a));
     }
-    return Math.min(5.999, 5 + (v - pts[5]) / (pts[5] - pts[4]) * 0.999);
+    return Math.min(top + 0.999, top + (v - pts[top]) / (pts[top] - pts[top - 1]) * 0.999);
+  }
+  const rankMeta = () => { state.meta = state.meta || {}; return state.meta; };
+  const isIgnored = (key) => !!((rankMeta().rankIgnore || {})[key]);
+  // Kandidaten pro Bereich: jeder Eintrag, der zum Bestwert beitragen könnte (auch ignorierte, für den Editor)
+  function rankCands(k, list) {
+    const man = (rankMeta().rankSet || {})[k];
+    if (man > 0) list.push({ key: "m", label: "Von dir festgelegt", v: man, manual: true });
+    list.forEach((c) => { c.ignored = !c.manual && isIgnored(k + "|" + c.key); });
+    list.sort((a, b) => b.v - a.v);
+    const best = list.reduce((m, c) => (!c.ignored && c.v > m ? c.v : m), 0);
+    return { best, cands: list.slice(0, 8) };
   }
   function computeRanks() {
     const bw = +S().bodyweight || 75;
     const hist = buildHistory();
     const tests = state.tests.entries || [];
-    const bestTest = (k) => tests.reduce((m, e) => (e.values && e.values[k] > m ? e.values[k] : m), 0);
+    const testCands = (k) => tests.filter((e) => e.values && e.values[k] > 0).map((e) => ({ key: "t|" + e.date, label: "Test am " + shortDate(parseKey(e.date)), v: e.values[k] }));
+    const logLabel = (it) => shortDate(parseKey(it.date)) + ": " + String(it.note).slice(0, 34);
     const repCat = (k, n, rx, notRx, testK, th) => {
-      let best = testK ? bestTest(testK) : 0;
+      const list = testK ? testCands(testK) : [];
       Object.keys(hist).forEach((key) => {
         const h = hist[key], nm = String(h.name || "").toLowerCase();
         if (!rx.test(nm) || (notRx && notRx.test(nm))) return;
-        h.items.forEach((it) => { if (it.met.secs) return; const eq = (it.met.v / bw - 1) * 30; if (eq > best) best = eq; });
+        h.items.forEach((it) => { if (it.met.secs) return; const eq = (it.met.v / bw - 1) * 30; if (eq > 0) list.push({ key: "l|" + it.date + "|" + it.id, label: logLabel(it), v: eq }); });
       });
-      return { k, n, v: best, pts: [0].concat(th), fmt: (x) => Math.round(x) + " Wdh.", has: best > 0 };
+      const rc = rankCands(k, list);
+      return { k, n, v: rc.best, cands: rc.cands, edit: true, unit: "Wdh.", pts: [0].concat(th), fmt: (x) => Math.round(x) + " Wdh.", has: rc.best > 0 };
     };
     const cats = [
-      repCat("pull", "Klimmzüge", /klimmz|pull-?up/, /chin|row|ruder|negativ|band|austral/, "pullups", [5, 10, 15, 20, 28]),
-      repCat("chin", "Chin-ups", /chin/, /negativ|band/, null, [6, 12, 17, 22, 30]),
-      repCat("dips", "Dips", /\bdip/, /bank|bench|negativ|band|stuhl/, "dips", [8, 15, 22, 30, 40]),
-      repCat("push", "Liegestütze", /liegest|push-?up/, /pike|knie|negativ|band|archer|einarm|handstand/, "pushups", [15, 30, 45, 60, 80])
+      repCat("pull", "Klimmzüge", /klimmz|pull-?up/, /chin|row|ruder|negativ|band|austral/, "pullups", [5, 10, 15, 20, 28, 38]),
+      repCat("chin", "Chin-ups", /chin/, /negativ|band/, null, [6, 12, 17, 22, 30, 40]),
+      repCat("dips", "Dips", /\bdip/, /bank|bench|negativ|band|stuhl/, "dips", [8, 15, 22, 30, 40, 55]),
+      repCat("push", "Liegestütze", /liegest|push-?up/, /pike|knie|negativ|band|archer|einarm|handstand/, "pushups", [15, 30, 45, 60, 80, 100])
     ];
-    let lsit = bestTest("lsit");
-    Object.keys(hist).forEach((key) => { const h = hist[key]; if (!/l-?sit/i.test(h.name)) return; h.items.forEach((it) => { if (it.met.secs && it.met.v > lsit) lsit = it.met.v; }); });
-    cats.push({ k: "core", n: "L-Sit", v: lsit, pts: [0, 5, 10, 20, 30, 45], fmt: (x) => Math.round(x) + " s", has: lsit > 0 });
+    const lsList = testCands("lsit");
+    Object.keys(hist).forEach((key) => { const h = hist[key]; if (!/l-?sit/i.test(h.name)) return; h.items.forEach((it) => { if (it.met.secs && it.met.v > 0) lsList.push({ key: "l|" + it.date + "|" + it.id, label: logLabel(it), v: it.met.v }); }); });
+    const lsc = rankCands("core", lsList);
+    cats.push({ k: "core", n: "L-Sit", v: lsc.best, cands: lsc.cands, edit: true, unit: "s", pts: [0, 5, 10, 20, 30, 45, 60], fmt: (x) => Math.round(x) + " s", has: lsc.best > 0 });
     const runs = runEntries().filter((r) => r.km >= 3);
     const bestPace = runs.reduce((m, r) => (!m || r.pace < m ? r.pace : m), 0);
-    cats.push({ k: "run", n: "Laufen", v: bestPace, pts: [600, 420, 375, 330, 290, 255], fmt: (x) => fmtPace(x) + " /km", has: !!bestPace, hint: "ab 3 km" });
+    cats.push({ k: "run", n: "Laufen", v: bestPace, pts: [600, 420, 375, 330, 290, 255, 235], fmt: (x) => fmtPace(x) + " /km", has: !!bestPace, hint: "ab 3 km" });
     const lv = SKILLS.map((sk) => Math.min(1, ((state.skills[sk.key] || {}).level || 0) / sk.levels.length));
     const skAvg = lv.reduce((a, b) => a + b, 0) / Math.max(1, lv.length);
-    cats.push({ k: "skills", n: "Skills", v: skAvg, pts: [0, 0.12, 0.28, 0.48, 0.7, 0.9], fmt: (x) => Math.round(x * 100) + " %", has: skAvg > 0 });
+    cats.push({ k: "skills", n: "Skills", v: skAvg, pts: [0, 0.12, 0.28, 0.48, 0.7, 0.9, 1], fmt: (x) => Math.round(x * 100) + " %", has: skAvg > 0 });
     let tot = 0, dn = 0;
     const tk = todayKey(), start = arcStartDate();
     for (let d = start, i = 0; dateKey(d) <= tk && i < 400; d = addDays(d, 1), i++) {
@@ -7339,19 +7495,19 @@ main[data-dir="l"] > section:not([hidden]) { animation: viewInL 260ms cubic-bezi
       tot += pr.total; dn += pr.done;
     }
     const disc = tot >= 10 ? (dn / tot) * 100 : 0;
-    cats.push({ k: "disc", n: "Disziplin", v: disc, pts: [0, 50, 65, 80, 90, 97], fmt: (x) => Math.round(x) + " % der Sätze", has: tot >= 10 });
+    cats.push({ k: "disc", n: "Disziplin", v: disc, pts: [0, 50, 65, 80, 90, 97, 100], fmt: (x) => Math.round(x) + " % der Sätze", has: tot >= 10 });
     cats.forEach((c) => {
       if (!c.has) return;
       c.score = rankScore(c.v, c.pts);
-      c.idx = Math.min(5, Math.floor(c.score));
-      c.frac = c.idx >= 5 ? 1 : c.score - c.idx;
-      c.next = c.idx >= 5 ? null : c.pts[c.idx + 1];
+      c.idx = Math.min(MAXR, Math.floor(c.score));
+      c.frac = c.idx >= MAXR ? 1 : c.score - c.idx;
+      c.next = c.idx >= MAXR ? null : c.pts[c.idx + 1];
     });
     const got = cats.filter((c) => c.has);
     let overall = null;
     if (got.length >= 2) {
       const sc = got.reduce((a, c) => a + c.score, 0) / got.length;
-      overall = { score: sc, idx: Math.min(5, Math.floor(sc)), frac: Math.min(1, sc - Math.min(5, Math.floor(sc))), n: got.length };
+      overall = { score: sc, idx: Math.min(MAXR, Math.floor(sc)), frac: Math.min(1, sc - Math.min(MAXR, Math.floor(sc))), n: got.length };
     }
     return { cats, overall };
   }
@@ -7362,13 +7518,70 @@ main[data-dir="l"] > section:not([hidden]) { animation: viewInL 260ms cubic-bezi
     const o = R.overall;
     $("rankHero").innerHTML = o ?
       rankBadge(o.idx, true) + '<div class="rhtxt"><span class="rhk">Gesamtrang</span><b>' + RANK_L[o.idx] + "-Rang, " + RANK_T[o.idx] + '</b><div class="rbar"><i style="width:' + Math.round(o.frac * 100) + '%"></i></div><small>' +
-      (o.idx >= 5 ? "Höchster Rang. Halte ihn." : Math.round(o.frac * 100) + " % bis " + RANK_L[o.idx + 1] + "-Rang") + ", aus " + o.n + " Bereichen</small></div>" :
+      (o.idx >= MAXR ? "Höchster Rang. Halte ihn." : Math.round(o.frac * 100) + " % bis " + RANK_L[o.idx + 1] + "-Rang") + ", aus " + o.n + " Bereichen</small></div>" :
       '<p class="lead">Trag in mindestens zwei Bereichen Leistungen ein, zum Beispiel deine Wiederholungen unter Klimmzügen und Dips. Dann bekommst du deinen Gesamtrang.</p>';
     $("rankList").innerHTML = R.cats.map((c) => {
-      if (!c.has) return '<li class="none"><span class="rbadge rn0" aria-hidden="true">–</span><span class="rname">' + esc(c.n) + '</span><span class="rval">–</span><span class="rnext">Noch keine Daten' + (c.hint ? " (" + c.hint + ")" : "") + "</span></li>";
-      const nextTxt = c.idx >= 5 ? "Höchster Rang erreicht" : "Nächster Rang " + RANK_L[c.idx + 1] + " ab " + c.fmt(c.next);
-      return "<li>" + rankBadge(c.idx) + '<span class="rname">' + esc(c.n) + '</span><span class="rval">' + esc(c.fmt(c.v)) + '</span><div class="rbar"><i style="width:' + Math.round(c.frac * 100) + '%"></i></div><span class="rnext">' + esc(RANK_T[c.idx] + ". " + nextTxt) + "</span></li>";
+      const attrs = c.edit ? ' data-k="' + c.k + '" tabindex="0" role="button" aria-label="' + esc(c.n) + ' korrigieren"' : "";
+      const ed = (c.edit ? ' class="editable"' : "") + attrs;
+      const edHint = c.edit ? " · Tippen zum Korrigieren" : "";
+      if (!c.has) return '<li class="none' + (c.edit ? " editable" : "") + '"' + attrs + '><span class="rbadge rn0" aria-hidden="true">–</span><span class="rname">' + esc(c.n) + '</span><span class="rval">–</span><span class="rnext">Noch keine Daten' + (c.hint ? " (" + c.hint + ")" : "") + esc(edHint) + "</span></li>";
+      const nextTxt = c.idx >= MAXR ? "Höchster Rang erreicht" : "Nächster Rang " + RANK_L[c.idx + 1] + " ab " + c.fmt(c.next);
+      return "<li" + ed + ">" + rankBadge(c.idx) + '<span class="rname">' + esc(c.n) + '</span><span class="rval">' + esc(c.fmt(c.v)) + '</span><div class="rbar"><i style="width:' + Math.round(c.frac * 100) + '%"></i></div><span class="rnext">' + esc(RANK_T[c.idx] + ". " + nextTxt + edHint) + "</span></li>";
     }).join("");
+  }
+  // ---- Rang-Werte korrigieren ----
+  let rankEditK = null;
+  function curCat(k) { const R = computeRanks(); return R.cats.filter((c) => c.k === k)[0]; }
+  function silentRankSync() {
+    const R = computeRanks();
+    const cur = {};
+    R.cats.forEach((c) => { if (c.has) cur[c.k] = c.idx; });
+    if (R.overall) cur._overall = R.overall.idx;
+    rankMeta().ranks = cur;
+    saveLocal(); renderRankChip(); renderRanks();
+  }
+  function renderRankEdit() {
+    const c = curCat(rankEditK);
+    if (!c) return;
+    $("reTitle").textContent = c.n + " korrigieren";
+    const man = (rankMeta().rankSet || {})[c.k];
+    $("reVal").value = man > 0 ? String(man) : "";
+    $("reUnit").textContent = c.unit === "s" ? "Sekunden" : "Wiederholungen am Stück";
+    $("reList").innerHTML = c.cands.length ? c.cands.map((x, i) => '<li class="' + (x.ignored ? "ign" : "") + '"><span class="rl"><b>' + esc(Math.round(x.v)) + " " + esc(c.unit) + "</b><small>" + esc(x.label) + '</small></span>' +
+      (x.manual ? '<button class="btn small" data-act="clear">Entfernen</button>' : '<button class="btn small' + (x.ignored ? "" : " danger") + '" data-i="' + i + '">' + (x.ignored ? "Wieder zählen" : "Ignorieren") + "</button>") + "</li>").join("") : '<li><span class="rl"><small>Noch keine Einträge.</small></span></li>';
+    $("reList")._c = c;
+  }
+  function openRankEdit(k) {
+    rankEditK = k; renderRankEdit();
+    $("rankEdit").hidden = false;
+  }
+  function closeRankEdit() { $("rankEdit").hidden = true; rankEditK = null; }
+  if ($("rankList")) {
+    const go = (ev) => { const li = ev.target.closest("li.editable"); if (li && li.dataset.k) { hap("tap"); openRankEdit(li.dataset.k); } };
+    $("rankList").addEventListener("click", go);
+    $("rankList").addEventListener("keydown", (ev) => { if (ev.key === "Enter" || ev.key === " ") { ev.preventDefault(); go(ev); } });
+    $("reList").addEventListener("click", (ev) => {
+      const b = ev.target.closest("button");
+      if (!b) return;
+      const m = rankMeta();
+      if (b.dataset.act === "clear") { if (m.rankSet) delete m.rankSet[rankEditK]; }
+      else {
+        const x = $("reList")._c.cands[+b.dataset.i];
+        if (!x) return;
+        m.rankIgnore = m.rankIgnore || {};
+        const key = rankEditK + "|" + x.key;
+        if (m.rankIgnore[key]) delete m.rankIgnore[key]; else m.rankIgnore[key] = 1;
+      }
+      saveLocal(); silentRankSync(); renderRankEdit();
+    });
+    $("reSet").addEventListener("click", () => {
+      const v = Math.round(num($("reVal").value) || 0);
+      if (v < 1 || v > 999) { toast("Bitte eine Zahl zwischen 1 und 999 eintragen."); return; }
+      const m = rankMeta(); m.rankSet = m.rankSet || {}; m.rankSet[rankEditK] = v;
+      saveLocal(); silentRankSync(); renderRankEdit(); toast("Bestwert gesetzt");
+    });
+    $("reClose").addEventListener("click", closeRankEdit);
+    $("rankEdit").addEventListener("click", (ev) => { if (ev.target === $("rankEdit")) closeRankEdit(); });
   }
   function renderRankChip() {
     const chip = $("rankChip");
