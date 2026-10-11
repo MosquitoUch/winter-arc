@@ -5021,10 +5021,10 @@ main[data-dir="l"] > section:not([hidden]) { animation: viewInL 260ms cubic-bezi
     }).sort((a, b) => (b.date > a.date ? 1 : b.date < a.date ? -1 : 0)).slice(0, 14);
     const runs = runEntries();
     if (runs.length) {
-      let fastest = runs[0], longest = runs[0];
-      runs.forEach((r) => { if (r.pace < fastest.pace) fastest = r; if (r.km > longest.km) longest = r; });
+      let longest = runs[0], fastest = null;
+      runs.forEach((r) => { if (r.km > longest.km) longest = r; if (r.km >= 4.8 && (!fastest || r.pace < fastest.pace)) fastest = r; });
       rows.unshift({ name: "Längster Lauf", label: fmtN(longest.km) + " km", date: longest.date });
-      rows.unshift({ name: "Schnellste Pace", label: fmtPace(fastest.pace) + " /km", date: fastest.date });
+      if (fastest) rows.unshift({ name: "Schnellste Pace (ab 5 km)", label: fmtPace(fastest.pace) + " /km", date: fastest.date });
     }
     $("reclist").innerHTML = rows.map((r) => '<li><span class="rn">' + esc(r.name) + '</span><span class="rv">' + esc(r.label) + '</span><span class="rd">' + esc(shortDate(parseKey(r.date))) + "</span></li>").join("");
   }
