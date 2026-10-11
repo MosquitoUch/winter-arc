@@ -441,7 +441,7 @@ pre.prompt { white-space: pre-wrap; margin: 0 0 12px; padding: 14px; border-radi
 .collbtn[aria-expanded="false"] svg { transform: rotate(-90deg); }
 .is-collapsed > *:not(.shead) { display: none !important; }
 .is-collapsed { padding-bottom: 0 !important; }
-.sleepin { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto; gap: 8px; align-items: center; }
+.sleepin { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto auto; gap: 8px; align-items: center; }
 .sleepin .inp { min-height: 44px; text-align: center; }
 .sleepin .btn { min-width: 46px; padding: 8px; }
 .review { margin-top: 44px; padding-top: 24px; border-top: 1px solid var(--line); }
@@ -682,6 +682,69 @@ pre.prompt { white-space: pre-wrap; margin: 0 0 12px; padding: 14px; border-radi
 .entlist .ed { color: var(--mute); font-size: 13px; }
 .entlist .inp { width: 100%; min-height: 40px; }
 .entlist .two2 { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1.2fr); gap: 8px; align-items: center; color: var(--mute); }
+.syscard { position: relative; margin-top: 12px; padding: 16px; border-radius: 16px; border: 1px solid rgba(var(--acc-rgb), .45); background: linear-gradient(180deg, rgba(var(--acc-rgb), .10), rgba(var(--acc-rgb), .02) 40%, rgba(0, 0, 0, .35)); box-shadow: 0 0 0 1px rgba(var(--acc-rgb), .08) inset, 0 0 28px rgba(var(--acc-rgb), .14); overflow: hidden; }
+.syscard::before { content: ""; position: absolute; inset: 0; pointer-events: none; background: repeating-linear-gradient(0deg, rgba(255, 255, 255, .025) 0 1px, transparent 1px 3px); }
+.sw-top { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+.sw-tag { font-family: var(--display); font-weight: 800; letter-spacing: .32em; text-transform: uppercase; font-size: 13px; color: var(--ice); padding: 3px 10px; border: 1px solid rgba(var(--acc-rgb), .5); border-radius: 6px; }
+.sw-name { color: var(--ink-2); font-size: 14px; font-weight: 600; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.sw-head { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 16px; align-items: center; margin-top: 14px; }
+.sw-lv { display: grid; justify-items: center; line-height: 1; }
+.sw-lv small { font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: var(--mute); }
+.sw-lv b { font-family: var(--display); font-size: 54px; font-weight: 800; color: var(--ice); text-shadow: 0 0 18px rgba(var(--acc-rgb), .5); font-variant-numeric: tabular-nums; }
+.sw-main { display: grid; gap: 10px; min-width: 0; }
+.sw-rank { display: flex; align-items: center; gap: 10px; min-width: 0; }
+.sw-rank > div { display: grid; gap: 2px; min-width: 0; }
+.sw-rank b { font-family: var(--display); font-size: 20px; line-height: 1.05; }
+.sw-rank span:not(.rbadge) { color: var(--ink-2); font-size: 13px; }
+.sw-xp { display: grid; gap: 5px; }
+.sw-xp small { color: var(--mute); font-size: 12px; font-variant-numeric: tabular-nums; }
+.radar { display: block; width: 100%; max-width: 360px; margin: 6px auto 0; overflow: visible; }
+.rd-ring { fill: none; stroke: rgba(255, 255, 255, .08); stroke-width: 1; }
+.rd-ring.s { stroke: rgba(255, 194, 61, .28); stroke-dasharray: 3 4; }
+.rd-ax { stroke: rgba(255, 255, 255, .08); stroke-width: 1; }
+.rd-peak { fill: rgba(var(--acc-rgb), .22); stroke: var(--ice); stroke-width: 2; stroke-linejoin: round; filter: drop-shadow(0 0 8px rgba(var(--acc-rgb), .55)); }
+.rd-form { fill: none; stroke: rgba(255, 255, 255, .75); stroke-width: 1.5; stroke-dasharray: 5 4; stroke-linejoin: round; }
+.rd-dot { fill: var(--ice); }
+.rd-lab { fill: var(--ink-2); font-family: var(--display); font-size: 15px; font-weight: 700; letter-spacing: .08em; }
+.rd-val { fill: var(--ink); font-weight: 800; }
+.sw-legend { display: flex; justify-content: center; align-items: center; gap: 8px; color: var(--mute); font-size: 12px; margin: 0 0 12px; flex-wrap: wrap; }
+.sw-legend i { display: inline-block; width: 18px; height: 0; border-top: 2px solid var(--ice); vertical-align: middle; }
+.sw-legend i.lg-form { border-top: 2px dashed rgba(255, 255, 255, .75); margin-left: 8px; }
+.sw-attrs { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.sw-at { position: relative; display: grid; grid-template-columns: minmax(0, 1fr) auto; grid-template-rows: auto auto auto; align-items: baseline; padding: 10px 10px 8px; border-radius: 12px; background: rgba(0, 0, 0, .35); border: 1px solid var(--line); }
+.sw-at span { font-family: var(--display); font-weight: 800; letter-spacing: .14em; font-size: 13px; color: var(--ice); }
+.sw-at b { grid-column: 1; font-family: var(--display); font-size: 28px; font-weight: 800; line-height: 1.05; font-variant-numeric: tabular-nums; }
+.sw-at em { grid-column: 2; grid-row: 1 / 3; align-self: center; font-style: normal; font-family: var(--display); font-weight: 800; font-size: 20px; color: var(--mute); }
+.sw-at em.r1 { color: #C98E5A; } .sw-at em.r2 { color: #C3D0DD; } .sw-at em.r3 { color: #5FD4FF; } .sw-at em.r4 { color: #B48CFF; } .sw-at em.r5 { color: #FFC23D; } .sw-at em.r6 { color: #FF9BE8; text-shadow: 0 0 10px rgba(190, 140, 255, .8); } .sw-at em.r0 { color: #8A8F98; }
+.sw-at small { grid-column: 1 / -1; color: var(--mute); font-size: 11px; }
+.sw-at.off { opacity: .5; }
+.sw-form { color: var(--ink-2); font-size: 13px; margin: 12px 0 0; }
+.ranklist li.rgrp { display: flex; align-items: baseline; gap: 10px; padding: 18px 0 6px; border-top: 0; }
+.ranklist li.rgrp + li { border-top: 0; }
+.rgk { font-family: var(--display); font-weight: 800; letter-spacing: .16em; color: var(--ice); font-size: 15px; }
+.rgn { font-weight: 600; flex: 1; min-width: 0; }
+.rgv { font-family: var(--display); font-weight: 700; color: var(--ink-2); font-variant-numeric: tabular-nums; }
+.rrtab tr.rr-g th { text-align: left; color: var(--ice); font-family: var(--display); letter-spacing: .12em; font-size: 12px; padding-top: 14px; border-top: 0; }
+.sysov { position: fixed; inset: 0; z-index: 95; display: grid; place-items: center; padding: 24px; background: radial-gradient(circle at 50% 45%, rgba(var(--acc-rgb), .16), rgba(0, 0, 0, .86) 60%); backdrop-filter: blur(3px); -webkit-backdrop-filter: blur(3px); }
+.sysbox { position: relative; width: min(100%, 360px); display: grid; justify-items: center; gap: 12px; text-align: center; padding: 22px 18px 18px; border-radius: 14px; border: 1px solid rgba(var(--acc-rgb), .7); background: linear-gradient(180deg, rgba(8, 14, 22, .96), rgba(4, 8, 14, .96)); box-shadow: 0 0 0 1px rgba(var(--acc-rgb), .15) inset, 0 0 40px rgba(var(--acc-rgb), .35), 0 0 120px rgba(var(--acc-rgb), .15); overflow: hidden; }
+.sysbox::before { content: ""; position: absolute; inset: 0; pointer-events: none; background: repeating-linear-gradient(0deg, rgba(255, 255, 255, .03) 0 1px, transparent 1px 3px); }
+.systag { display: inline-flex; align-items: center; gap: 8px; font-family: var(--display); font-weight: 800; letter-spacing: .35em; text-transform: uppercase; font-size: 14px; color: var(--ice); padding: 4px 14px; border: 1px solid rgba(var(--acc-rgb), .6); border-radius: 6px; }
+.systag span { display: inline-grid; place-items: center; width: 18px; height: 18px; border-radius: 50%; border: 1.5px solid var(--ice); font-size: 12px; letter-spacing: 0; }
+.sysbox h2 { margin: 0; font-family: var(--display); font-size: 32px; line-height: 1.05; text-shadow: 0 0 18px rgba(var(--acc-rgb), .55); }
+.syslines { list-style: none; margin: 0; padding: 0; width: 100%; display: grid; gap: 6px; }
+.syslines li { display: flex; justify-content: space-between; gap: 12px; padding: 8px 10px; border-radius: 8px; background: rgba(var(--acc-rgb), .07); border: 1px solid rgba(var(--acc-rgb), .18); font-size: 15px; }
+.syslines li span { color: var(--ink-2); text-align: left; }
+.syslines li b { font-family: var(--display); font-size: 18px; color: var(--ink); white-space: nowrap; }
+.sysbox .btn { width: 100%; margin-top: 4px; }
+.sysnote { margin: 0; color: var(--ink-2); font-size: 13px; }
+.sysov.open .sysnote { animation: sysIn 360ms ease-out both; animation-delay: 620ms; }
+.sysov.open .sysbox { animation: sysOpen 520ms cubic-bezier(.2, .9, .2, 1) both; }
+.sysov.open .systag, .sysov.open .sysbadge, .sysov.open h2 { animation: sysIn 380ms ease-out both; animation-delay: 260ms; }
+.sysov.open .syslines li { animation: sysIn 360ms ease-out both; animation-delay: var(--d, 400ms); }
+.sysov.open .sysbox .btn { animation: sysIn 360ms ease-out both; animation-delay: 700ms; }
+@keyframes sysOpen { 0% { transform: scaleY(.02) scaleX(.4); opacity: 0; } 35% { transform: scaleY(.02) scaleX(1); opacity: 1; } 100% { transform: none; opacity: 1; } }
+@keyframes sysIn { from { opacity: 0; transform: translateY(6px); filter: blur(3px); } to { opacity: 1; transform: none; filter: none; } }
+@media (prefers-reduced-motion: reduce) { .sysov.open .sysbox, .sysov.open .systag, .sysov.open .sysbadge, .sysov.open h2, .sysov.open .syslines li, .sysov.open .sysbox .btn { animation: none; } }
 .rankreq { margin-top: 14px; border-top: 1px solid var(--line); padding-top: 12px; }
 .rankreq summary { cursor: pointer; font-weight: 600; min-height: 40px; display: flex; align-items: center; }
 .rrwrap { overflow-x: auto; margin-top: 8px; }
@@ -1108,7 +1171,15 @@ main[data-dir="l"] > section:not([hidden]) { animation: viewInL 260ms cubic-bezi
                 <input class="sr" type="file" id="sleepFileCam" accept="image/*" capture="environment" tabindex="-1">
               </div>
             </div>
-            <p class="ci-scale">Energie: 1 leer, 5 voll. Muskelkater: 1 keiner, 5 sehr stark. Schlaf: Dauer und Score aus Garmin, dazu auf Wunsch ein Screenshot.</p>
+            <div class="ci-row"><span class="ci-l">Herz</span>
+              <div class="sleepin">
+                <label class="sr" for="rhrIn">Ruhepuls</label>
+                <input class="inp" id="rhrIn" inputmode="numeric" placeholder="Ruhepuls" autocomplete="off">
+                <label class="sr" for="vo2In">VO2max</label>
+                <input class="inp" id="vo2In" inputmode="decimal" placeholder="VO2max" autocomplete="off">
+              </div>
+            </div>
+            <p class="ci-scale">Energie: 1 leer, 5 voll. Muskelkater: 1 keiner, 5 sehr stark. Schlaf: Dauer und Score aus Garmin, dazu auf Wunsch ein Screenshot. Herz: Ruhepuls und VO2max aus Garmin, wenn du sie hast.</p>
             <p class="ci-scale" id="sleepInfo"></p>
             <p class="ci-hint" id="cihint" hidden></p>
           </div>
@@ -1191,13 +1262,13 @@ main[data-dir="l"] > section:not([hidden]) { animation: viewInL 260ms cubic-bezi
       <div class="progview">
         <div class="block" id="rankBlock">
           <h2 class="bh">Dein Rang</h2>
-          <p class="lead">Von E bis S+, aus deinen besten Leistungen. Beim Laufen zählt deine beste 5-km-Zeit. Zusatzgewicht wird in Wiederholungen umgerechnet: 10 kg extra zählen deutlich mehr als eine reine Körpergewichts-Wiederholung. Stimmt ein Wert nicht, tipp auf die Zeile und korrigiere ihn.</p>
-          <div class="rankhero" id="rankHero"></div>
+          <div class="syscard" id="statusWin"></div>
+          <p class="lead">Jeder Bereich zahlt auf ein Attribut ein, die Attribute ergeben deinen Gesamtrang. Stimmt ein Wert nicht, tipp auf die Zeile und korrigiere ihn.</p>
           <ul class="ranklist" id="rankList"></ul>
           <details class="rankreq" id="rankReqD">
             <summary>Was brauche ich für welchen Rang?</summary>
             <div class="rrwrap"><table class="rrtab" id="rankReq"></table></div>
-            <p class="rrnote">Bei den Übungen zählt der beste Satz am Stück, mit Zusatzgewicht umgerechnet in Wiederholungen. Beim Laufen zählt deine beste Zeit über 5 km (Läufe ab 4,8 km, längere werden auf 5 km umgerechnet). Weniger ist hier besser.</p>
+            <p class="rrnote">Übungen: bester Satz am Stück, Zusatzgewicht wird in Wiederholungen umgerechnet. 5 km: beste Zeit, Läufe ab 4,8 km, längere werden umgerechnet. Ruhepuls: Schnitt aus 3 Messungen, weniger ist besser. Laufeffizienz: Meter pro Herzschlag bei Läufen ab 3 km. Maximalkraft: geschätztes Klimmzug-Maximum über Körpergewicht. Protein und Gewohnheiten: bester Zeitraum von 4 Wochen.</p>
           </details>
         </div>
         <div class="block">
@@ -1632,9 +1703,6 @@ main[data-dir="l"] > section:not([hidden]) { animation: viewInL 260ms cubic-bezi
   </main>
 </div>
 
-<div class="rec rankup" id="rankUp" hidden role="dialog" aria-modal="true" aria-label="Rang-Aufstieg">
-  <div class="rec-box"><div id="rankUpBadge"></div><p class="rec-k">Rang-Aufstieg</p><h2 class="rec-name" id="rankUpTitle"></h2><p class="rec-prev" id="rankUpText"></p></div>
-</div>
 <div class="rec" id="rec" hidden role="dialog" aria-modal="true" aria-label="Neuer Rekord">
   <div class="rec-box">
     <svg class="rec-svg" viewBox="0 0 120 124" aria-hidden="true">
@@ -1753,6 +1821,17 @@ main[data-dir="l"] > section:not([hidden]) { animation: viewInL 260ms cubic-bezi
       <div class="field"><label for="axSets">Sätze</label><input id="axSets" inputmode="numeric" autocomplete="off" placeholder="automatisch"><small>Leer lassen, wenn du die Leistung einträgst</small></div>
     </div>
     <div class="row"><button class="btn primary" id="axSave">Hinzufügen</button><button class="btn" id="axClose">Abbrechen</button></div>
+  </div>
+</div>
+
+<div class="sysov" id="sysWin" role="dialog" aria-modal="true" aria-labelledby="sysTitle" hidden>
+  <div class="sysbox">
+    <div class="systag"><span>!</span>System</div>
+    <div class="sysbadge" id="sysBadge" hidden></div>
+    <h2 id="sysTitle"></h2>
+    <ul class="syslines" id="sysLines"></ul>
+    <p class="sysnote" id="sysNote" hidden></p>
+    <button class="btn primary" id="sysOk">Bestätigen</button>
   </div>
 </div>
 
@@ -4428,6 +4507,7 @@ main[data-dir="l"] > section:not([hidden]) { animation: viewInL 260ms cubic-bezi
     if (document.activeElement !== $("sleepScore")) $("sleepScore").value = sl.score ? String(sl.score) : "";
     $("sleepShot").hidden = photosState !== "ok";
     $("sleepCam").hidden = photosState !== "ok";
+    if (typeof renderVitals === "function") renderVitals(dk);
     $("sleepInfo").textContent = photoIdx[dk + "|sleep"] ? "Garmin-Screenshot von heute ist gespeichert." : "";
     if (typeof patchRestRing === "function" && restReady) patchRestRing(dk);
   }
@@ -7518,10 +7598,11 @@ main[data-dir="l"] > section:not([hidden]) { animation: viewInL 260ms cubic-bezi
     if (el) { el.scrollIntoView({ block: "center", behavior: "smooth" }); if (el.tagName === "INPUT") setTimeout(() => { if (el.readOnly) el.click(); else el.focus({ preventScroll: true }); }, 400); }
   });
 
-  // ---------- Ränge ----------
+  // ---------- Ränge (v10: System-Status) ----------
   const RANK_L = ["E", "D", "C", "B", "A", "S", "S+"];
   const RANK_T = ["Rekrut", "Kämpfer", "Veteran", "Elite", "Meister", "Legende", "Mythos"];
   const MAXR = 6;
+  const FORM_DAYS = 28;
   function rankScore(v, pts) {
     const top = pts.length - 1;
     for (let i = 0; i < top; i++) {
@@ -7533,118 +7614,268 @@ main[data-dir="l"] > section:not([hidden]) { animation: viewInL 260ms cubic-bezi
   }
   const rankMeta = () => { state.meta = state.meta || {}; return state.meta; };
   const isIgnored = (key) => !!((rankMeta().rankIgnore || {})[key]);
+  const formSince = () => dateKey(addDays(today(), -FORM_DAYS));
+  const pickBest = (arr, low) => arr.reduce((m, c) => (!m ? c.v : low ? Math.min(m, c.v) : Math.max(m, c.v)), 0);
   // Kandidaten pro Bereich: jeder Eintrag, der zum Bestwert beitragen könnte (auch ignorierte, für den Editor)
   function rankCands(k, list, low) {
     const man = (rankMeta().rankSet || {})[k];
     if (man > 0) list.push({ key: "m", label: "Von dir festgelegt", v: man, manual: true });
     list.forEach((c) => { c.ignored = !c.manual && isIgnored(k + "|" + c.key); });
     list.sort((a, b) => (low ? a.v - b.v : b.v - a.v));
-    const best = list.reduce((m, c) => (c.ignored ? m : !m ? c.v : low ? Math.min(m, c.v) : Math.max(m, c.v)), 0);
-    return { best, cands: list.slice(0, 8) };
+    const ok = list.filter((c) => !c.ignored);
+    const since = formSince();
+    return { best: pickBest(ok, low), form: pickBest(ok.filter((c) => !c.manual && c.d && c.d >= since), low), cands: list.slice(0, 8) };
   }
+  // gleitender Durchschnitt über n Einträge; Bestwert und bester Wert der letzten 4 Wochen
+  function rollAvg(entries, n, low) {
+    const since = formSince();
+    let best = 0, form = 0;
+    for (let i = n - 1; i < entries.length; i++) {
+      let s = 0;
+      for (let j = i - n + 1; j <= i; j++) s += entries[j].v;
+      const a = s / n;
+      if (!best || (low ? a < best : a > best)) best = a;
+      if (entries[i].d >= since && (!form || (low ? a < form : a > form))) form = a;
+    }
+    return { best, form };
+  }
+  const ATTRS = [
+    { k: "str", s: "STR", n: "Stärke", t: "Der Eiserne" },
+    { k: "tec", s: "TEC", n: "Technik", t: "Der Akrobat" },
+    { k: "agi", s: "AGI", n: "Tempo", t: "Der Schnelle" },
+    { k: "end", s: "END", n: "Ausdauer", t: "Der Unermüdliche" },
+    { k: "vit", s: "VIT", n: "Vitalität", t: "Der Unverwüstliche" },
+    { k: "wil", s: "WIL", n: "Wille", t: "Der Unbeugsame" }
+  ];
+  const statOf = (score) => Math.round(10 + score * 15);
   function computeRanks() {
     const bw = +S().bodyweight || 75;
     const hist = buildHistory();
     const tests = state.tests.entries || [];
-    const testCands = (k) => tests.filter((e) => e.values && e.values[k] > 0).map((e) => ({ key: "t|" + e.date, label: "Test am " + shortDate(parseKey(e.date)), v: e.values[k] }));
+    const since = formSince(), tk = todayKey();
+    const testCands = (k) => tests.filter((e) => e.values && e.values[k] > 0).map((e) => ({ key: "t|" + e.date, d: e.date, label: "Test am " + shortDate(parseKey(e.date)), v: e.values[k] }));
     const logLabel = (it) => shortDate(parseKey(it.date)) + ": " + String(it.note).slice(0, 34);
+    const cats = [];
+    const add = (o) => { cats.push(o); return o; };
+    // ---- STR ----
     const repCat = (k, n, rx, notRx, testK, th) => {
       const list = testK ? testCands(testK) : [];
       Object.keys(hist).forEach((key) => {
         const h = hist[key], nm = String(h.name || "").toLowerCase();
         if (!rx.test(nm) || (notRx && notRx.test(nm))) return;
-        h.items.forEach((it) => { if (it.met.secs) return; const eq = (it.met.v / bw - 1) * 30; if (eq > 0) list.push({ key: "l|" + it.date + "|" + it.id, label: logLabel(it), v: eq }); });
+        h.items.forEach((it) => { if (it.met.secs) return; const eq = (it.met.v / bw - 1) * 30; if (eq > 0) list.push({ key: "l|" + it.date + "|" + it.id, d: it.date, label: logLabel(it), v: eq }); });
       });
       const rc = rankCands(k, list);
-      return { k, n, v: rc.best, cands: rc.cands, edit: true, unit: "Wdh.", pts: [0].concat(th), fmt: (x) => Math.round(x) + " Wdh.", has: rc.best > 0 };
+      add({ k, n, a: "str", v: rc.best, form: rc.form, cands: rc.cands, edit: true, unit: "Wdh.", pts: [0].concat(th), fmt: (x) => Math.round(x) + " Wdh.", has: rc.best > 0 });
     };
-    const cats = [
-      repCat("pull", "Klimmzüge", /klimmz|pull-?up/, /chin|row|ruder|negativ|band|austral/, "pullups", [5, 10, 15, 20, 28, 38]),
-      repCat("chin", "Chin-ups", /chin/, /negativ|band/, null, [6, 12, 17, 22, 30, 40]),
-      repCat("dips", "Dips", /\bdip/, /bank|bench|negativ|band|stuhl/, "dips", [8, 15, 22, 30, 40, 55]),
-      repCat("push", "Liegestütze", /liegest|push-?up/, /pike|knie|negativ|band|archer|einarm|handstand/, "pushups", [15, 30, 45, 60, 80, 100])
-    ];
+    repCat("pull", "Klimmzüge", /klimmz|pull-?up/, /chin|row|ruder|negativ|band|austral/, "pullups", [5, 10, 15, 20, 28, 38]);
+    repCat("chin", "Chin-ups", /chin/, /negativ|band/, null, [6, 12, 17, 22, 30, 40]);
+    repCat("dips", "Dips", /\bdip/, /bank|bench|negativ|band|stuhl/, "dips", [8, 15, 22, 30, 40, 55]);
+    repCat("push", "Liegestütze", /liegest|push-?up/, /pike|knie|negativ|band|archer|einarm|handstand/, "pushups", [15, 30, 45, 60, 80, 100]);
+    const kList = [];
+    Object.keys(hist).forEach((key) => {
+      const h = hist[key], nm = String(h.name || "").toLowerCase();
+      if (!/klimmz|pull-?up|chin/.test(nm) || /negativ|band|austral|row|ruder/.test(nm)) return;
+      h.items.forEach((it) => {
+        if (it.met.secs || !(it.perf.weight > 0) || it.met.r > 12) return;
+        kList.push({ key: "l|" + it.date + "|" + it.id, d: it.date, label: logLabel(it), v: (it.met.v / bw - 1) * 100 });
+      });
+    });
+    const kc = rankCands("kraft", kList);
+    add({ k: "kraft", n: "Maximalkraft", a: "str", v: kc.best, form: kc.form, u: "geschätztes Klimmzug-Maximum über Körpergewicht", pts: [0, 15, 30, 45, 60, 75, 95], fmt: (x) => "+" + Math.round(x) + " %", has: kc.best > 0, hint: "Klimmzüge mit Zusatzgewicht, bis 12 Wdh." });
+    // ---- TEC ----
     const lsList = testCands("lsit");
-    Object.keys(hist).forEach((key) => { const h = hist[key]; if (!/l-?sit/i.test(h.name)) return; h.items.forEach((it) => { if (it.met.secs && it.met.v > 0) lsList.push({ key: "l|" + it.date + "|" + it.id, label: logLabel(it), v: it.met.v }); }); });
+    Object.keys(hist).forEach((key) => { const h = hist[key]; if (!/l-?sit/i.test(h.name)) return; h.items.forEach((it) => { if (it.met.secs && it.met.v > 0) lsList.push({ key: "l|" + it.date + "|" + it.id, d: it.date, label: logLabel(it), v: it.met.v }); }); });
     const lsc = rankCands("core", lsList);
-    cats.push({ k: "core", n: "L-Sit", v: lsc.best, cands: lsc.cands, edit: true, unit: "s", pts: [0, 5, 10, 20, 30, 45, 60], fmt: (x) => Math.round(x) + " s", has: lsc.best > 0 });
-    // Laufen: 5-km-Zeit. Längere Läufe werden mit der Riegel-Formel auf 5 km umgerechnet, kürzere als 4,8 km zählen nicht.
+    add({ k: "core", n: "L-Sit", a: "tec", v: lsc.best, form: lsc.form, cands: lsc.cands, edit: true, unit: "s", u: "Sekunden gehalten", pts: [0, 5, 10, 20, 30, 45, 60], fmt: (x) => Math.round(x) + " s", has: lsc.best > 0 });
+    const lv = SKILLS.map((sk) => Math.min(1, ((state.skills[sk.key] || {}).level || 0) / sk.levels.length));
+    const skAvg = lv.reduce((a, b) => a + b, 0) / Math.max(1, lv.length);
+    add({ k: "skills", n: "Skills", a: "tec", v: skAvg, form: skAvg, u: "aller Skill-Stufen", pts: [0, 0.12, 0.28, 0.48, 0.7, 0.9, 1], fmt: (x) => Math.round(x * 100) + " %", has: skAvg > 0 });
+    // ---- AGI ----
     const runList = [];
     runEntries().forEach((r, i) => {
       if (r.km < 4.8) return;
-      const eq = r.sec * Math.pow(5 / r.km, 1.06);
-      runList.push({ key: "r|" + r.date + "|" + i, label: shortDate(parseKey(r.date)) + ": " + fmtN(r.km) + " km in " + fmtT5(r.sec), v: eq });
+      runList.push({ key: "r|" + r.date + "|" + i, d: r.date, label: shortDate(parseKey(r.date)) + ": " + fmtN(r.km) + " km in " + fmtT5(r.sec), v: r.sec * Math.pow(5 / r.km, 1.06) });
     });
     const rr = rankCands("run", runList, true);
-    cats.push({ k: "run", n: "Laufen", v: rr.best, cands: rr.cands, edit: true, unit: "5 km", low: true, pts: [2700, 2100, 1800, 1620, 1440, 1200, 1080], fmt: (x) => fmtT5(x), has: !!rr.best, hint: "ein Lauf ab 5 km" });
-    const lv = SKILLS.map((sk) => Math.min(1, ((state.skills[sk.key] || {}).level || 0) / sk.levels.length));
-    const skAvg = lv.reduce((a, b) => a + b, 0) / Math.max(1, lv.length);
-    cats.push({ k: "skills", n: "Skills", v: skAvg, pts: [0, 0.12, 0.28, 0.48, 0.7, 0.9, 1], fmt: (x) => Math.round(x * 100) + " %", has: skAvg > 0 });
-    let tot = 0, dn = 0;
-    const tk = todayKey(), start = arcStartDate();
-    for (let d = start, i = 0; dateKey(d) <= tk && i < 400; d = addDays(d, 1), i++) {
-      const s = effSession(d);
-      if (!s || s.free) continue;
-      const pr = sessionProgress(dateKey(d), s);
-      if (dateKey(d) === tk && !pr.done) continue;
-      tot += pr.total; dn += pr.done;
-    }
-    const disc = tot >= 10 ? (dn / tot) * 100 : 0;
-    cats.push({ k: "disc", n: "Disziplin", v: disc, pts: [0, 50, 65, 80, 90, 97, 100], fmt: (x) => Math.round(x) + " % der Sätze", has: tot >= 10 });
+    add({ k: "run", n: "5 km", a: "agi", low: true, v: rr.best, form: rr.form, cands: rr.cands, edit: true, unit: "5 km", u: "beste Zeit, längere Läufe umgerechnet", pts: [2700, 2100, 1800, 1620, 1440, 1200, 1080], fmt: (x) => fmtT5(x), has: !!rr.best, hint: "ein Lauf ab 5 km" });
+    // ---- END ----
+    const vit = [];
+    Object.keys(state.logs).sort().forEach((d) => { const v = state.logs[d] && state.logs[d].vitals; if (v) vit.push({ d, rhr: +v.rhr || 0, vo2: +v.vo2 || 0 }); });
+    const vo2 = vit.filter((x) => x.vo2 > 0).map((x) => ({ d: x.d, v: x.vo2 }));
+    add({ k: "vo2", n: "VO2max", a: "end", v: pickBest(vo2), form: pickBest(vo2.filter((x) => x.d >= since)), u: "ml/kg/min laut Garmin", pts: [30, 40, 45, 50, 54, 58, 63], fmt: (x) => fmtN(Math.round(x * 10) / 10), has: vo2.length > 0, hint: "im Check-in eintragen" });
+    const mot = runEntries().filter((r) => r.km >= 3 && r.avg > 80).map((r) => ({ d: r.date, v: (60000 / r.pace) / r.avg }));
+    add({ k: "motor", n: "Laufeffizienz", a: "end", v: pickBest(mot), form: pickBest(mot.filter((x) => x.d >= since)), u: "Meter pro Herzschlag", pts: [0.8, 0.95, 1.05, 1.15, 1.27, 1.4, 1.55], fmt: (x) => x.toFixed(2).replace(".", ",") + " m", has: mot.length > 0, hint: "Lauf ab 3 km mit Ø-Puls" });
+    // ---- VIT ----
+    const rhr = vit.filter((x) => x.rhr > 0).map((x) => ({ d: x.d, v: x.rhr }));
+    const rh = rhr.length >= 3 ? rollAvg(rhr, 3, true) : { best: 0, form: 0 };
+    add({ k: "herz", n: "Ruhepuls", a: "vit", low: true, v: rh.best, form: rh.form, u: "Schnitt aus 3 Messungen", pts: [85, 72, 66, 60, 55, 50, 45], fmt: (x) => Math.round(x) + " bpm", has: rh.best > 0, hint: "an 3 Tagen im Check-in eintragen" });
+    const sl = Object.keys(state.logs).sort().map((d) => ({ d, v: +(((state.logs[d] || {}).sleep || {}).score) || 0 })).filter((x) => x.v > 0);
+    const sr = sl.length >= 7 ? rollAvg(sl, 7) : { best: 0, form: 0 };
+    add({ k: "schlaf", n: "Schlaf", a: "vit", v: sr.best, form: sr.form, u: "Garmin-Score, Schnitt aus 7 Nächten", pts: [0, 55, 65, 72, 78, 84, 90], fmt: (x) => "Ø " + Math.round(x), has: sr.best > 0, hint: "7 Nächte mit Score" });
+    const days = [];
+    for (let d = arcStartDate(), i = 0; dateKey(d) <= tk && i < 400; d = addDays(d, 1), i++) days.push(dateKey(d));
+    const winRate = (hitFn, minDays) => {
+      let best = 0, form = 0, ok = false;
+      for (let i = 0; i < days.length; i++) {
+        let n = 0, h = 0;
+        for (let j = Math.max(0, i - FORM_DAYS + 1); j <= i; j++) { const r = hitFn(days[j]); if (r == null) continue; n++; h += r; }
+        if (n < minDays) continue;
+        ok = true;
+        const v = (h / n) * 100;
+        if (v > best) best = v;
+        if (i === days.length - 1) form = v;
+      }
+      return { best, form, ok };
+    };
+    const ptg = +S().proteinTarget || 120;
+    const pr = winRate((dk) => { const p = proteinTotal(dk); return p > 0 ? (p >= ptg ? 1 : 0) : null; }, 7);
+    add({ k: "protein", n: "Protein", a: "vit", v: pr.best, form: pr.form, u: "der Tage mit Ziel " + ptg + " g, 4 Wochen", pts: [0, 30, 50, 65, 80, 90, 97], fmt: (x) => Math.round(x) + " %", has: pr.ok, hint: "7 Tage Protein eintragen" });
+    // ---- WIL ----
+    let tot = 0, dn = 0, ft = 0, fd = 0;
+    days.forEach((dk) => {
+      const s = effSession(parseKey(dk));
+      if (!s || s.free) return;
+      const p = sessionProgress(dk, s);
+      if (dk === tk && !p.done) return;
+      tot += p.total; dn += p.done;
+      if (dk >= since) { ft += p.total; fd += p.done; }
+    });
+    add({ k: "disc", n: "Disziplin", a: "wil", v: tot >= 10 ? (dn / tot) * 100 : 0, form: ft >= 10 ? (fd / ft) * 100 : 0, u: "der geplanten Sätze", pts: [0, 50, 65, 80, 90, 97, 100], fmt: (x) => Math.round(x) + " %", has: tot >= 10 });
+    const usedHabits = days.some((dk) => habitStats(dk).n > 0);
+    const hb = usedHabits ? winRate((dk) => { const h = habitStats(dk); return h.total ? h.n / h.total : null; }, 7) : { ok: false, best: 0, form: 0 };
+    add({ k: "habits", n: "Gewohnheiten", a: "wil", v: hb.best, form: hb.form, u: "abgehakt, 4 Wochen", pts: [0, 40, 55, 70, 82, 92, 98], fmt: (x) => Math.round(x) + " %", has: hb.ok, hint: "Gewohnheiten in den Einstellungen anlegen" });
+    // ---- Punkte ----
     cats.forEach((c) => {
       if (!c.has) return;
       c.score = rankScore(c.v, c.pts);
       c.idx = Math.min(MAXR, Math.floor(c.score));
       c.frac = c.idx >= MAXR ? 1 : c.score - c.idx;
       c.next = c.idx >= MAXR ? null : c.pts[c.idx + 1];
+      if (c.form) { c.fscore = rankScore(c.form, c.pts); c.fidx = Math.min(MAXR, Math.floor(c.fscore)); }
     });
-    const got = cats.filter((c) => c.has);
-    let overall = null;
-    if (got.length >= 2) {
-      const sc = got.reduce((a, c) => a + c.score, 0) / got.length;
-      overall = { score: sc, idx: Math.min(MAXR, Math.floor(sc)), frac: Math.min(1, sc - Math.min(MAXR, Math.floor(sc))), n: got.length };
+    const attrs = ATTRS.map((A) => {
+      const all = cats.filter((c) => c.a === A.k), got = all.filter((c) => c.has);
+      const o = Object.assign({}, A, { cats: all, has: got.length > 0 });
+      if (!o.has) return o;
+      o.score = got.reduce((s, c) => s + c.score, 0) / got.length;
+      o.idx = Math.min(MAXR, Math.floor(o.score));
+      o.stat = statOf(o.score);
+      const fs = got.filter((c) => c.fscore != null);
+      if (fs.length) { o.fscore = fs.reduce((s, c) => s + c.fscore, 0) / fs.length; o.fidx = Math.min(MAXR, Math.floor(o.fscore)); }
+      return o;
+    });
+    const ga = attrs.filter((a) => a.has);
+    let overall = null, oform = null;
+    if (ga.length >= 2) {
+      const sc = ga.reduce((a, x) => a + x.score, 0) / ga.length;
+      const idx = Math.min(MAXR, Math.floor(sc));
+      overall = { score: sc, idx, frac: idx >= MAXR ? 1 : sc - idx, n: ga.length };
+      const gf = ga.filter((a) => a.fscore != null);
+      if (gf.length >= 2) { const f = gf.reduce((a, x) => a + x.fscore, 0) / gf.length; oform = { score: f, idx: Math.min(MAXR, Math.floor(f)) }; }
     }
-    return { cats, overall };
+    const top = ga.slice().sort((a, b) => b.score - a.score)[0];
+    return { cats, attrs, overall, oform, title: top ? top.t : "" };
+  }
+  // ---- Level und XP ----
+  function computeXP() {
+    const pt = +S().proteinTarget || 120;
+    let xp = 0;
+    Object.keys(state.logs).forEach((dk) => {
+      const l = state.logs[dk] || {};
+      Object.keys(l.exercises || {}).forEach((id) => { const x = l.exercises[id]; if (x && x.done) xp += x.done.filter(Boolean).length * 10; });
+      Object.keys(l.runs || {}).forEach((id) => { const r = l.runs[id]; if (r && r.km) xp += Math.round(r.km * 12); });
+      const c = l.checkin || {};
+      if (c.energy || c.soreness) xp += 5;
+      if (l.sleep && (l.sleep.min || l.sleep.score)) xp += 5;
+      if (l.vitals && (l.vitals.rhr || l.vitals.vo2)) xp += 3;
+      if (proteinTotal(dk) >= pt) xp += 10;
+      xp += habitStats(dk).n * 3;
+    });
+    xp += (state.tests.entries || []).length * 50;
+    let lv = 1, need = 100, rest = xp;
+    while (rest >= need && lv < 999) { rest -= need; lv++; need = 100 + 20 * (lv - 1); }
+    return { xp, lv, cur: rest, need };
   }
   const rankBadge = (idx, big) => '<span class="rbadge r' + idx + (big ? " big" : "") + '" aria-hidden="true">' + RANK_L[idx] + "</span>";
-  function renderRanks() {
-    if (!$("rankHero")) return;
-    const R = computeRanks();
+  function radarSvg(attrs) {
+    const W = 320, H = 286, cx = 160, cy = 146, R = 98, n = attrs.length;
+    const pt = (i, f) => { const a = -Math.PI / 2 + (i * 2 * Math.PI) / n; return [cx + Math.cos(a) * R * f, cy + Math.sin(a) * R * f]; };
+    const poly = (fs) => fs.map((f, i) => pt(i, f).map((v) => v.toFixed(1)).join(",")).join(" ");
+    let g = "";
+    for (let r = 1; r <= 7; r++) g += '<polygon class="rd-ring' + (r === 5 ? " s" : "") + '" points="' + poly(attrs.map(() => r / 7)) + '"/>';
+    attrs.forEach((_, i) => { const p = pt(i, 1); g += '<line class="rd-ax" x1="' + cx + '" y1="' + cy + '" x2="' + p[0].toFixed(1) + '" y2="' + p[1].toFixed(1) + '"/>'; });
+    const fPeak = attrs.map((a) => (a.has ? Math.max(0.06, Math.min(1, (a.score + 0.5) / 7)) : 0.04));
+    g += '<polygon class="rd-peak" points="' + poly(fPeak) + '"/>';
+    if (attrs.some((a) => a.fscore != null)) {
+      const fForm = attrs.map((a) => (a.fscore != null ? Math.max(0.06, Math.min(1, (a.fscore + 0.5) / 7)) : 0.04));
+      g += '<polygon class="rd-form" points="' + poly(fForm) + '"/>';
+    }
+    fPeak.forEach((f, i) => { if (attrs[i].has) { const p = pt(i, f); g += '<circle class="rd-dot" cx="' + p[0].toFixed(1) + '" cy="' + p[1].toFixed(1) + '" r="3.2"/>'; } });
+    attrs.forEach((a, i) => {
+      const p = pt(i, 1.2), anchor = Math.abs(p[0] - cx) < 8 ? "middle" : p[0] > cx ? "start" : "end";
+      const dy = p[1] < cy - 20 ? -4 : p[1] > cy + 20 ? 14 : 4;
+      g += '<text class="rd-lab" x="' + p[0].toFixed(1) + '" y="' + (p[1] + dy).toFixed(1) + '" text-anchor="' + anchor + '">' + a.s + ' <tspan class="rd-val">' + (a.has ? a.stat : "?") + "</tspan></text>";
+    });
+    return '<svg class="radar" viewBox="0 0 ' + W + " " + H + '" role="img" aria-label="Attribute: ' + esc(attrs.map((a) => a.n + " " + (a.has ? a.stat : "ohne Daten")).join(", ")) + '">' + g + "</svg>";
+  }
+  function renderStatusWin(R, X) {
+    const el = $("statusWin");
+    if (!el) return;
     const o = R.overall;
+    const name = (S().partner && S().partner.me) || "Jäger";
+    const head = '<div class="sw-top"><span class="sw-tag">Status</span><span class="sw-name">' + esc(name) + "</span></div>" +
+      '<div class="sw-head"><div class="sw-lv"><small>Level</small><b>' + X.lv + "</b></div>" +
+      '<div class="sw-main"><div class="sw-rank">' + (o ? rankBadge(o.idx) : '<span class="rbadge rn0" aria-hidden="true">–</span>') +
+      "<div><b>" + (o ? RANK_L[o.idx] + "-Rang · " + RANK_T[o.idx] : "Noch ohne Rang") + "</b><span>" + (R.title ? "Titel: " + esc(R.title) : "Trag Leistungen ein, um einen Titel zu bekommen") + "</span></div></div>" +
+      '<div class="sw-xp"><div class="rbar"><i style="width:' + Math.round((X.cur / X.need) * 100) + '%"></i></div><small>' + fmtInt(X.cur) + " / " + fmtInt(X.need) + " XP bis Level " + (X.lv + 1) + "</small></div></div></div>";
+    const tiles = '<div class="sw-attrs">' + R.attrs.map((a) => '<div class="sw-at' + (a.has ? "" : " off") + '"><span>' + a.s + "</span><b>" + (a.has ? a.stat : "–") + "</b>" + (a.has ? '<em class="rk r' + a.idx + '">' + RANK_L[a.idx] + "</em>" : "<em>–</em>") + "<small>" + esc(a.n) + "</small></div>").join("") + "</div>";
+    const formTxt = o ? (o.idx >= MAXR ? "Höchster Rang. Halte ihn." : Math.round(o.frac * 100) + " % bis " + RANK_L[o.idx + 1] + "-Rang") + (R.oform ? ". Form der letzten 4 Wochen: " + RANK_L[R.oform.idx] + "-Rang" : "") + "." :
+      "Trag in mindestens zwei Attributen Leistungen ein. Dann bekommst du deinen Gesamtrang.";
+    el.innerHTML = head + radarSvg(R.attrs) + '<p class="sw-legend"><i class="lg-peak"></i>Bestwert <i class="lg-form"></i>Form, letzte 4 Wochen</p>' + tiles + '<p class="sw-form">' + esc(formTxt) + "</p>";
+  }
+  function renderRanks() {
+    if (!$("statusWin")) return;
+    const R = computeRanks(), X = computeXP();
+    renderStatusWin(R, X);
     renderRankReq(R);
-    $("rankHero").innerHTML = o ?
-      rankBadge(o.idx, true) + '<div class="rhtxt"><span class="rhk">Gesamtrang</span><b>' + RANK_L[o.idx] + "-Rang, " + RANK_T[o.idx] + '</b><div class="rbar"><i style="width:' + Math.round(o.frac * 100) + '%"></i></div><small>' +
-      (o.idx >= MAXR ? "Höchster Rang. Halte ihn." : Math.round(o.frac * 100) + " % bis " + RANK_L[o.idx + 1] + "-Rang") + ", aus " + o.n + " Bereichen</small></div>" :
-      '<p class="lead">Trag in mindestens zwei Bereichen Leistungen ein, zum Beispiel deine Wiederholungen unter Klimmzügen und Dips. Dann bekommst du deinen Gesamtrang.</p>';
-    $("rankList").innerHTML = R.cats.map((c) => {
-      const attrs = c.edit ? ' data-k="' + c.k + '" tabindex="0" role="button" aria-label="' + esc(c.n) + ' korrigieren"' : "";
-      const ed = (c.edit ? ' class="editable"' : "") + attrs;
-      const edHint = c.edit ? " · Tippen zum Korrigieren" : "";
-      if (!c.has) return '<li class="none' + (c.edit ? " editable" : "") + '"' + attrs + '><span class="rbadge rn0" aria-hidden="true">–</span><span class="rname">' + esc(c.n) + '</span><span class="rval">–</span><span class="rnext">Noch keine Daten' + (c.hint ? " (" + c.hint + ")" : "") + esc(edHint) + "</span></li>";
-      const nextTxt = c.idx >= MAXR ? "Höchster Rang erreicht" : "Nächster Rang " + RANK_L[c.idx + 1] + " ab " + c.fmt(c.next);
-      return "<li" + ed + ">" + rankBadge(c.idx) + '<span class="rname">' + esc(c.n) + '</span><span class="rval">' + esc(c.fmt(c.v)) + '</span><div class="rbar"><i style="width:' + Math.round(c.frac * 100) + '%"></i></div><span class="rnext">' + esc(RANK_T[c.idx] + ". " + nextTxt + edHint) + "</span></li>";
+    $("rankList").innerHTML = R.attrs.map((A) => {
+      const head = '<li class="rgrp"><span class="rgk">' + A.s + '</span><span class="rgn">' + esc(A.n) + '</span><span class="rgv">' + (A.has ? A.stat + " · " + RANK_L[A.idx] : "–") + "</span></li>";
+      return head + A.cats.map((c) => {
+        const attrs = c.edit ? ' data-k="' + c.k + '" tabindex="0" role="button" aria-label="' + esc(c.n) + ' korrigieren"' : "";
+        const edHint = c.edit ? " · Tippen zum Korrigieren" : "";
+        if (!c.has) return '<li class="none' + (c.edit ? " editable" : "") + '"' + attrs + '><span class="rbadge rn0" aria-hidden="true">–</span><span class="rname">' + esc(c.n) + '</span><span class="rval">–</span><span class="rnext">Noch keine Daten' + (c.hint ? " (" + c.hint + ")" : "") + esc(edHint) + "</span></li>";
+        const nextTxt = c.idx >= MAXR ? "Höchster Rang erreicht" : "Nächster Rang " + RANK_L[c.idx + 1] + " ab " + c.fmt(c.next);
+        const formTxt = c.fidx != null ? (c.fidx < c.idx ? " · Form: " + RANK_L[c.fidx] : "") : c.k !== "skills" ? " · Form: keine Daten in 4 Wochen" : "";
+        return "<li" + (c.edit ? ' class="editable"' : "") + attrs + ">" + rankBadge(c.idx) + '<span class="rname">' + esc(c.n) + '</span><span class="rval">' + esc(c.fmt(c.v)) + '</span><div class="rbar"><i style="width:' + Math.round(c.frac * 100) + '%"></i></div><span class="rnext">' + esc((c.u ? c.u + ". " : "") + RANK_T[c.idx] + ". " + nextTxt + formTxt + edHint) + "</span></li>";
+      }).join("");
     }).join("");
   }
   function renderRankReq(R) {
     const t = $("rankReq");
     if (!t) return;
     const head = "<thead><tr><th></th>" + [1, 2, 3, 4, 5, 6].map((i) => '<th><span class="rbadge r' + i + '" aria-hidden="true">' + RANK_L[i] + '</span><small>' + RANK_T[i] + "</small></th>").join("") + "</tr></thead>";
-    const body = R.cats.map((c) => {
-      const cells = [1, 2, 3, 4, 5, 6].map((i) => '<td class="' + (c.has && c.idx >= i ? "got" : "") + (c.has && c.idx === i ? " cur" : "") + '">' + esc(c.fmt(c.pts[i]).replace(" der Sätze", "").replace(" Wdh.", "")) + "</td>").join("");
-      const unit = c.k === "run" ? "5-km-Zeit" : c.k === "core" ? "Sek." : c.k === "skills" || c.k === "disc" ? "" : "Wdh.";
+    const unitOf = { run: "Zeit", core: "Sek.", herz: "bpm", vo2: "ml/kg/min", motor: "m/Schlag", kraft: "% KG", schlaf: "Score" };
+    const body = R.attrs.map((A) => '<tr class="rr-g"><th colspan="7">' + A.s + " · " + esc(A.n) + "</th></tr>" + A.cats.map((c) => {
+      const cells = [1, 2, 3, 4, 5, 6].map((i) => '<td class="' + (c.has && c.idx >= i ? "got" : "") + (c.has && c.idx === i ? " cur" : "") + '">' + esc(c.fmt(c.pts[i]).replace(" Wdh.", "").replace(" bpm", "").replace(" m", "").replace("Ø ", "")) + "</td>").join("");
+      const unit = unitOf[c.k] || (c.a === "str" && c.k !== "kraft" ? "Wdh." : "");
       return '<tr><th scope="row">' + esc(c.n) + (unit ? "<small>" + unit + "</small>" : "") + "</th>" + cells + "</tr>";
-    }).join("");
+    }).join("")).join("");
     t.innerHTML = head + "<tbody>" + body + "</tbody>";
   }
   // ---- Rang-Werte korrigieren ----
   let rankEditK = null;
   function curCat(k) { const R = computeRanks(); return R.cats.filter((c) => c.k === k)[0]; }
-  function silentRankSync() {
-    const R = computeRanks();
+  function rankSnapshot(R, X) {
     const cur = {};
     R.cats.forEach((c) => { if (c.has) cur[c.k] = c.idx; });
     if (R.overall) cur._overall = R.overall.idx;
-    rankMeta().ranks = cur;
+    cur._lv = X.lv;
+    return cur;
+  }
+  function silentRankSync() {
+    const R = computeRanks(), X = computeXP();
+    rankMeta().ranks = rankSnapshot(R, X);
     saveLocal(); renderRankChip(); renderRanks();
   }
   function renderRankEdit() {
@@ -7656,7 +7887,7 @@ main[data-dir="l"] > section:not([hidden]) { animation: viewInL 260ms cubic-bezi
     $("reVal").placeholder = c.k === "run" ? "z. B. 24:30" : "z. B. 45";
     $("reVal").inputMode = c.k === "run" ? "text" : "numeric";
     $("reUnit").textContent = c.k === "run" ? "Deine beste 5-km-Zeit, Minuten:Sekunden" : c.unit === "s" ? "Sekunden" : "Wiederholungen am Stück";
-    $("reList").innerHTML = c.cands.length ? c.cands.map((x, i) => '<li class="' + (x.ignored ? "ign" : "") + '"><span class="rl"><b>' + esc(c.k === "run" ? fmtT5(x.v) : Math.round(x.v) + " " + c.unit) + "</b><small>" + esc(x.label) + '</small></span>' +
+    $("reList").innerHTML = (c.cands || []).length ? c.cands.map((x, i) => '<li class="' + (x.ignored ? "ign" : "") + '"><span class="rl"><b>' + esc(c.k === "run" ? fmtT5(x.v) : Math.round(x.v) + " " + c.unit) + "</b><small>" + esc(x.label) + '</small></span>' +
       (x.manual ? '<button class="btn small" data-act="clear">Entfernen</button>' : '<button class="btn small' + (x.ignored ? "" : " danger") + '" data-i="' + i + '">' + (x.ignored ? "Wieder zählen" : "Ignorieren") + "</button>") + "</li>").join("") : '<li><span class="rl"><small>Noch keine Einträge.</small></span></li>';
     $("reList")._c = c;
   }
@@ -7698,46 +7929,110 @@ main[data-dir="l"] > section:not([hidden]) { animation: viewInL 260ms cubic-bezi
     if (!chip) return;
     const st = (state.meta && state.meta.ranks) || {};
     const o = st._overall;
-    chip.hidden = o == null;
-    if (o != null) chip.innerHTML = rankBadge(o) + "<span>" + RANK_L[o] + "-Rang, " + RANK_T[o] + "</span>";
+    chip.hidden = o == null && !st._lv;
+    if (chip.hidden) return;
+    chip.innerHTML = (o != null ? rankBadge(o) : "") + "<span>" + (o != null ? RANK_L[o] + "-Rang · " : "") + "Lv. " + (st._lv || 1) + "</span>";
+  }
+  // ---- System-Fenster ----
+  const sysQueue = [];
+  function sysSound() {
+    try {
+      primeAudio();
+      if (!audioCtx || !soundOn()) return;
+      const t0 = audioCtx.currentTime;
+      [[523, 0], [784, 0.11], [1047, 0.22], [1568, 0.36]].forEach(([f, dt], i) => {
+        const o = audioCtx.createOscillator(), g = audioCtx.createGain();
+        o.type = i === 3 ? "sine" : "triangle";
+        o.frequency.setValueAtTime(f, t0 + dt);
+        g.gain.setValueAtTime(0.0001, t0 + dt);
+        g.gain.exponentialRampToValueAtTime(i === 3 ? 0.12 : 0.16, t0 + dt + 0.015);
+        g.gain.exponentialRampToValueAtTime(0.0001, t0 + dt + (i === 3 ? 1.1 : 0.32));
+        o.connect(g); g.connect(audioCtx.destination);
+        o.start(t0 + dt); o.stop(t0 + dt + 1.2);
+      });
+    } catch (e) { /* ignore */ }
+  }
+  function sysShow(title, lines, badgeIdx, note) {
+    sysQueue.push({ title, lines, badgeIdx, note });
+    if (sysQueue.length === 1) sysNext();
+  }
+  function sysNext() {
+    const it = sysQueue[0], el = $("sysWin");
+    if (!it || !el) return;
+    $("sysTitle").textContent = it.title;
+    $("sysBadge").innerHTML = it.badgeIdx != null ? rankBadge(it.badgeIdx, true) : "";
+    $("sysBadge").hidden = it.badgeIdx == null;
+    $("sysNote").textContent = it.note || "";
+    $("sysNote").hidden = !it.note;
+    $("sysLines").innerHTML = it.lines.map((l, i) => '<li style="--d:' + (380 + i * 140) + 'ms"><span>' + esc(l.t) + "</span><b>" + esc(l.v) + "</b></li>").join("");
+    el.hidden = false;
+    el.classList.remove("open"); void el.offsetWidth; el.classList.add("open");
+    sysSound();
+    hap("pr");
+  }
+  function sysClose() {
+    $("sysWin").hidden = true;
+    sysQueue.shift();
+    if (sysQueue.length) setTimeout(sysNext, 260);
+  }
+  if ($("sysWin")) {
+    $("sysOk").addEventListener("click", sysClose);
+    $("sysWin").addEventListener("click", (ev) => { if (ev.target === $("sysWin")) sysClose(); });
   }
   let rankTimer = 0;
   function checkRanks() {
     clearTimeout(rankTimer);
     rankTimer = setTimeout(() => {
-      let R;
-      try { R = computeRanks(); } catch (e) { return; }
-      state.meta = state.meta || {};
-      const prev = state.meta.ranks || null;
-      const cur = {};
-      R.cats.forEach((c) => { if (c.has) cur[c.k] = c.idx; });
-      if (R.overall) cur._overall = R.overall.idx;
+      let R, X;
+      try { R = computeRanks(); X = computeXP(); } catch (e) { return; }
+      const m = rankMeta();
+      const prev = m.ranks || null;
+      const cur = rankSnapshot(R, X);
       if (prev) {
-        const ups = [];
-        R.cats.forEach((c) => { if (c.has && prev[c.k] != null && c.idx > prev[c.k]) ups.push(c.n + " " + RANK_L[c.idx]); });
+        const lines = [];
+        let note = "";
+        const v10 = prev._lv != null;
+        R.cats.forEach((c) => {
+          if (!c.has) return;
+          if (prev[c.k] != null && c.idx > prev[c.k]) {
+            lines.push({ t: c.n, v: RANK_L[prev[c.k]] + " → " + RANK_L[c.idx] });
+            if (!note) note = c.idx >= MAXR ? c.n + ": höchster Rang erreicht." : "Nächstes Ziel: " + c.n + " " + RANK_L[c.idx + 1] + " ab " + c.fmt(c.next) + ".";
+          }
+          else if (prev[c.k] == null && v10) lines.push({ t: c.n, v: "freigeschaltet: " + RANK_L[c.idx] });
+        });
         const oUp = R.overall && prev._overall != null && R.overall.idx > prev._overall;
-        if (oUp) showRankUp(R.overall.idx);
-        else if (ups.length) { toast("Rang-Aufstieg: " + ups.join(", ")); hap("set"); }
+        if (oUp) lines.unshift({ t: "Gesamtrang", v: RANK_L[prev._overall] + " → " + RANK_L[R.overall.idx] });
+        const lvUp = v10 && X.lv > prev._lv;
+        if (lines.length) {
+          if (lvUp) lines.push({ t: "Level", v: prev._lv + " → " + X.lv });
+          sysShow(oUp ? "Rang-Aufstieg" : "Neuer Rang", lines, oUp ? R.overall.idx : null, note);
+        } else if (lvUp) { toast("Level " + X.lv + " erreicht"); hap("set"); }
       }
-      if (JSON.stringify(prev) !== JSON.stringify(cur)) { state.meta.ranks = cur; saveLocal(); }
+      if (JSON.stringify(prev) !== JSON.stringify(cur)) { m.ranks = cur; saveLocal(); }
       renderRankChip();
       if (currentTab === "progress") renderRanks();
     }, 900);
   }
-  function showRankUp(idx) {
-    const el = $("rankUp");
-    if (!el) return;
-    $("rankUpBadge").innerHTML = rankBadge(idx, true);
-    $("rankUpTitle").textContent = RANK_L[idx] + "-Rang";
-    $("rankUpText").textContent = "Gesamtrang aufgestiegen: " + RANK_T[idx] + ".";
-    el.hidden = false;
-    try { recordSound(); } catch (e) { /* ignore */ }
-    hap("flame");
-    clearTimeout(showRankUp.t);
-    showRankUp.t = setTimeout(() => { el.hidden = true; }, 4200);
-  }
-  if ($("rankUp")) $("rankUp").addEventListener("click", () => { $("rankUp").hidden = true; });
   if ($("rankChip")) $("rankChip").addEventListener("click", () => { showTab("progress"); setTimeout(() => { const b = $("rankBlock"); if (b) b.scrollIntoView({ block: "start", behavior: "smooth" }); }, 120); });
+
+  // ---------- Vitalwerte im Check-in ----------
+  function renderVitals(dk) {
+    const v = (state.logs[dk] && state.logs[dk].vitals) || {};
+    if ($("rhrIn") && document.activeElement !== $("rhrIn")) $("rhrIn").value = v.rhr ? String(v.rhr) : "";
+    if ($("vo2In") && document.activeElement !== $("vo2In")) $("vo2In").value = v.vo2 ? fmtN(v.vo2) : "";
+  }
+  function saveVitals() {
+    const dk = todayKey();
+    const rr = $("rhrIn").value.trim(), vv = $("vo2In").value.trim();
+    const l = ensureLog(dk);
+    const v = {};
+    if (rr) { const n = Math.round(num(rr) || 0); if (n < 30 || n > 120) { toast("Ruhepuls bitte zwischen 30 und 120 eintragen."); return; } v.rhr = n; }
+    if (vv) { const n = Math.round((num(vv) || 0) * 10) / 10; if (n < 20 || n > 90) { toast("VO2max bitte zwischen 20 und 90 eintragen."); return; } v.vo2 = n; }
+    if (v.rhr || v.vo2) l.vitals = v; else delete l.vitals;
+    saveLog(dk);
+    checkRanks();
+  }
+  if ($("rhrIn")) { $("rhrIn").addEventListener("change", saveVitals); $("vo2In").addEventListener("change", saveVitals); }
 
   // ---------- Erinnerungen ----------
   function renderReminder(dk) {
