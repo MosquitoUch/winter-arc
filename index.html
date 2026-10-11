@@ -629,6 +629,19 @@ pre.prompt { white-space: pre-wrap; margin: 0 0 12px; padding: 14px; border-radi
 .calfhint { margin: 8px 0 0; font-size: 13px; color: var(--ink-2); }
 .pkcal { margin: 8px 0 0; font-size: 13px; color: var(--ink-2); }
 .pkcal:empty { display: none; }
+.sndrow { display: grid; gap: 8px; margin: 12px 0; }
+.sndrow > label { font-size: 15px; font-weight: 600; color: var(--ink); }
+.sndctl { display: flex; gap: 8px; align-items: center; }
+.sndctl select { flex: 1; min-width: 0; }
+.sndfile { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+.sndfile small { color: var(--mute); overflow-wrap: anywhere; }
+#bgimg { position: fixed; inset: 0; z-index: 0; pointer-events: none; background-size: cover; background-position: center; background-repeat: no-repeat; }
+#bgimg::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(0,0,0,.45), rgba(0,0,0,.15) 40%, rgba(0,0,0,.6)); }
+@keyframes breathe { 0%, 100% { opacity: .65; transform: scale(.95); } 50% { opacity: 1; transform: scale(1.08); } }
+@keyframes breatheGlow { 0%, 100% { filter: drop-shadow(0 0 2px rgba(var(--acc-rgb), .25)); } 50% { filter: drop-shadow(0 0 9px rgba(var(--acc-rgb), .7)); } }
+:root[data-glow="on"] .ringwrap::before { background: radial-gradient(closest-side, rgba(var(--tint-rgb), 0.3), rgba(var(--tint-rgb), 0.08) 58%, transparent 74%); animation: breathe 6s ease-in-out infinite; }
+:root[data-glow="on"] .pbar i { animation: breatheGlow 5s ease-in-out infinite; }
+:root[data-glow="on"] .tab[aria-current="page"] svg { animation: breatheGlow 5s ease-in-out infinite; }
 .runverdict.bad { border-color: rgba(255, 138, 122, .5); color: #FFC2B8; }
 .chip { display: inline-block; padding: 2px 10px; border-radius: 999px; border: 1px solid var(--line-2); font-size: 12px; font-weight: 600; white-space: nowrap; }
 .chip.ok { border-color: rgba(110, 231, 168, .5); color: #B5F2D2; }
@@ -1372,6 +1385,18 @@ main[data-dir="l"] > section:not([hidden]) { animation: viewInL 260ms cubic-bezi
               </div>
               <small class="fhint">Der Hintergrund bleibt echtes Schwarz, ideal für dein OLED-Display. Unter „Eigene" wählst du zwei Farben, daraus berechnet die App alle Töne selbst.</small></div>
               <div class="toggle"><span>Töne<small>Piepen im EMOM und bei der Mobility, Klang bei Pausenende und Flamme.</small></span><button class="switch" role="switch" aria-checked="true" id="swSound" aria-label="Töne"></button></div>
+              <details class="mini"><summary>Töne pro Ereignis</summary>
+                <div id="sndRows"></div>
+                <div class="field"><label for="sndVol">Lautstärke der eigenen Töne</label><input type="range" id="sndVol" min="20" max="100" step="5"></div>
+                <small class="fhint">Eigene Dateien (MP3, WAV oder M4A, bis 3 MB und 10 Sekunden) bleiben nur auf diesem Handy gespeichert und werden nirgends hochgeladen. Nimm nur Töne, die du selbst nutzen darfst.</small>
+              </details>
+              <div class="toggle"><span>Atmender Glow<small>Ring, Balken und Tab-Symbol leuchten ruhig in deiner Farbe.</small></span><button class="switch" role="switch" aria-checked="true" id="swGlow" aria-label="Atmender Glow"></button></div>
+              <details class="mini"><summary>Eigenes Hintergrundbild</summary>
+                <div class="row"><button class="btn small" id="bgPick">Bild wählen</button><button class="btn small" id="bgRemove" style="display:none">Entfernen</button></div>
+                <div class="toggle"><span>Bild anzeigen</span><button class="switch" role="switch" aria-checked="true" id="swBg" aria-label="Hintergrundbild anzeigen" hidden></button></div>
+                <div class="field" hidden><label for="bgDim">Sichtbarkeit des Bildes</label><input type="range" id="bgDim" min="10" max="70" step="5"></div>
+                <small class="fhint">Das Bild wird verkleinert, abgedunkelt und bleibt nur auf diesem Handy. Nimm am besten ein dunkles Motiv, dann bleibt die Schrift gut lesbar.</small>
+              </details>
               <div class="field"><label for="setHaptic">Haptik (Vibration)</label><select id="setHaptic"><option value="aus">Aus</option><option value="leicht">Leicht</option><option value="normal">Normal</option><option value="kraeftig">Kräftig</option></select><details class="mini"><summary>Muster ausprobieren</summary><div class="hlab" id="hlab" role="group" aria-label="Haptik ausprobieren"></div><small class="fhint">Tipp auf ein Muster zum Ausprobieren. Spürst du nichts, prüf in den Handy-Einstellungen unter Töne und Vibration, dass die Vibrationsstärke nicht auf null steht.</small></details></div>
             </div>
           </details>
@@ -2776,6 +2801,7 @@ main[data-dir="l"] > section:not([hidden]) { animation: viewInL 260ms cubic-bezi
   }
   function chime() {
     try {
+      if (sndOverride("rest")) return;
       if (!audioCtx || !soundOn()) return;
       const t0 = audioCtx.currentTime;
       [0, 0.18].forEach((off, i) => {
@@ -2847,6 +2873,7 @@ main[data-dir="l"] > section:not([hidden]) { animation: viewInL 260ms cubic-bezi
     renderToday();
     if (x.done[i]) {
       buzz(12);
+      sndOverride("set");
       shards(li.querySelector('.set[data-i="' + i + '"]') || btn);
       const pr = sessionProgress(dk, session);
       if (pr.done === pr.total) { stopTimer(); celebrate(dk); }
@@ -6405,6 +6432,7 @@ main[data-dir="l"] > section:not([hidden]) { animation: viewInL 260ms cubic-bezi
 
   function flameSound() {
     try {
+      if (sndOverride("flame")) return;
       primeAudio();
       if (!audioCtx || !soundOn()) return;
       const t0 = audioCtx.currentTime;
@@ -6519,6 +6547,7 @@ main[data-dir="l"] > section:not([hidden]) { animation: viewInL 260ms cubic-bezi
     if (currentTab === "body") renderBody();
     if (currentTab === "tools") renderTools();
     if (currentTab === "plan") renderPlanView();
+    if (typeof mediaRefresh === "function") mediaRefresh();
   }
 
   // ================= v6: Wochenziel, Rekord, Schritte, Notiz, Teilen =================
@@ -6593,6 +6622,7 @@ main[data-dir="l"] > section:not([hidden]) { animation: viewInL 260ms cubic-bezi
   const recShown = {};
   function recordSound() {
     try {
+      if (sndOverride("record")) return;
       primeAudio();
       if (!audioCtx || !soundOn()) return;
       const t0 = audioCtx.currentTime;
@@ -6843,6 +6873,232 @@ main[data-dir="l"] > section:not([hidden]) { animation: viewInL 260ms cubic-bezi
   buildHapLab();
   applyAccent();
   snow.recolor();
+  // ================= v8: Töne pro Ereignis, Hintergrundbild, atmender Glow =================
+  const mdb = (() => {
+    let db = null, failed = false;
+    function open() {
+      if (db) return Promise.resolve(db);
+      if (failed || !window.indexedDB) return Promise.reject(new Error("no-idb"));
+      return new Promise((resolve, reject) => {
+        let req;
+        try { req = indexedDB.open("winterarc-media", 1); } catch (e) { failed = true; reject(e); return; }
+        req.onupgradeneeded = () => { if (!req.result.objectStoreNames.contains("m")) req.result.createObjectStore("m", { keyPath: "id" }); };
+        req.onsuccess = () => { db = req.result; db.onclose = () => { db = null; }; resolve(db); };
+        req.onerror = () => { failed = true; reject(req.error); };
+        req.onblocked = () => reject(new Error("blocked"));
+      });
+    }
+    const run = (mode, fn) => open().then((d) => new Promise((resolve, reject) => {
+      let r;
+      const t = d.transaction("m", mode);
+      try { r = fn(t.objectStore("m")); } catch (e) { reject(e); return; }
+      t.oncomplete = () => resolve(r && r.result);
+      t.onerror = () => reject(t.error);
+      t.onabort = () => reject(t.error || new Error("abort"));
+    }));
+    return { put: (id, blob, name) => run("readwrite", (s) => s.put({ id, blob, name: name || "" })), get: (id) => run("readonly", (s) => s.get(id)), del: (id) => run("readwrite", (s) => s.delete(id)) };
+  })();
+
+  // ---------- Töne ----------
+  const SND_EVENTS = [
+    { k: "set", n: "Satz fertig", d: "aus", std: false },
+    { k: "rest", n: "Pause vorbei und Timer", d: "standard", std: true },
+    { k: "record", n: "Neuer Rekord", d: "standard", std: true },
+    { k: "flame", n: "Flamme der Serie", d: "standard", std: true }
+  ];
+  const SND_PRESETS = [["standard", "Standard"], ["gong", "Gong"], ["glas", "Glas"], ["klick", "Klick"], ["synth", "Synth"], ["eigen", "Eigene Datei"], ["aus", "Aus"]];
+  const sndBuf = {};
+  const sndNames = {};
+  const sndChoice = (k) => { const e = SND_EVENTS.find((x) => x.k === k); return (S().sounds || {})[k] || (e && e.d) || "standard"; };
+  const sndVol = () => { const v = +S().soundVol; return v >= 0.2 && v <= 1 ? v : 0.7; };
+  function sndOverride(k) {
+    const c = sndChoice(k);
+    if (c === "standard") return false;
+    if (!soundOn() || c === "aus") return true;
+    primeAudio();
+    if (!audioCtx) return true;
+    try { if (c === "eigen") playCustom(k); else synthPreset(c, k); } catch (e) { /* ignore */ }
+    return true;
+  }
+  function synthPreset(c, k) {
+    const t0 = audioCtx.currentTime, V = sndVol();
+    const big = k === "flame" || k === "record", small = k === "set";
+    const tone = (f, st, dur, type, vol, dest) => {
+      const o = audioCtx.createOscillator(), g = audioCtx.createGain();
+      o.type = type; o.frequency.value = f;
+      g.gain.setValueAtTime(0.0001, t0 + st);
+      g.gain.exponentialRampToValueAtTime(Math.max(0.002, vol * V), t0 + st + 0.015);
+      g.gain.exponentialRampToValueAtTime(0.0001, t0 + st + dur);
+      o.connect(g); g.connect(dest || audioCtx.destination);
+      o.start(t0 + st); o.stop(t0 + st + dur + 0.05);
+    };
+    if (c === "gong") {
+      const len = small ? 0.8 : big ? 2.4 : 1.6;
+      [[196, 0.34], [392, 0.2], [523.3, 0.12], [784, 0.08]].forEach((p, i) => tone(p[0], 0, len * (1 - i * 0.18), "sine", p[1]));
+    } else if (c === "glas") {
+      const notes = small ? [1568] : big ? [1318.5, 1568, 2093, 2637] : [1318.5, 1760];
+      notes.forEach((f, i) => { tone(f, i * 0.11, small ? 0.45 : 1.0, "sine", 0.22); tone(f * 2.01, i * 0.11, 0.3, "sine", 0.05); });
+    } else if (c === "klick") {
+      const n = small ? 1 : big ? 3 : 2;
+      for (let i = 0; i < n; i++) {
+        const len = Math.floor(audioCtx.sampleRate * 0.05), buf = audioCtx.createBuffer(1, len, audioCtx.sampleRate), d = buf.getChannelData(0);
+        for (let j = 0; j < len; j++) d[j] = (Math.random() * 2 - 1) * Math.pow(1 - j / len, 3);
+        const s = audioCtx.createBufferSource(), hp = audioCtx.createBiquadFilter(), g = audioCtx.createGain();
+        s.buffer = buf; hp.type = "highpass"; hp.frequency.value = 1800; g.gain.value = 0.9 * V;
+        s.connect(hp); hp.connect(g); g.connect(audioCtx.destination);
+        s.start(t0 + i * 0.14);
+      }
+    } else if (c === "synth") {
+      const lp = audioCtx.createBiquadFilter(); lp.type = "lowpass"; lp.frequency.value = 2400; lp.connect(audioCtx.destination);
+      const notes = small ? [660, 880] : big ? [440, 554.4, 659.3, 880, 1108.7] : [440, 659.3, 880];
+      notes.forEach((f, i) => tone(f, i * 0.08, small ? 0.18 : 0.32, "sawtooth", 0.12, lp));
+    }
+  }
+  function playCustom(k) {
+    const go = (buf) => {
+      const s = audioCtx.createBufferSource(), g = audioCtx.createGain();
+      s.buffer = buf; g.gain.value = sndVol();
+      s.connect(g); g.connect(audioCtx.destination);
+      s.start(); s.stop(audioCtx.currentTime + 10);
+    };
+    if (sndBuf[k]) { go(sndBuf[k]); return; }
+    mdb.get("snd-" + k).then((rec) => {
+      if (!rec || !rec.blob) return null;
+      return rec.blob.arrayBuffer().then((ab) => new Promise((res, rej) => audioCtx.decodeAudioData(ab, res, rej))).then((b) => { sndBuf[k] = b; go(b); });
+    }).catch(() => {});
+  }
+  const sndFile = document.createElement("input");
+  sndFile.type = "file"; sndFile.accept = "audio/*"; sndFile.className = "sr"; sndFile.tabIndex = -1; sndFile.setAttribute("aria-hidden", "true");
+  document.body.appendChild(sndFile);
+  let sndTarget = "";
+  sndFile.addEventListener("change", () => {
+    const f = sndFile.files && sndFile.files[0], k = sndTarget;
+    sndFile.value = "";
+    if (!f || !k) return;
+    if (f.size > 3 * 1024 * 1024) { toast("Die Datei ist größer als 3 MB. Nimm eine kürzere."); return; }
+    primeAudio();
+    if (!audioCtx) { toast("Dein Browser kann hier keinen Ton abspielen."); return; }
+    f.arrayBuffer().then((ab) => new Promise((res, rej) => audioCtx.decodeAudioData(ab.slice(0), res, rej))).then((buf) => {
+      if (buf.duration > 10) { toast("Der Ton ist länger als 10 Sekunden. Nimm einen kürzeren."); return; }
+      return mdb.put("snd-" + k, f, f.name).then(() => {
+        sndBuf[k] = buf; sndNames[k] = f.name;
+        S().sounds = Object.assign({}, S().sounds, { [k]: "eigen" });
+        saveSettings(); renderSndUi();
+        playCustom(k);
+        toast("Ton gespeichert");
+      });
+    }).catch(() => toast("Diese Datei konnte ich nicht lesen. Nimm MP3, WAV oder M4A."));
+  });
+  function renderSndUi() {
+    const box = $("sndRows");
+    if (!box) return;
+    box.innerHTML = SND_EVENTS.map((e) => {
+      const cur = sndChoice(e.k);
+      const opts = SND_PRESETS.filter((p) => e.std || p[0] !== "standard").map((p) => '<option value="' + p[0] + '"' + (p[0] === cur ? " selected" : "") + ">" + p[1] + "</option>").join("");
+      return '<div class="sndrow"><label for="snd-' + e.k + '">' + esc(e.n) + '</label><div class="sndctl"><select id="snd-' + e.k + '" data-k="' + e.k + '">' + opts + '</select><button class="btn small" data-play="' + e.k + '">Hören</button></div>' +
+        '<div class="sndfile"' + (cur === "eigen" ? "" : " hidden") + '><button class="btn small" data-pick="' + e.k + '">Datei wählen</button><small>' + esc(sndNames[e.k] || "") + "</small></div></div>";
+    }).join("");
+    $("sndVol").value = Math.round(sndVol() * 100);
+  }
+  const sndBox = document.getElementById("sndRows");
+  if (sndBox) {
+    sndBox.addEventListener("change", (ev) => {
+      const s = ev.target.closest("select[data-k]");
+      if (!s) return;
+      const k = s.dataset.k;
+      S().sounds = Object.assign({}, S().sounds, { [k]: s.value });
+      saveSettings();
+      if (s.value === "eigen") {
+        mdb.get("snd-" + k).then((rec) => { if (rec && rec.blob) { sndNames[k] = rec.name; renderSndUi(); playCustom(k); } else { renderSndUi(); sndTarget = k; sndFile.click(); } }).catch(() => { renderSndUi(); sndTarget = k; sndFile.click(); });
+      } else { renderSndUi(); if (s.value !== "aus") { primeAudio(); sndPreview(k); } }
+    });
+    sndBox.addEventListener("click", (ev) => {
+      const p = ev.target.closest("[data-play]");
+      if (p) { primeAudio(); sndPreview(p.dataset.play); return; }
+      const f = ev.target.closest("[data-pick]");
+      if (f) { primeAudio(); sndTarget = f.dataset.pick; sndFile.click(); }
+    });
+    $("sndVol").addEventListener("change", function () { S().soundVol = Math.max(0.2, Math.min(1, (+this.value || 70) / 100)); saveSettings(); primeAudio(); sndPreview("rest"); });
+  }
+  function sndPreview(k) {
+    if (!soundOn()) { toast("Die Töne sind oben ausgeschaltet."); return; }
+    const c = sndChoice(k);
+    if (c === "standard") { const f = k === "flame" ? flameSound : k === "record" ? recordSound : chime; f(); return; }
+    sndOverride(k);
+  }
+  function loadSndNames() {
+    SND_EVENTS.forEach((e) => { mdb.get("snd-" + e.k).then((rec) => { if (rec && rec.name) { sndNames[e.k] = rec.name; renderSndUi(); } }).catch(() => {}); });
+  }
+
+  // ---------- Hintergrundbild ----------
+  const bgEl = document.createElement("div");
+  bgEl.id = "bgimg"; bgEl.setAttribute("aria-hidden", "true");
+  document.body.insertBefore(bgEl, document.body.firstChild);
+  let bgUrl = "", bgHas = false;
+  const bgDim = () => { const v = +S().bgDim; return v >= 10 && v <= 70 ? v : 30; };
+  function applyBg() {
+    const on = bgHas && S().bgOn !== false;
+    bgEl.style.opacity = String(bgDim() / 100);
+    bgEl.style.backgroundImage = on && bgUrl ? 'url("' + bgUrl + '")' : "none";
+    bgEl.style.display = on ? "" : "none";
+    document.documentElement.toggleAttribute("data-bg", on);
+    const rm = $("bgRemove"), sw = $("swBg"), dm = $("bgDim");
+    if (rm) rm.style.display = bgHas ? "" : "none";
+    if (sw) { sw.parentElement.style.display = bgHas ? "" : "none"; sw.setAttribute("aria-checked", S().bgOn !== false ? "true" : "false"); }
+    if (dm && document.activeElement !== dm) dm.value = bgDim();
+    if (dm) dm.closest(".field").style.display = bgHas ? "" : "none";
+  }
+  function loadBg() {
+    mdb.get("bg").then((rec) => {
+      if (rec && rec.blob) { if (bgUrl) URL.revokeObjectURL(bgUrl); bgUrl = URL.createObjectURL(rec.blob); bgHas = true; }
+      applyBg();
+    }).catch(() => applyBg());
+  }
+  const bgFile = document.createElement("input");
+  bgFile.type = "file"; bgFile.accept = "image/png,image/jpeg,image/webp"; bgFile.className = "sr"; bgFile.tabIndex = -1; bgFile.setAttribute("aria-hidden", "true");
+  document.body.appendChild(bgFile);
+  bgFile.addEventListener("change", () => {
+    const f = bgFile.files && bgFile.files[0];
+    bgFile.value = "";
+    if (!f) return;
+    const url = URL.createObjectURL(f), img = new Image();
+    img.onload = () => {
+      const max = 1280, sc = Math.min(1, max / Math.max(img.naturalWidth, img.naturalHeight));
+      const cv = document.createElement("canvas");
+      cv.width = Math.max(1, Math.round(img.naturalWidth * sc)); cv.height = Math.max(1, Math.round(img.naturalHeight * sc));
+      cv.getContext("2d").drawImage(img, 0, 0, cv.width, cv.height);
+      URL.revokeObjectURL(url);
+      cv.toBlob((blob) => {
+        if (!blob) { toast("Das Bild konnte nicht verarbeitet werden."); return; }
+        mdb.put("bg", blob, f.name).then(() => { S().bgOn = true; saveSettings(); loadBg(); toast("Hintergrundbild gesetzt"); }).catch(() => toast("Das Bild konnte nicht gespeichert werden."));
+      }, "image/jpeg", 0.82);
+    };
+    img.onerror = () => { URL.revokeObjectURL(url); toast("Dieses Bild konnte ich nicht lesen. Nimm PNG, JPG oder WebP."); };
+    img.src = url;
+  });
+  if ($("bgPick")) {
+    $("bgPick").addEventListener("click", () => bgFile.click());
+    $("bgRemove").addEventListener("click", () => { mdb.del("bg").then(() => { bgHas = false; if (bgUrl) { URL.revokeObjectURL(bgUrl); bgUrl = ""; } applyBg(); toast("Hintergrundbild entfernt"); }).catch(() => {}); });
+    $("swBg").addEventListener("click", () => { S().bgOn = S().bgOn === false; saveSettings(); applyBg(); });
+    $("bgDim").addEventListener("input", function () { S().bgDim = +this.value; bgEl.style.opacity = String(bgDim() / 100); });
+    $("bgDim").addEventListener("change", () => saveSettings());
+  }
+
+  // ---------- Atmender Glow ----------
+  function applyGlow() {
+    document.documentElement.setAttribute("data-glow", S().glow !== false ? "on" : "off");
+    const sw = $("swGlow");
+    if (sw) sw.setAttribute("aria-checked", S().glow !== false ? "true" : "false");
+  }
+  if ($("swGlow")) $("swGlow").addEventListener("click", () => { S().glow = S().glow === false; saveSettings(); applyGlow(); toast(S().glow !== false ? "Glow an" : "Glow aus"); });
+  let sndSig = "";
+  function mediaRefresh() {
+    applyGlow(); applyBg();
+    const sig = JSON.stringify([S().sounds, S().soundVol, sndNames]);
+    if (sig !== sndSig && !(sndBox && sndBox.contains(document.activeElement))) { sndSig = sig; renderSndUi(); }
+  }
+  mediaRefresh(); loadBg(); loadSndNames();
+
   const deepHandled = handleDeepLink();
   initCollapsibles();
   initInfos();
