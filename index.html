@@ -959,6 +959,7 @@ main[data-dir="l"] > section:not([hidden]) { animation: viewInL 260ms cubic-bezi
     <symbol id="i-up" viewBox="0 0 24 24"><path d="M12 19V6M6.5 11.5L12 6l5.5 5.5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
     <symbol id="i-dot" viewBox="0 0 24 24"><path d="M12 5l6 3.5v7L12 19l-6-3.5v-7z" fill="currentColor"/></symbol>
     <symbol id="i-body" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="6.5" r="2.7"/><path d="M5.5 20v-4.2c0-2.6 2.3-4.3 6.5-4.3s6.5 1.7 6.5 4.3V20"/></g></symbol>
+    <symbol id="i-cam" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round"><path d="M4 8.5A1.5 1.5 0 0 1 5.5 7H8l1.2-2h5.6L16 7h2.5A1.5 1.5 0 0 1 20 8.5v9a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 4 17.5z"/><circle cx="12" cy="13" r="3.3"/></g></symbol>
     <symbol id="i-img" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"><rect x="3.5" y="5" width="17" height="14" rx="2.5"/><path d="M3.5 16l5-5 4 4 3-3 5 5" stroke-linecap="round"/><circle cx="16" cy="9" r="1.5"/></g></symbol>
   </defs>
 </svg>
@@ -1060,8 +1061,10 @@ main[data-dir="l"] > section:not([hidden]) { animation: viewInL 260ms cubic-bezi
                 <input class="inp" id="sleepDur" inputmode="text" placeholder="7:30 h" autocomplete="off">
                 <label class="sr" for="sleepScore">Garmin Schlaf-Score</label>
                 <input class="inp" id="sleepScore" inputmode="numeric" placeholder="Score" autocomplete="off">
-                <button class="btn small" id="sleepShot" aria-label="Garmin-Screenshot hinzufügen" hidden><svg aria-hidden="true"><use href="#i-img"/></svg></button>
+                <button class="btn small" id="sleepCam" aria-label="Garmin-Bild mit Kamera aufnehmen" hidden><svg aria-hidden="true"><use href="#i-cam"/></svg></button>
+                <button class="btn small" id="sleepShot" aria-label="Garmin-Screenshot aus Galerie wählen" hidden><svg aria-hidden="true"><use href="#i-img"/></svg></button>
                 <input class="sr" type="file" id="sleepFile" accept="image/*" tabindex="-1">
+                <input class="sr" type="file" id="sleepFileCam" accept="image/*" capture="environment" tabindex="-1">
               </div>
             </div>
             <p class="ci-scale">Energie: 1 leer, 5 voll. Muskelkater: 1 keiner, 5 sehr stark. Schlaf: Dauer und Score aus Garmin, dazu auf Wunsch ein Screenshot.</p>
@@ -4247,7 +4250,8 @@ main[data-dir="l"] > section:not([hidden]) { animation: viewInL 260ms cubic-bezi
       return await new Promise((res, rej) => cv.toBlob((b) => (b ? res(b) : rej(new Error("blob"))), "image/jpeg", 0.85));
     } finally { if (bmp.close) bmp.close(); }
   }
-  $("sleepFile").addEventListener("change", async (ev) => {
+  $("sleepCam").addEventListener("click", () => $("sleepFileCam").click());
+  const onSleepFile = async (ev) => {
     const f = ev.target.files && ev.target.files[0];
     ev.target.value = "";
     if (!f) return;
@@ -4257,12 +4261,15 @@ main[data-dir="l"] > section:not([hidden]) { animation: viewInL 260ms cubic-bezi
       toast("Screenshot gespeichert");
       renderSleepRow(todayKey()); renderSleepBlock();
     } catch (e) { toast("Der Screenshot konnte nicht gespeichert werden. Nimm ein JPG oder PNG."); }
-  });
+  };
+  $("sleepFile").addEventListener("change", onSleepFile);
+  $("sleepFileCam").addEventListener("change", onSleepFile);
   function renderSleepRow(dk) {
     const sl = (state.logs[dk] && state.logs[dk].sleep) || {};
     if (document.activeElement !== $("sleepDur")) $("sleepDur").value = sl.min ? fmtSleep(sl.min).replace(" h", "") : "";
     if (document.activeElement !== $("sleepScore")) $("sleepScore").value = sl.score ? String(sl.score) : "";
     $("sleepShot").hidden = photosState !== "ok";
+    $("sleepCam").hidden = photosState !== "ok";
     $("sleepInfo").textContent = photoIdx[dk + "|sleep"] ? "Garmin-Screenshot von heute ist gespeichert." : "";
     if (typeof patchRestRing === "function" && restReady) patchRestRing(dk);
   }
