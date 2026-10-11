@@ -638,10 +638,16 @@ pre.prompt { white-space: pre-wrap; margin: 0 0 12px; padding: 14px; border-radi
 #bgimg { position: fixed; inset: 0; z-index: 0; pointer-events: none; background-size: cover; background-position: center; background-repeat: no-repeat; }
 #bgimg::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(0,0,0,.45), rgba(0,0,0,.15) 40%, rgba(0,0,0,.6)); }
 @keyframes breathe { 0%, 100% { opacity: .65; transform: scale(.95); } 50% { opacity: 1; transform: scale(1.08); } }
-@keyframes breatheGlow { 0%, 100% { filter: drop-shadow(0 0 2px rgba(var(--acc-rgb), .25)); } 50% { filter: drop-shadow(0 0 9px rgba(var(--acc-rgb), .7)); } }
-:root[data-glow="on"] .ringwrap::before { background: radial-gradient(closest-side, rgba(var(--tint-rgb), 0.3), rgba(var(--tint-rgb), 0.08) 58%, transparent 74%); animation: breathe 6s ease-in-out infinite; }
+@keyframes breatheGlow { 0%, 100% { filter: drop-shadow(0 0 2px rgba(var(--acc-rgb), .3)); } 50% { filter: drop-shadow(0 0 12px rgba(var(--acc-rgb), .95)); } }
+:root[data-glow="on"] .ringwrap::before { inset: -42%; background: radial-gradient(closest-side, rgba(var(--tint-rgb), 0.5), rgba(var(--tint-rgb), 0.16) 52%, transparent 72%); animation: breathe 5s ease-in-out infinite; }
+@keyframes breatheText { 0%, 100% { text-shadow: 0 0 6px rgba(var(--acc-rgb), .25); } 50% { text-shadow: 0 0 26px rgba(var(--acc-rgb), .85), 0 0 8px rgba(var(--acc-rgb), .5); } }
+@keyframes breatheBar { 0%, 100% { box-shadow: 0 0 4px rgba(var(--acc-rgb), .3); } 50% { box-shadow: 0 0 16px rgba(var(--acc-rgb), .85); } }
+:root[data-glow="on"] .ringnum { animation: breatheText 5s ease-in-out infinite; }
+:root[data-glow="on"] .ring .seg.on { animation: breatheGlow 5s ease-in-out infinite; }
+:root[data-glow="on"] .pbar { animation: breatheBar 5s ease-in-out infinite; }
 :root[data-glow="on"] .pbar i { animation: breatheGlow 5s ease-in-out infinite; }
-:root[data-glow="on"] .tab[aria-current="page"] svg { animation: breatheGlow 5s ease-in-out infinite; }
+:root[data-glow="on"] .tab[aria-current="page"] svg { animation: breatheGlow 4s ease-in-out infinite; }
+:root[data-glow="on"] .btn.primary { animation: breatheBar 5s ease-in-out infinite; }
 .runverdict.bad { border-color: rgba(255, 138, 122, .5); color: #FFC2B8; }
 .chip { display: inline-block; padding: 2px 10px; border-radius: 999px; border: 1px solid var(--line-2); font-size: 12px; font-weight: 600; white-space: nowrap; }
 .chip.ok { border-color: rgba(110, 231, 168, .5); color: #B5F2D2; }
