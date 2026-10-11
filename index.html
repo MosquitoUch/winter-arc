@@ -648,6 +648,47 @@ pre.prompt { white-space: pre-wrap; margin: 0 0 12px; padding: 14px; border-radi
 :root[data-glow="on"] .pbar i { animation: breatheGlow 5s ease-in-out infinite; }
 :root[data-glow="on"] .tab[aria-current="page"] svg { animation: breatheGlow 4s ease-in-out infinite; }
 :root[data-glow="on"] .btn.primary { animation: breatheBar 5s ease-in-out infinite; }
+.restlist { list-style: none; margin: 4px auto 0; padding: 0; max-width: 360px; display: grid; gap: 6px; }
+.restlist button { width: 100%; display: grid; grid-template-columns: 26px minmax(0, 1fr) auto; align-items: center; gap: 10px; min-height: 44px; padding: 8px 12px; border-radius: 12px; border: 1px solid var(--line-2); background: transparent; color: var(--ink-2); font: inherit; text-align: left; }
+.restlist .rk { width: 22px; height: 22px; border-radius: 50%; border: 1.5px solid var(--line-2); display: grid; place-items: center; font-size: 13px; font-weight: 700; color: var(--ice-ink); }
+.restlist li.ok .rk { background: var(--ice); border-color: var(--ice); }
+.restlist li.ok button { border-color: var(--ice-deep); color: var(--ink); }
+.restlist .rn { font-weight: 600; color: var(--ink); }
+.restlist .rt { font-size: 13px; color: var(--mute); text-align: right; }
+.rbadge { display: inline-grid; place-items: center; width: 34px; height: 38px; clip-path: polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%); font-family: var(--display); font-weight: 800; font-size: 19px; color: #000; background: var(--rc, #8A8F98); flex: none; }
+.rbadge.big { width: 76px; height: 86px; font-size: 44px; }
+.rbadge.r0 { --rc: #8A8F98; } .rbadge.r1 { --rc: #C98E5A; } .rbadge.r2 { --rc: #C3D0DD; } .rbadge.r3 { --rc: #5FD4FF; } .rbadge.r4 { --rc: #B48CFF; } .rbadge.r5 { --rc: linear-gradient(135deg, #FFF2A8, #FFC23D 55%, #FF8A1F); }
+.rbadge.r5 { background: var(--rc); filter: drop-shadow(0 0 10px rgba(255, 194, 61, .6)); }
+.rbadge.rn0 { --rc: var(--line-2); color: var(--mute); }
+.rankhero { display: flex; align-items: center; gap: 18px; margin-top: 14px; }
+.rhtxt { display: grid; gap: 6px; min-width: 0; flex: 1; }
+.rhk { font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--mute); }
+.rhtxt b { font-family: var(--display); font-size: 26px; line-height: 1.05; }
+.rhtxt small { color: var(--ink-2); font-size: 13px; }
+.rbar { height: 6px; border-radius: 999px; background: var(--line); overflow: hidden; }
+.rbar i { display: block; height: 100%; background: var(--ice); border-radius: inherit; }
+.ranklist { list-style: none; margin: 16px 0 0; padding: 0; }
+.ranklist li { display: grid; grid-template-columns: 34px minmax(0, 1fr) auto; gap: 6px 12px; align-items: center; padding: 12px 0; border-top: 1px solid var(--line); }
+.ranklist li:first-child { border-top: 0; }
+.ranklist .rname { font-weight: 600; min-width: 0; }
+.ranklist .rval { font-family: var(--display); font-weight: 700; font-size: 18px; color: var(--ice); white-space: nowrap; }
+.ranklist .rbar, .ranklist .rnext { grid-column: 2 / -1; }
+.ranklist .rnext { color: var(--mute); font-size: 13px; margin-top: -2px; }
+.ranklist li.none .rname, .ranklist li.none .rval { color: var(--mute); }
+.rankchip { display: inline-flex; align-items: center; gap: 8px; margin: 10px 0 0; padding: 4px 12px 4px 4px; min-height: 40px; border-radius: 999px; border: 1px solid var(--line-2); background: rgba(0, 0, 0, .3); color: var(--ink); font: inherit; font-size: 14px; font-weight: 600; }
+.rankchip .rbadge { width: 26px; height: 30px; font-size: 15px; }
+.rankup .rec-box { display: grid; justify-items: center; gap: 6px; }
+.cmpmode { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
+.cmpmode .chip { min-height: 36px; padding: 6px 14px; font-size: 13px; }
+.cmpmode .chip[aria-pressed="true"] { border-color: var(--ice); color: var(--ice); }
+.cmpslide { position: relative; max-width: 420px; margin-top: 10px; aspect-ratio: 3 / 4; border-radius: 12px; overflow: hidden; background: var(--surface); touch-action: pan-y; }
+.cmpslide img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.cmpslide .cs-r { clip-path: inset(0 0 0 var(--cut, 50%)); }
+.cmpslide .cs-line { position: absolute; top: 0; bottom: 0; left: var(--cut, 50%); width: 2px; margin-left: -1px; background: var(--ice); box-shadow: 0 0 10px var(--glow); pointer-events: none; }
+.cmpslide .cs-tag { position: absolute; top: 8px; padding: 2px 8px; border-radius: 999px; background: rgba(0, 0, 0, .6); font-size: 12px; font-weight: 600; }
+.cmpslide .cs-tag.l { left: 8px; } .cmpslide .cs-tag.r { right: 8px; }
+.cmpslide input[type=range] { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; margin: 0; cursor: ew-resize; }
+.cmpdiff { margin: 10px 0 0; font-size: 14px; color: var(--ink-2); max-width: 420px; }
 .runverdict.bad { border-color: rgba(255, 138, 122, .5); color: #FFC2B8; }
 .chip { display: inline-block; padding: 2px 10px; border-radius: 999px; border: 1px solid var(--line-2); font-size: 12px; font-weight: 600; white-space: nowrap; }
 .chip.ok { border-color: rgba(110, 231, 168, .5); color: #B5F2D2; }
@@ -935,10 +976,12 @@ main[data-dir="l"] > section:not([hidden]) { animation: viewInL 260ms cubic-bezi
     <section id="view-today" aria-label="Heute">
       <div class="today">
         <div class="today-left">
+          <div class="banner" id="remindBanner" hidden><span id="remindText"></span><button class="btn small" id="remindLater">Für heute ausblenden</button></div>
           <div class="banner" id="sundayBanner" hidden><span><b>Dein Wochenrückblick ist bereit.</b> Schau dir deine Woche an.</span><button class="btn small primary" id="sundayBtn">Ansehen</button></div>
           <div class="hero" id="hero">
             <h1 class="dayname" id="dayname"></h1>
             <p class="datestr" id="datestr"></p>
+            <button class="rankchip" id="rankChip" hidden aria-label="Zu deinem Rang"></button>
             <p class="sessname" id="sessname"></p>
             <p class="when" id="when"></p>
             <p class="deload" id="deload" hidden><b>Deload-Woche.</b> Halbe Sätze, gleiche Technik, nicht ans Limit. Jetzt holt dein Körper auf.</p>
@@ -950,6 +993,7 @@ main[data-dir="l"] > section:not([hidden]) { animation: viewInL 260ms cubic-bezi
               </div>
               <span class="sr" id="ringlabel"></span>
             </div>
+            <ul class="restlist" id="restlist" hidden aria-label="Erholungsziele"></ul>
             <p class="rest-note" id="restnote" hidden>Heute wächst du. Geh spazieren, dehn dich und schlaf früh.</p>
             <div class="row" id="freeRow" hidden style="margin-top:14px"><button class="btn small" id="exAddFree">Trotzdem trainiert? Freies Training eintragen</button></div>
             <div class="row" id="trainRow" hidden style="margin-top:14px"><button class="btn small" id="trainBtn" aria-pressed="false">Trainingsmodus starten</button></div>
@@ -1101,6 +1145,12 @@ main[data-dir="l"] > section:not([hidden]) { animation: viewInL 260ms cubic-bezi
     <section id="view-progress" aria-label="Fortschritt" hidden>
       <h1 class="pagetitle">Fortschritt</h1>
       <div class="progview">
+        <div class="block" id="rankBlock">
+          <h2 class="bh">Dein Rang</h2>
+          <p class="lead">Von E bis S, aus deinen besten Leistungen. Zusatzgewicht wird in Wiederholungen umgerechnet. Ränge fallen nie wieder ab.</p>
+          <div class="rankhero" id="rankHero"></div>
+          <ul class="ranklist" id="rankList"></ul>
+        </div>
         <div class="block">
           <h2 class="bh">Dein Winter Arc</h2>
           <p class="lead">Jeder Kristall ist ein Tag. Je heller, desto mehr hast du an dem Tag geschafft. Türkis markierte Wochen sind Deload-Wochen.</p>
@@ -1190,7 +1240,10 @@ main[data-dir="l"] > section:not([hidden]) { animation: viewInL 260ms cubic-bezi
               <div><label class="sr" for="cmpL">Links</label><select id="cmpL"></select></div>
               <div><label class="sr" for="cmpR">Rechts</label><select id="cmpR"></select></div>
             </div>
-            <div class="cmp"><img id="cmpImgL" alt="Foto links"><img id="cmpImgR" alt="Foto rechts"></div>
+            <div class="cmpmode" role="group" aria-label="Ansicht"><button class="chip" id="cmpModeSide" aria-pressed="true">Nebeneinander</button><button class="chip" id="cmpModeSlide" aria-pressed="false">Schieberegler</button></div>
+            <div class="cmp" id="cmpSide"><img id="cmpImgL" alt="Foto links"><img id="cmpImgR" alt="Foto rechts"></div>
+            <div class="cmpslide" id="cmpSlide" hidden><img id="cmpSlL" alt="Foto vorher"><img class="cs-r" id="cmpSlR" alt="Foto nachher"><span class="cs-line" aria-hidden="true"></span><span class="cs-tag l" id="cmpTagL"></span><span class="cs-tag r" id="cmpTagR"></span><label class="sr" for="cmpRange">Trennlinie verschieben</label><input type="range" id="cmpRange" min="0" max="100" value="50"></div>
+            <p class="cmpdiff" id="cmpDiff"></p>
           </div>
         </div>
 
@@ -1450,6 +1503,10 @@ main[data-dir="l"] > section:not([hidden]) { animation: viewInL 260ms cubic-bezi
                 <input type="number" inputmode="numeric" min="30" max="300" id="setProtein">
               </div>
               <div class="field">
+                <label for="setRemind">Erinnerung an Offenes ab</label>
+                <select id="setRemind"><option value="aus">Aus</option><option value="16">16 Uhr</option><option value="17">17 Uhr</option><option value="18">18 Uhr</option><option value="19">19 Uhr</option><option value="20">20 Uhr</option><option value="21">21 Uhr</option></select>
+              </div>
+              <div class="field">
                 <label for="setKcal">Kalorienziel pro Tag</label>
                 <input type="number" inputmode="numeric" min="1200" max="6000" step="50" id="setKcal">
               </div>
@@ -1521,6 +1578,9 @@ main[data-dir="l"] > section:not([hidden]) { animation: viewInL 260ms cubic-bezi
   </main>
 </div>
 
+<div class="rec rankup" id="rankUp" hidden role="dialog" aria-modal="true" aria-label="Rang-Aufstieg">
+  <div class="rec-box"><div id="rankUpBadge"></div><p class="rec-k">Rang-Aufstieg</p><h2 class="rec-name" id="rankUpTitle"></h2><p class="rec-prev" id="rankUpText"></p></div>
+</div>
 <div class="rec" id="rec" hidden role="dialog" aria-modal="true" aria-label="Neuer Rekord">
   <div class="rec-box">
     <svg class="rec-svg" viewBox="0 0 120 124" aria-hidden="true">
@@ -2571,7 +2631,7 @@ main[data-dir="l"] > section:not([hidden]) { animation: viewInL 260ms cubic-bezi
     $("today-empty").hidden = hasPlan;
     $("today-list-wrap").hidden = !(hasPlan && session);
     $("today-rest").hidden = !(hasPlan && !session);
-    $("ringwrap").hidden = !(hasPlan && session);
+    $("ringwrap").hidden = !hasPlan;
     $("restnote").hidden = !(hasPlan && !session);
     $("freeRow").hidden = $("restnote").hidden;
     $("deload").hidden = !(session && session.deload);
@@ -2584,6 +2644,7 @@ main[data-dir="l"] > section:not([hidden]) { animation: viewInL 260ms cubic-bezi
       $("sessname").textContent = "Ruhetag";
       $("when").textContent = "";
       const next = nextSessionAfter(now);
+      patchRestRing(dk);
       $("nextsession").textContent = next ? "Nächste Einheit: " + DOW_NAMES[next.session.dow - 1] + (next.session.time ? " um " + next.session.time + " Uhr" : "") + ", " + next.session.name + "." : "";
       todaySig = "";
     } else {
@@ -2772,6 +2833,7 @@ main[data-dir="l"] > section:not([hidden]) { animation: viewInL 260ms cubic-bezi
     });
     const s = streak();
     $("streak").innerHTML = s > 0 ? "Serie: <b>" + s + " " + (s === 1 ? "Tag" : "Tage") + "</b>" : "Hak alle ab, dann startet deine Serie";
+    if (typeof patchRestRing === "function" && restReady) patchRestRing(dk);
   }
 
   function renderProtein(dk) {
@@ -2795,9 +2857,11 @@ main[data-dir="l"] > section:not([hidden]) { animation: viewInL 260ms cubic-bezi
     $("pkcal").textContent = list.length ? "Etwa " + Math.round(ksum).toLocaleString("de-DE") + " kcal von " + kt.toLocaleString("de-DE") + (nk ? ". " + nk + (nk === 1 ? " Eintrag" : " Einträge") + " ohne kcal" : "") + "." : "";
     $("pundo").disabled = !list.length;
     $("plog").textContent = list.length ? "Heute: " + list.slice(-6).map((p) => p.l).join(", ") + (list.length > 6 ? " und mehr" : "") : "";
+    if (typeof patchRestRing === "function" && restReady) patchRestRing(dk);
   }
 
   // ================= Interactions: today =================
+  let restReady = false;
   let audioCtx = null;
   function primeAudio() {
     try {
@@ -3265,6 +3329,7 @@ main[data-dir="l"] > section:not([hidden]) { animation: viewInL 260ms cubic-bezi
     $("cihint").hidden = !hint;
     $("cihint").textContent = hint;
     renderAmpel(dk);
+    if (typeof patchRestRing === "function" && restReady) patchRestRing(dk);
   }
   $("checkinCard").addEventListener("click", (ev) => {
     const b = ev.target.closest(".ci-btn");
@@ -3545,6 +3610,7 @@ main[data-dir="l"] > section:not([hidden]) { animation: viewInL 260ms cubic-bezi
     renderCheckin(dk);
     renderSleepRow(dk);
     renderSundayBanner();
+    if (typeof renderReminder === "function" && restReady) renderReminder(dk);
     renderExBar(dk);
     const card = $("bodyCard");
     const due = measureDue(dk);
@@ -3851,14 +3917,43 @@ main[data-dir="l"] > section:not([hidden]) { animation: viewInL 260ms cubic-bezi
       if (!ids.includes(cmpR)) cmpR = ids[ids.length - 1];
       const optHtml = (sel) => list.map((p) => '<option value="' + esc(p.id) + '"' + (p.id === sel ? " selected" : "") + ">" + esc(shortDate(parseKey(p.date))) + "</option>").join("");
       $("cmpL").innerHTML = optHtml(cmpL); $("cmpR").innerHTML = optHtml(cmpR);
-      urlFor(cmpL).then((u) => { if (u) $("cmpImgL").src = u; });
-      urlFor(cmpR).then((u) => { if (u) $("cmpImgR").src = u; });
+      cmpLoad();
     }
   }
+  let cmpMode = "side";
+  function cmpLoad() {
+    urlFor(cmpL).then((u) => { if (u) { $("cmpImgL").src = u; $("cmpSlL").src = u; } });
+    urlFor(cmpR).then((u) => { if (u) { $("cmpImgR").src = u; $("cmpSlR").src = u; } });
+    const dl = (photoIdx[cmpL] || {}).date, dr = (photoIdx[cmpR] || {}).date;
+    $("cmpTagL").textContent = dl ? shortDate(parseKey(dl)) : "";
+    $("cmpTagR").textContent = dr ? shortDate(parseKey(dr)) : "";
+    $("cmpDiff").textContent = cmpDiffText(dl, dr);
+  }
+  function cmpDiffText(a, b) {
+    if (!a || !b || a === b) return "";
+    if (a > b) { const t = a; a = b; b = t; }
+    const days = daysBetween(parseKey(a), parseKey(b));
+    const es = bodyEntries();
+    const near = (d) => { let best = null, bd = 1e9; es.forEach((e) => { const x = Math.abs(daysBetween(parseKey(e.date), parseKey(d))); if (x <= 7 && x < bd) { bd = x; best = e; } }); return best; };
+    const ea = near(a), eb = near(b);
+    const parts = [];
+    if (ea && eb && ea !== eb) MEAS.forEach((m) => { if (ea[m.k] && eb[m.k]) { const dv = eb[m.k] - ea[m.k]; parts.push(m.l + " " + (dv >= 0 ? "+" : "−") + fmtN(Math.abs(dv)) + " " + m.u); } });
+    return "Zwischen den Fotos liegen " + days + (days === 1 ? " Tag" : " Tage") + (parts.length ? ": " + parts.join(", ") + "." : ". Trag Messwerte ein, dann siehst du hier auch, was sich verändert hat.");
+  }
+  function setCmpMode(m) {
+    cmpMode = m;
+    $("cmpSide").hidden = m !== "side";
+    $("cmpSlide").hidden = m !== "slide";
+    $("cmpModeSide").setAttribute("aria-pressed", String(m === "side"));
+    $("cmpModeSlide").setAttribute("aria-pressed", String(m === "slide"));
+  }
+  $("cmpModeSide").addEventListener("click", () => setCmpMode("side"));
+  $("cmpModeSlide").addEventListener("click", () => setCmpMode("slide"));
+  $("cmpRange").addEventListener("input", function () { $("cmpSlide").style.setProperty("--cut", this.value + "%"); });
   $("gChips").addEventListener("click", (ev) => { const c = ev.target.closest(".chip"); if (!c) return; gPose = c.dataset.pose; gLimit = 24; cmpL = ""; cmpR = ""; renderGallery(); });
   $("thumbsMore").addEventListener("click", () => { gLimit += 24; renderGallery(); });
-  $("cmpL").addEventListener("change", function () { cmpL = this.value; urlFor(cmpL).then((u) => { if (u) $("cmpImgL").src = u; }); });
-  $("cmpR").addEventListener("change", function () { cmpR = this.value; urlFor(cmpR).then((u) => { if (u) $("cmpImgR").src = u; }); });
+  $("cmpL").addEventListener("change", function () { cmpL = this.value; cmpLoad(); });
+  $("cmpR").addEventListener("change", function () { cmpR = this.value; cmpLoad(); });
 
   // ---- timelapse ----
   async function drawFrame(ctx, W, H, id) {
@@ -4169,6 +4264,7 @@ main[data-dir="l"] > section:not([hidden]) { animation: viewInL 260ms cubic-bezi
     if (document.activeElement !== $("sleepScore")) $("sleepScore").value = sl.score ? String(sl.score) : "";
     $("sleepShot").hidden = photosState !== "ok";
     $("sleepInfo").textContent = photoIdx[dk + "|sleep"] ? "Garmin-Screenshot von heute ist gespeichert." : "";
+    if (typeof patchRestRing === "function" && restReady) patchRestRing(dk);
   }
   function sleepRows(days) {
     const rows = [];
@@ -4835,6 +4931,7 @@ main[data-dir="l"] > section:not([hidden]) { animation: viewInL 260ms cubic-bezi
   });
 
   function renderProgress() {
+    renderRanks();
     renderArcGrid();
     renderProgressChart();
     renderSkills();
@@ -4935,12 +5032,27 @@ main[data-dir="l"] > section:not([hidden]) { animation: viewInL 260ms cubic-bezi
     return { app: "winter-arc", version: 2, exportedAt: stamp(), data: { plan: state.plan, settings: state.settings, logs: state.logs, skills: state.skills, tests: state.tests, body: state.body } };
   }
   function markBackup() { state.meta = state.meta || {}; state.meta.lastBackup = stamp(); saveLocal(); renderBackupInfo(); }
+  function blobToData(b) { return new Promise((res, rej) => { const r = new FileReader(); r.onload = () => res(String(r.result)); r.onerror = () => rej(r.error); r.readAsDataURL(b); }); }
+  function mediaPayload() {
+    if (typeof mdb === "undefined") return Promise.resolve(null);
+    const keys = ["bg", "snd-set", "snd-rest", "snd-record", "snd-flame"];
+    return Promise.all(keys.map((k) => mdb.get(k).then((rec) => (rec && rec.blob ? blobToData(rec.blob).then((d) => ({ k, name: rec.name || "", d })) : null)).catch(() => null)))
+      .then((arr) => { const out = {}; arr.forEach((x) => { if (x) out[x.k] = { name: x.name, d: x.d }; }); return Object.keys(out).length ? out : null; })
+      .catch(() => null);
+  }
   function saveBackup() {
+    const t0 = Date.now();
+    mediaPayload().then((media) => {
+      const pl = backupPayload();
+      if (media) pl.data.media = media;
+      saveBackupJson(JSON.stringify(pl), Date.now() - t0 > 3000);
+    });
+  }
+  function saveBackupJson(json, slow) {
     const name = "winter-arc-backup-" + todayKey() + ".json";
-    const json = JSON.stringify(backupPayload());
     let file = null;
     try { file = new File([json], name, { type: "application/json" }); } catch (e) { file = null; }
-    if (file && navigator.canShare && navigator.canShare({ files: [file] }) && navigator.share) {
+    if (!slow && file && navigator.canShare && navigator.canShare({ files: [file] }) && navigator.share) {
       navigator.share({ files: [file], title: "Winter Arc Backup" }).then(() => { markBackup(); toast("Backup gespeichert"); }).catch((e) => {
         if (e && e.name === "AbortError") return;
         downloadBackup(json, name);
@@ -4971,6 +5083,15 @@ main[data-dir="l"] > section:not([hidden]) { animation: viewInL 260ms cubic-bezi
       state.skills = data.skills || state.skills;
       state.tests = data.tests && Array.isArray(data.tests.entries) ? data.tests : state.tests;
       if (data.body && Array.isArray(data.body.entries)) state.body = data.body;
+      if (data.media && typeof mdb !== "undefined") {
+        Object.keys(data.media).forEach((k) => {
+          const m = data.media[k];
+          if (!m || !/^data:/.test(m.d || "")) return;
+          fetch(m.d).then((r) => r.blob()).then((b) => mdb.put(k, b, m.name)).then(() => {
+            if (k === "bg") loadBg(); else { delete sndBuf[k.slice(4)]; loadSndNames(); }
+          }).catch(() => {});
+        });
+      }
       todaySig = "";
       saveLocal();
       renderAll();
@@ -5020,6 +5141,7 @@ main[data-dir="l"] > section:not([hidden]) { animation: viewInL 260ms cubic-bezi
     setv("setBw", S().bodyweight || 75);
     setv("setProtein", S().proteinTarget || 120);
     setv("setKcal", S().kcalTarget || 3200);
+    setv("setRemind", S().remindFrom == null ? "19" : String(S().remindFrom));
     setv("setDrink", S().drinkTarget || 3000);
     setv("setBottle", S().bottle || 600);
     setv("setDrinkFrom", S().drinkFrom != null ? S().drinkFrom : 8);
@@ -5174,6 +5296,7 @@ main[data-dir="l"] > section:not([hidden]) { animation: viewInL 260ms cubic-bezi
     settingChanged("Dauer gespeichert: " + len + " Tage");
   });
   $("setBw").addEventListener("change", function () { const v = num(this.value); if (v && v >= 30 && v <= 200) { S().bodyweight = v; settingChanged("Körpergewicht gespeichert"); } });
+  $("setRemind").addEventListener("change", function () { S().remindFrom = this.value === "aus" ? "aus" : +this.value; settingChanged(this.value === "aus" ? "Erinnerungen aus" : "Erinnerung ab " + this.value + " Uhr"); });
   $("setKcal").addEventListener("change", function () { const v = Math.round(num(this.value) || 0); if (v >= 1200 && v <= 6000) { S().kcalTarget = v; settingChanged("Kalorienziel gespeichert"); } });
   $("setProtein").addEventListener("change", function () { const v = Math.round(num(this.value) || 0); if (v >= 30 && v <= 300) { S().proteinTarget = v; settingChanged("Proteinziel gespeichert"); } });
   $("setHabits").addEventListener("change", function () {
@@ -5244,7 +5367,7 @@ main[data-dir="l"] > section:not([hidden]) { animation: viewInL 260ms cubic-bezi
   // Name "snow" bleibt, damit showTab und die Farbwahl unverändert weiterrufen können.
   const snow = (() => {
     const cv = $("ambient"), ctx = cv && cv.getContext && cv.getContext("2d");
-    const MODES = { eis: "snow", schnee: "snow", aurora: "aurora", violett: "nebula", glut: "embers", blut: "embers", gold: "dust", neon: "grid", toxic: "spores", nacht: "stars", echidna: "dust", titan: "embers" };
+    const MODES = { eis: "snow", schnee: "snow", aurora: "aurora", violett: "nebula", glut: "embers", blut: "embers", gold: "dust", neon: "grid", toxic: "spores", nacht: "stars", echidna: "dust", titan: "embers", monarch: "stars", blutmond: "embers", sakura: "dust", donner: "grid", abyss: "spores", kaiser: "dust" };
     const COUNT = { snow: 70, embers: 44, dust: 64, spores: 24, stars: 120, aurora: 70, nebula: 70, grid: 40 };
     let P = [], B = [], raf = 0, running = false, w = 0, h = 0, last = 0, mode = "", onToday = true;
     let acc = "142,235,248", wht = "225,232,236", life = 0.3, lifeT = 0.3, lifeAt = 0, shot = null, shotAt = 0;
@@ -6173,6 +6296,12 @@ main[data-dir="l"] > section:not([hidden]) { animation: viewInL 260ms cubic-bezi
     { k: "nacht", n: "Mitternacht", a: "#4D7CFF", b: "#D6E0FF" },
     { k: "echidna", n: "Echidna", a: "#B7A6E6", b: "#FFFFFF", line: "Teestunde. Neugier ist erlaubt, Gier auch." },
     { k: "titan", n: "Titan", a: "#8FB36B", b: "#F3E6C8", line: "Hinaus über die Mauer. Heute zählt jeder Satz." },
+    { k: "monarch", n: "Monarch", a: "#6C7BFF", b: "#C9D8FF", line: "Steig auf. Jeder Satz ist ein Level." },
+    { k: "blutmond", n: "Blutmond", a: "#E0344B", b: "#ECE6F0", line: "Die Nacht gehört denen, die trainieren." },
+    { k: "sakura", n: "Sakura", a: "#FF8FB8", b: "#FFF1F6", line: "Ruhig, schön und unaufhaltsam." },
+    { k: "donner", n: "Donner", a: "#FFD84D", b: "#B9DCFF", line: "Schnell, laut, kein Zögern." },
+    { k: "abyss", n: "Abgrund", a: "#2FD6C3", b: "#D8FFF9", line: "Je tiefer du gehst, desto stärker kommst du zurück." },
+    { k: "kaiser", n: "Kaiser", a: "#E8B64A", b: "#FFF6DD", line: "Disziplin ist eine Krone, die man täglich trägt." },
     { k: "eigen", n: "Eigene", custom: true }
   ];
   // ---- Farb-Generator: aus zwei Farben alle Töne berechnen ----
@@ -6554,6 +6683,7 @@ main[data-dir="l"] > section:not([hidden]) { animation: viewInL 260ms cubic-bezi
     if (currentTab === "tools") renderTools();
     if (currentTab === "plan") renderPlanView();
     if (typeof mediaRefresh === "function") mediaRefresh();
+    if (typeof checkRanks === "function") checkRanks();
   }
 
   // ================= v6: Wochenziel, Rekord, Schritte, Notiz, Teilen =================
@@ -6871,6 +7001,7 @@ main[data-dir="l"] > section:not([hidden]) { animation: viewInL 260ms cubic-bezi
     if (k !== lastDay) { lastDay = k; todaySig = ""; renderAll(); return; }
     const s = effSession(today());
     if (s) $("when").textContent = whenText(s);
+    renderReminder(k);
   }, 30000);
   window.addEventListener("resize", fitDayname);
   try { if (document.fonts && document.fonts.ready) document.fonts.ready.then(fitDayname); } catch (e) { /* ignore */ }
@@ -7105,12 +7236,209 @@ main[data-dir="l"] > section:not([hidden]) { animation: viewInL 260ms cubic-bezi
   }
   mediaRefresh(); loadBg(); loadSndNames();
 
+  // ================= v9: Ruhetag-Ring, Ränge, Erinnerungen =================
+  // ---------- Ruhetag: Erholungs-Ring ----------
+  function restItems(dk) {
+    const l = state.logs[dk] || {};
+    const items = [];
+    const pt = +S().proteinTarget || 120, p = proteinTotal(dk);
+    items.push({ k: "protein", n: "Protein", ok: p >= pt, t: Math.round(p) + " von " + pt + " g" });
+    const dt = drinkCfg().target, w = drinkTotal(dk);
+    items.push({ k: "drink", n: "Wasser", ok: w >= dt, t: fmtL(w) + " von " + fmtL(dt) });
+    const sl = l.sleep || {};
+    items.push({ k: "sleep", n: "Schlaf", ok: (sl.min || 0) >= 420, t: sl.min ? fmtSleep(sl.min) + (sl.min >= 420 ? "" : ", Ziel 7 h") : "noch nicht eingetragen" });
+    const c = l.checkin || {};
+    items.push({ k: "checkin", n: "Check-in", ok: !!(c.energy || c.soreness), t: c.energy || c.soreness ? "erledigt" : "Energie und Muskelkater" });
+    const hs = habitStats(dk);
+    if (hs.total) items.push({ k: "habits", n: "Gewohnheiten", ok: hs.n === hs.total, t: hs.n + " von " + hs.total });
+    return items;
+  }
+  const restDoneShown = {};
+  function patchRestRing(dk) {
+    const list = $("restlist");
+    if (!list) return;
+    dk = dk || todayKey();
+    const hasPlan = !!(state.plan && state.plan.days && state.plan.days.length);
+    const rest = hasPlan && !effSession(parseKey(dk));
+    list.hidden = !rest;
+    if (!rest) return;
+    const items = restItems(dk);
+    const done = items.filter((i) => i.ok).length;
+    patchRing(items.length, done);
+    $("ringnum").innerHTML = done + "<small>/" + items.length + "</small>";
+    const complete = done === items.length;
+    $("ringlabeltxt").textContent = complete ? "Erholt" : "Erholung";
+    $("ringlabel").textContent = done + " von " + items.length + " Erholungszielen erreicht";
+    $("hero").classList.toggle("is-complete", complete);
+    list.innerHTML = items.map((i) => '<li class="' + (i.ok ? "ok" : "") + '"><button data-go="' + i.k + '"><span class="rk" aria-hidden="true">' + (i.ok ? "✓" : "") + '</span><span class="rn">' + esc(i.n) + '</span><span class="rt">' + esc(i.t) + "</span></button></li>").join("");
+    if (complete && !restDoneShown[dk] && dk === todayKey()) { restDoneShown[dk] = 1; if (restDoneShown._init) { toast("Erholungstag komplett. So wächst du."); hap("set"); } }
+    restDoneShown._init = 1;
+  }
+  if ($("restlist")) $("restlist").addEventListener("click", (ev) => {
+    const b = ev.target.closest("[data-go]");
+    if (!b) return;
+    const sel = { protein: '[data-coll="protein"]', drink: "#drinkCard", sleep: "#sleepDur", checkin: "#checkinCard", habits: "#habits" }[b.dataset.go];
+    const el = sel && document.querySelector(sel);
+    if (el) { el.scrollIntoView({ block: "center", behavior: "smooth" }); if (el.tagName === "INPUT") setTimeout(() => el.focus({ preventScroll: true }), 400); }
+  });
+
+  // ---------- Ränge ----------
+  const RANK_L = ["E", "D", "C", "B", "A", "S"];
+  const RANK_T = ["Rekrut", "Kämpfer", "Veteran", "Elite", "Meister", "Legende"];
+  function rankScore(v, pts) {
+    for (let i = 0; i < 5; i++) {
+      const a = pts[i], b = pts[i + 1];
+      const inSeg = a < b ? v < b : v > b;
+      if (inSeg) return Math.max(0, i + (v - a) / (b - a));
+    }
+    return Math.min(5.999, 5 + (v - pts[5]) / (pts[5] - pts[4]) * 0.999);
+  }
+  function computeRanks() {
+    const bw = +S().bodyweight || 75;
+    const hist = buildHistory();
+    const tests = state.tests.entries || [];
+    const bestTest = (k) => tests.reduce((m, e) => (e.values && e.values[k] > m ? e.values[k] : m), 0);
+    const repCat = (k, n, rx, notRx, testK, th) => {
+      let best = testK ? bestTest(testK) : 0;
+      Object.keys(hist).forEach((key) => {
+        const h = hist[key], nm = String(h.name || "").toLowerCase();
+        if (!rx.test(nm) || (notRx && notRx.test(nm))) return;
+        h.items.forEach((it) => { if (it.met.secs) return; const eq = (it.met.v / bw - 1) * 30; if (eq > best) best = eq; });
+      });
+      return { k, n, v: best, pts: [0].concat(th), fmt: (x) => Math.round(x) + " Wdh.", has: best > 0 };
+    };
+    const cats = [
+      repCat("pull", "Klimmzüge", /klimmz|pull-?up/, /chin|row|ruder|negativ|band|austral/, "pullups", [5, 10, 15, 20, 28]),
+      repCat("chin", "Chin-ups", /chin/, /negativ|band/, null, [6, 12, 17, 22, 30]),
+      repCat("dips", "Dips", /\bdip/, /bank|bench|negativ|band|stuhl/, "dips", [8, 15, 22, 30, 40]),
+      repCat("push", "Liegestütze", /liegest|push-?up/, /pike|knie|negativ|band|archer|einarm|handstand/, "pushups", [15, 30, 45, 60, 80])
+    ];
+    let lsit = bestTest("lsit");
+    Object.keys(hist).forEach((key) => { const h = hist[key]; if (!/l-?sit/i.test(h.name)) return; h.items.forEach((it) => { if (it.met.secs && it.met.v > lsit) lsit = it.met.v; }); });
+    cats.push({ k: "core", n: "L-Sit", v: lsit, pts: [0, 5, 10, 20, 30, 45], fmt: (x) => Math.round(x) + " s", has: lsit > 0 });
+    const runs = runEntries().filter((r) => r.km >= 3);
+    const bestPace = runs.reduce((m, r) => (!m || r.pace < m ? r.pace : m), 0);
+    cats.push({ k: "run", n: "Laufen", v: bestPace, pts: [600, 420, 375, 330, 290, 255], fmt: (x) => fmtPace(x) + " /km", has: !!bestPace, hint: "ab 3 km" });
+    const lv = SKILLS.map((sk) => Math.min(1, ((state.skills[sk.key] || {}).level || 0) / sk.levels.length));
+    const skAvg = lv.reduce((a, b) => a + b, 0) / Math.max(1, lv.length);
+    cats.push({ k: "skills", n: "Skills", v: skAvg, pts: [0, 0.12, 0.28, 0.48, 0.7, 0.9], fmt: (x) => Math.round(x * 100) + " %", has: skAvg > 0 });
+    let tot = 0, dn = 0;
+    const tk = todayKey(), start = arcStartDate();
+    for (let d = start, i = 0; dateKey(d) <= tk && i < 400; d = addDays(d, 1), i++) {
+      const s = effSession(d);
+      if (!s || s.free) continue;
+      const pr = sessionProgress(dateKey(d), s);
+      if (dateKey(d) === tk && !pr.done) continue;
+      tot += pr.total; dn += pr.done;
+    }
+    const disc = tot >= 10 ? (dn / tot) * 100 : 0;
+    cats.push({ k: "disc", n: "Disziplin", v: disc, pts: [0, 50, 65, 80, 90, 97], fmt: (x) => Math.round(x) + " % der Sätze", has: tot >= 10 });
+    cats.forEach((c) => {
+      if (!c.has) return;
+      c.score = rankScore(c.v, c.pts);
+      c.idx = Math.min(5, Math.floor(c.score));
+      c.frac = c.idx >= 5 ? 1 : c.score - c.idx;
+      c.next = c.idx >= 5 ? null : c.pts[c.idx + 1];
+    });
+    const got = cats.filter((c) => c.has);
+    let overall = null;
+    if (got.length >= 2) {
+      const sc = got.reduce((a, c) => a + c.score, 0) / got.length;
+      overall = { score: sc, idx: Math.min(5, Math.floor(sc)), frac: Math.min(1, sc - Math.min(5, Math.floor(sc))), n: got.length };
+    }
+    return { cats, overall };
+  }
+  const rankBadge = (idx, big) => '<span class="rbadge r' + idx + (big ? " big" : "") + '" aria-hidden="true">' + RANK_L[idx] + "</span>";
+  function renderRanks() {
+    if (!$("rankHero")) return;
+    const R = computeRanks();
+    const o = R.overall;
+    $("rankHero").innerHTML = o ?
+      rankBadge(o.idx, true) + '<div class="rhtxt"><span class="rhk">Gesamtrang</span><b>' + RANK_L[o.idx] + "-Rang, " + RANK_T[o.idx] + '</b><div class="rbar"><i style="width:' + Math.round(o.frac * 100) + '%"></i></div><small>' +
+      (o.idx >= 5 ? "Höchster Rang. Halte ihn." : Math.round(o.frac * 100) + " % bis " + RANK_L[o.idx + 1] + "-Rang") + ", aus " + o.n + " Bereichen</small></div>" :
+      '<p class="lead">Trag in mindestens zwei Bereichen Leistungen ein, zum Beispiel deine Wiederholungen unter Klimmzügen und Dips. Dann bekommst du deinen Gesamtrang.</p>';
+    $("rankList").innerHTML = R.cats.map((c) => {
+      if (!c.has) return '<li class="none"><span class="rbadge rn0" aria-hidden="true">–</span><span class="rname">' + esc(c.n) + '</span><span class="rval">–</span><span class="rnext">Noch keine Daten' + (c.hint ? " (" + c.hint + ")" : "") + "</span></li>";
+      const nextTxt = c.idx >= 5 ? "Höchster Rang erreicht" : "Nächster Rang " + RANK_L[c.idx + 1] + " ab " + c.fmt(c.next);
+      return "<li>" + rankBadge(c.idx) + '<span class="rname">' + esc(c.n) + '</span><span class="rval">' + esc(c.fmt(c.v)) + '</span><div class="rbar"><i style="width:' + Math.round(c.frac * 100) + '%"></i></div><span class="rnext">' + esc(RANK_T[c.idx] + ". " + nextTxt) + "</span></li>";
+    }).join("");
+  }
+  function renderRankChip() {
+    const chip = $("rankChip");
+    if (!chip) return;
+    const st = (state.meta && state.meta.ranks) || {};
+    const o = st._overall;
+    chip.hidden = o == null;
+    if (o != null) chip.innerHTML = rankBadge(o) + "<span>" + RANK_L[o] + "-Rang, " + RANK_T[o] + "</span>";
+  }
+  let rankTimer = 0;
+  function checkRanks() {
+    clearTimeout(rankTimer);
+    rankTimer = setTimeout(() => {
+      let R;
+      try { R = computeRanks(); } catch (e) { return; }
+      state.meta = state.meta || {};
+      const prev = state.meta.ranks || null;
+      const cur = {};
+      R.cats.forEach((c) => { if (c.has) cur[c.k] = c.idx; });
+      if (R.overall) cur._overall = R.overall.idx;
+      if (prev) {
+        const ups = [];
+        R.cats.forEach((c) => { if (c.has && prev[c.k] != null && c.idx > prev[c.k]) ups.push(c.n + " " + RANK_L[c.idx]); });
+        const oUp = R.overall && prev._overall != null && R.overall.idx > prev._overall;
+        if (oUp) showRankUp(R.overall.idx);
+        else if (ups.length) { toast("Rang-Aufstieg: " + ups.join(", ")); hap("set"); }
+      }
+      if (JSON.stringify(prev) !== JSON.stringify(cur)) { state.meta.ranks = cur; saveLocal(); }
+      renderRankChip();
+      if (currentTab === "progress") renderRanks();
+    }, 900);
+  }
+  function showRankUp(idx) {
+    const el = $("rankUp");
+    if (!el) return;
+    $("rankUpBadge").innerHTML = rankBadge(idx, true);
+    $("rankUpTitle").textContent = RANK_L[idx] + "-Rang";
+    $("rankUpText").textContent = "Gesamtrang aufgestiegen: " + RANK_T[idx] + ".";
+    el.hidden = false;
+    try { recordSound(); } catch (e) { /* ignore */ }
+    hap("flame");
+    clearTimeout(showRankUp.t);
+    showRankUp.t = setTimeout(() => { el.hidden = true; }, 4200);
+  }
+  if ($("rankUp")) $("rankUp").addEventListener("click", () => { $("rankUp").hidden = true; });
+  if ($("rankChip")) $("rankChip").addEventListener("click", () => { showTab("progress"); setTimeout(() => { const b = $("rankBlock"); if (b) b.scrollIntoView({ block: "start", behavior: "smooth" }); }, 120); });
+
+  // ---------- Erinnerungen ----------
+  function renderReminder(dk) {
+    const el = $("remindBanner");
+    if (!el) return;
+    const from = S().remindFrom == null ? 19 : S().remindFrom;
+    const now = new Date();
+    const dismissed = state.meta && state.meta.remindOff === dk;
+    if (from === "aus" || dismissed || dk !== todayKey() || now.getHours() < +from) { el.hidden = true; return; }
+    const open = [];
+    const pt = +S().proteinTarget || 120, p = proteinTotal(dk);
+    if (p < pt) open.push(Math.round(pt - p) + " g Protein");
+    const dt = drinkCfg().target, w = drinkTotal(dk);
+    if (w < dt) open.push(fmtL(dt - w) + " Wasser");
+    const l = state.logs[dk] || {};
+    (S().habits || []).forEach((h) => { if (/protein|wasser|trinken/i.test(h)) return; if (!(l.habits && l.habits[h])) open.push(h); });
+    const s = effSession(today());
+    if (s) { const pr = sessionProgress(dk, s); if (pr.total && pr.done < pr.total) open.push((pr.total - pr.done) + (pr.total - pr.done === 1 ? " Satz" : " Sätze") + " im Training"); }
+    if (!open.length) { el.hidden = true; return; }
+    $("remindText").innerHTML = "<b>Heute noch offen:</b> " + esc(open.join(", ")) + ".";
+    el.hidden = false;
+  }
+  if ($("remindLater")) $("remindLater").addEventListener("click", () => { state.meta = state.meta || {}; state.meta.remindOff = todayKey(); saveLocal(); $("remindBanner").hidden = true; });
+
   const deepHandled = handleDeepLink();
   initCollapsibles();
   initInfos();
   let savedTab = "today";
   try { savedTab = localStorage.getItem("winterarc.tab") || "today"; } catch (e) { /* ignore */ }
   if (deepHandled) savedTab = "tools";
+  restReady = true;
   renderAll();
   showTab(savedTab);
   setSync();
