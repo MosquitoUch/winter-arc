@@ -675,6 +675,22 @@ pre.prompt { white-space: pre-wrap; margin: 0 0 12px; padding: 14px; border-radi
 .ranklist .rbar, .ranklist .rnext { grid-column: 2 / -1; }
 .ranklist .rnext { color: var(--mute); font-size: 13px; margin-top: -2px; }
 .ranklist li.none .rname, .ranklist li.none .rval { color: var(--mute); }
+.rankreq { margin-top: 14px; border-top: 1px solid var(--line); padding-top: 12px; }
+.rankreq summary { cursor: pointer; font-weight: 600; min-height: 40px; display: flex; align-items: center; }
+.rrwrap { overflow-x: auto; margin-top: 8px; }
+.rrtab { border-collapse: collapse; width: 100%; table-layout: fixed; font-variant-numeric: tabular-nums; }
+.rrtab th, .rrtab td { padding: 8px 2px; text-align: center; font-size: 12.5px; border-top: 1px solid var(--line); }
+.rrtab thead th { border-top: 0; font-weight: 600; }
+.rrtab thead small { display: none; }
+.rrtab tbody th small { display: block; color: var(--mute); font-weight: 400; font-size: 11px; }
+.rrtab thead .rbadge { width: 24px; height: 28px; font-size: 13px; }
+.rrtab thead .rbadge.r6 { font-size: 11px; }
+.rrtab thead th:first-child, .rrtab tbody th { width: 84px; }
+.rrtab tbody th { text-align: left; font-weight: 600; }
+.rrtab td { color: var(--mute); }
+.rrtab td.got { color: var(--ink); }
+.rrtab td.cur { color: var(--ice); font-weight: 700; background: rgba(255, 255, 255, .05); border-radius: 8px; }
+.rrnote { color: var(--mute); font-size: 12px; margin: 10px 0 0; }
 .ranklist li.editable { cursor: pointer; }
 .ranklist li.editable:active { background: rgba(255, 255, 255, .04); }
 .relist { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; max-height: 38vh; overflow: auto; }
@@ -1171,6 +1187,11 @@ main[data-dir="l"] > section:not([hidden]) { animation: viewInL 260ms cubic-bezi
           <p class="lead">Von E bis S+, aus deinen besten Leistungen. Zusatzgewicht wird in Wiederholungen umgerechnet: 10 kg extra zählen deutlich mehr als eine reine Körpergewichts-Wiederholung. Stimmt ein Wert nicht, tipp auf die Zeile und korrigiere ihn.</p>
           <div class="rankhero" id="rankHero"></div>
           <ul class="ranklist" id="rankList"></ul>
+          <details class="rankreq" id="rankReqD">
+            <summary>Was brauche ich für welchen Rang?</summary>
+            <div class="rrwrap"><table class="rrtab" id="rankReq"></table></div>
+            <p class="rrnote">Bei den Übungen zählt der beste Satz am Stück, mit Zusatzgewicht umgerechnet in Wiederholungen. Beim Laufen zählt das Tempo ab 3 km, ein niedrigerer Wert ist besser.</p>
+          </details>
         </div>
         <div class="block">
           <h2 class="bh">Dein Winter Arc</h2>
@@ -7516,6 +7537,7 @@ main[data-dir="l"] > section:not([hidden]) { animation: viewInL 260ms cubic-bezi
     if (!$("rankHero")) return;
     const R = computeRanks();
     const o = R.overall;
+    renderRankReq(R);
     $("rankHero").innerHTML = o ?
       rankBadge(o.idx, true) + '<div class="rhtxt"><span class="rhk">Gesamtrang</span><b>' + RANK_L[o.idx] + "-Rang, " + RANK_T[o.idx] + '</b><div class="rbar"><i style="width:' + Math.round(o.frac * 100) + '%"></i></div><small>' +
       (o.idx >= MAXR ? "Höchster Rang. Halte ihn." : Math.round(o.frac * 100) + " % bis " + RANK_L[o.idx + 1] + "-Rang") + ", aus " + o.n + " Bereichen</small></div>" :
@@ -7528,6 +7550,17 @@ main[data-dir="l"] > section:not([hidden]) { animation: viewInL 260ms cubic-bezi
       const nextTxt = c.idx >= MAXR ? "Höchster Rang erreicht" : "Nächster Rang " + RANK_L[c.idx + 1] + " ab " + c.fmt(c.next);
       return "<li" + ed + ">" + rankBadge(c.idx) + '<span class="rname">' + esc(c.n) + '</span><span class="rval">' + esc(c.fmt(c.v)) + '</span><div class="rbar"><i style="width:' + Math.round(c.frac * 100) + '%"></i></div><span class="rnext">' + esc(RANK_T[c.idx] + ". " + nextTxt + edHint) + "</span></li>";
     }).join("");
+  }
+  function renderRankReq(R) {
+    const t = $("rankReq");
+    if (!t) return;
+    const head = "<thead><tr><th></th>" + [1, 2, 3, 4, 5, 6].map((i) => '<th><span class="rbadge r' + i + '" aria-hidden="true">' + RANK_L[i] + '</span><small>' + RANK_T[i] + "</small></th>").join("") + "</tr></thead>";
+    const body = R.cats.map((c) => {
+      const cells = [1, 2, 3, 4, 5, 6].map((i) => '<td class="' + (c.has && c.idx >= i ? "got" : "") + (c.has && c.idx === i ? " cur" : "") + '">' + esc(c.fmt(c.pts[i]).replace(" der Sätze", "").replace(" /km", "").replace(" Wdh.", "")) + "</td>").join("");
+      const unit = c.k === "run" ? "min/km" : c.k === "core" ? "Sek." : c.k === "skills" || c.k === "disc" ? "" : "Wdh.";
+      return '<tr><th scope="row">' + esc(c.n) + (unit ? "<small>" + unit + "</small>" : "") + "</th>" + cells + "</tr>";
+    }).join("");
+    t.innerHTML = head + "<tbody>" + body + "</tbody>";
   }
   // ---- Rang-Werte korrigieren ----
   let rankEditK = null;
