@@ -9766,7 +9766,7 @@ main[data-dir="l"] > section:not([hidden]) { animation: viewInL 260ms cubic-bezi
     const rank = rollRank(rnd, playerRank(), keyed);
     const red = rnd() < 0.1 + 0.03 * rank;
     const g = gateMake(rank, red, now);
-    g.expires = keyed ? now + 3 * 3600e3 : Math.min(now + 3 * 3600e3, endOfDay(now));
+    g.expires = keyed ? now + 3 * 3600e3 : Math.min(now + 3 * 3600e3, endOfDay(now) - 2.5 * 3600e3);
     G.cur = g; G.lastDay = todayKey();
     saveLocal();
     sysShow("Ein Gate hat sich geöffnet", [{ t: "Rang", v: RANK_L[rank] + "-Rang" }, { t: "Zeitlimit drinnen", v: GATE_MIN[rank] + " Min." }, { t: "Schließt um", v: hhmm(g.expires) }], rank, "Du findest es unter Heute. Gefahr: unbekannt.");
@@ -9798,7 +9798,8 @@ main[data-dir="l"] > section:not([hidden]) { animation: viewInL 260ms cubic-bezi
     const keys = Object.keys(G.seen).sort();
     if (keys.length > 60) keys.slice(0, keys.length - 60).forEach((k) => delete G.seen[k]);
     const y = dateKey(addDays(today(), -1));
-    let ok = ((h >>> 16) % 100) < 50 && G.lastDay !== y && endOfDay(now) - now > 40 * 60e3;
+    const late = new Date(now).getHours() >= 21;
+    let ok = ((h >>> 16) % 100) < 50 && G.lastDay !== y && !late;
     try { const r = readiness(dk); if (r.hasInput && r.score < 45) ok = false; } catch (e) { /* ignore */ }
     saveLocal();
     if (ok) gateSpawn(false);
