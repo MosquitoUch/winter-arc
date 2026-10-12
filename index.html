@@ -300,6 +300,31 @@ body.timer-on .app { padding-bottom: calc(200px + env(safe-area-inset-bottom, 0p
 .pips i.on { background: linear-gradient(160deg, var(--hi), var(--ice) 45%, var(--ice-2)); }
 .pips i.cur { background: var(--ice-deep); }
 .skill-goal { margin: 0; color: var(--ink-2); font-size: 15px; }
+.skill > .skill-top { width: 100%; padding: 0; border: 0; background: none; color: inherit; font: inherit; text-align: left; cursor: pointer; }
+.skill > .skill-top h3::after { content: " ›"; color: var(--mute); font-weight: 400; }
+.skill > .skill-top[aria-expanded="true"] h3::after { content: " ⌄"; }
+.sktree { display: flex; align-items: center; margin: 12px 0 10px; overflow-x: auto; padding: 4px 2px; scrollbar-width: none; }
+.sktree::-webkit-scrollbar { display: none; }
+.skn { flex: none; width: 34px; height: 38px; display: grid; place-items: center; clip-path: polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%); background: var(--line-2); color: var(--mute); font-family: var(--display); font-weight: 800; font-size: 15px; }
+.skn.on { background: linear-gradient(160deg, var(--hi), var(--ice) 45%, var(--ice-2)); color: var(--ice-ink); }
+.skn.cur { background: var(--ice-deep); color: var(--ink); animation: breathe 2.4s ease-in-out infinite; }
+.skl { flex: 1 1 10px; min-width: 8px; max-width: 34px; height: 2px; background: var(--line-2); display: block; }
+.skl.on { background: var(--ice); box-shadow: 0 0 6px rgba(var(--acc-rgb), .7); }
+.skill.mastered .skn.on { background: linear-gradient(135deg, #FFF2A8, #FFC23D 55%, #FF8A1F); }
+.skill.mastered .skl.on { background: #FFC23D; box-shadow: 0 0 6px rgba(255, 194, 61, .7); }
+.skscroll { list-style: none; margin: 0 0 12px; padding: 4px 0 0 0; display: grid; gap: 0; border-left: 2px solid var(--line-2); margin-left: 16px; }
+.skscroll li { position: relative; display: grid; grid-template-columns: 28px minmax(0, 1fr); gap: 10px; align-items: center; padding: 6px 0 6px 0; margin-left: -15px; }
+.skscroll .skd { width: 28px; height: 28px; display: grid; place-items: center; border-radius: 50%; background: var(--surface-2); border: 1px solid var(--line-2); color: var(--mute); font-size: 13px; font-weight: 700; }
+.skscroll li.on .skd { background: var(--ice); border-color: var(--ice); color: var(--ice-ink); }
+.skscroll li.cur .skd { border-color: var(--ice); color: var(--ice); box-shadow: 0 0 10px rgba(var(--acc-rgb), .5); }
+.skscroll li span:last-child { display: grid; min-width: 0; }
+.skscroll small { color: var(--mute); font-size: 13px; }
+.skscroll li:not(.on):not(.cur) b { color: var(--ink-2); font-weight: 500; }
+.skmgr { margin-top: 14px; border-top: 1px solid var(--line); padding-top: 8px; }
+.skmgr summary { cursor: pointer; font-weight: 600; min-height: 40px; display: flex; align-items: center; }
+.skchips { display: flex; flex-wrap: wrap; gap: 8px; margin: 8px 0; }
+.skchips .chip[aria-pressed="true"] { border-color: var(--ice); color: var(--ice); }
+@media (prefers-reduced-motion: reduce) { .skn.cur { animation: none; } }
 .skill-goal b { color: var(--ink); font-weight: 600; }
 .skill .row { margin-top: 10px; }
 
@@ -2303,8 +2328,16 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
       ["L-Sit", "20 s halten"], ["L-Sit", "30 s halten"]] },
     { key: "dragonflag", name: "Dragon Flag", levels: [
       ["Tuck Dragon Flag, nur ablassen", "5 × 3 s"], ["Tuck Dragon Flag", "8 s halten"], ["Einbeinig, nur ablassen", "5 × 3 s"],
-      ["Full Dragon Flag, nur ablassen", "5 × 4 s"], ["Full Dragon Flag", "5 Wdh."]] }
+      ["Full Dragon Flag, nur ablassen", "5 × 4 s"], ["Full Dragon Flag", "5 Wdh."]] },
+    { key: "planche", name: "Planche", opt: true, levels: [
+      ["Planche Lean", "20 s halten"], ["Tuck Planche", "5 s halten"], ["Tuck Planche", "15 s halten"],
+      ["Advanced Tuck Planche", "8 s halten"], ["Straddle Planche", "5 s halten"], ["Full Planche", "3 s halten"]] },
+    { key: "muscleup", name: "Muscle-Up", opt: true, levels: [
+      ["Explosive Klimmzüge bis zur Brust", "5 Wdh."], ["Negative Muscle-Ups", "5 × 3 s"], ["Muscle-Up mit Band", "3 Wdh."],
+      ["Muscle-Up", "1 Wdh."], ["Muscle-Ups", "3 Wdh."], ["Muscle-Ups", "5 Wdh. sauber"]] }
   ];
+  const skillOn = (sk) => { const on = (state.skills && state.skills._on) || {}; return on[sk.key] != null ? !!on[sk.key] : !sk.opt; };
+  const activeSkills = () => SKILLS.filter(skillOn);
   const TEST_ITEMS = [
     { g: "Kraft im Park", k: "pullups", l: "Klimmzüge, Maximum", u: "Wdh." },
     { g: "Kraft im Park", k: "dips", l: "Dips am Barren, Maximum", u: "Wdh." },
@@ -5725,33 +5758,60 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
   }
 
   // ================= Progress: skills =================
+  const skillOpen = {};
   function renderSkills() {
-    $("skills").innerHTML = SKILLS.map((sk) => {
+    const act = activeSkills();
+    const html = act.map((sk) => {
       const st = state.skills[sk.key] || { level: 0 };
       const lv = Math.max(0, Math.min(sk.levels.length, st.level || 0));
-      const pips = sk.levels.map((_, i) => "<i class=\"" + (i < lv ? "on" : i === lv ? "cur" : "") + "\"></i>").join("");
       const mastered = lv >= sk.levels.length;
+      const nodes = sk.levels.map((l, i) => (i ? '<i class="skl' + (i <= lv ? " on" : "") + '" aria-hidden="true"></i>' : "") +
+        '<span class="skn' + (i < lv ? " on" : i === lv ? " cur" : "") + '" title="' + esc(l[0] + ": " + l[1]) + '">' + (i < lv ? "✓" : i + 1) + "</span>").join("");
       const goal = mastered ? "Gemeistert. Halte die Form mit regelmäßigem Training." : "<b>" + esc(sk.levels[lv][0]) + "</b>: " + esc(sk.levels[lv][1]);
-      return '<div class="skill" data-k="' + sk.key + '"><div class="skill-top"><h3>' + esc(sk.name) + "</h3><span>Stufe " + Math.min(lv + 1, sk.levels.length) + " von " + sk.levels.length + "</span></div>" +
-        '<div class="pips" aria-hidden="true">' + pips + '</div><p class="skill-goal">' + (mastered ? goal : "Ziel: " + goal) + "</p>" +
+      const open = !!skillOpen[sk.key];
+      const scroll = open ? '<ol class="skscroll">' + sk.levels.map((l, i) => '<li class="' + (i < lv ? "on" : i === lv ? "cur" : "") + '"><span class="skd">' + (i < lv ? "✓" : i + 1) + '</span><span><b>' + esc(l[0]) + "</b><small>" + esc(l[1]) + (i === lv ? " · aktuelles Ziel" : "") + "</small></span></li>").join("") + "</ol>" : "";
+      return '<div class="skill' + (mastered ? " mastered" : "") + '" data-k="' + sk.key + '"><button class="skill-top" data-act="open" aria-expanded="' + open + '"><h3>' + esc(sk.name) + "</h3><span>" + (mastered ? "Gemeistert" : "Stufe " + (lv + 1) + " von " + sk.levels.length) + "</span></button>" +
+        '<div class="sktree" aria-hidden="true">' + nodes + "</div>" + scroll + '<p class="skill-goal">' + (mastered ? goal : "Ziel: " + goal) + "</p>" +
         '<div class="row">' + (mastered ? "" : '<button class="btn small" data-act="up">Stufe geschafft</button>') +
         (lv > 0 ? '<button class="btn small" data-act="down">Eine Stufe zurück</button>' : "") + "</div></div>";
     }).join("");
+    const mgr = '<details class="skmgr"><summary>Skills auswählen</summary><div class="skchips">' + SKILLS.map((sk) => '<button class="chip" data-tog="' + sk.key + '" aria-pressed="' + skillOn(sk) + '">' + esc(sk.name) + "</button>").join("") + '</div><small class="fhint">Nur ausgewählte Skills zählen für deinen Technik-Rang.</small></details>';
+    $("skills").innerHTML = (html || '<p class="lead">Wähle unten mindestens einen Skill aus.</p>') + mgr;
   }
   $("skills").addEventListener("click", (ev) => {
+    const tg = ev.target.closest("[data-tog]");
+    if (tg) {
+      const k = tg.dataset.tog, sk = SKILLS.find((x) => x.key === k);
+      state.skills._on = state.skills._on || {};
+      const nowOn = !skillOn(sk);
+      if (!nowOn && activeSkills().length <= 1) { toast("Mindestens ein Skill bleibt aktiv."); return; }
+      state.skills._on[k] = nowOn;
+      saveSkills(); hap("tap");
+      const keepOpen = $("skills").querySelector(".skmgr") && $("skills").querySelector(".skmgr").open;
+      renderSkills();
+      if (keepOpen) $("skills").querySelector(".skmgr").open = true;
+      if (typeof checkRanks === "function") checkRanks();
+      return;
+    }
     const b = ev.target.closest("[data-act]");
     if (!b) return;
     const key = b.closest(".skill").dataset.k;
     const sk = SKILLS.find((s) => s.key === key);
+    if (b.dataset.act === "open") { skillOpen[key] = !skillOpen[key]; hap("tick"); renderSkills(); return; }
     const st = state.skills[key] || (state.skills[key] = { level: 0 });
     if (b.dataset.act === "up" && st.level < sk.levels.length) {
       st.level++;
       st.updated = todayKey();
-      toast(st.level >= sk.levels.length ? sk.name + " gemeistert." : "Neue Stufe: " + sk.levels[st.level][0]);
+      const mastered = st.level >= sk.levels.length;
+      if (window.__waGame) {
+        const done = sk.levels[st.level - 1];
+        sysShow(mastered ? "Skill gemeistert" : "Neue Fähigkeit", [{ t: sk.name, v: st.level + " von " + sk.levels.length + " Stufen" }, { t: "Geschafft", v: done[0] }, { t: "Belohnung", v: "+" + (mastered ? 100 : 30) + " XP" }], null, mastered ? "Alle Stufen gemeistert. Das ist selten." : "Nächstes Ziel: " + sk.levels[st.level][0] + ", " + sk.levels[st.level][1] + ".");
+      } else toast(mastered ? sk.name + " gemeistert." : "Neue Stufe: " + sk.levels[st.level][0]);
       buzz([20, 40, 20]);
     } else if (b.dataset.act === "down" && st.level > 0) st.level--;
     saveSkills();
     renderSkills();
+    if (typeof checkRanks === "function") checkRanks();
   });
 
   // ================= Progress: tests =================
@@ -5922,7 +5982,7 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
       TEST_ITEMS.forEach((it) => { if (e.values[it.k] != null) v[it.l] = fmtTest(it, e.values[it.k]) + (it.u ? " " + it.u : ""); });
       return { datum: shortDate(parseKey(e.date)), werte: v };
     });
-    const skills = SKILLS.map((sk) => { const lv = (state.skills[sk.key] || {}).level || 0; return { skill: sk.name, stufe: lv + 1, ziel: lv < sk.levels.length ? sk.levels[lv].join(", ") : "gemeistert" }; });
+    const skills = activeSkills().map((sk) => { const lv = (state.skills[sk.key] || {}).level || 0; return { skill: sk.name, stufe: lv + 1, ziel: lv < sk.levels.length ? sk.levels[lv].join(", ") : "gemeistert" }; });
     return JSON.stringify({
       heute: shortDate(now) + " " + now.getFullYear(),
       uhrzeit: pad(now.getHours()) + ":" + pad(now.getMinutes()),
@@ -8421,7 +8481,7 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
     Object.keys(hist).forEach((key) => { const h = hist[key]; if (!/l-?sit/i.test(h.name)) return; h.items.forEach((it) => { if (it.met.secs && it.met.v > 0) lsList.push({ key: "l|" + it.date + "|" + it.id, d: it.date, label: logLabel(it), v: it.met.v }); }); });
     const lsc = rankCands("core", lsList);
     add({ k: "core", n: "L-Sit", a: "tec", v: lsc.best, form: lsc.form, cands: lsc.cands, edit: true, unit: "s", u: "Sekunden gehalten", pts: [0, 5, 10, 20, 30, 45, 60], fmt: (x) => Math.round(x) + " s", has: lsc.best > 0 });
-    const lv = SKILLS.map((sk) => Math.min(1, ((state.skills[sk.key] || {}).level || 0) / sk.levels.length));
+    const lv = activeSkills().map((sk) => Math.min(1, ((state.skills[sk.key] || {}).level || 0) / sk.levels.length));
     const skAvg = lv.reduce((a, b) => a + b, 0) / Math.max(1, lv.length);
     add({ k: "skills", n: "Skills", a: "tec", v: skAvg, form: skAvg, u: "aller Skill-Stufen", pts: [0, 0.12, 0.28, 0.48, 0.7, 0.9, 1], fmt: (x) => Math.round(x * 100) + " %", has: skAvg > 0 });
     // ---- AGI ----
@@ -8545,6 +8605,7 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
     xp += Object.keys(mm.ach || {}).length * 25;
     ((mm.gates && mm.gates.log) || []).forEach((g) => { if (g.res === "won") xp += g.xp || 0; });
     xp += ((mm.shadows && mm.shadows.list) || []).length * (cl && cl.id === "necro" ? 30 : 15);
+    SKILLS.forEach((sk) => { const l = Math.min(sk.levels.length, ((state.skills || {})[sk.key] || {}).level || 0); xp += l * 30 + (l >= sk.levels.length ? 70 : 0); });
     let lv = 1, need = 100, rest = xp;
     while (rest >= need && lv < 999) { rest -= need; lv++; need = 100 + 20 * (lv - 1); }
     return { xp, lv, cur: rest, need };
@@ -8898,7 +8959,9 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
     { id: "arise1", n: "Erhebe dich", d: "Ersten Schatten extrahiert" },
     { id: "army10", n: "Schattenheer", d: "10 Schatten in deiner Armee", title: "Herr der Schatten" },
     { id: "job", n: "Job-Wechsel", d: "Prüfung bestanden und Klasse gewählt" },
-    { id: "rival50", n: "Über dich hinaus", d: "50 Sätze gegen dein Schatten-Ich gewonnen", title: "Der Unaufhaltsame" }
+    { id: "rival50", n: "Über dich hinaus", d: "50 Sätze gegen dein Schatten-Ich gewonnen", title: "Der Unaufhaltsame" },
+    { id: "skill1", n: "Erste Technik", d: "Eine Skill-Stufe geschafft" },
+    { id: "master1", n: "Meister einer Kunst", d: "Einen Skill komplett gemeistert", title: "Der Meister" }
   ];
   function achStats(R, X) {
     let sets = 0, km = 0, wMax = 0;
@@ -8918,7 +8981,8 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
       maxIdx: R.cats.reduce((a, c) => (c.has ? Math.max(a, c.idx) : a), -1), lv: X.lv,
       arc: arcDay() > (S().arcLength || 90),
       gWon: ((m.gates && m.gates.log) || []).filter((g) => g.res === "won"),
-      shadows: ((m.shadows && m.shadows.list) || []).length, cls: !!(m.cls && m.cls.id), rival: rivalWinsTotal()
+      shadows: ((m.shadows && m.shadows.list) || []).length, cls: !!(m.cls && m.cls.id), rival: rivalWinsTotal(),
+      skLv: SKILLS.reduce((a, sk) => a + (((state.skills || {})[sk.key] || {}).level || 0), 0), skMax: SKILLS.some((sk) => (((state.skills || {})[sk.key] || {}).level || 0) >= sk.levels.length)
     };
   }
   const ACH_TEST = {
@@ -8929,7 +8993,8 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
     boss1: (s) => s.bosses >= 1, boss3: (s) => s.bosses >= 3, rankS: (s) => s.maxIdx >= 5, rankSp: (s) => s.maxIdx >= 6,
     lv10: (s) => s.lv >= 10, lv30: (s) => s.lv >= 30, arc: (s) => s.arc,
     gate1: (s) => s.gWon.length >= 1, gate10: (s) => s.gWon.length >= 10, gateS: (s) => s.gWon.some((g) => g.rank >= 5), gateRed: (s) => s.gWon.some((g) => g.red),
-    arise1: (s) => s.shadows >= 1, army10: (s) => s.shadows >= 10, job: (s) => s.cls, rival50: (s) => s.rival >= 50
+    arise1: (s) => s.shadows >= 1, army10: (s) => s.shadows >= 10, job: (s) => s.cls, rival50: (s) => s.rival >= 50,
+    skill1: (s) => s.skLv >= 1, master1: (s) => s.skMax
   };
   function checkAch(R, X) {
     const m = rankMeta();
