@@ -8579,7 +8579,8 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
     Object.keys(state.logs).forEach((dk) => {
       const l = state.logs[dk] || {};
       const runeX = mm0.gates && mm0.gates.runes && mm0.gates.runes[dk] ? 2 : 1;
-      const ck = cl && dk >= cl.since ? cl.id : "";
+      let ck = cl && dk >= cl.since ? cl.id : "";
+      if (!ck && mm0.clsHist) { const h = mm0.clsHist.find((x) => dk >= x.since && dk <= x.until); if (h) ck = h.id; }
       let sx = 0, rx = 0, vx = 0;
       Object.keys(l.exercises || {}).forEach((id) => {
         const x = l.exercises[id];
@@ -10534,6 +10535,7 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
   function chooseClass(id) {
     const m = rankMeta(), dk = todayKey();
     const had = classId();
+    if (had && m.cls.since < dk) { m.clsHist = m.clsHist || []; m.clsHist.push({ id: had, since: m.cls.since, until: dateKey(addDays(parseKey(dk), -1)) }); }
     m.cls = { id, since: dk, changed: dk };
     const J = jobMeta(); J.passed = false; J.done = J.done || dk;
     saveLocal();
