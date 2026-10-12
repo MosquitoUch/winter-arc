@@ -1106,6 +1106,73 @@ main[data-dir="l"] > section:not([hidden]) { animation: viewInL 260ms cubic-bezi
 .set.just .hex { animation: hexPop 380ms cubic-bezier(.2, 1.5, .4, 1); }
 @keyframes hexPop { 0% { transform: scale(.82); } 100% { transform: scale(1); } }
 @media (prefers-reduced-motion: reduce) { .pbar.shine i::after, .set .shard, .set.just .hex { animation: none !important; } }
+
+/* v14: Gates, Inventar, RIR, Aura */
+.aura { position: fixed; inset: 0; z-index: 0; pointer-events: none; opacity: 0; transition: opacity 1.2s ease; background: radial-gradient(120% 55% at 50% -8%, rgba(var(--aura-rgb, 138,143,152), .20), transparent 62%); }
+:root[data-aura] .aura { opacity: 1; }
+:root[data-aura="4"] .aura, :root[data-aura="5"] .aura, :root[data-aura="6"] .aura { animation: auraPulse 5.5s ease-in-out infinite; }
+:root[data-aura="5"] .aura { background: radial-gradient(120% 60% at 50% -8%, rgba(255,194,61,.24), rgba(255,138,31,.06) 45%, transparent 68%); }
+:root[data-aura="6"] .aura { background: radial-gradient(120% 60% at 50% -8%, rgba(255,155,232,.24), rgba(143,123,255,.10) 45%, transparent 70%); }
+@keyframes auraPulse { 0%, 100% { opacity: .75; } 50% { opacity: 1; } }
+.aura.burst::after { content: ""; position: absolute; inset: 0; background: radial-gradient(circle at 50% 40%, rgba(var(--aura-rgb), .55), transparent 60%); animation: auraBurst 1.6s ease-out both; }
+@keyframes auraBurst { 0% { opacity: 0; transform: scale(.6); } 25% { opacity: 1; } 100% { opacity: 0; transform: scale(1.6); } }
+:root[data-aura] #statusWin { border-color: rgba(var(--aura-rgb), .6); box-shadow: 0 0 0 1px rgba(var(--aura-rgb), .12) inset, 0 0 34px rgba(var(--aura-rgb), .22); }
+:root[data-aura="5"] #statusWin, :root[data-aura="6"] #statusWin { animation: swGlow 4s ease-in-out infinite; }
+@keyframes swGlow { 0%, 100% { box-shadow: 0 0 0 1px rgba(var(--aura-rgb), .15) inset, 0 0 26px rgba(var(--aura-rgb), .2); } 50% { box-shadow: 0 0 0 1px rgba(var(--aura-rgb), .3) inset, 0 0 48px rgba(var(--aura-rgb), .42); } }
+:root[data-aura] .rankchip { border-color: rgba(var(--aura-rgb), .55); box-shadow: 0 0 14px rgba(var(--aura-rgb), .25); }
+@media (prefers-reduced-motion: reduce) { .aura, #statusWin, .gportal::before { animation: none !important; } }
+
+.gatecard { --gc: #5FD4FF; position: relative; display: grid; grid-template-columns: 74px minmax(0, 1fr); gap: 14px; align-items: center; margin: 0 0 20px; padding: 14px 16px; border-radius: 16px; border: 1px solid color-mix(in srgb, var(--gc) 65%, transparent); background: linear-gradient(135deg, color-mix(in srgb, var(--gc) 16%, transparent), rgba(0,0,0,.4)); box-shadow: 0 0 26px color-mix(in srgb, var(--gc) 28%, transparent); overflow: hidden; }
+.gatecard .systag { font-size: 12px; padding: 2px 10px; color: var(--gc); border-color: color-mix(in srgb, var(--gc) 60%, transparent); }
+.gportal { position: relative; width: 74px; height: 74px; border-radius: 50%; display: grid; place-items: center; }
+.gportal::before { content: ""; position: absolute; inset: 0; border-radius: 50%; background: conic-gradient(from 0deg, var(--gc), transparent 30%, var(--gc) 50%, transparent 80%, var(--gc)); filter: blur(1px); animation: gspin 3.2s linear infinite; }
+.gportal::after { content: ""; position: absolute; inset: 6px; border-radius: 50%; background: radial-gradient(circle, #02040a 35%, color-mix(in srgb, var(--gc) 35%, #02040a)); }
+.gportal b { position: relative; z-index: 1; font-family: var(--display); font-size: 34px; font-weight: 800; color: var(--gc); text-shadow: 0 0 14px var(--gc); }
+@keyframes gspin { to { transform: rotate(360deg); } }
+.gatecard.s .gportal::before { animation-duration: 1.6s; }
+.gatecard h3 { margin: 6px 0 2px; font-family: var(--display); font-size: 22px; line-height: 1.1; }
+.gatecard p { margin: 0 0 10px; color: var(--ink-2); font-size: 13px; }
+.gatecard .btn { border-color: var(--gc); color: var(--gc); }
+.gaterun { --gc: #5FD4FF; position: fixed; inset: 0; z-index: 75; display: flex; justify-content: center; overflow-y: auto; background: radial-gradient(120% 60% at 50% 0%, color-mix(in srgb, var(--gc) 22%, #000), #000 70%); padding: calc(18px + env(safe-area-inset-top, 0px)) 16px calc(18px + env(safe-area-inset-bottom, 0px)); }
+.gaterun.red { background: radial-gradient(120% 70% at 50% 0%, #4a0606, #000 72%); }
+.grbox { width: min(520px, 100%); display: grid; gap: 14px; align-content: start; }
+.grhead { display: flex; align-items: center; gap: 12px; }
+.grhead h2 { margin: 0; font-family: var(--display); font-size: 28px; line-height: 1.05; color: var(--gc); text-shadow: 0 0 18px color-mix(in srgb, var(--gc) 60%, transparent); }
+.grhead p { margin: 2px 0 0; color: var(--ink-2); font-size: 14px; }
+.grtime { text-align: center; font-family: var(--display); font-size: 76px; font-weight: 800; line-height: 1; font-variant-numeric: tabular-nums; color: var(--ink); }
+.grtime.low { color: #FF6B5E; animation: breathe 1s ease-in-out infinite; }
+.grbar { height: 6px; border-radius: 999px; background: rgba(255,255,255,.1); overflow: hidden; }
+.grbar i { display: block; height: 100%; background: var(--gc); border-radius: inherit; transition: width 1s linear; }
+.grlist { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+.grt { width: 100%; display: grid; grid-template-columns: 76px minmax(0, 1fr) 30px; align-items: center; gap: 10px; min-height: 64px; padding: 10px 14px; border-radius: 14px; border: 1px solid color-mix(in srgb, var(--gc) 45%, transparent); background: rgba(0,0,0,.45); color: var(--ink); text-align: left; }
+.grt b { font-family: var(--display); font-size: 30px; font-weight: 800; color: var(--gc); font-variant-numeric: tabular-nums; }
+.grt span { font-weight: 600; min-width: 0; }
+.grt i { width: 28px; height: 28px; border-radius: 50%; border: 1.5px solid color-mix(in srgb, var(--gc) 60%, transparent); display: grid; place-items: center; font-style: normal; font-weight: 800; color: #000; }
+.grt.ok { opacity: .55; }
+.grt.ok i { background: var(--gc); }
+.grt.ok span { text-decoration: line-through; }
+.grquit { justify-self: center; background: transparent; border: 0; color: var(--mute); min-height: 44px; padding: 0 16px; text-decoration: underline; }
+.gaterun.red .grquit { color: #FF8A7A; }
+.invgrid { display: grid; gap: 10px; margin-top: 12px; }
+.inv { display: grid; grid-template-columns: 44px minmax(0, 1fr) auto; gap: 12px; align-items: center; padding: 12px; border-radius: 14px; border: 1px solid var(--line-2); background: rgba(255,255,255,.03); }
+.inv.empty { opacity: .55; }
+.invic { width: 44px; height: 44px; border-radius: 12px; display: grid; place-items: center; font-size: 22px; color: var(--ice); border: 1px solid rgba(var(--acc-rgb), .45); background: rgba(var(--acc-rgb), .08); }
+.invt { display: grid; gap: 2px; min-width: 0; }
+.invt em { font-style: normal; color: var(--ice); font-family: var(--display); }
+.invt small { color: var(--mute); font-size: 13px; }
+.invon { font-size: 13px; color: var(--ice); font-weight: 600; }
+.gatestats { margin: 16px 0 6px; color: var(--ink-2); font-size: 14px; }
+.gatelog { list-style: none; margin: 0; padding: 0; }
+.gatelog li { display: grid; grid-template-columns: 34px minmax(0, 1fr) auto; gap: 12px; align-items: center; padding: 8px 0; border-top: 1px solid var(--line); }
+.gatelog li:first-child { border-top: 0; }
+.gatelog span { display: grid; min-width: 0; }
+.gatelog small { color: var(--mute); font-size: 12px; }
+.gatelog em { font-style: normal; color: var(--ice); font-weight: 600; font-size: 14px; }
+.pad-rir { display: flex; align-items: center; justify-content: center; gap: 6px; margin-bottom: 12px; flex-wrap: wrap; }
+.pad-rir > span { color: var(--ink-2); font-size: 13px; margin-right: 4px; }
+.pad-rir button { min-height: 40px; min-width: 44px; padding: 0 10px; border-radius: 12px; border: 1px solid var(--line-2); background: transparent; color: var(--ink-2); font-weight: 700; }
+.pad-rir button[aria-pressed="true"] { background: var(--ice); border-color: var(--ice); color: var(--ice-ink); }
+.qelix { margin-top: 8px; }
 </style>
 </head>
 <body>
@@ -1149,6 +1216,7 @@ main[data-dir="l"] > section:not([hidden]) { animation: viewInL 260ms cubic-bezi
 </svg>
 
 <canvas class="ambient" id="ambient" aria-hidden="true"></canvas>
+<div class="aura" id="aura" aria-hidden="true"></div>
 <div class="app">
   <header class="top">
     <div class="brand"><svg aria-hidden="true"><use href="#i-flake"/></svg>Winter Arc</div>
@@ -1187,6 +1255,11 @@ main[data-dir="l"] > section:not([hidden]) { animation: viewInL 260ms cubic-bezi
           <div class="ampel idle" id="ampelCard" role="status">
             <span class="dot" aria-hidden="true"></span>
             <div><h3 id="ampelTitle">Noch keine Daten</h3><p id="ampelText"></p><p class="why" id="ampelWhy" hidden></p></div>
+          </div>
+
+          <div class="gatecard" id="gateCard" hidden>
+            <div class="gportal" aria-hidden="true"><b id="gateRank">C</b></div>
+            <div><span class="systag sm"><span>!</span>Gate</span><h3 id="gateTitle"></h3><p id="gateMeta"></p><button class="btn small" id="gateEnter">Betreten</button></div>
           </div>
 
           <div class="questcard" id="questCard">
@@ -1356,6 +1429,13 @@ main[data-dir="l"] > section:not([hidden]) { animation: viewInL 260ms cubic-bezi
             <div class="rrwrap"><table class="rrtab" id="rankReq"></table></div>
             <p class="rrnote">Übungen: bester Satz am Stück, Zusatzgewicht wird in Wiederholungen umgerechnet. 5 km: beste Zeit, Läufe ab 4,8 km, längere werden umgerechnet. Ruhepuls: Schnitt aus 3 Messungen, weniger ist besser. Laufeffizienz: Meter pro Herzschlag bei Läufen ab 3 km. Maximalkraft: geschätztes Klimmzug-Maximum über Körpergewicht. Protein und Gewohnheiten: bester Zeitraum von 4 Wochen.</p>
           </details>
+        </div>
+        <div class="block" id="invBlock">
+          <h2 class="bh">Inventar</h2>
+          <p class="lead">Beute aus Gates. Gates öffnen sich zwischendurch von selbst, meistens tagsüber. Ein Red Gate erkennst du erst, wenn du drin bist.</p>
+          <div class="invgrid" id="invGrid"></div>
+          <p class="gatestats" id="gateStats"></p>
+          <ul class="gatelog" id="gateLog"></ul>
         </div>
         <div class="block" id="achBlock">
           <h2 class="bh">Erfolge <span class="achcount" id="achCount"></span></h2>
@@ -1869,6 +1949,7 @@ main[data-dir="l"] > section:not([hidden]) { animation: viewInL 260ms cubic-bezi
     <div class="pad-val" id="padVal" aria-live="polite"></div>
     <div class="pad-quick" id="padQuick"></div>
     <div class="pad-kg" id="padKg"><button data-d="-2.5" aria-label="2,5 kg weniger">−2,5</button><span>Zusatz</span><b id="padKgVal">0 kg</b><button data-d="2.5" aria-label="2,5 kg mehr">+2,5</button></div>
+    <div class="pad-rir" id="padRir" role="group" aria-label="Wie viele Wiederholungen wären noch gegangen"><span>Noch im Tank</span><button data-r="0" aria-pressed="false">0</button><button data-r="1" aria-pressed="false">1</button><button data-r="2" aria-pressed="false">2</button><button data-r="3" aria-pressed="false">3</button><button data-r="4" aria-pressed="false">4+</button></div>
     <div class="pad-keys" id="padKeys"><button data-k="1">1</button><button data-k="2">2</button><button data-k="3">3</button><button data-k="4">4</button><button data-k="5">5</button><button data-k="6">6</button><button data-k="7">7</button><button data-k="8">8</button><button data-k="9">9</button><button data-k="del" aria-label="Löschen">⌫</button><button data-k="0">0</button><button data-k="ok" class="ok" id="padOk">Fertig</button></div>
     <div class="pad-foot"><button class="btn small" id="padMic" hidden><svg aria-hidden="true"><use href="#i-mic"/></svg>Sagen</button><button class="btn small" id="padSkip">Ohne Zahl abhaken</button><button class="btn small" id="padClose">Abbrechen</button></div>
   </div>
@@ -1948,6 +2029,16 @@ main[data-dir="l"] > section:not([hidden]) { animation: viewInL 260ms cubic-bezi
       <div class="field"><label for="axSets">Sätze</label><input id="axSets" inputmode="numeric" autocomplete="off" placeholder="automatisch"><small>Leer lassen, wenn du die Leistung einträgst</small></div>
     </div>
     <div class="row"><button class="btn primary" id="axSave">Hinzufügen</button><button class="btn" id="axClose">Abbrechen</button></div>
+  </div>
+</div>
+
+<div class="gaterun" id="gateRun" hidden role="dialog" aria-modal="true" aria-labelledby="grTitle">
+  <div class="grbox">
+    <div class="grhead"><span id="grBadge"></span><div><h2 id="grTitle"></h2><p id="grSub"></p></div></div>
+    <div class="grtime" id="grTime" role="timer">0:00</div>
+    <div class="grbar"><i id="grBar"></i></div>
+    <ul class="grlist" id="grList"></ul>
+    <button class="grquit" id="grQuit">Gate verlassen</button>
   </div>
 </div>
 
@@ -2814,6 +2905,7 @@ main[data-dir="l"] > section:not([hidden]) { animation: viewInL 260ms cubic-bezi
     });
     return map;
   }
+  function rirOf(it) { const x = state.logs[it.date] && state.logs[it.date].exercises && state.logs[it.date].exercises[it.id]; return x && Array.isArray(x.rir) ? x.rir.filter((v) => v != null && v >= 0) : []; }
   function historyFor(name, hist) { const h = (hist || buildHistory())[normName(name)]; return h ? h.items : []; }
   function bestBefore(items, date) {
     let b = null;
@@ -2859,6 +2951,14 @@ main[data-dir="l"] > section:not([hidden]) { animation: viewInL 260ms cubic-bezi
         delta = Math.max(2.5, Math.min(10, Math.round(delta / 2.5) * 2.5));
         return { up: true, text: "Zu leicht: Alle Sätze mit " + Math.min.apply(null, firstN) + " bis " + Math.max.apply(null, firstN) + " Wdh., Ziel sind " + rng.low + " bis " + rng.high + ". Nimm heute +" + fmtN(lw + delta) + " kg. Wird es zu schwer, geh in 2,5-kg-Schritten zurück." };
       }
+    }
+    const rirL = rng.secs ? [] : rirOf(last);
+    if (rirL.length >= Math.min(n, 2)) {
+      const mn = Math.min.apply(null, rirL);
+      const step = lw > 0 ? "Nimm heute +" + fmtN(lw + 2.5) + " kg statt +" + fmtN(lw) + " kg." : "Nimm heute 2,5 kg Zusatzgewicht oder eine schwerere Variante.";
+      if (topped(last) && mn >= 2) return { up: true, text: "Steigern: Letztes Mal alle Sätze mit " + rng.high + " Wdh. und noch mindestens " + mn + " im Tank. " + step };
+      if (mn >= 3 && !last.perf.reps.slice(0, n).some((x) => x < rng.low)) return { up: true, text: "Zu leicht: Letztes Mal in jedem Satz noch 3 oder mehr im Tank. Mach heute 2 Wdh. mehr pro Satz" + (lw ? " mit " + (lw > 0 ? "+" : "") + fmtN(lw) + " kg" : "") + "." };
+      if (mn === 0 && rirL.every((v) => v === 0) && last.perf.reps.slice(0, n).some((x) => x < rng.low)) return { up: false, text: "Letztes Mal jeder Satz bis zum Limit und trotzdem unter " + rng.low + " Wdh. Bleib bei der Last, hör heute eine Wiederholung früher auf und hol es über mehr Sätze." };
     }
     if (topped(last) && prev && topped(prev) && prev.perf.weight <= lw + 0.01) {
       if (rng.secs) return { up: true, text: "Steigern: Zweimal in allen Sätzen " + rng.high + " s gehalten. Nimm 5 s mehr oder die nächste Stufe." };
@@ -3963,7 +4063,7 @@ main[data-dir="l"] > section:not([hidden]) { animation: viewInL 260ms cubic-bezi
 
   // ================= Today extras =================
   function renderTodayExtras(dk) {
-    if (window.__waGame) { renderQuest(dk); renderVoiceBtn(); renderAiFab(); }
+    if (window.__waGame) { renderQuest(dk); renderVoiceBtn(); renderAiFab(); renderGate(); }
     renderSteps(dk);
     renderGoal();
     renderSessNote(dk);
@@ -7211,7 +7311,7 @@ main[data-dir="l"] > section:not([hidden]) { animation: viewInL 260ms cubic-bezi
   const cssVar = (n) => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
 
   // ---------- Zahlentastatur ----------
-  const numpad = { id: "", i: 0, val: "", kg: 0, secs: false, showKg: false };
+  const numpad = { id: "", i: 0, val: "", kg: 0, secs: false, showKg: false, rir: null };
   function noteParts(note) {
     const p = parsePerf(note) || { reps: [], weight: 0, secs: false, partials: 0 };
     return { reps: p.reps.slice(), weight: p.weight || 0, secs: !!p.secs, partials: p.partials || 0 };
@@ -7236,6 +7336,7 @@ main[data-dir="l"] > section:not([hidden]) { animation: viewInL 260ms cubic-bezi
     const last = prev.length ? prev[prev.length - 1] : null;
     const i = +btn.dataset.i;
     numpad.id = e.id; numpad.i = i; numpad.val = ""; numpad.pre = false;
+    { const lx = state.logs[dk] && state.logs[dk].exercises && state.logs[dk].exercises[e.id]; numpad.rir = lx && Array.isArray(lx.rir) && lx.rir[i] != null ? lx.rir[i] : null; }
     numpad.secs = !!((rng && rng.secs) || cur.secs);
     numpad.kg = cur.weight || (last && !cur.reps.length ? last.perf.weight || 0 : 0);
     if (!numpad.kg && !cur.reps.length) { const pm = String(e.extra || "").match(/\+\s*(\d+(?:[.,]\d+)?)\s*kg/i); if (pm && !(last && last.perf.weight)) numpad.kg = parseFloat(pm[1].replace(",", ".")); }
@@ -7246,7 +7347,8 @@ main[data-dir="l"] > section:not([hidden]) { animation: viewInL 260ms cubic-bezi
     const unit = numpad.secs ? " s" : " Wdh.";
     const lastReps = last ? last.perf.reps.slice(0, n) : [];
     $("padMeta").textContent = (rng ? "Ziel " + (rng.low === rng.high ? rng.low : rng.low + " bis " + rng.high) + unit : "") +
-      (lastReps.length ? (rng ? ". " : "") + "Letztes Mal: " + lastReps.join("/") + (last.perf.weight ? " mit " + (last.perf.weight > 0 ? "+" : "") + fmtN(last.perf.weight) + " kg" : "") : "");
+      (lastReps.length ? (rng ? ". " : "") + "Letztes Mal: " + lastReps.join("/") + (last.perf.weight ? " mit " + (last.perf.weight > 0 ? "+" : "") + fmtN(last.perf.weight) + " kg" : "") + (rirOf(last).length ? ", im Tank " + rirOf(last).map((v) => (v >= 4 ? "4+" : v)).join("/") : "") : "");
+    $("padMeta").textContent = $("padMeta").textContent.replace("Wdh..", "Wdh.");
     const quick = [];
     if (lastReps[i] != null) quick.push(lastReps[i]);
     if (i > 0 && cur.reps[i - 1] != null) quick.push(cur.reps[i - 1]);
@@ -7269,6 +7371,8 @@ main[data-dir="l"] > section:not([hidden]) { animation: viewInL 260ms cubic-bezi
     el.innerHTML = (numpad.val || "0") + "<small>" + (numpad.secs ? "s" : "Wdh.") + "</small>";
     $("padKgVal").textContent = (numpad.kg > 0 ? "+" : "") + fmtN(numpad.kg) + " kg";
     $("padOk").disabled = !numpad.val || +numpad.val <= 0;
+    $("padRir").hidden = numpad.secs;
+    $("padRir").querySelectorAll("button").forEach((b) => b.setAttribute("aria-pressed", numpad.rir != null && +b.dataset.r === numpad.rir ? "true" : "false"));
   }
   function closePad() { $("pad").hidden = true; document.body.style.overflow = ""; }
   function savePad(withNumber) {
@@ -7288,6 +7392,13 @@ main[data-dir="l"] > section:not([hidden]) { animation: viewInL 260ms cubic-bezi
       pendingNotes[dk] = pendingNotes[dk] || {};
       pendingNotes[dk][e.id] = buildNote(parts);
       commitNote(dk, e.id, true);
+      if (numpad.rir != null && !numpad.secs) {
+        const lx = ensureLog(dk).exercises[e.id] || (ensureLog(dk).exercises[e.id] = { name: e.name, done: [], note: buildNote(parts) });
+        lx.rir = Array.isArray(lx.rir) ? lx.rir : [];
+        lx.rir[numpad.i] = numpad.rir;
+        for (let k = 0; k < lx.rir.length; k++) if (lx.rir[k] === undefined) lx.rir[k] = null;
+        saveLog(dk);
+      }
     }
     closePad();
     const li = $("exlist").querySelector('[data-id="' + CSS.escape(numpad.id) + '"]');
@@ -7317,6 +7428,13 @@ main[data-dir="l"] > section:not([hidden]) { animation: viewInL 260ms cubic-bezi
     if (!b) return;
     numpad.kg = Math.max(-40, Math.min(60, Math.round((numpad.kg + +b.dataset.d) * 10) / 10));
     buzz(6);
+    renderPad();
+  });
+  $("padRir").addEventListener("click", (ev) => {
+    const b = ev.target.closest("button[data-r]");
+    if (!b) return;
+    buzz(6);
+    numpad.rir = numpad.rir === +b.dataset.r ? null : +b.dataset.r;
     renderPad();
   });
   $("padSkip").addEventListener("click", () => savePad(false));
@@ -8244,10 +8362,12 @@ main[data-dir="l"] > section:not([hidden]) { animation: viewInL 260ms cubic-bezi
   // ---- Level und XP ----
   function computeXP() {
     const pt = +S().proteinTarget || 120;
+    const mm0 = rankMeta();
     let xp = 0;
     Object.keys(state.logs).forEach((dk) => {
       const l = state.logs[dk] || {};
-      Object.keys(l.exercises || {}).forEach((id) => { const x = l.exercises[id]; if (x && x.done) xp += x.done.filter(Boolean).length * 10; });
+      const runeX = mm0.gates && mm0.gates.runes && mm0.gates.runes[dk] ? 2 : 1;
+      Object.keys(l.exercises || {}).forEach((id) => { const x = l.exercises[id]; if (x && x.done) xp += x.done.filter(Boolean).length * 10 * runeX; });
       Object.keys(l.runs || {}).forEach((id) => { const r = l.runs[id]; if (r && r.km) xp += Math.round(r.km * 12); });
       const c = l.checkin || {};
       if (c.energy || c.soreness) xp += 5;
@@ -8261,6 +8381,7 @@ main[data-dir="l"] > section:not([hidden]) { animation: viewInL 260ms cubic-bezi
     xp += Object.keys(mm.quests || {}).length * 50;
     xp += Object.keys(mm.bosses || {}).filter((k) => mm.bosses[k].won).length * 200;
     xp += Object.keys(mm.ach || {}).length * 25;
+    ((mm.gates && mm.gates.log) || []).forEach((g) => { if (g.res === "won") xp += g.xp || 0; });
     let lv = 1, need = 100, rest = xp;
     while (rest >= need && lv < 999) { rest -= need; lv++; need = 100 + 20 * (lv - 1); }
     return { xp, lv, cur: rest, need };
@@ -8397,6 +8518,7 @@ main[data-dir="l"] > section:not([hidden]) { animation: viewInL 260ms cubic-bezi
   }
   function renderRankChip() {
     const chip = $("rankChip");
+    try { applyAura(); } catch (e) { /* ignore */ }
     if (!chip) return;
     const st = (state.meta && state.meta.ranks) || {};
     const o = st._overall;
@@ -8479,6 +8601,7 @@ main[data-dir="l"] > section:not([hidden]) { animation: viewInL 260ms cubic-bezi
         if (lines.length) {
           if (lvUp) lines.push({ t: "Level", v: prev._lv + " → " + X.lv });
           sysShow(oUp ? "Rang-Aufstieg" : "Neuer Rang", lines, oUp ? R.overall.idx : null, note);
+          if (oUp) { m.ranks = cur; setTimeout(() => auraBurst(R.overall.idx), 600); }
         } else if (lvUp) { toast("Level " + X.lv + " erreicht"); hap("set"); if (window.__waGame && voiceOn()) coach("level_up", { level: X.lv }); }
       }
       if (JSON.stringify(prev) !== JSON.stringify(cur)) { m.ranks = cur; saveLocal(); }
@@ -8488,6 +8611,7 @@ main[data-dir="l"] > section:not([hidden]) { animation: viewInL 260ms cubic-bezi
     }, 900);
   }
   if ($("statusWin")) $("statusWin").addEventListener("click", (ev) => { if (ev.target.closest("#licBtn")) { hap("tap"); shareLicense(); } });
+  if ($("questNote")) $("questNote").addEventListener("click", (ev) => { if (ev.target.closest("#questElix")) { hap("tap"); useItem("elixir"); } });
   if ($("rankChip")) $("rankChip").addEventListener("click", () => { showTab("progress"); setTimeout(() => { const b = $("rankBlock"); if (b) b.scrollIntoView({ block: "start", behavior: "smooth" }); }, 120); });
 
   // ---------- v11: Daily Quest, Erfolge, Titel, Boss, Hunter-Lizenz, Coach-Stimme ----------
@@ -8523,7 +8647,9 @@ main[data-dir="l"] > section:not([hidden]) { animation: viewInL 260ms cubic-bezi
     const items = autos.map((a) => ({ id: "a_" + a, t: QUEST_AUTO[a].t, auto: a })).concat(man.map((q) => ({ id: q.id, t: q.t })));
     const m = rankMeta(), from = m.questFrom;
     const y = dateKey(addDays(parseKey(dk), -1));
-    if (from && y >= from && !(m.quests || {})[y] && dk <= todayKey()) items.push({ id: "pen", t: QUEST_PENALTY[h % QUEST_PENALTY.length], pen: true });
+    const gm = m.gates || {};
+    if (from && y >= from && !(m.quests || {})[y] && !(gm.shields && gm.shields[y]) && dk <= todayKey()) items.push({ id: "pen", t: QUEST_PENALTY[h % QUEST_PENALTY.length], pen: true });
+    if (gm.pen && gm.pen[dk]) items.push({ id: "gpen", t: QUEST_PENALTY[(h + 3) % QUEST_PENALTY.length] + " (Red Gate)", pen: true });
     return items;
   }
   function questState(dk) {
@@ -8547,8 +8673,10 @@ main[data-dir="l"] > section:not([hidden]) { animation: viewInL 260ms cubic-bezi
     $("questList").innerHTML = q.items.map((it) => '<li class="' + (it.done ? "ok" : "") + (it.pen ? " pen" : "") + '">' +
       (it.auto ? '<span class="qbox" aria-hidden="true">' + (it.done ? "✓" : "") + "</span>" : '<button class="qbox" data-q="' + it.id + '" aria-pressed="' + (it.done ? "true" : "false") + '" aria-label="' + esc(it.t) + '">' + (it.done ? "✓" : "") + "</button>") +
       '<span class="qt">' + (it.pen ? "<b>Strafquest:</b> " : "") + esc(it.t) + (it.auto ? '<small>wird automatisch erkannt</small>' : "") + "</span></li>").join("");
-    const setNote = (w) => { $("questNote").textContent = q.items.some((i) => i.pen) && !w ? "Die Daily Quest von gestern blieb offen. Erledige heute die Strafquest dazu." : w ? "Morgen wartet die nächste Quest." : "Belohnung: 50 XP."; };
-    $("questNote").textContent = q.items.some((i) => i.pen) && !won ? "Die Daily Quest von gestern blieb offen. Erledige heute die Strafquest dazu." : won ? "Morgen wartet die nächste Quest." : "Belohnung: 50 XP.";
+    const setNote = (w) => { $("questNote").textContent = q.items.some((i) => i.pen) && !w ? "Eine Strafquest ist offen. Erledige sie heute dazu." : w ? "Morgen wartet die nächste Quest." : "Belohnung: 50 XP."; };
+    $("questNote").textContent = q.items.some((i) => i.pen) && !won ? "Eine Strafquest ist offen. Erledige sie heute dazu." : won ? "Morgen wartet die nächste Quest." : "Belohnung: 50 XP.";
+    const elx = (m.gates && m.gates.inv && m.gates.inv.elixir) || 0;
+    if (q.items.some((i) => i.pen && !i.done) && !won && elx > 0) $("questNote").insertAdjacentHTML("beforeend", '<br><button class="btn small qelix" id="questElix">Elixier benutzen (' + elx + ')</button>');
     if (q.all && !won) {
       m.quests = m.quests || {}; m.quests[dk] = 1; saveLocal();
       card.classList.add("done");
@@ -8592,7 +8720,11 @@ main[data-dir="l"] > section:not([hidden]) { animation: viewInL 260ms cubic-bezi
     { id: "rankSp", n: "Mythos", d: "Einen S+-Rang erreicht", title: "Mythos" },
     { id: "lv10", n: "Erwacht", d: "Level 10 erreicht", title: "Der Erwachte" },
     { id: "lv30", n: "Monarch", d: "Level 30 erreicht", title: "Monarch" },
-    { id: "arc", n: "Winter überstanden", d: "Den Winter Arc beendet", title: "Winter-Legende" }
+    { id: "arc", n: "Winter überstanden", d: "Den Winter Arc beendet", title: "Winter-Legende" },
+    { id: "gate1", n: "Erster Dungeon", d: "Erstes Gate geräumt" },
+    { id: "gate10", n: "Gate-Räumer", d: "10 Gates geräumt", title: "Der Räumer" },
+    { id: "gateS", n: "Gatebrecher", d: "Ein S-Rang-Gate geräumt", title: "Gatebrecher" },
+    { id: "gateRed", n: "Überlebender", d: "Ein Red Gate überlebt", title: "Der Überlebende" }
   ];
   function achStats(R, X) {
     let sets = 0, km = 0, wMax = 0;
@@ -8610,7 +8742,8 @@ main[data-dir="l"] > section:not([hidden]) { animation: viewInL 260ms cubic-bezi
       sets, km, wMax, st: streak(), quests: Object.keys(m.quests || {}).length, bosses,
       pull: cat("pull").v || 0, push: cat("push").v || 0, dips: cat("dips").v || 0, run: cat("run").v || 0,
       maxIdx: R.cats.reduce((a, c) => (c.has ? Math.max(a, c.idx) : a), -1), lv: X.lv,
-      arc: arcDay() > (S().arcLength || 90)
+      arc: arcDay() > (S().arcLength || 90),
+      gWon: ((m.gates && m.gates.log) || []).filter((g) => g.res === "won")
     };
   }
   const ACH_TEST = {
@@ -8619,7 +8752,8 @@ main[data-dir="l"] > section:not([hidden]) { animation: viewInL 260ms cubic-bezi
     km50: (s) => s.km >= 50, km100: (s) => s.km >= 100, sub25: (s) => s.run > 0 && s.run < 1500, sub20: (s) => s.run > 0 && s.run < 1200,
     streak7: (s) => s.st >= 7, streak30: (s) => s.st >= 30, quest1: (s) => s.quests >= 1, quest30: (s) => s.quests >= 30,
     boss1: (s) => s.bosses >= 1, boss3: (s) => s.bosses >= 3, rankS: (s) => s.maxIdx >= 5, rankSp: (s) => s.maxIdx >= 6,
-    lv10: (s) => s.lv >= 10, lv30: (s) => s.lv >= 30, arc: (s) => s.arc
+    lv10: (s) => s.lv >= 10, lv30: (s) => s.lv >= 30, arc: (s) => s.arc,
+    gate1: (s) => s.gWon.length >= 1, gate10: (s) => s.gWon.length >= 10, gateS: (s) => s.gWon.some((g) => g.rank >= 5), gateRed: (s) => s.gWon.some((g) => g.red)
   };
   function checkAch(R, X) {
     const m = rankMeta();
@@ -9580,7 +9714,292 @@ main[data-dir="l"] > section:not([hidden]) { animation: viewInL 260ms cubic-bezi
     renderAiSettings();
   }
 
+  // ---------- v14: Gates, Inventar, Items, Aura ----------
+  const GATE_COL = ["#8A8F98", "#C98E5A", "#C3D0DD", "#5FD4FF", "#B48CFF", "#FFC23D"];
+  const GATE_MIN = [8, 10, 13, 16, 20, 25];
+  const GATE_N = [2, 3, 3, 4, 4, 5];
+  const GATE_MULT = [1, 1.4, 1.9, 2.5, 3.2, 4];
+  const GATE_XP = [40, 60, 90, 130, 180, 250];
+  const GATE_POOL = [
+    { n: "Liegestütze", b: 20 }, { n: "Kniebeugen", b: 30 }, { n: "Burpees", b: 10 }, { n: "Klimmzüge", b: 4 },
+    { n: "Dips", b: 8 }, { n: "Ausfallschritte, gesamt", b: 20 }, { n: "Mountain Climbers", b: 30 }, { n: "Sprungkniebeugen", b: 12 },
+    { n: "Pike-Liegestütze", b: 8 }, { n: "Hollow Hold, in Etappen", b: 30, s: 1 }, { n: "Unterarmstütz, in Etappen", b: 45, s: 1 }, { n: "Wandsitzen, in Etappen", b: 45, s: 1 }
+  ];
+  const ITEMS = {
+    elixir: { n: "Elixier der Erholung", ic: "✚", d: "Schützt eine verpasste Daily Quest. Die Strafquest fällt weg." },
+    rune: { n: "Rune der Stärke", ic: "ᚱ", d: "Doppelte XP für alle Sätze von heute." },
+    key: { n: "Gate-Schlüssel", ic: "⚿", d: "Öffnet sofort ein Gate, oft einen Rang höher." }
+  };
+  function gMeta() {
+    const m = rankMeta();
+    if (!m.gates) m.gates = { inv: { elixir: 0, rune: 0, key: 1 }, cur: null, log: [], seen: {}, runes: {}, shields: {}, pen: {} };
+    const G = m.gates;
+    ["inv", "seen", "runes", "shields", "pen"].forEach((k) => { if (!G[k]) G[k] = {}; });
+    if (!G.log) G.log = [];
+    return G;
+  }
+  function seeded(seed) { let s = seed >>> 0 || 1; return () => { s ^= s << 13; s >>>= 0; s ^= s >> 17; s ^= s << 5; s >>>= 0; return s / 4294967296; }; }
+  const playerRank = () => { const r = (rankMeta().ranks || {})._overall; return r == null ? 0 : r; };
+  function gateMake(rank, red, now) {
+    const id = "g" + now.toString(36);
+    const rnd = seeded(hashStr(id));
+    const pool = GATE_POOL.slice();
+    const tasks = [];
+    for (let i = 0; i < GATE_N[rank] && pool.length; i++) {
+      const t = pool.splice(Math.floor(rnd() * pool.length), 1)[0];
+      let c = t.b * GATE_MULT[rank] * (red ? 1.25 : 1);
+      c = t.s ? Math.round(c / 5) * 5 : c > 20 ? Math.round(c / 5) * 5 : Math.round(c);
+      tasks.push({ n: t.n, c: Math.max(t.s ? 15 : 3, c), s: !!t.s, done: false });
+    }
+    return { id, rank, red: !!red, open: now, tasks, limit: GATE_MIN[rank] * 60, entered: 0 };
+  }
+  function rollRank(rnd, base, keyed) {
+    if (!keyed && rnd() < 0.03) return 5; // Anomalie
+    const x = rnd();
+    const d = keyed ? (x < 0.4 ? 0 : x < 0.8 ? 1 : 2) : (x < 0.2 ? -1 : x < 0.65 ? 0 : x < 0.9 ? 1 : 2);
+    return Math.max(0, Math.min(5, base + d));
+  }
+  const endOfDay = (now) => { const d = new Date(now); d.setHours(23, 30, 0, 0); return d.getTime(); };
+  function gateSpawn(keyed) {
+    const G = gMeta(), now = Date.now();
+    const rnd = seeded(hashStr("r" + now));
+    const rank = rollRank(rnd, playerRank(), keyed);
+    const red = rnd() < 0.1 + 0.03 * rank;
+    const g = gateMake(rank, red, now);
+    g.expires = keyed ? now + 3 * 3600e3 : Math.min(now + 3 * 3600e3, endOfDay(now));
+    G.cur = g; G.lastDay = todayKey();
+    saveLocal();
+    sysShow("Ein Gate hat sich geöffnet", [{ t: "Rang", v: RANK_L[rank] + "-Rang" }, { t: "Zeitlimit drinnen", v: GATE_MIN[rank] + " Min." }, { t: "Schließt um", v: hhmm(g.expires) }], rank, "Du findest es unter Heute. Gefahr: unbekannt.");
+    renderGate();
+  }
+  const hhmm = (ts) => { const d = new Date(ts); return pad(d.getHours()) + ":" + pad(d.getMinutes()); };
+  function gateLog(g, res, extra) {
+    const G = gMeta();
+    G.log.push(Object.assign({ id: g.id, rank: g.rank, red: g.red, res, d: todayKey() }, extra || {}));
+    if (G.log.length > 200) G.log = G.log.slice(-200);
+    G.cur = null;
+    saveLocal();
+  }
+  function gateTick() {
+    if (!window.__waGame) return;
+    const G = gMeta(), now = Date.now(), dk = todayKey();
+    const g = G.cur;
+    if (g) {
+      if (!g.entered && now > g.expires) { gateLog(g, "closed"); toast("Das Gate hat sich geschlossen."); renderGate(); return; }
+      if (g.entered && now > g.entered + g.limit * 1000 && !g.tasks.every((t) => t.done)) { gateFail(true); return; }
+      if (g.entered) gateRunRender();
+      return;
+    }
+    if (G.seen[dk]) return;
+    const h = hashStr("gate" + dk);
+    const at = new Date(); at.setHours(9 + (h % 11), (h >>> 8) % 60, 0, 0);
+    if (now < at.getTime()) return;
+    G.seen[dk] = 1;
+    const keys = Object.keys(G.seen).sort();
+    if (keys.length > 60) keys.slice(0, keys.length - 60).forEach((k) => delete G.seen[k]);
+    const y = dateKey(addDays(today(), -1));
+    let ok = ((h >>> 16) % 100) < 50 && G.lastDay !== y && endOfDay(now) - now > 40 * 60e3;
+    try { const r = readiness(dk); if (r.hasInput && r.score < 45) ok = false; } catch (e) { /* ignore */ }
+    saveLocal();
+    if (ok) gateSpawn(false);
+  }
+  function gateLeft(g) { return Math.max(0, Math.ceil((g.entered + g.limit * 1000 - Date.now()) / 1000)); }
+  const mmss = (s) => Math.floor(s / 60) + ":" + pad(s % 60);
+  function renderGate() {
+    const card = $("gateCard");
+    if (!card) return;
+    const G = gMeta(), g = G.cur;
+    card.hidden = !g || !!g.entered;
+    if (g && !card.hidden) {
+      card.style.setProperty("--gc", GATE_COL[g.rank]);
+      card.classList.toggle("s", g.rank >= 5);
+      const left = Math.max(0, g.expires - Date.now());
+      const hL = Math.floor(left / 3600e3), mL = Math.floor((left % 3600e3) / 60e3);
+      $("gateRank").textContent = RANK_L[g.rank];
+      $("gateTitle").textContent = (g.rank >= 5 ? "S-Rang-Gate" : RANK_L[g.rank] + "-Rang-Gate");
+      $("gateMeta").textContent = "Schließt in " + (hL ? hL + " h " : "") + mL + " Min. · drinnen " + GATE_MIN[g.rank] + " Min. für " + g.tasks.length + " Aufgaben";
+    }
+    if (g && g.entered) gateRunOpen(); else if ($("gateRun")) $("gateRun").hidden = true;
+    renderInv();
+  }
+  let gateIv = 0, gateGiveUp = 0;
+  function gateRunOpen() {
+    const ov = $("gateRun"), g = gMeta().cur;
+    if (!ov || !g) return;
+    if (ov.hidden) {
+      ov.hidden = false;
+      document.body.style.overflow = "hidden";
+      try { wakeOn(); } catch (e) { /* ignore */ }
+    }
+    ov.style.setProperty("--gc", g.red ? "#FF3B3B" : GATE_COL[g.rank]);
+    ov.classList.toggle("red", g.red);
+    $("grBadge").innerHTML = rankBadge(g.rank, false);
+    $("grTitle").textContent = g.red ? "Red Gate" : RANK_L[g.rank] + "-Rang-Gate";
+    $("grSub").textContent = g.red ? "Kein Ausgang, bis alle Aufgaben erledigt sind." : "Erledige alle Aufgaben, bevor die Zeit abläuft.";
+    $("grList").innerHTML = g.tasks.map((t, i) => '<li><button class="grt' + (t.done ? " ok" : "") + '" data-i="' + i + '" aria-pressed="' + t.done + '"><b>' + t.c + (t.s ? " s" : "") + "</b><span>" + esc(t.n) + '</span><i aria-hidden="true">' + (t.done ? "✓" : "") + "</i></button></li>").join("");
+    gateGiveUp = 0;
+    $("grQuit").textContent = g.red ? "Aufgeben" : "Gate verlassen";
+    gateRunRender();
+    clearInterval(gateIv);
+    gateIv = setInterval(gateRunRender, 1000);
+  }
+  function gateRunRender() {
+    const g = gMeta().cur;
+    if (!g || !g.entered) { clearInterval(gateIv); return; }
+    const left = gateLeft(g);
+    $("grTime").textContent = mmss(left);
+    $("grBar").style.width = (100 * left / g.limit).toFixed(1) + "%";
+    $("grTime").classList.toggle("low", left <= 60);
+    if (left === 60 && !g.warned) { g.warned = 1; hap("herz"); }
+    if (left <= 0 && !g.tasks.every((t) => t.done)) gateFail(true);
+  }
+  function gateRunClose() {
+    clearInterval(gateIv);
+    if ($("gateRun")) $("gateRun").hidden = true;
+    document.body.style.overflow = "";
+    try { if (!document.body.classList.contains("train-mode")) wakeOff(); } catch (e) { /* ignore */ }
+  }
+  function gateEnter() {
+    const G = gMeta(), g = G.cur;
+    if (!g || g.entered) return;
+    primeAudio();
+    g.entered = Date.now();
+    saveLocal(); hap("pr");
+    renderGate();
+    if (g.red) sysShow("Warnung", [{ t: "Das Gate färbt sich", v: "rot" }, { t: "Ausgang", v: "versiegelt" }, { t: "Aufgeben", v: "Strafquest morgen" }], g.rank, "Red Gate. Du kommst erst raus, wenn alle Aufgaben erledigt sind.");
+  }
+  function gateLoot(g, fast) {
+    const rnd = seeded(hashStr("loot" + g.id));
+    const rolls = 1 + (g.rank >= 3 ? 1 : 0) + (g.rank >= 5 ? 1 : 0) + (g.red ? 1 : 0) + (fast ? 1 : 0);
+    const nothing = Math.max(0.12, 0.5 - 0.07 * g.rank - (g.red ? 0.15 : 0));
+    const got = [];
+    for (let i = 0; i < rolls; i++) {
+      const x = rnd();
+      if (x < nothing) continue;
+      const y = (x - nothing) / (1 - nothing);
+      got.push(y < 0.42 ? "elixir" : y < 0.78 ? "rune" : "key");
+    }
+    return got;
+  }
+  function gateClear() {
+    const G = gMeta(), g = G.cur;
+    if (!g) return;
+    const used = Math.round((Date.now() - g.entered) / 1000);
+    const fast = used < g.limit * 0.6;
+    const xp = Math.round(GATE_XP[g.rank] * (g.red ? 1.5 : 1));
+    const loot = gateLoot(g, fast);
+    loot.forEach((k) => { G.inv[k] = (G.inv[k] || 0) + 1; });
+    gateLog(g, "won", { xp, loot, t: used });
+    gateRunClose();
+    const cnt = {};
+    loot.forEach((k) => { cnt[k] = (cnt[k] || 0) + 1; });
+    const lines = [{ t: "Zeit", v: mmss(used) + " von " + mmss(g.limit) }, { t: "Belohnung", v: "+" + xp + " XP" }]
+      .concat(Object.keys(cnt).map((k) => ({ t: ITEMS[k].n, v: "× " + cnt[k] })));
+    if (!loot.length) lines.push({ t: "Beute", v: "keine" });
+    sysShow(g.red ? "Red Gate überlebt" : "Gate geräumt", lines, g.rank, fast ? "Schnell geräumt: eine Extra-Chance auf Beute." : g.rank >= 5 ? "Ein S-Rang-Gate. Das schafft nicht jeder." : "Die Beute liegt in deinem Inventar unter Fortschritt.");
+    renderGate();
+    checkRanks();
+  }
+  function gateFail(timeout) {
+    const G = gMeta(), g = G.cur;
+    if (!g) return;
+    const done = g.tasks.filter((t) => t.done).length;
+    if (g.red) { const tm = dateKey(addDays(today(), 1)); G.pen[tm] = 1; }
+    gateLog(g, timeout ? "lost" : g.red ? "gaveup" : "left", { n: done });
+    gateRunClose();
+    renderGate();
+    if (g.red) sysShow(timeout ? "Zeit abgelaufen" : "Aufgegeben", [{ t: "Aufgaben", v: done + " von " + g.tasks.length }, { t: "Strafe", v: "Strafquest morgen" }], g.rank, "Das Red Gate hat dich ausgespuckt. Morgen wartet eine Strafquest.");
+    else if (timeout) sysShow("Zeit abgelaufen", [{ t: "Aufgaben", v: done + " von " + g.tasks.length }, { t: "Beute", v: "keine" }], g.rank, "Das Gate ist zusammengebrochen. Das nächste kommt.");
+    else toast("Gate verlassen. Keine Beute.");
+  }
+  function useItem(k) {
+    const G = gMeta();
+    if (!(G.inv[k] > 0)) return;
+    const dk = todayKey();
+    if (k === "rune") {
+      if (G.runes[dk]) { toast("Heute ist schon eine Rune aktiv."); return; }
+      G.runes[dk] = 1; G.inv.rune--;
+      saveLocal(); hap("pr");
+      sysShow("Rune aktiviert", [{ t: "Satz-XP heute", v: "× 2" }], null, "Gilt bis Mitternacht, auch für Sätze, die du heute schon gemacht hast.");
+      checkRanks();
+    } else if (k === "key") {
+      if (G.cur) { toast("Es ist schon ein Gate offen."); return; }
+      G.inv.key--;
+      saveLocal();
+      gateSpawn(true);
+    } else if (k === "elixir") {
+      const y = dateKey(addDays(today(), -1));
+      const qd = questDef(dk);
+      if (qd.some((i) => i.id === "pen")) G.shields[y] = 1;
+      else if (qd.some((i) => i.id === "gpen")) delete G.pen[dk];
+      else { toast("Gerade gibt es keine Strafquest, die das Elixier aufheben könnte."); return; }
+      G.inv.elixir--;
+      saveLocal(); hap("pr");
+      toast("Elixier benutzt. Die Strafquest ist weg.");
+      renderQuest(dk);
+    }
+    renderInv();
+  }
+  function renderInv() {
+    const el = $("invGrid");
+    if (!el) return;
+    const G = gMeta(), dk = todayKey();
+    el.innerHTML = Object.keys(ITEMS).map((k) => {
+      const it = ITEMS[k], n = G.inv[k] || 0;
+      const act = k === "rune" && G.runes[dk] ? '<span class="invon">Heute aktiv</span>' : n > 0 ? '<button class="btn small" data-use="' + k + '">Benutzen</button>' : "";
+      return '<div class="inv' + (n ? "" : " empty") + '"><span class="invic" aria-hidden="true">' + it.ic + '</span><div class="invt"><b>' + esc(it.n) + ' <em>× ' + n + "</em></b><small>" + esc(it.d) + "</small></div>" + act + "</div>";
+    }).join("");
+    const won = G.log.filter((l) => l.res === "won");
+    const s = won.filter((l) => l.rank >= 5).length, red = won.filter((l) => l.red).length;
+    $("gateStats").textContent = won.length ? won.length + " geräumt · " + s + " S-Rang · " + red + " Red Gates überlebt" : "Noch kein Gate geräumt.";
+    const resT = { won: "geräumt", lost: "Zeit abgelaufen", left: "verlassen", gaveup: "aufgegeben", closed: "verpasst" };
+    $("gateLog").innerHTML = G.log.slice(-6).reverse().map((l) => "<li>" + rankBadge(l.rank) + '<span><b>' + (l.red ? "Red Gate" : RANK_L[l.rank] + "-Rang") + "</b><small>" + shortDate(parseKey(l.d)) + " · " + resT[l.res] + (l.t ? " in " + mmss(l.t) : "") + "</small></span>" + (l.xp ? "<em>+" + l.xp + " XP</em>" : "") + "</li>").join("");
+  }
+  if ($("gateCard")) {
+    $("gateEnter").addEventListener("click", () => { hap("tap"); gateEnter(); });
+    $("grList").addEventListener("click", (ev) => {
+      const b = ev.target.closest("button[data-i]");
+      const g = gMeta().cur;
+      if (!b || !g) return;
+      const t = g.tasks[+b.dataset.i];
+      t.done = !t.done;
+      saveLocal();
+      if (t.done) { hap("set"); try { sndOverride("set"); } catch (e) { /* ignore */ } }
+      b.classList.toggle("ok", t.done); b.setAttribute("aria-pressed", t.done); b.querySelector("i").textContent = t.done ? "✓" : "";
+      if (g.tasks.every((x) => x.done)) setTimeout(gateClear, 350);
+    });
+    $("grQuit").addEventListener("click", () => {
+      const g = gMeta().cur;
+      if (!g) return;
+      if (!gateGiveUp) { gateGiveUp = 1; $("grQuit").textContent = g.red ? "Wirklich aufgeben? Strafquest morgen" : "Wirklich? Keine Beute"; setTimeout(() => { if (gateGiveUp) { gateGiveUp = 0; if ($("grQuit")) $("grQuit").textContent = g.red ? "Aufgeben" : "Gate verlassen"; } }, 4000); return; }
+      gateGiveUp = 0;
+      gateFail(false);
+    });
+    $("invGrid").addEventListener("click", (ev) => { const b = ev.target.closest("button[data-use]"); if (b) { hap("tap"); useItem(b.dataset.use); } });
+    setInterval(() => { if (!document.hidden) { gateTick(); if (currentTab === "today") renderGate(); } }, 30000);
+    document.addEventListener("visibilitychange", () => { if (!document.hidden) gateTick(); });
+  }
+
+  // ---- Aura nach Gesamtrang ----
+  const AURA = ["138,143,152", "201,142,90", "195,208,221", "95,212,255", "180,140,255", "255,194,61", "255,155,232"];
+  function applyAura() {
+    const o = ((state.meta && state.meta.ranks) || {})._overall;
+    const r = document.documentElement;
+    if (o == null) { r.removeAttribute("data-aura"); return; }
+    r.setAttribute("data-aura", o);
+    r.style.setProperty("--aura-rgb", AURA[o]);
+  }
+  function auraBurst(idx) {
+    applyAura();
+    const el = $("aura");
+    if (!el || reduced()) return;
+    el.classList.remove("burst"); void el.offsetWidth; el.classList.add("burst");
+    buzz([30, 60, 30, 60, 30, 120, 220]);
+  }
+
   window.__waGame = true;
+  applyAura();
+  setTimeout(() => { try { gateTick(); renderGate(); } catch (e) { /* ignore */ } }, 1200);
 
   // ---------- Vitalwerte im Check-in ----------
   function renderVitals(dk) {
