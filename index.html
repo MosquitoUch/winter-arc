@@ -1173,6 +1173,94 @@ main[data-dir="l"] > section:not([hidden]) { animation: viewInL 260ms cubic-bezi
 .pad-rir button { min-height: 40px; min-width: 44px; padding: 0 10px; border-radius: 12px; border: 1px solid var(--line-2); background: transparent; color: var(--ink-2); font-weight: 700; }
 .pad-rir button[aria-pressed="true"] { background: var(--ice); border-color: var(--ice); color: var(--ice-ink); }
 .qelix { margin-top: 8px; }
+
+/* v15: Schatten-Ich, Schatten-Armee, Klassen, Körper-Scan, Deload */
+.rival { color: #B9A8FF; font-size: 13px; }
+.rival b { color: #D9CEFF; font-weight: 500; }
+.rival .rvdown { font-style: normal; margin-left: 6px; padding: 1px 8px; border-radius: 999px; background: rgba(150, 120, 255, .22); border: 1px solid rgba(185, 168, 255, .55); color: #E4DBFF; font-size: 12px; font-weight: 700; }
+.xpfloat.shf { color: #D2C4FF; font-size: 14px; letter-spacing: .02em; text-shadow: 0 0 12px rgba(140, 110, 255, .95); animation-duration: 1250ms; }
+.sysbox .btn.sysact { border-color: rgba(var(--acc-rgb), .7); color: var(--ice); background: rgba(var(--acc-rgb), .08); }
+.sysov.arising .sysbox { border-color: rgba(150, 120, 255, .9); box-shadow: 0 0 0 1px rgba(150, 120, 255, .25) inset, 0 0 60px rgba(120, 90, 255, .55), 0 0 140px rgba(120, 90, 255, .3); }
+.sysov.arising .sysbadge .shfig { animation: arise 1.6s ease-in-out both; }
+@keyframes arise { 0% { transform: translateY(26px) scale(.7); opacity: 0; filter: blur(6px) brightness(.4); } 60% { opacity: 1; filter: blur(1px) brightness(1.4); } 100% { transform: none; opacity: 1; filter: none; } }
+.shfig { width: 44px; height: 55px; color: #07060d; filter: drop-shadow(0 0 6px color-mix(in srgb, var(--eye) 60%, transparent)); }
+.shfig.big { width: 84px; height: 105px; filter: drop-shadow(0 0 14px color-mix(in srgb, var(--eye) 70%, transparent)); }
+.armygrid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin-top: 12px; }
+@media (min-width: 620px) { .armygrid { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+.shd { display: grid; justify-items: center; gap: 4px; padding: 12px 6px 10px; border-radius: 14px; border: 1px solid var(--line-2); background: radial-gradient(120% 80% at 50% 0%, rgba(120, 90, 255, .14), transparent 70%), rgba(255, 255, 255, .02); text-align: center; min-width: 0; }
+.shd b { font-size: 15px; line-height: 1.2; overflow-wrap: break-word; hyphens: auto; }
+.shd .shfig { width: 56px; height: 70px; }
+.shd small { color: var(--mute); font-size: 12px; }
+.armyempty { grid-column: 1 / -1; margin: 0; color: var(--mute); font-size: 14px; }
+.shpend { display: grid; grid-template-columns: 44px minmax(0, 1fr) auto; gap: 12px; align-items: center; margin-top: 10px; padding: 10px 12px; border-radius: 14px; border: 1px dashed rgba(185, 168, 255, .55); background: rgba(120, 90, 255, .08); }
+.shpt { display: grid; min-width: 0; }
+.shpt small { color: var(--mute); font-size: 12px; }
+.jobcard { position: relative; margin: 0 0 20px; padding: 14px 16px; border-radius: 16px; border: 1px solid rgba(180, 140, 255, .6); background: linear-gradient(135deg, rgba(180, 140, 255, .14), rgba(0, 0, 0, .4)); box-shadow: 0 0 26px rgba(180, 140, 255, .2); }
+.jobcard .systag { color: #CDB6FF; border-color: rgba(180, 140, 255, .6); font-size: 12px; padding: 2px 10px; }
+.jobcard .systag span { border-color: #CDB6FF; }
+.jobcard h3 { margin: 8px 0 4px; font-family: var(--display); font-size: 22px; line-height: 1.1; }
+.jobcard p { margin: 0 0 10px; color: var(--ink-2); font-size: 14px; }
+.jobcard .btn { border-color: #B48CFF; color: #D9C8FF; }
+.gaterun.job { background: radial-gradient(120% 70% at 50% 0%, #2a1650, #000 72%); }
+.clsbox { width: min(100%, 440px); max-height: calc(100% - 24px); overflow-y: auto; }
+.clslist { display: grid; gap: 8px; width: 100%; }
+.clsopt { display: grid; grid-template-columns: 46px minmax(0, 1fr); gap: 12px; align-items: center; width: 100%; padding: 12px; border-radius: 12px; border: 1px solid rgba(var(--acc-rgb), .25); background: rgba(var(--acc-rgb), .05); color: var(--ink); text-align: left; }
+.clsopt[aria-pressed="true"] { border-color: var(--ice); background: rgba(var(--acc-rgb), .16); box-shadow: 0 0 18px rgba(var(--acc-rgb), .25); }
+.clsopt.locked { opacity: .5; }
+.clsopt.cur { border-style: dashed; }
+.clsicw { width: 46px; height: 46px; display: grid; place-items: center; border-radius: 12px; border: 1px solid rgba(var(--acc-rgb), .35); }
+.clsic { width: 26px; height: 26px; color: var(--ice); --eye: var(--ice); }
+.clsicw svg[viewBox="0 0 64 80"] { width: 26px; height: 32px; color: #07060d; --eye: #B48CFF; }
+.clsic.big { width: 54px; height: 54px; }
+.clst { display: grid; gap: 2px; min-width: 0; }
+.clst b { font-size: 16px; }
+.clst b em { font-style: normal; font-size: 11px; color: #CDB6FF; border: 1px solid rgba(180, 140, 255, .6); border-radius: 999px; padding: 0 6px; margin-left: 6px; vertical-align: 2px; }
+.clst small { color: var(--ink-2); font-size: 13px; }
+.clst i { font-style: normal; color: var(--ice); font-size: 13px; }
+.clsbox .btn + .btn { margin-top: 0; }
+.clsnow { display: grid; grid-template-columns: 60px minmax(0, 1fr); gap: 14px; align-items: center; margin: 10px 0 12px; }
+.clsnow > div { display: grid; gap: 2px; min-width: 0; }
+.clsnow b { font-family: var(--display); font-size: 24px; }
+.clsnow small { color: var(--ink-2); font-size: 13px; }
+.clsnow i { font-style: normal; color: var(--ice); font-size: 14px; }
+.clsnow .clssince { color: var(--mute); }
+.clsnow svg[viewBox="0 0 64 80"] { width: 48px; height: 60px; color: #07060d; --eye: #B48CFF; }
+.sw-cls { display: block; color: var(--ink-2); font-size: 13px; }
+.scan { margin: 20px 0 8px; padding: 14px 16px 16px; border-radius: 16px; border: 1px solid rgba(var(--acc-rgb), .35); background: linear-gradient(180deg, rgba(var(--acc-rgb), .07), rgba(0, 0, 0, .3)); }
+.scan .shead { flex-wrap: wrap; gap: 8px; }
+.scanwk { display: flex; gap: 6px; }
+.scanwk .chip { min-height: 34px; padding: 4px 12px; font-size: 13px; }
+.scanwk .chip[aria-pressed="true"] { border-color: var(--ice); color: var(--ice); }
+.scanfig { display: flex; justify-content: center; gap: 4%; margin-top: 10px; }
+.scanfig figure { margin: 0; width: 44%; max-width: 170px; display: grid; justify-items: center; gap: 4px; }
+.scanfig figcaption { color: var(--mute); font-size: 12px; letter-spacing: .12em; text-transform: uppercase; }
+.bodysvg { width: 100%; height: auto; overflow: visible; }
+.bodysvg .nb { fill: rgba(255, 255, 255, .035); stroke: rgba(255, 255, 255, .12); stroke-width: .5; }
+.bodysvg .m { fill: rgba(255, 255, 255, .05); stroke: rgba(var(--acc-rgb), .3); stroke-width: .6; cursor: pointer; transition: fill .3s ease; }
+.bodysvg .m.l1 { fill: rgba(var(--acc-rgb), .17); }
+.bodysvg .m.l2 { fill: rgba(var(--acc-rgb), .34); }
+.bodysvg .m.l3 { fill: rgba(var(--acc-rgb), .66); stroke: var(--ice); filter: drop-shadow(0 0 2.5px rgba(var(--acc-rgb), .9)); }
+.bodysvg .m.l4 { fill: rgba(255, 159, 67, .72); stroke: #FFB36B; filter: drop-shadow(0 0 2.5px rgba(255, 159, 67, .8)); }
+.bodysvg .m.sel { stroke: #fff; stroke-width: 1.3; }
+.bodysvg .abs { fill: none; stroke: rgba(0, 0, 0, .35); stroke-width: .6; pointer-events: none; }
+.bodysvg .scanline { fill: rgba(var(--acc-rgb), .55); pointer-events: none; animation: scanY 3.6s linear infinite; }
+@keyframes scanY { from { transform: translateY(0); opacity: 0; } 8% { opacity: .9; } 92% { opacity: .9; } to { transform: translateY(208px); opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .bodysvg .scanline { display: none; } }
+.scaninfo { margin: 12px 0 8px; color: var(--ink-2); font-size: 14px; }
+.scaninfo b { color: var(--ink); }
+.scanleg { display: flex; flex-wrap: wrap; gap: 6px 14px; color: var(--mute); font-size: 12px; }
+.scanleg span { display: inline-flex; align-items: center; gap: 6px; }
+.scanleg i { width: 12px; height: 12px; border-radius: 3px; border: 1px solid rgba(var(--acc-rgb), .35); background: rgba(255, 255, 255, .05); }
+.scanleg i.l1 { background: rgba(var(--acc-rgb), .17); } .scanleg i.l2 { background: rgba(var(--acc-rgb), .34); } .scanleg i.l3 { background: rgba(var(--acc-rgb), .66); } .scanleg i.l4 { background: rgba(255, 159, 67, .72); border-color: #FFB36B; }
+.dlcard { margin: 0 0 20px; padding: 14px 16px; border-radius: 16px; border: 1px solid rgba(255, 179, 107, .6); background: linear-gradient(135deg, rgba(255, 159, 67, .12), rgba(0, 0, 0, .4)); }
+.dlcard .systag { color: #FFC58C; border-color: rgba(255, 179, 107, .6); font-size: 12px; padding: 2px 10px; }
+.dlcard .systag span { border-color: #FFC58C; }
+.dlcard h3 { margin: 8px 0 6px; font-family: var(--display); font-size: 22px; }
+.dlcard ul { margin: 0 0 8px; padding-left: 18px; color: var(--ink-2); font-size: 14px; }
+.dlcard p { margin: 0 0 10px; color: var(--ink-2); font-size: 14px; }
+svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
+.sysbadge svg.clsic.big { width: 64px; height: 64px; }
+.sysbadge svg.clsic.big[viewBox="0 0 64 80"] { width: 70px; height: 88px; }
 </style>
 </head>
 <body>
@@ -1211,6 +1299,11 @@ main[data-dir="l"] > section:not([hidden]) { animation: viewInL 260ms cubic-bezi
     <symbol id="i-body" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="6.5" r="2.7"/><path d="M5.5 20v-4.2c0-2.6 2.3-4.3 6.5-4.3s6.5 1.7 6.5 4.3V20"/></g></symbol>
     <symbol id="i-mic" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="3.5" width="6" height="11" rx="3"/><path d="M5.5 11.5a6.5 6.5 0 0 0 13 0M12 18v2.5"/></g></symbol>
     <symbol id="i-cam" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round"><path d="M4 8.5A1.5 1.5 0 0 1 5.5 7H8l1.2-2h5.6L16 7h2.5A1.5 1.5 0 0 1 20 8.5v9a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 4 17.5z"/><circle cx="12" cy="13" r="3.3"/></g></symbol>
+    <symbol id="i-shadow" viewBox="0 0 64 80"><path d="M32 3C18.5 3 11 14 11 26.5c0 7 2.2 12.2 5.6 16.2L7 77h50l-9.6-34.3c3.4-4 5.6-9.2 5.6-16.2C53 14 45.5 3 32 3z" fill="currentColor" stroke="var(--eye, #8EEBF8)" stroke-opacity=".55" stroke-width="1.4"/><path d="M32 13c-7.5 0-12.5 6.2-12.5 14 0 7.6 5.2 13.5 12.5 13.5S44.5 34.6 44.5 27c0-7.8-5-14-12.5-14z" fill="#000"/><path d="M21.5 25.5l8.5 3-8 2.2zM42.5 25.5l-8.5 3 8 2.2z" fill="var(--eye, #8EEBF8)"/><path d="M20 50l12 8 12-8M24 62l8 5 8-5" fill="none" stroke="var(--eye, #8EEBF8)" stroke-opacity=".35" stroke-width="1.2"/></symbol>
+    <symbol id="i-cl-assassin" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20L15.5 8.5 19 3l-5.5 3.5L2 18"/><path d="M20 20L8.5 8.5 5 3l5.5 3.5L22 18"/><path d="M6.5 14.5l3 3M17.5 14.5l-3 3"/></g></symbol>
+    <symbol id="i-cl-warrior" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.5l2 3v9.5h-4V5.5z"/><path d="M7 15.5h10M12 15.5v4.5"/><circle cx="12" cy="21" r="1.1"/></g></symbol>
+    <symbol id="i-cl-monk" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="12" r="8.5"/><path d="M12 3.5a4.25 4.25 0 0 1 0 8.5 4.25 4.25 0 0 0 0 8.5"/><circle cx="12" cy="7.8" r="1.1" fill="currentColor"/><circle cx="12" cy="16.2" r="1.1"/></g></symbol>
+    <symbol id="i-cl-guardian" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"><path d="M12 2.8l7.5 3v5.8c0 4.8-3.2 8.2-7.5 9.9-4.3-1.7-7.5-5.1-7.5-9.9V5.8z"/><path d="M12 7v10M8.5 11h7" stroke-linecap="round"/></g></symbol>
     <symbol id="i-img" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"><rect x="3.5" y="5" width="17" height="14" rx="2.5"/><path d="M3.5 16l5-5 4 4 3-3 5 5" stroke-linecap="round"/><circle cx="16" cy="9" r="1.5"/></g></symbol>
   </defs>
 </svg>
@@ -1260,6 +1353,21 @@ main[data-dir="l"] > section:not([hidden]) { animation: viewInL 260ms cubic-bezi
           <div class="gatecard" id="gateCard" hidden>
             <div class="gportal" aria-hidden="true"><b id="gateRank">C</b></div>
             <div><span class="systag sm"><span>!</span>Gate</span><h3 id="gateTitle"></h3><p id="gateMeta"></p><button class="btn small" id="gateEnter">Betreten</button></div>
+          </div>
+
+          <div class="jobcard" id="jobCard" hidden>
+            <span class="systag sm"><span>!</span>Job-Wechsel</span>
+            <h3 id="jobTitle">Die Prüfung wartet</h3>
+            <p id="jobText"></p>
+            <button class="btn small" id="jobGo">Prüfung beginnen</button>
+          </div>
+
+          <div class="dlcard" id="dlCard" hidden>
+            <span class="systag sm"><span>!</span>System</span>
+            <h3>Deload empfohlen</h3>
+            <ul id="dlWhy"></ul>
+            <p>Eine Woche mit halben Sätzen und ohne Limit. Danach bist du stärker als vorher.</p>
+            <div class="row"><button class="btn small primary" id="dlYes">Deload diese Woche</button><button class="btn small" id="dlNo">Weiter wie geplant</button></div>
           </div>
 
           <div class="questcard" id="questCard">
@@ -1400,6 +1508,12 @@ main[data-dir="l"] > section:not([hidden]) { animation: viewInL 260ms cubic-bezi
     <section id="view-week" aria-label="Woche" hidden>
       <h1 class="pagetitle" id="weektitle">Diese Woche</h1>
       <div class="week-stats" id="weekstats"></div>
+      <div class="scan" id="scanCard">
+        <div class="shead"><h2>Körper-Scan</h2><div class="scanwk" id="scanWk" role="group" aria-label="Woche wählen"><button class="chip" data-w="0" aria-pressed="true">Diese Woche</button><button class="chip" data-w="1" aria-pressed="false">Letzte Woche</button></div></div>
+        <div class="scanfig" id="scanFig"></div>
+        <p class="scaninfo" id="scanInfo" aria-live="polite"></p>
+        <div class="scanleg" aria-hidden="true"><span><i></i>keine</span><span><i class="l1"></i>1–4</span><span><i class="l2"></i>5–9</span><span><i class="l3"></i>10–20 ideal</span><span><i class="l4"></i>über 20</span></div>
+      </div>
       <ul class="weeklist" id="weeklist"></ul>
 
       <div class="review" id="reviewBlock">
@@ -1429,6 +1543,16 @@ main[data-dir="l"] > section:not([hidden]) { animation: viewInL 260ms cubic-bezi
             <div class="rrwrap"><table class="rrtab" id="rankReq"></table></div>
             <p class="rrnote">Übungen: bester Satz am Stück, Zusatzgewicht wird in Wiederholungen umgerechnet. 5 km: beste Zeit, Läufe ab 4,8 km, längere werden umgerechnet. Ruhepuls: Schnitt aus 3 Messungen, weniger ist besser. Laufeffizienz: Meter pro Herzschlag bei Läufen ab 3 km. Maximalkraft: geschätztes Klimmzug-Maximum über Körpergewicht. Protein und Gewohnheiten: bester Zeitraum von 4 Wochen.</p>
           </details>
+        </div>
+        <div class="block" id="clsBlock">
+          <h2 class="bh">Klasse</h2>
+          <div id="clsCur"></div>
+        </div>
+        <div class="block" id="armyBlock">
+          <h2 class="bh">Schatten-Armee <span class="achcount" id="armyCount"></span></h2>
+          <p class="lead">Besiegte Bosse und Gate-Wächter ab C-Rang kannst du als Schatten extrahieren. Du hast drei Versuche, danach zerfällt der Schatten. Ein Schatten wartet zwei Tage.</p>
+          <div id="armyPend"></div>
+          <div class="armygrid" id="armyGrid"></div>
         </div>
         <div class="block" id="invBlock">
           <h2 class="bh">Inventar</h2>
@@ -1788,7 +1912,7 @@ main[data-dir="l"] > section:not([hidden]) { animation: viewInL 260ms cubic-bezi
                 <div class="field" hidden><label for="bgDim">Sichtbarkeit des Bildes</label><input type="range" id="bgDim" min="10" max="70" step="5"></div>
                 <small class="fhint">Das Bild wird verkleinert, abgedunkelt und bleibt nur auf diesem Handy. Nimm am besten ein dunkles Motiv, dann bleibt die Schrift gut lesbar.</small>
               </details>
-              <div class="field"><label for="setHaptic">Haptik (Vibration)</label><select id="setHaptic"><option value="aus">Aus</option><option value="leicht">Leicht</option><option value="normal">Normal</option><option value="kraeftig">Kräftig</option></select><details class="mini"><summary>Muster ausprobieren</summary><div class="hlab" id="hlab" role="group" aria-label="Haptik ausprobieren"></div><small class="fhint">Tipp auf ein Muster zum Ausprobieren. Spürst du nichts, prüf in den Handy-Einstellungen unter Töne und Vibration, dass die Vibrationsstärke nicht auf null steht.</small></details></div>
+              <div class="field"><label for="setHaptic">Haptik (Vibration)</label><select id="setHaptic"><option value="aus">Aus</option><option value="leicht">Leicht</option><option value="normal">Normal</option><option value="kraeftig">Kräftig</option></select><div class="toggle"><span>Countdown spüren<small>Drei kurze Vibrationen am Ende der Pause, damit du nicht aufs Handy schauen musst.</small></span><button class="switch" role="switch" aria-checked="true" id="swHapCount" aria-label="Countdown spüren"></button></div><details class="mini"><summary>Muster ausprobieren</summary><div class="hlab" id="hlab" role="group" aria-label="Haptik ausprobieren"></div><small class="fhint">Tipp auf ein Muster zum Ausprobieren. Spürst du nichts, prüf in den Handy-Einstellungen unter Töne und Vibration, dass die Vibrationsstärke nicht auf null steht.</small></details></div>
             </div>
           </details>
           <details class="grp" id="grpTrain">
@@ -2042,6 +2166,16 @@ main[data-dir="l"] > section:not([hidden]) { animation: viewInL 260ms cubic-bezi
   </div>
 </div>
 
+<div class="sysov" id="clsPick" role="dialog" aria-modal="true" aria-labelledby="clsTitle" hidden>
+  <div class="sysbox clsbox">
+    <div class="systag"><span>!</span>System</div>
+    <h2 id="clsTitle">Wähle deine Klasse</h2>
+    <div class="clslist" id="clsList"></div>
+    <button class="btn primary" id="clsOk" disabled>Klasse wählen</button>
+    <button class="btn" id="clsCancel">Später</button>
+  </div>
+</div>
+
 <div class="sysov" id="sysWin" role="dialog" aria-modal="true" aria-labelledby="sysTitle" hidden>
   <div class="sysbox">
     <div class="systag"><span>!</span>System</div>
@@ -2049,6 +2183,7 @@ main[data-dir="l"] > section:not([hidden]) { animation: viewInL 260ms cubic-bezi
     <h2 id="sysTitle"></h2>
     <ul class="syslines" id="sysLines"></ul>
     <p class="sysnote" id="sysNote" hidden></p>
+    <button class="btn sysact" id="sysAct" hidden></button>
     <button class="btn primary" id="sysOk">Bestätigen</button>
   </div>
 </div>
@@ -2736,7 +2871,7 @@ main[data-dir="l"] > section:not([hidden]) { animation: viewInL 260ms cubic-bezi
     if (date < arcStartDate()) return 0;
     return Math.floor(daysBetween(startOfWeek(arcStartDate()), date) / 7) + 1;
   }
-  const isDeloadWeek = (w) => !!(S().autoDeload && w > 0 && w % 4 === 0);
+  const isDeloadWeek = (w) => { if (!(w > 0)) return false; const m = state.meta || {}; if (m.deloadWeeks && m.deloadWeeks[w]) return true; return !!(S().autoDeload && w % 4 === 0 && !(m.deloadSkip && m.deloadSkip[w])); };
   const isRun = (e) => /\b(lauf|laufen|run|running|joggen|jogging)\b/i.test(e.name || "");
   const runRow = (w) => RUN_TABLE[w] || (w > 12 ? RUN_MAINTAIN : null);
   const runIdx = (dow) => (dow === 6 ? 2 : dow === 7 ? 3 : dow <= 3 ? 0 : 1);
@@ -3069,7 +3204,7 @@ main[data-dir="l"] > section:not([hidden]) { animation: viewInL 260ms cubic-bezi
     const session = effSession(now);
     if ($("dayname").textContent !== DOW_NAMES[dow - 1]) $("dayname").textContent = DOW_NAMES[dow - 1];
     fitDayname();
-    $("datestr").textContent = longDate(now) + (arcWeek(now) ? ", Woche " + arcWeek(now) : "");
+    $("datestr").textContent = longDate(now) + (arcWeek(now) ? ", Woche " + arcWeek(now) + (window.__waGame ? " · " + epTitle(arcWeek(now)) : "") : "");
 
     const hasPlan = !!(state.plan && state.plan.days && state.plan.days.length);
     $("today-empty").hidden = hasPlan;
@@ -3156,7 +3291,7 @@ main[data-dir="l"] > section:not([hidden]) { animation: viewInL 260ms cubic-bezi
             '<span class="runstatus" aria-live="polite"></span>' +
           "</div>";
       } else {
-        body = '<div class="exlog"><input type="text" autocomplete="off" aria-label="Leistung für ' + esc(e.name) + '" placeholder="' + placeholderFor(e) + '"><span class="parsed"></span><span class="last"></span></div>';
+        body = '<div class="exlog"><input type="text" autocomplete="off" aria-label="Leistung für ' + esc(e.name) + '" placeholder="' + placeholderFor(e) + '"><span class="parsed"></span><span class="last"></span><span class="rival" hidden></span></div>';
       }
       li.innerHTML =
         '<div class="ex-head"><h3 class="ex-name">' + esc(e.name) + '<span class="pr-badge" hidden>Rekord</span></h3><span class="ex-spec">' + specHtml(e) + "</span></div>" +
@@ -3208,6 +3343,8 @@ main[data-dir="l"] > section:not([hidden]) { animation: viewInL 260ms cubic-bezi
         const ln = prev[prev.length - 1];
         last.innerHTML = "Letztes Mal (" + shortDate(parseKey(ln.date)) + "): <b>" + esc(ln.note) + "</b>";
       } else last.textContent = "";
+      const rvEl = li.querySelector(".rival");
+      if (rvEl) { const rl = window.__waGame ? rivalLine(e, dk, hist, prev.length ? prev[prev.length - 1] : null, todayItem) : ""; rvEl.hidden = !rl; rvEl.innerHTML = rl; }
     });
     let nextFound = false;
     ol.querySelectorAll(".ex").forEach((li) => {
@@ -3629,6 +3766,7 @@ main[data-dir="l"] > section:not([hidden]) { animation: viewInL 260ms cubic-bezi
   const timer = { end: 0, total: 0, id: 0, finished: false, said: false };
   function startTimer(sec) {
     timer.said = false;
+    timer.cd = 0;
     timer.voice = window.__waGame && voiceOn() ? coachRestPrep() : null;
     timer.total = sec * 1000;
     timer.end = Date.now() + timer.total;
@@ -3651,6 +3789,7 @@ main[data-dir="l"] > section:not([hidden]) { animation: viewInL 260ms cubic-bezi
     $("timertime").textContent = fmtClock(left);
     $("timerbar").style.transform = "scaleX(" + Math.max(0, Math.min(1, left / timer.total)).toFixed(4) + ")";
     if (left > 0 && left <= 10500 && !timer.said && timer.total > 20000) { timer.said = true; if (window.__waGame && timer.voice) sayLine(timer.voice.ten); }
+    if (left > 0 && left <= 3000 && S().hapCount !== false && timer.total > 8000) { const sec = Math.ceil(left / 1000); if (timer.cd !== sec) { timer.cd = sec; hap("count"); } }
     if (left <= 0) {
       if (!timer.finished) {
         timer.finished = true;
@@ -3658,7 +3797,7 @@ main[data-dir="l"] > section:not([hidden]) { animation: viewInL 260ms cubic-bezi
         $("timer").classList.add("done");
         $("timerlabel").textContent = "Nächster Satz";
         $("timertime").textContent = "Los";
-        chime(); buzz([60, 80, 60]);
+        chime(); hap("restEnd");
         setTimeout(() => { if (timer.finished) stopTimer(); }, 6000);
       }
       return;
@@ -3723,6 +3862,7 @@ main[data-dir="l"] > section:not([hidden]) { animation: viewInL 260ms cubic-bezi
       '<div class="stat"><strong>' + completed + "<small>/" + planned + "</small></strong><span>Einheiten" + (freeDone ? " (+" + freeDone + " frei)" : "") + "</span></div>" +
       '<div class="stat"><strong>' + (kmDone ? fmtN(kmDone) : setsDone) + "</strong><span>" + (kmDone ? "km gelaufen" : "Sätze") + "</span></div>" +
       '<div class="stat"><strong>' + pct + "<small>%</small></strong><span>Gewohnheiten</span></div>";
+    renderScan();
     renderReview();
   }
   $("weeklist").addEventListener("click", (ev) => {
@@ -4063,7 +4203,7 @@ main[data-dir="l"] > section:not([hidden]) { animation: viewInL 260ms cubic-bezi
 
   // ================= Today extras =================
   function renderTodayExtras(dk) {
-    if (window.__waGame) { renderQuest(dk); renderVoiceBtn(); renderAiFab(); renderGate(); }
+    if (window.__waGame) { renderQuest(dk); renderVoiceBtn(); renderAiFab(); renderGate(); renderJob(); renderDeloadCard(dk); episodeCheck(); }
     renderSteps(dk);
     renderGoal();
     renderSessNote(dk);
@@ -5138,7 +5278,7 @@ main[data-dir="l"] > section:not([hidden]) { animation: viewInL 260ms cubic-bezi
     const ws = addDays(startOfWeek(today()), -7 * revOffset);
     const wn = arcWeek(ws);
     const we = addDays(ws, 6);
-    $("revWeekLabel").textContent = (wn ? "Woche " + wn + ", " : "") + ws.getDate() + "." + (ws.getMonth() + 1) + ". bis " + we.getDate() + "." + (we.getMonth() + 1) + ".";
+    $("revWeekLabel").textContent = (wn ? "Woche " + wn + (window.__waGame ? " · " + epTitle(wn) : "") + ", " : "") + ws.getDate() + "." + (ws.getMonth() + 1) + ". bis " + we.getDate() + "." + (we.getMonth() + 1) + ".";
     const st = weekStats(ws);
     const rows = reviewRows(st, ws);
     $("revList").innerHTML = rows.map((r) => "<li><span>" + esc(r[0]).replace(/^(\s+)/, "&nbsp;&nbsp;&nbsp;") + "</span><span><b>" + esc(r[1]) + "</b></span></li>").join("");
@@ -5714,7 +5854,10 @@ main[data-dir="l"] > section:not([hidden]) { animation: viewInL 260ms cubic-bezi
         const before = mb.bosses[tk], won = b.dmg >= 100;
         mb.bosses[tk] = { n: bossName(tk), dmg: b.dmg, won: won || !!(before && before.won) };
         saveLocal();
-        if (won && !(before && before.won)) sysShow("Boss besiegt", [{ t: bossName(tk), v: "0 % HP" }, { t: "Kritische Treffer", v: String(b.crits) }, { t: "Belohnung", v: "+200 XP" }], null, "Der nächste Boss wartet am nächsten Testtag.");
+        if (won && !(before && before.won)) {
+          const bw0 = arcWeek(parseKey(tk)), sh = window.__waGame ? shadowOffer("boss", bw0 >= 13 ? 5 : bw0 >= 9 ? 4 : 3, bossName(tk)) : null;
+          sysShow("Boss besiegt", [{ t: bossName(tk), v: "0 % HP" }, { t: "Kritische Treffer", v: String(b.crits) }, { t: "Belohnung", v: "+200 XP" }], null, sh ? "Sein Schatten liegt vor dir. Extrahier ihn, solange du kannst." : "Der nächste Boss wartet am nächsten Testtag.", sh ? offerOpts(sh) : {});
+        }
         else if (!won) sysShow("Der Boss lebt noch", [{ t: bossName(tk), v: (100 - b.dmg) + " % HP" }, { t: "Treffer", v: b.hits + " + " + b.crits + " kritisch" }], null, "Du kannst heute noch nachtesten und den Test erneut speichern.");
         checkRanks();
       }
@@ -5727,7 +5870,7 @@ main[data-dir="l"] > section:not([hidden]) { animation: viewInL 260ms cubic-bezi
 
   function renderProgress() {
     renderRanks();
-    if (window.__waGame) renderAch();
+    if (window.__waGame) { renderAch(); renderClsBlock(); renderArmy(); }
     renderArcGrid();
     renderProgressChart();
     renderSkills();
@@ -7349,6 +7492,13 @@ main[data-dir="l"] > section:not([hidden]) { animation: viewInL 260ms cubic-bezi
     $("padMeta").textContent = (rng ? "Ziel " + (rng.low === rng.high ? rng.low : rng.low + " bis " + rng.high) + unit : "") +
       (lastReps.length ? (rng ? ". " : "") + "Letztes Mal: " + lastReps.join("/") + (last.perf.weight ? " mit " + (last.perf.weight > 0 ? "+" : "") + fmtN(last.perf.weight) + " kg" : "") + (rirOf(last).length ? ", im Tank " + rirOf(last).map((v) => (v >= 4 ? "4+" : v)).join("/") : "") : "");
     $("padMeta").textContent = $("padMeta").textContent.replace("Wdh..", "Wdh.");
+    if (window.__waGame) {
+      const rv = rivalOf(e.name, dk);
+      if (rv && rv.perf.reps[i] != null && !!rv.perf.secs === !!numpad.secs) {
+        const t0 = $("padMeta").textContent;
+        $("padMeta").textContent = t0 + (t0 && !/\.$/.test(t0) ? ". " : t0 ? " " : "") + "Schatten-Ich (" + shortDate(parseKey(rv.date)) + "): " + rv.perf.reps[i] + (rv.perf.secs ? " s" : "") + (rv.perf.weight ? " mit " + (rv.perf.weight > 0 ? "+" : "") + fmtN(rv.perf.weight) + " kg" : "") + ".";
+      }
+    }
     const quick = [];
     if (lastReps[i] != null) quick.push(lastReps[i]);
     if (i > 0 && cur.reps[i - 1] != null) quick.push(cur.reps[i - 1]);
@@ -7385,7 +7535,8 @@ main[data-dir="l"] > section:not([hidden]) { animation: viewInL 260ms cubic-bezi
       const parts = noteParts(pn != null ? pn : lg.note);
       const v = Math.min(999, Math.max(1, Math.round(+numpad.val)));
       const prevItems = window.__waGame && voiceOn() && !numpad.secs ? historyFor(e.name).filter((x) => x.date < dk && !x.perf.secs) : null;
-      if (prevItems) setTimeout(() => coachSetFeedback(e.name, numpad.i, v, numpad.showKg ? numpad.kg : 0, prevItems), 0);
+      const rvc = rivalAfterSet(e, numpad.i, v, numpad.showKg ? numpad.kg : (parts.weight || 0), numpad.secs);
+      if (prevItems) { const ni = numpad.i; setTimeout(() => coachSetFeedback(e.name, ni, v, numpad.showKg ? numpad.kg : 0, prevItems, rvc), 0); }
       if (numpad.i < parts.reps.length) parts.reps[numpad.i] = v; else parts.reps.push(v);
       parts.secs = numpad.secs;
       if (numpad.showKg) parts.weight = numpad.kg;
@@ -7817,7 +7968,7 @@ main[data-dir="l"] > section:not([hidden]) { animation: viewInL 260ms cubic-bezi
     x.textAlign = "left"; x.fillStyle = ink; x.font = "900 150px " + disp;
     x.fillText(wn ? "Woche " + wn : "Woche", 52, 290);
     x.fillStyle = ink2; x.font = "500 40px " + fam;
-    x.fillText(ws.getDate() + "." + (ws.getMonth() + 1) + ". bis " + we.getDate() + "." + (we.getMonth() + 1) + "." + we.getFullYear(), 56, 352);
+    x.fillText(ws.getDate() + "." + (ws.getMonth() + 1) + ". bis " + we.getDate() + "." + (we.getMonth() + 1) + "." + we.getFullYear() + (wn && window.__waGame ? "  ·  " + epTitle(wn) : ""), 56, 352);
     const tot = st.vol.pull.kg + st.vol.dips.kg + st.vol.push.kg;
     const tiles = [
       [st.planned ? st.done + "/" + st.planned : st.free ? String(st.free) : "–", "Einheiten" + (st.free && st.planned ? " (+" + st.free + " frei)" : "")],
@@ -8363,18 +8514,29 @@ main[data-dir="l"] > section:not([hidden]) { animation: viewInL 260ms cubic-bezi
   function computeXP() {
     const pt = +S().proteinTarget || 120;
     const mm0 = rankMeta();
+    const cl = mm0.cls && mm0.cls.id ? mm0.cls : null;
     let xp = 0;
     Object.keys(state.logs).forEach((dk) => {
       const l = state.logs[dk] || {};
       const runeX = mm0.gates && mm0.gates.runes && mm0.gates.runes[dk] ? 2 : 1;
-      Object.keys(l.exercises || {}).forEach((id) => { const x = l.exercises[id]; if (x && x.done) xp += x.done.filter(Boolean).length * 10 * runeX; });
-      Object.keys(l.runs || {}).forEach((id) => { const r = l.runs[id]; if (r && r.km) xp += Math.round(r.km * 12); });
+      const ck = cl && dk >= cl.since ? cl.id : "";
+      let sx = 0, rx = 0, vx = 0;
+      Object.keys(l.exercises || {}).forEach((id) => {
+        const x = l.exercises[id];
+        if (!x || !x.done) return;
+        let per = 10;
+        if (ck === "warrior" || ck === "monk") { const f = famOf(x.name || ""); if ((ck === "warrior" && (f === "push" || f === "pull")) || (ck === "monk" && f === "core")) per = 12.5; }
+        sx += x.done.filter(Boolean).length * per * runeX;
+      });
+      Object.keys(l.runs || {}).forEach((id) => { const r = l.runs[id]; if (r && r.km) rx += Math.round(r.km * 12 * (ck === "assassin" ? 1.25 : 1)); });
       const c = l.checkin || {};
-      if (c.energy || c.soreness) xp += 5;
-      if (l.sleep && (l.sleep.min || l.sleep.score)) xp += 5;
-      if (l.vitals && (l.vitals.rhr || l.vitals.vo2)) xp += 3;
-      if (proteinTotal(dk) >= pt) xp += 10;
-      xp += habitStats(dk).n * 3;
+      if (c.energy || c.soreness) vx += 5;
+      if (l.sleep && (l.sleep.min || l.sleep.score)) vx += 5;
+      if (l.vitals && (l.vitals.rhr || l.vitals.vo2)) vx += 3;
+      if (proteinTotal(dk) >= pt) vx += 10;
+      vx += habitStats(dk).n * 3;
+      if (ck === "guardian") vx *= 1.5;
+      xp += Math.round((sx + rx + vx) * (ck === "necro" ? 1.1 : 1));
     });
     xp += (state.tests.entries || []).length * 50;
     const mm = rankMeta();
@@ -8382,6 +8544,7 @@ main[data-dir="l"] > section:not([hidden]) { animation: viewInL 260ms cubic-bezi
     xp += Object.keys(mm.bosses || {}).filter((k) => mm.bosses[k].won).length * 200;
     xp += Object.keys(mm.ach || {}).length * 25;
     ((mm.gates && mm.gates.log) || []).forEach((g) => { if (g.res === "won") xp += g.xp || 0; });
+    xp += ((mm.shadows && mm.shadows.list) || []).length * (cl && cl.id === "necro" ? 30 : 15);
     let lv = 1, need = 100, rest = xp;
     while (rest >= need && lv < 999) { rest -= need; lv++; need = 100 + 20 * (lv - 1); }
     return { xp, lv, cur: rest, need };
@@ -8417,7 +8580,7 @@ main[data-dir="l"] > section:not([hidden]) { animation: viewInL 260ms cubic-bezi
     const head = '<div class="sw-top"><span class="sw-tag">Status</span><span class="sw-name">' + esc(name) + "</span></div>" +
       '<div class="sw-head"><div class="sw-lv"><small>Level</small><b>' + X.lv + "</b></div>" +
       '<div class="sw-main"><div class="sw-rank">' + (o ? rankBadge(o.idx) : '<span class="rbadge rn0" aria-hidden="true">–</span>') +
-      "<div><b>" + (o ? RANK_L[o.idx] + "-Rang · " + RANK_T[o.idx] : "Noch ohne Rang") + "</b><span>" + (wornTitle ? "Titel: " + esc(wornTitle) : "Trag Leistungen ein, um einen Titel zu bekommen") + "</span></div></div>" +
+      "<div><b>" + (o ? RANK_L[o.idx] + "-Rang · " + RANK_T[o.idx] : "Noch ohne Rang") + "</b><span>" + (wornTitle ? "Titel: " + esc(wornTitle) : "Trag Leistungen ein, um einen Titel zu bekommen") + "</span>" + (function () { const ci = classId(), an = shCount(); const t = [ci ? "Klasse: " + CLASSES[ci].n : "", an ? "Armee: " + an + " Schatten" : ""].filter(Boolean).join(" · "); return t ? '<span class="sw-cls">' + esc(t) + "</span>" : ""; })() + "</div></div>" +
       '<div class="sw-xp"><div class="rbar"><i style="width:' + Math.round((X.cur / X.need) * 100) + '%"></i></div><small>' + fmtInt(X.cur) + " / " + fmtInt(X.need) + " XP bis Level " + (X.lv + 1) + "</small></div></div></div>";
     const tiles = '<div class="sw-attrs">' + R.attrs.map((a) => '<div class="sw-at' + (a.has ? "" : " off") + '"><span>' + a.s + "</span><b>" + (a.has ? a.stat : "–") + "</b>" + (a.has ? '<em class="rk r' + a.idx + '">' + RANK_L[a.idx] + "</em>" : "<em>–</em>") + "<small>" + esc(a.n) + "</small></div>").join("") + "</div>";
     const formTxt = o ? (o.idx >= MAXR ? "Höchster Rang. Halte ihn." : Math.round(o.frac * 100) + " % bis " + RANK_L[o.idx + 1] + "-Rang") + (R.oform ? ". Form der letzten 4 Wochen: " + RANK_L[R.oform.idx] + "-Rang" : "") + "." :
@@ -8545,8 +8708,8 @@ main[data-dir="l"] > section:not([hidden]) { animation: viewInL 260ms cubic-bezi
       });
     } catch (e) { /* ignore */ }
   }
-  function sysShow(title, lines, badgeIdx, note) {
-    sysQueue.push({ title, lines, badgeIdx, note });
+  function sysShow(title, lines, badgeIdx, note, opts) {
+    sysQueue.push({ title, lines, badgeIdx, note, opts: opts || {} });
     if (sysQueue.length === 1) sysNext();
   }
   function sysNext() {
@@ -8554,16 +8717,21 @@ main[data-dir="l"] > section:not([hidden]) { animation: viewInL 260ms cubic-bezi
     if (!it || !el) return;
     if ($("pad") && !$("pad").hidden) { setTimeout(sysNext, 700); return; }
     $("sysTitle").textContent = it.title;
-    $("sysBadge").innerHTML = it.badgeIdx != null ? rankBadge(it.badgeIdx, true) : "";
-    $("sysBadge").hidden = it.badgeIdx == null;
+    const op = it.opts || {};
+    $("sysBadge").innerHTML = op.badgeHtml || (it.badgeIdx != null ? rankBadge(it.badgeIdx, true) : "");
+    $("sysBadge").hidden = it.badgeIdx == null && !op.badgeHtml;
+    if ($("sysAct")) { $("sysAct").hidden = !op.action; $("sysAct").disabled = false; if (op.action) $("sysAct").textContent = op.action.label; }
+    $("sysOk").textContent = op.okLabel || "Bestätigen";
+    $("sysOk").disabled = false;
+    $("sysWin").classList.remove("arising");
     $("sysNote").textContent = it.note || "";
     $("sysNote").hidden = !it.note;
     $("sysLines").innerHTML = it.lines.map((l, i) => '<li style="--d:' + (380 + i * 140) + 'ms"><span>' + esc(l.t) + "</span><b>" + esc(l.v) + "</b></li>").join("");
     el.hidden = false;
     el.classList.remove("open"); void el.offsetWidth; el.classList.add("open");
     sysSound();
-    hap("pr");
-    if (window.__waGame) sysVoice(it.title);
+    hap(op.hap || "pr");
+    if (window.__waGame) sysVoice(it.title, op.voice);
   }
   function sysClose() {
     $("sysWin").hidden = true;
@@ -8591,7 +8759,7 @@ main[data-dir="l"] > section:not([hidden]) { animation: viewInL 260ms cubic-bezi
           if (!c.has) return;
           if (prev[c.k] != null && c.idx > prev[c.k]) {
             lines.push({ t: c.n, v: RANK_L[prev[c.k]] + " → " + RANK_L[c.idx] });
-            if (!note) note = c.idx >= MAXR ? c.n + ": höchster Rang erreicht." : "Nächstes Ziel: " + c.n + " " + RANK_L[c.idx + 1] + " ab " + c.fmt(c.next) + ".";
+            if (!note) note = c.idx >= MAXR ? c.n + ": höchster Rang erreicht." : ("Nächstes Ziel: " + c.n + " " + RANK_L[c.idx + 1] + " ab " + c.fmt(c.next) + ".").replace("..", ".");
           }
           else if (prev[c.k] == null && v10 && c.idx >= 2) lines.push({ t: c.n, v: "freigeschaltet: " + RANK_L[c.idx] });
         });
@@ -8645,6 +8813,8 @@ main[data-dir="l"] > section:not([hidden]) { animation: viewInL 260ms cubic-bezi
     const man = [];
     for (let j = 0; man.length < 3 - autos.length && j < pool.length * 2; j++) { const q = pool[(h + j * 3) % pool.length]; if (man.indexOf(q) < 0) man.push(q); }
     const items = autos.map((a) => ({ id: "a_" + a, t: QUEST_AUTO[a].t, auto: a })).concat(man.map((q) => ({ id: q.id, t: q.t })));
+    const cq = window.__waGame ? classQuest(dk) : null;
+    if (cq) { if (man.length) items.pop(); items.push(cq); }
     const m = rankMeta(), from = m.questFrom;
     const y = dateKey(addDays(parseKey(dk), -1));
     const gm = m.gates || {};
@@ -8672,7 +8842,7 @@ main[data-dir="l"] > section:not([hidden]) { animation: viewInL 260ms cubic-bezi
     card.classList.toggle("done", won);
     $("questList").innerHTML = q.items.map((it) => '<li class="' + (it.done ? "ok" : "") + (it.pen ? " pen" : "") + '">' +
       (it.auto ? '<span class="qbox" aria-hidden="true">' + (it.done ? "✓" : "") + "</span>" : '<button class="qbox" data-q="' + it.id + '" aria-pressed="' + (it.done ? "true" : "false") + '" aria-label="' + esc(it.t) + '">' + (it.done ? "✓" : "") + "</button>") +
-      '<span class="qt">' + (it.pen ? "<b>Strafquest:</b> " : "") + esc(it.t) + (it.auto ? '<small>wird automatisch erkannt</small>' : "") + "</span></li>").join("");
+      '<span class="qt">' + (it.pen ? "<b>Strafquest:</b> " : it.cls ? "<b>Klasse:</b> " : "") + esc(it.t) + (it.auto ? '<small>wird automatisch erkannt</small>' : "") + "</span></li>").join("");
     const setNote = (w) => { $("questNote").textContent = q.items.some((i) => i.pen) && !w ? "Eine Strafquest ist offen. Erledige sie heute dazu." : w ? "Morgen wartet die nächste Quest." : "Belohnung: 50 XP."; };
     $("questNote").textContent = q.items.some((i) => i.pen) && !won ? "Eine Strafquest ist offen. Erledige sie heute dazu." : won ? "Morgen wartet die nächste Quest." : "Belohnung: 50 XP.";
     const elx = (m.gates && m.gates.inv && m.gates.inv.elixir) || 0;
@@ -8724,7 +8894,11 @@ main[data-dir="l"] > section:not([hidden]) { animation: viewInL 260ms cubic-bezi
     { id: "gate1", n: "Erster Dungeon", d: "Erstes Gate geräumt" },
     { id: "gate10", n: "Gate-Räumer", d: "10 Gates geräumt", title: "Der Räumer" },
     { id: "gateS", n: "Gatebrecher", d: "Ein S-Rang-Gate geräumt", title: "Gatebrecher" },
-    { id: "gateRed", n: "Überlebender", d: "Ein Red Gate überlebt", title: "Der Überlebende" }
+    { id: "gateRed", n: "Überlebender", d: "Ein Red Gate überlebt", title: "Der Überlebende" },
+    { id: "arise1", n: "Erhebe dich", d: "Ersten Schatten extrahiert" },
+    { id: "army10", n: "Schattenheer", d: "10 Schatten in deiner Armee", title: "Herr der Schatten" },
+    { id: "job", n: "Job-Wechsel", d: "Prüfung bestanden und Klasse gewählt" },
+    { id: "rival50", n: "Über dich hinaus", d: "50 Sätze gegen dein Schatten-Ich gewonnen", title: "Der Unaufhaltsame" }
   ];
   function achStats(R, X) {
     let sets = 0, km = 0, wMax = 0;
@@ -8743,7 +8917,8 @@ main[data-dir="l"] > section:not([hidden]) { animation: viewInL 260ms cubic-bezi
       pull: cat("pull").v || 0, push: cat("push").v || 0, dips: cat("dips").v || 0, run: cat("run").v || 0,
       maxIdx: R.cats.reduce((a, c) => (c.has ? Math.max(a, c.idx) : a), -1), lv: X.lv,
       arc: arcDay() > (S().arcLength || 90),
-      gWon: ((m.gates && m.gates.log) || []).filter((g) => g.res === "won")
+      gWon: ((m.gates && m.gates.log) || []).filter((g) => g.res === "won"),
+      shadows: ((m.shadows && m.shadows.list) || []).length, cls: !!(m.cls && m.cls.id), rival: rivalWinsTotal()
     };
   }
   const ACH_TEST = {
@@ -8753,7 +8928,8 @@ main[data-dir="l"] > section:not([hidden]) { animation: viewInL 260ms cubic-bezi
     streak7: (s) => s.st >= 7, streak30: (s) => s.st >= 30, quest1: (s) => s.quests >= 1, quest30: (s) => s.quests >= 30,
     boss1: (s) => s.bosses >= 1, boss3: (s) => s.bosses >= 3, rankS: (s) => s.maxIdx >= 5, rankSp: (s) => s.maxIdx >= 6,
     lv10: (s) => s.lv >= 10, lv30: (s) => s.lv >= 30, arc: (s) => s.arc,
-    gate1: (s) => s.gWon.length >= 1, gate10: (s) => s.gWon.length >= 10, gateS: (s) => s.gWon.some((g) => g.rank >= 5), gateRed: (s) => s.gWon.some((g) => g.red)
+    gate1: (s) => s.gWon.length >= 1, gate10: (s) => s.gWon.length >= 10, gateS: (s) => s.gWon.some((g) => g.rank >= 5), gateRed: (s) => s.gWon.some((g) => g.red),
+    arise1: (s) => s.shadows >= 1, army10: (s) => s.shadows >= 10, job: (s) => s.cls, rival50: (s) => s.rival >= 50
   };
   function checkAch(R, X) {
     const m = rankMeta();
@@ -8911,7 +9087,9 @@ main[data-dir="l"] > section:not([hidden]) { animation: viewInL 260ms cubic-bezi
     ["ten", "Noch 10 Sekunden Pause"], ["rest_over", "Pause vorbei"], ["last_set", "Vor dem letzten Satz"],
     ["set_pr", "Neuer Rekord im Satz"], ["set_better", "Mehr als letztes Mal"], ["set_worse", "Weniger als letztes Mal"],
     ["done", "Training fertig"], ["rank_up", "Rang-Aufstieg"], ["level_up", "Level-Aufstieg"], ["quest", "Daily Quest geschafft"],
-    ["boss_won", "Boss besiegt"], ["boss_alive", "Boss lebt noch"], ["achievement", "Erfolg freigeschaltet"], ["voice_on", "Stimme eingeschaltet"]
+    ["boss_won", "Boss besiegt"], ["boss_alive", "Boss lebt noch"], ["achievement", "Erfolg freigeschaltet"], ["voice_on", "Stimme eingeschaltet"],
+    ["shadow_win", "Schatten-Ich geschlagen"], ["gate_open", "Gate geöffnet"], ["gate_clear", "Gate geräumt"], ["red_gate", "Red Gate betreten"],
+    ["arise", "Schatten extrahiert"], ["episode", "Neue Episode"], ["job", "Klasse gewählt"]
   ];
   const LINES = {
     normal: {
@@ -8927,7 +9105,10 @@ main[data-dir="l"] > section:not([hidden]) { animation: viewInL 260ms cubic-bezi
       done: ["Training abgeschlossen. Stark gemacht.", "Fertig für heute. Gute Arbeit."],
       rank_up: ["Rang-Aufstieg."], level_up: ["Level aufgestiegen. Level {level}."], quest: ["Daily Quest abgeschlossen."],
       boss_won: ["Boss besiegt."], boss_alive: ["Der Boss lebt noch. Nächstes Mal."], achievement: ["Erfolg freigeschaltet."],
-      voice_on: ["Coach-Stimme an. Ich sage dir, wann die Pause vorbei ist."]
+      voice_on: ["Coach-Stimme an. Ich sage dir, wann die Pause vorbei ist."],
+      shadow_win: ["Dein Schatten-Ich vom {datum} ist geschlagen.", "Besser als vor vier Wochen. Genau so."],
+      gate_open: ["Ein Gate hat sich geöffnet. Rang {rang}."], gate_clear: ["Gate geräumt. Gute Arbeit."], red_gate: ["Achtung. Das Gate ist rot. Kein Ausgang."],
+      arise: ["Erhebe dich. Ein neuer Schatten dient dir."], episode: ["Episode {nr}. {titel}."], job: ["Du bist jetzt {klasse}."]
     },
     motivation: {
       start: ["Na endlich. Hör auf zu jammern, wir fangen an. {next}", "Aufstehen, Jäger. {next}"],
@@ -8942,7 +9123,10 @@ main[data-dir="l"] > section:not([hidden]) { animation: viewInL 260ms cubic-bezi
       done: ["Geschafft. Hätte nicht gedacht, dass du durchhältst. Respekt.", "Fertig. Heute warst du kein Schwächling."],
       rank_up: ["Rang-Aufstieg. Na bitte, geht doch."], level_up: ["Level {level}. Ruh dich bloß nicht darauf aus."], quest: ["Quest erledigt. Wurde auch Zeit."],
       boss_won: ["Boss erledigt. So macht man das."], boss_alive: ["Der Boss lacht dich aus. Nächstes Mal machst du ihn platt."], achievement: ["Erfolg freigeschaltet. Nicht schlecht, Jäger."],
-      voice_on: ["Ich bin da. Und ich lasse dich nicht hängen, auch wenn du es willst."]
+      voice_on: ["Ich bin da. Und ich lasse dich nicht hängen, auch wenn du es willst."],
+      shadow_win: ["Dein altes Ich liegt am Boden. Weiter so.", "Vor vier Wochen warst du schwächer. Und jetzt? Nicht schlecht."],
+      gate_open: ["Ein Gate. Rang {rang}. Na los, oder hast du Angst?"], gate_clear: ["Gate geräumt. Ich bin fast beeindruckt."], red_gate: ["Rotes Gate. Kein Ausgang. Jetzt zeig, was du bist."],
+      arise: ["Erhebe dich. Noch ein Soldat für deine Armee."], episode: ["Episode {nr}. {titel}. Enttäusch mich nicht."], job: ["Du bist jetzt {klasse}. Mach dem Namen keine Schande."]
     },
     ruhig: {
       start: ["Ganz ruhig. Wir beginnen mit {next}", "Schön, dass du da bist. Erste Übung: {next}"],
@@ -8956,7 +9140,9 @@ main[data-dir="l"] > section:not([hidden]) { animation: viewInL 260ms cubic-bezi
       done: ["Fertig. Gönn dir jetzt Ruhe.", "Geschafft. Trink etwas und atme durch."],
       rank_up: ["Ein neuer Rang. Verdient."], level_up: ["Level {level}. Schritt für Schritt."], quest: ["Daily Quest erledigt. Schön."],
       boss_won: ["Boss besiegt. Gut gemacht."], boss_alive: ["Der Boss steht noch. Nächstes Mal."], achievement: ["Ein neuer Erfolg."],
-      voice_on: ["Ich begleite dich heute ruhig durchs Training."]
+      voice_on: ["Ich begleite dich heute ruhig durchs Training."],
+      shadow_win: ["Du bist weiter als vor vier Wochen. Schön."], gate_open: ["Ein Gate hat sich geöffnet. Nimm dir Zeit."], gate_clear: ["Gate geräumt. Atme durch."],
+      red_gate: ["Ein rotes Gate. Bleib ruhig, eine Aufgabe nach der anderen."], arise: ["Ein neuer Schatten folgt dir."], episode: ["Episode {nr}. {titel}."], job: ["Du bist jetzt {klasse}. Ein guter Weg."]
     }
   };
   const STYLE = {
@@ -9240,26 +9426,27 @@ main[data-dir="l"] > section:not([hidden]) { animation: viewInL 260ms cubic-bezi
     if (pre) sayLine(pre).then(() => setTimeout(() => sayLine(main), 250)); else sayLine(main);
   }
   // Rückmeldung direkt nach einem eingetragenen Satz
-  function coachSetFeedback(name, i, v, weight, prevItems) {
+  function coachSetFeedback(name, i, v, weight, prevItems, rv) {
     if (!voiceOn() || !v) return;
     const prev = prevItems.length ? prevItems[prevItems.length - 1] : null;
     let best = 0;
     prevItems.forEach((it) => { if ((it.perf.weight || 0) >= (weight || 0) - 0.01) it.perf.reps.forEach((x) => { if (x > best) best = x; }); });
     const vars = { wdh: v, uebung: name };
     if (prevItems.length >= 1 && v > best) { coach("set_pr", vars); return; }
+    if (rv && rv.win && rv.first) { coach("shadow_win", Object.assign(vars, { datum: shortDate(parseKey(rv.date)) })); return; }
     if (!prev || Math.abs((prev.perf.weight || 0) - (weight || 0)) > 0.01) return;
     const lv = prev.perf.reps[i];
     if (lv == null) return;
     if (v > lv) coach("set_better", Object.assign(vars, { diff: v - lv }));
     else if (v < lv) coach("set_worse", Object.assign(vars, { diff: lv - v }));
   }
-  const SYS_SIT = { "Rang-Aufstieg": "rank_up", "Neuer Rang": "rank_up", "Quest abgeschlossen": "quest", "Erfolg freigeschaltet": "achievement", "Erfolge freigeschaltet": "achievement", "Boss besiegt": "boss_won", "Der Boss lebt noch": "boss_alive" };
-  function sysVoice(title) {
-    const sit = SYS_SIT[title];
+  const SYS_SIT = { "Rang-Aufstieg": "rank_up", "Neuer Rang": "rank_up", "Quest abgeschlossen": "quest", "Erfolg freigeschaltet": "achievement", "Erfolge freigeschaltet": "achievement", "Boss besiegt": "boss_won", "Der Boss lebt noch": "boss_alive", "Gate geräumt": "gate_clear", "Red Gate überlebt": "gate_clear", "Warnung": "red_gate", "Prüfung bestanden": "gate_clear" };
+  function sysVoice(title, ov) {
+    const sit = (ov && ov.sit) || SYS_SIT[title];
     if (!sit || !voiceOn()) return;
     let rang = "";
     try { const o = (rankMeta().ranks || {})._overall; if (o != null) rang = RANK_L[o]; } catch (e) { /* ignore */ }
-    setTimeout(() => coach(sit, { rang, level: (rankMeta().ranks || {})._lv }), 650);
+    setTimeout(() => coach(sit, Object.assign({ rang, level: (rankMeta().ranks || {})._lv }, (ov && ov.vars) || {})), 650);
   }
 
   // ---- Auswahl auf „Heute" ----
@@ -9534,7 +9721,8 @@ main[data-dir="l"] > section:not([hidden]) { animation: viewInL 260ms cubic-bezi
         const lg = exLog(dk, e), n = setCount(e), d = lg.done.filter(Boolean).length;
         const prev = historyFor(e.name).filter((x) => x.date < dk);
         const last = prev.length ? prev[prev.length - 1] : null;
-        L.push("- " + e.name + ": " + n + " × " + (e.reps || "?") + (e.extra ? " (" + e.extra + ")" : "") + ", erledigt " + d + "/" + n + (lg.note ? ", heute eingetragen: " + lg.note : "") + (last ? ", letztes Mal (" + shortDate(parseKey(last.date)) + "): " + last.note : ""));
+        const rv = rivalOf(e.name, dk);
+        L.push("- " + e.name + ": " + n + " × " + (e.reps || "?") + (e.extra ? " (" + e.extra + ")" : "") + ", erledigt " + d + "/" + n + (lg.note ? ", heute eingetragen: " + lg.note : "") + (last ? ", letztes Mal (" + shortDate(parseKey(last.date)) + "): " + last.note : "") + (rv && (!last || rv.date !== last.date) ? ", Schatten-Ich vor etwa 4 Wochen (" + shortDate(parseKey(rv.date)) + "): " + rv.note : ""));
       });
       const nx = nextSet();
       L.push(nx.text ? "Als Nächstes: " + nx.text + (nx.last ? " Das ist der letzte Satz der Einheit." : "") : "Alle Sätze für heute sind erledigt.");
@@ -9548,6 +9736,7 @@ main[data-dir="l"] > section:not([hidden]) { animation: viewInL 260ms cubic-bezi
     } catch (e) { /* ignore */ }
     try { const q = questState(dk); L.push("Daily Quest: " + q.items.map((i) => (i.done ? "[x] " : "[ ] ") + i.t).join(", ") + "."); } catch (e) { /* ignore */ }
     L.push("Körpergewicht: " + (S().bodyweight || "unbekannt") + " kg.");
+    try { L.push(gameContext()); } catch (e) { /* ignore */ }
     return L.join("\n");
   }
   function aiSystem() {
@@ -9581,6 +9770,7 @@ main[data-dir="l"] > section:not([hidden]) { animation: viewInL 260ms cubic-bezi
         const rng = parseRange(e.reps);
         parts.secs = !!(rng && rng.secs) || parts.secs;
         if (kg != null && isFinite(kg)) parts.weight = +kg;
+        rivalAfterSet(e, i, v, parts.weight || 0, parts.secs);
         pendingNotes[dk] = pendingNotes[dk] || {};
         pendingNotes[dk][e.id] = buildNote(parts);
         commitNote(dk, e.id, true);
@@ -9740,12 +9930,12 @@ main[data-dir="l"] > section:not([hidden]) { animation: viewInL 260ms cubic-bezi
   }
   function seeded(seed) { let s = seed >>> 0 || 1; return () => { s ^= s << 13; s >>>= 0; s ^= s >> 17; s ^= s << 5; s >>>= 0; return s / 4294967296; }; }
   const playerRank = () => { const r = (rankMeta().ranks || {})._overall; return r == null ? 0 : r; };
-  function gateMake(rank, red, now) {
+  function gateMake(rank, red, now, nTasks) {
     const id = "g" + now.toString(36);
     const rnd = seeded(hashStr(id));
     const pool = GATE_POOL.slice();
     const tasks = [];
-    for (let i = 0; i < GATE_N[rank] && pool.length; i++) {
+    for (let i = 0; i < (nTasks || GATE_N[rank]) && pool.length; i++) {
       const t = pool.splice(Math.floor(rnd() * pool.length), 1)[0];
       let c = t.b * GATE_MULT[rank] * (red ? 1.25 : 1);
       c = t.s ? Math.round(c / 5) * 5 : c > 20 ? Math.round(c / 5) * 5 : Math.round(c);
@@ -9769,7 +9959,7 @@ main[data-dir="l"] > section:not([hidden]) { animation: viewInL 260ms cubic-bezi
     g.expires = keyed ? now + 3 * 3600e3 : Math.min(now + 3 * 3600e3, endOfDay(now) - 2.5 * 3600e3);
     G.cur = g; G.lastDay = todayKey();
     saveLocal();
-    sysShow("Ein Gate hat sich geöffnet", [{ t: "Rang", v: RANK_L[rank] + "-Rang" }, { t: "Zeitlimit drinnen", v: GATE_MIN[rank] + " Min." }, { t: "Schließt um", v: hhmm(g.expires) }], rank, "Du findest es unter Heute. Gefahr: unbekannt.");
+    sysShow("Ein Gate hat sich geöffnet", [{ t: "Rang", v: RANK_L[rank] + "-Rang" }, { t: "Zeitlimit drinnen", v: GATE_MIN[rank] + " Min." }, { t: "Schließt um", v: hhmm(g.expires) }], rank, "Du findest es unter Heute. Gefahr: unbekannt.", { hap: "gate", voice: { sit: "gate_open", vars: { rang: RANK_L[rank] } } });
     renderGate();
   }
   const hhmm = (ts) => { const d = new Date(ts); return pad(d.getHours()) + ":" + pad(d.getMinutes()); };
@@ -9822,6 +10012,7 @@ main[data-dir="l"] > section:not([hidden]) { animation: viewInL 260ms cubic-bezi
     }
     if (g && g.entered) gateRunOpen(); else if ($("gateRun")) $("gateRun").hidden = true;
     renderInv();
+    if (typeof renderJob === "function") renderJob();
   }
   let gateIv = 0, gateGiveUp = 0;
   function gateRunOpen() {
@@ -9832,14 +10023,15 @@ main[data-dir="l"] > section:not([hidden]) { animation: viewInL 260ms cubic-bezi
       document.body.style.overflow = "hidden";
       try { wakeOn(); } catch (e) { /* ignore */ }
     }
-    ov.style.setProperty("--gc", g.red ? "#FF3B3B" : GATE_COL[g.rank]);
+    ov.style.setProperty("--gc", g.red ? "#FF3B3B" : g.job ? "#B48CFF" : GATE_COL[g.rank]);
     ov.classList.toggle("red", g.red);
+    ov.classList.toggle("job", !!g.job);
     $("grBadge").innerHTML = rankBadge(g.rank, false);
-    $("grTitle").textContent = g.red ? "Red Gate" : RANK_L[g.rank] + "-Rang-Gate";
-    $("grSub").textContent = g.red ? "Kein Ausgang, bis alle Aufgaben erledigt sind." : "Erledige alle Aufgaben, bevor die Zeit abläuft.";
+    $("grTitle").textContent = g.job ? "Prüfung des Job-Wechsels" : g.red ? "Red Gate" : RANK_L[g.rank] + "-Rang-Gate";
+    $("grSub").textContent = g.job ? "Kein Ausgang. Besteh die Prüfung, dann wählst du deine Klasse." : g.red ? "Kein Ausgang, bis alle Aufgaben erledigt sind." : "Erledige alle Aufgaben, bevor die Zeit abläuft.";
     $("grList").innerHTML = g.tasks.map((t, i) => '<li><button class="grt' + (t.done ? " ok" : "") + '" data-i="' + i + '" aria-pressed="' + t.done + '"><b>' + t.c + (t.s ? " s" : "") + "</b><span>" + esc(t.n) + '</span><i aria-hidden="true">' + (t.done ? "✓" : "") + "</i></button></li>").join("");
     gateGiveUp = 0;
-    $("grQuit").textContent = g.red ? "Aufgeben" : "Gate verlassen";
+    $("grQuit").textContent = g.red || g.job ? "Aufgeben" : "Gate verlassen";
     gateRunRender();
     clearInterval(gateIv);
     gateIv = setInterval(gateRunRender, 1000);
@@ -9887,6 +10079,15 @@ main[data-dir="l"] > section:not([hidden]) { animation: viewInL 260ms cubic-bezi
     if (!g) return;
     const used = Math.round((Date.now() - g.entered) / 1000);
     const fast = used < g.limit * 0.6;
+    if (g.job) {
+      gateLog(g, "won", { xp: 300, loot: [], t: used, job: true });
+      jobMeta().passed = true;
+      saveLocal();
+      gateRunClose();
+      sysShow("Prüfung bestanden", [{ t: "Zeit", v: mmss(used) + " von " + mmss(g.limit) }, { t: "Belohnung", v: "+300 XP" }, { t: "Freigeschaltet", v: "Klassenwahl" }], g.rank, "Das System erkennt dich an. Wähle jetzt deine Klasse.", { action: { label: "Klasse wählen", fn: () => { sysClose(); openClsPick(); } }, okLabel: "Später" });
+      renderGate(); renderJob(); checkRanks();
+      return;
+    }
     const xp = Math.round(GATE_XP[g.rank] * (g.red ? 1.5 : 1));
     const loot = gateLoot(g, fast);
     loot.forEach((k) => { G.inv[k] = (G.inv[k] || 0) + 1; });
@@ -9897,7 +10098,9 @@ main[data-dir="l"] > section:not([hidden]) { animation: viewInL 260ms cubic-bezi
     const lines = [{ t: "Zeit", v: mmss(used) + " von " + mmss(g.limit) }, { t: "Belohnung", v: "+" + xp + " XP" }]
       .concat(Object.keys(cnt).map((k) => ({ t: ITEMS[k].n, v: "× " + cnt[k] })));
     if (!loot.length) lines.push({ t: "Beute", v: "keine" });
-    sysShow(g.red ? "Red Gate überlebt" : "Gate geräumt", lines, g.rank, fast ? "Schnell geräumt: eine Extra-Chance auf Beute." : g.rank >= 5 ? "Ein S-Rang-Gate. Das schafft nicht jeder." : "Die Beute liegt in deinem Inventar unter Fortschritt.");
+    let sh = null;
+    if (g.rank >= 2 || g.red) { const nm = SH_NAMES[g.rank][hashStr("n" + g.id) % 3]; sh = shadowOffer("gate", g.rank + (g.red ? 1 : 0), (g.red ? "Roter " : "") + nm); lines.push({ t: "Gate-Wächter", v: sh.n }); }
+    sysShow(g.red ? "Red Gate überlebt" : "Gate geräumt", lines, g.rank, sh ? "Der Wächter liegt am Boden. Willst du seinen Schatten?" : fast ? "Schnell geräumt: eine Extra-Chance auf Beute." : "Die Beute liegt in deinem Inventar unter Fortschritt.", sh ? Object.assign(offerOpts(sh), { badgeHtml: "" }) : {});
     renderGate();
     checkRanks();
   }
@@ -9906,9 +10109,10 @@ main[data-dir="l"] > section:not([hidden]) { animation: viewInL 260ms cubic-bezi
     if (!g) return;
     const done = g.tasks.filter((t) => t.done).length;
     if (g.red) { const tm = dateKey(addDays(today(), 1)); G.pen[tm] = 1; }
-    gateLog(g, timeout ? "lost" : g.red ? "gaveup" : "left", { n: done });
+    gateLog(g, timeout ? "lost" : g.red || g.job ? "gaveup" : "left", { n: done, job: !!g.job });
     gateRunClose();
     renderGate();
+    if (g.job) { jobMeta().failDay = todayKey(); saveLocal(); renderJob(); sysShow("Prüfung gescheitert", [{ t: "Aufgaben", v: done + " von " + g.tasks.length }], g.rank, "Das System gibt dir eine zweite Chance. Morgen öffnet sich die Prüfung erneut."); return; }
     if (g.red) sysShow(timeout ? "Zeit abgelaufen" : "Aufgegeben", [{ t: "Aufgaben", v: done + " von " + g.tasks.length }, { t: "Strafe", v: "Strafquest morgen" }], g.rank, "Das Red Gate hat dich ausgespuckt. Morgen wartet eine Strafquest.");
     else if (timeout) sysShow("Zeit abgelaufen", [{ t: "Aufgaben", v: done + " von " + g.tasks.length }, { t: "Beute", v: "keine" }], g.rank, "Das Gate ist zusammengebrochen. Das nächste kommt.");
     else toast("Gate verlassen. Keine Beute.");
@@ -9972,7 +10176,7 @@ main[data-dir="l"] > section:not([hidden]) { animation: viewInL 260ms cubic-bezi
     $("grQuit").addEventListener("click", () => {
       const g = gMeta().cur;
       if (!g) return;
-      if (!gateGiveUp) { gateGiveUp = 1; $("grQuit").textContent = g.red ? "Wirklich aufgeben? Strafquest morgen" : "Wirklich? Keine Beute"; setTimeout(() => { if (gateGiveUp) { gateGiveUp = 0; if ($("grQuit")) $("grQuit").textContent = g.red ? "Aufgeben" : "Gate verlassen"; } }, 4000); return; }
+      if (!gateGiveUp) { gateGiveUp = 1; $("grQuit").textContent = g.job ? "Wirklich aufgeben? Erst morgen wieder" : g.red ? "Wirklich aufgeben? Strafquest morgen" : "Wirklich? Keine Beute"; setTimeout(() => { if (gateGiveUp) { gateGiveUp = 0; if ($("grQuit")) $("grQuit").textContent = g.red || g.job ? "Aufgeben" : "Gate verlassen"; } }, 4000); return; }
       gateGiveUp = 0;
       gateFail(false);
     });
@@ -9995,9 +10199,539 @@ main[data-dir="l"] > section:not([hidden]) { animation: viewInL 260ms cubic-bezi
     const el = $("aura");
     if (!el || reduced()) return;
     el.classList.remove("burst"); void el.offsetWidth; el.classList.add("burst");
-    buzz([30, 60, 30, 60, 30, 120, 220]);
+    hap("rankUp");
   }
 
+  // ---------- v15: Schatten-Ich, Schatten-Armee, Job-Wechsel, Episoden, Körper-Scan, Deload-Erkennung ----------
+  const avgArr = (a) => (a.length ? a.reduce((x, y) => x + y, 0) / a.length : 0);
+  const medArr = (a) => { if (!a.length) return 0; const s = a.slice().sort((x, y) => x - y), m = Math.floor(s.length / 2); return s.length % 2 ? s[m] : (s[m - 1] + s[m]) / 2; };
+  const fmtHalf = (v) => fmtN(Math.round(v * 2) / 2);
+
+  // ---- Zusätzliche Vibrationsmuster ----
+  Object.assign(HAP, {
+    count: [16],
+    restEnd: [90, 70, 90, 70, 280],
+    rival: [14, 50, 14, 50, 70],
+    gate: [40, 110, 40, 110, 40, 260, 120],
+    rankUp: [30, 60, 30, 60, 30, 120, 220, 90, 420],
+    shadow: [10, 40, 10, 40, 10, 40, 10, 120, 260]
+  });
+  HAP_LAB.push({ n: "Countdown", p: "count" }, { n: "Pause vorbei", p: "restEnd" }, { n: "Schatten-Ich geschlagen", p: "rival" }, { n: "Gate", p: "gate" }, { n: "Rang-Aufstieg", p: "rankUp" }, { n: "Schatten", p: "shadow" });
+  function renderHapCount() { const b = $("swHapCount"); if (b) b.setAttribute("aria-checked", S().hapCount !== false ? "true" : "false"); }
+  if ($("swHapCount")) {
+    $("swHapCount").addEventListener("click", () => { S().hapCount = S().hapCount === false; saveSettings(); renderHapCount(); if (S().hapCount !== false) hap("count"); toast(S().hapCount !== false ? "Countdown spürbar" : "Countdown ohne Vibration"); });
+    renderHapCount();
+  }
+
+  // ---- Schatten-Ich: du gegen dich von vor etwa 4 Wochen ----
+  function rivalOf(name, dk, hist) {
+    const base = parseKey(dk);
+    let best = null, bd = 1e9;
+    historyFor(name, hist).forEach((it) => {
+      const age = daysBetween(parseKey(it.date), base);
+      if (age < 14 || age > 56) return;
+      const d = Math.abs(age - 28);
+      if (d < bd || (d === bd && it.date > best.date)) { bd = d; best = it; }
+    });
+    return best;
+  }
+  function rivalCompare(rv, i, v, kg, secs) {
+    if (!rv || !!rv.perf.secs !== !!secs) return null;
+    const r = rv.perf.reps[i];
+    if (r == null) return null;
+    const bw = +S().bodyweight || 75;
+    const sc = (reps, w) => (secs ? reps : (bw + (w || 0)) * (1 + reps / 30));
+    const a = sc(v, kg), b = sc(r, rv.perf.weight || 0);
+    return { win: a > b * 1.001, r, w: rv.perf.weight || 0, date: rv.date };
+  }
+  function shadowFloat(el, txt) {
+    try {
+      if (reduced() || !el || !el.getBoundingClientRect) return;
+      const r = el.getBoundingClientRect();
+      const f = document.createElement("span");
+      f.className = "xpfloat shf"; f.textContent = txt;
+      f.style.left = (r.left + r.width / 2) + "px"; f.style.top = (r.top - 34) + "px";
+      document.body.appendChild(f);
+      setTimeout(() => f.remove(), 1300);
+    } catch (e) { /* ignore */ }
+  }
+  function rivalAfterSet(e, i, v, kg, secs) {
+    if (!window.__waGame || !e) return null;
+    const dk = todayKey();
+    const c = rivalCompare(rivalOf(e.name, dk), i, v, kg, secs);
+    if (!c) return null;
+    const m = rankMeta();
+    m.rivalWon = m.rivalWon || {};
+    const day = m.rivalWon[dk] || (m.rivalWon[dk] = {});
+    const arr = day[e.id] || (day[e.id] = []);
+    const first = c.win && !arr.length;
+    const had = arr.indexOf(i) >= 0;
+    if (c.win && !had) arr.push(i);
+    if (!c.win && had) arr.splice(arr.indexOf(i), 1);
+    saveLocal();
+    if (c.win) setTimeout(() => {
+      const li = $("exlist").querySelector('[data-id="' + CSS.escape(e.id) + '"]');
+      const b = li && li.querySelector('.set[data-i="' + i + '"]');
+      shadowFloat(b, "Schatten geschlagen");
+      hap("rival");
+    }, 320);
+    return Object.assign(c, { first });
+  }
+  const rivalWinsTotal = () => { const w = rankMeta().rivalWon || {}; let n = 0; Object.keys(w).forEach((d) => Object.keys(w[d]).forEach((id) => { n += w[d][id].length; })); return n; };
+  function rivalLine(e, dk, hist, prevLast, todayItem) {
+    const rv = rivalOf(e.name, dk, hist);
+    if (!rv || (prevLast && prevLast.date === rv.date)) return "";
+    let tail = "";
+    if (todayItem && !!todayItem.perf.secs === !!rv.perf.secs) {
+      let wins = 0;
+      todayItem.perf.reps.forEach((v, i) => { const c = rivalCompare(rv, i, v, todayItem.perf.weight || 0, todayItem.perf.secs); if (c && c.win) wins++; });
+      const n = rv.perf.reps.length;
+      tail = wins >= n ? ' <em class="rvdown">besiegt</em>' : wins ? " · geschlagen in " + wins + " von " + n : "";
+    }
+    return "Schatten-Ich (" + shortDate(parseKey(rv.date)) + "): <b>" + esc(rv.note) + "</b>" + tail;
+  }
+
+  // ---- System-Fenster: Aktions-Knopf und Live-Aktualisierung ----
+  function sysUpdate(o) {
+    if (o.title != null) $("sysTitle").textContent = o.title;
+    if (o.badgeHtml != null) { $("sysBadge").innerHTML = o.badgeHtml; $("sysBadge").hidden = !o.badgeHtml; }
+    if (o.lines) $("sysLines").innerHTML = o.lines.map((l, i) => '<li style="--d:' + (120 + i * 120) + 'ms"><span>' + esc(l.t) + "</span><b>" + esc(l.v) + "</b></li>").join("");
+    if (o.note != null) { $("sysNote").textContent = o.note; $("sysNote").hidden = !o.note; }
+    if (o.action !== undefined) { const a = $("sysAct"); a.hidden = !o.action; if (o.action) { a.textContent = o.action; a.disabled = false; } }
+    const el = $("sysWin");
+    el.classList.remove("open"); void el.offsetWidth; el.classList.add("open");
+  }
+  if ($("sysAct")) $("sysAct").addEventListener("click", () => { const it = sysQueue[0]; if (it && it.opts && it.opts.action) { primeAudio(); it.opts.action.fn(it); } });
+
+  // ---- Schatten-Armee ----
+  const SH_NAMES = [
+    ["Eiswolf", "Frostkobold", "Schneegeist"], ["Frostork", "Grabkobold", "Eisskorpion"], ["Schneegolem", "Nachtjäger", "Frostschamane"],
+    ["Eisritter", "Sturmhexer", "Grabwächter"], ["Frostlindwurm", "Schattenmagier", "Eisgeneral"], ["Gletscherdrache", "Frostmonarch", "Winterkoloss"]
+  ];
+  const SH_COL = ["#8A8F98", "#C98E5A", "#C3D0DD", "#5FD4FF", "#B48CFF", "#FFC23D", "#FF9BE8"];
+  function shMeta() {
+    const m = rankMeta();
+    if (!m.shadows) m.shadows = { list: [], pend: [], lost: 0 };
+    if (!m.shadows.list) m.shadows.list = [];
+    if (!m.shadows.pend) m.shadows.pend = [];
+    return m.shadows;
+  }
+  const shCount = () => ((rankMeta().shadows || {}).list || []).length;
+  function prunePend() {
+    const S0 = shMeta(), now = Date.now();
+    const keep = S0.pend.filter((p) => now - (p.ts || 0) < 48 * 3600e3);
+    if (keep.length !== S0.pend.length) { S0.lost = (S0.lost || 0) + S0.pend.length - keep.length; S0.pend = keep; saveLocal(); }
+  }
+  function shadowOffer(src, rank, name) {
+    const S0 = shMeta();
+    const p = { id: "s" + Date.now().toString(36) + Math.floor(Math.random() * 1296).toString(36), n: name, rank: Math.max(0, Math.min(6, rank)), src, d: todayKey(), ts: Date.now(), tries: 0 };
+    S0.pend.push(p);
+    if (S0.pend.length > 6) S0.pend = S0.pend.slice(-6);
+    saveLocal();
+    return p;
+  }
+  const extractChance = (p) => Math.max(0.3, Math.min(0.92, 0.72 - 0.1 * (p.rank - playerRank()) + (classId() === "necro" ? 0.15 : 0)));
+  function extractTry(id) {
+    const S0 = shMeta(), p = S0.pend.find((x) => x.id === id);
+    if (!p) return { r: "gone" };
+    p.tries++;
+    const ok = Math.random() < extractChance(p);
+    if (ok) { S0.pend = S0.pend.filter((x) => x.id !== id); S0.list.push({ id: p.id, n: p.n, rank: p.rank, src: p.src, d: todayKey(), from: p.d }); }
+    else if (p.tries >= 3) { S0.pend = S0.pend.filter((x) => x.id !== id); S0.lost = (S0.lost || 0) + 1; }
+    saveLocal();
+    return { r: ok ? "ok" : p.tries >= 3 ? "lost" : "fail", p };
+  }
+  const shadowFig = (rank, big) => '<svg class="shfig' + (big ? " big" : "") + '" viewBox="0 0 64 80" style="--eye:' + SH_COL[Math.max(0, Math.min(6, rank))] + '" aria-hidden="true"><use href="#i-shadow"/></svg>';
+  function ariseSound(ok) {
+    try {
+      primeAudio();
+      if (!audioCtx || !soundOn()) return;
+      const t0 = audioCtx.currentTime;
+      [0, 7].forEach((det) => {
+        const o = audioCtx.createOscillator(), g = audioCtx.createGain();
+        o.type = "sawtooth"; o.detune.value = det;
+        o.frequency.setValueAtTime(55, t0); o.frequency.exponentialRampToValueAtTime(ok ? 220 : 90, t0 + 1.5);
+        g.gain.setValueAtTime(0.0001, t0); g.gain.exponentialRampToValueAtTime(0.05, t0 + 0.5); g.gain.exponentialRampToValueAtTime(0.0001, t0 + 1.7);
+        const f = audioCtx.createBiquadFilter(); f.type = "lowpass"; f.frequency.value = 700;
+        o.connect(f); f.connect(g); g.connect(audioCtx.destination);
+        o.start(t0); o.stop(t0 + 1.8);
+      });
+    } catch (e) { /* ignore */ }
+  }
+  function extractFlow(id) {
+    const p = shMeta().pend.find((x) => x.id === id);
+    if (!p) { sysUpdate({ action: null, note: "Dieser Schatten ist nicht mehr da." }); return; }
+    $("sysAct").disabled = true; $("sysOk").disabled = true;
+    $("sysWin").classList.add("arising");
+    sysUpdate({ title: "Erhebe dich.", badgeHtml: shadowFig(p.rank, true), lines: [{ t: p.n, v: RANK_L[p.rank] + "-Rang" }], note: "Extraktion läuft …", action: null });
+    hap("shadow"); ariseSound(true);
+    setTimeout(() => {
+      const res = extractTry(id);
+      $("sysWin").classList.remove("arising");
+      $("sysOk").disabled = false;
+      if (res.r === "ok") {
+        sysSound();
+        $("sysOk").textContent = "Bestätigen";
+        sysUpdate({ title: "Schatten extrahiert", lines: [{ t: p.n, v: RANK_L[p.rank] + "-Rang" }, { t: "Armee", v: shCount() + " Schatten" }, { t: "Belohnung", v: "+" + (classId() === "necro" ? 30 : 15) + " XP" }], note: "Er dient dir jetzt. Du findest ihn unter Fortschritt.", action: null });
+        if (voiceOn()) setTimeout(() => coach("arise", {}), 300);
+        checkRanks();
+      } else if (res.r === "fail") {
+        sysUpdate({ title: "Der Schatten widersetzt sich", lines: [{ t: p.n, v: "Versuch " + p.tries + " von 3" }], note: "Noch " + (3 - p.tries) + (3 - p.tries === 1 ? " Versuch." : " Versuche."), action: "Erneut versuchen" });
+      } else if (res.r === "lost") {
+        $("sysOk").textContent = "Bestätigen";
+        sysUpdate({ title: "Der Schatten ist zerfallen", lines: [{ t: p.n, v: "verloren" }], note: "Drei Versuche, kein Erfolg. Der nächste wartet.", action: null });
+      }
+      renderArmy();
+    }, reduced() ? 500 : 1700);
+  }
+  function offerOpts(p) { return { badgeHtml: shadowFig(p.rank, true), action: { label: "Schatten extrahieren", fn: () => extractFlow(p.id) }, okLabel: "Später" }; }
+  function renderArmy() {
+    const g = $("armyGrid");
+    if (!g) return;
+    prunePend();
+    const S0 = shMeta();
+    const list = S0.list.slice().sort((a, b) => b.rank - a.rank || (a.d < b.d ? 1 : -1));
+    const power = list.reduce((s, x) => s + x.rank + 1, 0);
+    $("armyCount").textContent = list.length ? list.length + " · Stärke " + power : "";
+    $("armyPend").innerHTML = S0.pend.map((p) => '<div class="shpend">' + shadowFig(p.rank) + '<div class="shpt"><b>' + esc(p.n) + "</b><small>" + RANK_L[p.rank] + "-Rang · " + (3 - p.tries) + (3 - p.tries === 1 ? " Versuch" : " Versuche") + ' übrig</small></div><button class="btn small" data-x="' + p.id + '">Extrahieren</button></div>').join("");
+    g.innerHTML = list.length ? list.map((s) => '<div class="shd">' + shadowFig(s.rank) + "<b>" + esc(s.n) + "</b><small>" + RANK_L[s.rank] + "-Rang · " + shortDate(parseKey(s.d)) + "</small></div>").join("") :
+      '<p class="armyempty">Noch keine Schatten. Räum ein Gate ab C-Rang oder besiege einen Boss.</p>';
+  }
+  if ($("armyPend")) $("armyPend").addEventListener("click", (ev) => {
+    const b = ev.target.closest("button[data-x]");
+    if (!b) return;
+    const p = shMeta().pend.find((x) => x.id === b.dataset.x);
+    if (!p) { renderArmy(); return; }
+    hap("tap");
+    sysShow("Schatten gefunden", [{ t: p.n, v: RANK_L[p.rank] + "-Rang" }, { t: "Versuche übrig", v: String(3 - p.tries) }], null, "Ein besiegter Gegner wartet darauf, dir zu dienen.", offerOpts(p));
+  });
+
+  // ---- Job-Wechsel und Klassen ----
+  const CLASSES = {
+    assassin: { n: "Assassine", ic: "i-cl-assassin", b: "+25 % XP auf Läufe", d: "Schnell, ausdauernd, schwer zu fassen.", q: ["6 × 15 Sekunden Sprint auf der Stelle", "15 Minuten zügig gehen", "3 × 40 Hampelmänner, so schnell es geht"] },
+    warrior: { n: "Krieger", ic: "i-cl-warrior", b: "+25 % XP auf Zug- und Druckübungen", d: "Rohe Kraft, Satz für Satz.", q: ["3 × 8 langsame Negativ-Liegestütze", "40 Liegestütze, über den Tag verteilt", "3 × 30 Sekunden Dead Hang"] },
+    monk: { n: "Mönch", ic: "i-cl-monk", b: "+25 % XP auf Core und Skills", d: "Kontrolle, Balance, Technik.", q: ["3 × 15 Sekunden L-Sit oder Tuck-Sit", "5 Minuten Handstand an der Wand, in Etappen", "10 Minuten Mobility mit ruhigem Atem"] },
+    guardian: { n: "Wächter", ic: "i-cl-guardian", b: "+50 % XP auf Schlaf, Check-in, Protein und Gewohnheiten", d: "Unverwüstlich. Erholung ist deine Waffe.", q: ["Vor 23 Uhr im Bett", "Abends 10 Minuten dehnen", "Zwei große Gläser Wasser vor dem Mittag"] },
+    necro: { n: "Schattenbeschwörer", ic: "i-shadow", b: "+10 % auf alle XP, Schatten zählen doppelt, leichtere Extraktion", d: "Geheime Klasse. Wer eine Armee hat, braucht keine Verbündeten.", q: ["3 Minuten Schattenboxen", "1 Minute Hollow Hold, in Etappen", "2 Minuten Wandsitzen, in Etappen"], secret: true }
+  };
+  const classId = () => { const c = rankMeta().cls; return c && c.id && CLASSES[c.id] ? c.id : ""; };
+  const clsIcon = (id, cls) => '<svg class="' + (cls || "clsic") + '" ' + (id === "i-shadow" ? 'viewBox="0 0 64 80"' : 'viewBox="0 0 24 24"') + ' aria-hidden="true"><use href="#' + id + '"/></svg>';
+  function classQuest(dk) {
+    const id = classId(), c = rankMeta().cls;
+    if (!id || dk < c.since) return null;
+    const q = CLASSES[id].q;
+    return { id: "cls_" + id + "_" + (hashStr("c" + dk) % q.length), t: q[hashStr("c" + dk) % q.length], cls: true };
+  }
+  function jobMeta() { const m = rankMeta(); if (!m.job) m.job = {}; return m.job; }
+  function jobStart() {
+    const G = gMeta();
+    if (G.cur) { toast("Erst das offene Gate abschließen."); return; }
+    const now = Date.now();
+    const rank = Math.max(2, Math.min(5, playerRank()));
+    const g = gateMake(rank, false, now, Math.min(5, GATE_N[rank] + 1));
+    g.job = true; g.limit = GATE_MIN[rank] * 60 + 300; g.expires = now + 3600e3; g.entered = now;
+    G.cur = g;
+    saveLocal(); hap("gate");
+    renderGate(); renderJob();
+    sysShow("Prüfung des Job-Wechsels", [{ t: "Ausgang", v: "versiegelt" }, { t: "Zeitlimit", v: Math.round(g.limit / 60) + " Min." }, { t: "Aufgaben", v: String(g.tasks.length) }], rank, "Besteh die Prüfung, dann wählst du deine Klasse. Scheiterst du, darfst du es morgen erneut versuchen.");
+  }
+  function renderJob() {
+    const card = $("jobCard");
+    if (!card) return;
+    const J = jobMeta(), G = gMeta(), dk = todayKey();
+    const show = !classId() && (playerRank() >= 2 || J.passed);
+    card.hidden = !show || !!(G.cur && G.cur.job);
+    if (card.hidden) return;
+    const btn = $("jobGo");
+    if (J.passed) { $("jobTitle").textContent = "Wähle deine Klasse"; $("jobText").textContent = "Du hast die Prüfung bestanden. Jetzt entscheidest du, welcher Jäger du sein willst."; btn.textContent = "Klasse wählen"; btn.disabled = false; return; }
+    $("jobTitle").textContent = "Die Prüfung wartet";
+    btn.textContent = "Prüfung beginnen";
+    if (J.failDay === dk) { $("jobText").textContent = "Heute bist du gescheitert. Morgen öffnet sich die Prüfung erneut."; btn.disabled = true; }
+    else if (G.cur) { $("jobText").textContent = "Ab C-Rang darfst du deine Klasse wählen. Schließ zuerst das offene Gate ab."; btn.disabled = true; }
+    else { $("jobText").textContent = "Ab C-Rang darfst du deine Klasse wählen. Vorher musst du ein versiegeltes Gate überstehen, ohne Ausgang."; btn.disabled = false; }
+  }
+  let clsSel = "";
+  function openClsPick() {
+    const ov = $("clsPick");
+    if (!ov) return;
+    const army = shCount();
+    clsSel = "";
+    $("clsList").innerHTML = Object.keys(CLASSES).map((k) => {
+      const c = CLASSES[k];
+      if (c.secret && army < 5) return '<button class="clsopt locked" disabled><span class="clsicw">' + clsIcon("i-shadow") + '</span><span class="clst"><b>???</b><small>Geheime Klasse. Bedingung unbekannt.</small></span></button>';
+      return '<button class="clsopt' + (k === classId() ? " cur" : "") + '" data-c="' + k + '" aria-pressed="false"><span class="clsicw">' + clsIcon(c.ic) + '</span><span class="clst"><b>' + esc(c.n) + (c.secret ? " <em>geheim</em>" : "") + "</b><small>" + esc(c.d) + "</small><i>" + esc(c.b) + "</i></span></button>";
+    }).join("");
+    $("clsOk").disabled = true;
+    ov.hidden = false;
+    document.body.style.overflow = "hidden";
+  }
+  function closeClsPick() { $("clsPick").hidden = true; document.body.style.overflow = ""; }
+  function chooseClass(id) {
+    const m = rankMeta(), dk = todayKey();
+    const had = classId();
+    m.cls = { id, since: dk, changed: dk };
+    const J = jobMeta(); J.passed = false; J.done = J.done || dk;
+    saveLocal();
+    closeClsPick();
+    const c = CLASSES[id];
+    sysShow(had ? "Klasse gewechselt" : "Job-Wechsel abgeschlossen", [{ t: "Klasse", v: c.n }, { t: "Bonus", v: c.b }], null, "Ab heute zählt dein Bonus. Deine Klassen-Quest steht in der Daily Quest.", { badgeHtml: clsIcon(c.ic, "clsic big"), voice: { sit: "job", vars: { klasse: c.n } } });
+    renderJob(); renderClsBlock(); renderQuest(dk); checkRanks();
+  }
+  function renderClsBlock() {
+    const el = $("clsCur");
+    if (!el) return;
+    const id = classId(), J = jobMeta();
+    if (!id) {
+      el.innerHTML = '<p class="lead">' + (J.passed ? "Prüfung bestanden. Wähle deine Klasse unter Heute." : playerRank() >= 2 ? "Die Prüfung des Job-Wechsels wartet unter Heute." : "Ab Gesamtrang C öffnet sich die Prüfung des Job-Wechsels. Danach wählst du eine Klasse mit eigenem Bonus und eigenen Quests.") + "</p>";
+      return;
+    }
+    const c = CLASSES[id], cl = rankMeta().cls;
+    const next = dateKey(addDays(parseKey(cl.changed || cl.since), 28));
+    const can = todayKey() >= next;
+    el.innerHTML = '<div class="clsnow">' + clsIcon(c.ic, "clsic big") + '<div><b>' + esc(c.n) + "</b><small>" + esc(c.d) + "</small><i>" + esc(c.b) + '</i><small class="clssince">Seit ' + shortDate(parseKey(cl.since)) + "</small></div></div>" +
+      '<button class="btn small" id="clsChange"' + (can ? "" : " disabled") + ">" + (can ? "Klasse wechseln" : "Wechsel möglich ab " + shortDate(parseKey(next))) + "</button>";
+  }
+  if ($("jobCard")) {
+    $("jobGo").addEventListener("click", () => { hap("tap"); if (jobMeta().passed) openClsPick(); else jobStart(); });
+    $("clsList").addEventListener("click", (ev) => {
+      const b = ev.target.closest("button[data-c]");
+      if (!b) return;
+      hap("tap");
+      clsSel = b.dataset.c;
+      $("clsList").querySelectorAll("button[data-c]").forEach((x) => x.setAttribute("aria-pressed", x === b ? "true" : "false"));
+      $("clsOk").disabled = false;
+      $("clsOk").textContent = CLASSES[clsSel].n + " werden";
+    });
+    $("clsOk").addEventListener("click", () => { if (clsSel) chooseClass(clsSel); });
+    $("clsCancel").addEventListener("click", closeClsPick);
+    $("clsCur").addEventListener("click", (ev) => { if (ev.target.closest("#clsChange")) { hap("tap"); openClsPick(); } });
+  }
+
+  // ---- Episoden ----
+  const EPISODES = [
+    ["Das Erwachen", "Alles beginnt mit einer Entscheidung. Du hast sie getroffen."],
+    ["Erster Frost", "Die Euphorie ist weg. Jetzt zählt, wer weitermacht."],
+    ["Die Jagd beginnt", "Die ersten Gates öffnen sich. Zeig, was du gelernt hast."],
+    ["Die Stille vor dem Sturm", "Weniger ist diese Woche mehr. Dein Körper holt auf."],
+    ["Der Eiswächter", "Am Testtag wartet der erste Boss. Er kennt deine alten Werte."],
+    ["Tiefer ins Eis", "Die Lasten werden schwerer. Du auch."],
+    ["Gegen den Wind", "Mitte des Winters. Jetzt trennt sich der Wille vom Wunsch."],
+    ["Kraft sammeln", "Auch Jäger schärfen ihre Klingen in Ruhe."],
+    ["Der Frostriese", "Der zweite Boss. Größer, kälter, gnadenloser."],
+    ["Schatten im Schnee", "Deine Schatten folgen dir. Und dein altes Ich auch."],
+    ["Kein Weg zurück", "Du bist zu weit gekommen, um jetzt weich zu werden."],
+    ["Vor dem Thron", "Die letzte Ruhe vor dem Finale. Sammle alles, was du hast."],
+    ["Der Winterkönig", "Das Finale. Ein Boss, ein Test, ein ganzer Winter."]
+  ];
+  const epTitle = (w) => (w >= 1 ? (EPISODES[w - 1] || ["Epilog", "Der Winter ist vorbei. Die Jagd nicht."])[0] : "");
+  const epTeaser = (w) => (w >= 1 ? (EPISODES[w - 1] || ["Epilog", "Der Winter ist vorbei. Die Jagd nicht."])[1] : "");
+  function episodeCheck() {
+    const w = arcWeek(today());
+    if (!w || w < 1) return;
+    const m = rankMeta();
+    m.ep = m.ep || {};
+    if (m.ep.seen >= w) return;
+    const prevSeen = m.ep.seen || 0;
+    const nowRank = (m.ranks || {})._overall;
+    const lines = [{ t: "Episode", v: w + " von " + Math.max(13, Math.ceil((S().arcLength || 90) / 7)) }];
+    if (prevSeen && w > 1) {
+      const ws = addDays(startOfWeek(today()), -7), we = addDays(ws, 6);
+      const a = dateKey(ws), b = dateKey(we);
+      const st = weekStats(ws);
+      if (st.planned || st.free) lines.push({ t: "Letzte Woche", v: (st.planned ? st.done + " von " + st.planned : st.free) + " Einheiten" });
+      if (st.setsDone) lines.push({ t: "Sätze", v: String(st.setsDone) });
+      if (st.km) lines.push({ t: "Gelaufen", v: fmtN(Math.round(st.km * 10) / 10) + " km" });
+      const gw = (gMeta().log || []).filter((l) => l.res === "won" && l.d >= a && l.d <= b).length;
+      if (gw) lines.push({ t: "Gates geräumt", v: String(gw) });
+      const qn = Object.keys(m.quests || {}).filter((k) => k >= a && k <= b).length;
+      if (qn) lines.push({ t: "Daily Quests", v: qn + " von 7" });
+      const sn = shMeta().list.filter((s) => s.d >= a && s.d <= b).length;
+      if (sn) lines.push({ t: "Neue Schatten", v: String(sn) });
+      if (m.ep.rk != null && nowRank != null && nowRank !== m.ep.rk) lines.push({ t: "Gesamtrang", v: RANK_L[m.ep.rk] + " → " + RANK_L[nowRank] });
+    }
+    m.ep.seen = w; m.ep.rk = nowRank != null ? nowRank : null;
+    saveLocal();
+    sysShow(epTitle(w), lines.slice(0, 7), null, epTeaser(w), prevSeen && w > 1 ? { action: { label: "Wochenrückblick ansehen", fn: () => { sysClose(); revOffset = 1; showTab("week"); setTimeout(() => { renderReview(); const r = $("reviewBlock"); if (r) r.scrollIntoView({ block: "start" }); }, 120); } }, okLabel: "Los geht's", voice: { sit: "episode", vars: { nr: w, titel: epTitle(w) } } } : { okLabel: "Los geht's", voice: { sit: "episode", vars: { nr: w, titel: epTitle(w) } } });
+  }
+
+  // ---- Körper-Scan ----
+  let scanOff = 0, scanSel = "";
+  const BODY = {
+    front: [
+      ["nb", "e", 50, 15, 9, 11], ["nb", "r", 45, 25, 10, 7, 2],
+      ["Schultern", "e", 29, 40, 8, 7], ["Schultern", "e", 71, 40, 8, 7],
+      ["Brust", "r", 34, 33, 15.5, 18, 5], ["Brust", "r", 50.5, 33, 15.5, 18, 5],
+      ["Bizeps", "r", 18, 49, 9, 22, 4.5], ["Bizeps", "r", 73, 49, 9, 22, 4.5],
+      ["nb", "r", 13, 73, 8, 25, 4], ["nb", "r", 79, 73, 8, 25, 4], ["nb", "e", 17, 102, 4, 5], ["nb", "e", 83, 102, 4, 5],
+      ["Core", "r", 38, 54, 24, 37, 6], ["Core", "r", 31, 56, 6, 30, 3], ["Core", "r", 63, 56, 6, 30, 3],
+      ["nb", "r", 36, 93, 28, 9, 4.5],
+      ["Beine", "r", 34, 104, 14, 42, 7], ["Beine", "r", 52, 104, 14, 42, 7],
+      ["nb", "e", 41, 150, 5, 4], ["nb", "e", 59, 150, 5, 4],
+      ["Beine", "r", 35, 156, 11, 40, 5.5], ["Beine", "r", 54, 156, 11, 40, 5.5],
+      ["nb", "e", 40, 203, 6, 3.5], ["nb", "e", 60, 203, 6, 3.5]
+    ],
+    back: [
+      ["nb", "e", 50, 15, 9, 11], ["nb", "r", 45, 25, 10, 5, 2],
+      ["Rücken", "p", "41,30 59,30 65,38 35,38"],
+      ["Schultern", "e", 28, 41, 7.5, 7], ["Schultern", "e", 72, 41, 7.5, 7],
+      ["Rücken", "p", "35,40 49,40 49,79 39,71"], ["Rücken", "p", "51,40 65,40 61,71 51,79"],
+      ["Trizeps", "r", 18, 49, 9, 22, 4.5], ["Trizeps", "r", 73, 49, 9, 22, 4.5],
+      ["nb", "r", 13, 73, 8, 25, 4], ["nb", "r", 79, 73, 8, 25, 4], ["nb", "e", 17, 102, 4, 5], ["nb", "e", 83, 102, 4, 5],
+      ["Core", "r", 40, 81, 20, 11, 4],
+      ["Beine", "r", 35, 94, 14.5, 16, 6], ["Beine", "r", 50.5, 94, 14.5, 16, 6],
+      ["Beine", "r", 35, 112, 13, 36, 6], ["Beine", "r", 52, 112, 13, 36, 6],
+      ["Beine", "r", 35, 155, 11, 38, 5.5], ["Beine", "r", 54, 155, 11, 38, 5.5],
+      ["nb", "e", 40, 203, 6, 3.5], ["nb", "e", 60, 203, 6, 3.5]
+    ]
+  };
+  const scanLv = (v) => (v <= 0 ? 0 : v < 5 ? 1 : v < 10 ? 2 : v <= 20 ? 3 : 4);
+  function bodySvg(view, mg) {
+    let s = "";
+    BODY[view].forEach((p) => {
+      const g = p[0], nb = g === "nb";
+      const cls = nb ? "nb" : "m l" + scanLv(mg[g] || 0) + (scanSel === g ? " sel" : "");
+      const da = nb ? "" : ' data-g="' + g + '"';
+      if (p[1] === "e") s += '<ellipse class="' + cls + '"' + da + ' cx="' + p[2] + '" cy="' + p[3] + '" rx="' + p[4] + '" ry="' + p[5] + '"/>';
+      else if (p[1] === "r") s += '<rect class="' + cls + '"' + da + ' x="' + p[2] + '" y="' + p[3] + '" width="' + p[4] + '" height="' + p[5] + '" rx="' + p[6] + '"/>';
+      else s += '<polygon class="' + cls + '"' + da + ' points="' + p[2] + '"/>';
+    });
+    if (view === "front") s += '<path class="abs" d="M50 56v33M39 66h22M39 78h22"/>';
+    return '<svg class="bodysvg" viewBox="0 0 100 210" role="img" aria-label="Körper ' + (view === "front" ? "vorne" : "hinten") + '">' + s + '<rect class="scanline" x="2" y="0" width="96" height="1.6"/></svg>';
+  }
+  function scanData(ws) {
+    const tk = todayKey(), br = {}, mg = {};
+    let days = 0;
+    for (let i = 0; i < 7; i++) {
+      const dk = dateKey(addDays(ws, i));
+      if (dk > tk) continue;
+      days++;
+      const l = state.logs[dk] || {};
+      Object.keys(l.exercises || {}).forEach((id) => {
+        const x = l.exercises[id];
+        if (!x || !x.name) return;
+        const nd = (x.done || []).filter(Boolean).length;
+        if (!nd) return;
+        muscleOf(x.name).forEach(([g, w]) => { mg[g] = (mg[g] || 0) + nd * w; br[g] = br[g] || {}; br[g][x.name] = (br[g][x.name] || 0) + nd * w; });
+      });
+    }
+    return { mg, br, days };
+  }
+  function renderScan() {
+    const fig = $("scanFig");
+    if (!fig) return;
+    const ws = addDays(startOfWeek(today()), -7 * scanOff);
+    const d = scanData(ws);
+    fig.innerHTML = '<figure>' + bodySvg("front", d.mg) + "<figcaption>Vorne</figcaption></figure><figure>" + bodySvg("back", d.mg) + "<figcaption>Hinten</figcaption></figure>";
+    $("scanWk").querySelectorAll("button").forEach((b) => b.setAttribute("aria-pressed", +b.dataset.w === scanOff ? "true" : "false"));
+    const tot = MG.reduce((s, g) => s + (d.mg[g] || 0), 0);
+    let txt;
+    if (scanSel) {
+      const v = d.mg[scanSel] || 0, parts = Object.keys(d.br[scanSel] || {}).sort((a, b) => d.br[scanSel][b] - d.br[scanSel][a]);
+      txt = "<b>" + esc(scanSel) + ": " + fmtHalf(v) + " Sätze</b>" + (parts.length ? ". " + esc(parts.map((n) => n + " " + fmtHalf(d.br[scanSel][n])).join(", ")) : "") + ". Richtwert: 10 bis 20 pro Woche.";
+    } else if (!tot) txt = scanOff ? "Letzte Woche hast du keine Sätze abgehakt." : "Noch keine Sätze in dieser Woche. Hak Sätze ab, dann leuchten die Muskeln auf.";
+    else {
+      const sorted = MG.slice().sort((a, b) => (d.mg[b] || 0) - (d.mg[a] || 0));
+      const worked = sorted.filter((g) => (d.mg[g] || 0) > 0), none = sorted.filter((g) => !(d.mg[g] > 0));
+      const full = scanOff > 0 || d.days >= 5;
+      const low = worked.filter((g) => d.mg[g] < 6);
+      const list = (gs) => esc(gs.map((g) => g + " " + fmtHalf(d.mg[g])).join(", "));
+      if (full) txt = "Am meisten: <b>" + esc(sorted[0]) + "</b> mit " + fmtHalf(d.mg[sorted[0]]) + " Sätzen." + (low.length ? " Zu wenig: " + list(low) + "." : "") + (none.length ? " Gar nicht: " + esc(none.join(", ")) + "." : "") + (!low.length && !none.length ? " Alle Gruppen gut versorgt." : "");
+      else txt = "Bisher: " + list(worked) + "." + (none.length ? " Noch offen: " + esc(none.join(", ")) + "." : "");
+      txt += " Tipp auf einen Muskel für Details.";
+    }
+    $("scanInfo").innerHTML = txt;
+  }
+  if ($("scanFig")) {
+    $("scanFig").addEventListener("click", (ev) => { const t = ev.target.closest("[data-g]"); scanSel = t ? (scanSel === t.dataset.g ? "" : t.dataset.g) : ""; hap("tick"); renderScan(); });
+    $("scanWk").addEventListener("click", (ev) => { const b = ev.target.closest("button[data-w]"); if (!b) return; scanOff = +b.dataset.w; hap("tick"); renderScan(); });
+  }
+
+  // ---- Deload-Erkennung ----
+  function deloadSignals(dk) {
+    const base = parseKey(dk), why = [];
+    let pts = 0, perf = false;
+    const hist = buildHistory();
+    let down = 0, seen = 0;
+    Object.keys(hist).forEach((k) => {
+      const its = hist[k].items;
+      const age = (i) => daysBetween(parseKey(i.date), base);
+      const recent = its.filter((i) => age(i) >= 0 && age(i) <= 14), older = its.filter((i) => age(i) > 14 && age(i) <= 42);
+      if (recent.length < 2 || !older.length) return;
+      seen++;
+      const bestOld = Math.max.apply(null, older.map((i) => i.met.v));
+      if (recent.slice(-2).every((i) => i.met.v < bestOld * 0.97)) down++;
+    });
+    if (seen && down >= Math.max(2, Math.ceil(seen * 0.4))) { pts += 2; perf = true; why.push("Leistung gesunken: " + down + " von " + seen + " Übungen liegen unter deinem Stand der Vorwochen"); }
+    let low = 0, days = 0, sore = 0;
+    for (let i = 0; i < 5; i++) {
+      const k = dateKey(addDays(base, -i)), r = readiness(k), c = checkinOf(k);
+      if (r.hasInput) { days++; if (r.score < 55) low++; }
+      if (c.soreness >= 4) sore++;
+    }
+    if (days >= 3 && low >= 3) { pts += 1; why.push("Bereitschaft an " + low + " der letzten " + days + " Tage niedrig"); }
+    if (sore >= 3) { pts += 1; why.push("Starker Muskelkater an " + sore + " der letzten 5 Tage"); }
+    const rh = [], old = [], sl = [];
+    for (let i = 0; i < 35; i++) {
+      const l = state.logs[dateKey(addDays(base, -i))];
+      if (!l) continue;
+      if (l.vitals && l.vitals.rhr) (i < 5 ? rh : i >= 7 ? old : []).push(l.vitals.rhr);
+      if (i < 7 && l.sleep && l.sleep.min) sl.push(l.sleep.min);
+    }
+    if (rh.length >= 3 && old.length >= 5 && avgArr(rh) >= medArr(old) + 5) { pts += 1; why.push("Ruhepuls im Schnitt " + Math.round(avgArr(rh) - medArr(old)) + " Schläge über normal"); }
+    if (sl.length >= 4 && avgArr(sl) < 390) { pts += 1; why.push("Schlaf im Schnitt nur " + fmtSleep(Math.round(avgArr(sl)))); }
+    let rirN = 0, rir0 = 0;
+    for (let i = 0; i < 7; i++) {
+      const l = state.logs[dateKey(addDays(base, -i))];
+      Object.keys((l && l.exercises) || {}).forEach((id) => { const x = l.exercises[id]; (x && Array.isArray(x.rir) ? x.rir : []).forEach((v) => { if (v == null) return; rirN++; if (v === 0) rir0++; }); });
+    }
+    if (rirN >= 8 && rir0 / rirN >= 0.7) { pts += 1; why.push("Fast jeder Satz bis zum Limit (" + Math.round((rir0 / rirN) * 100) + " % ohne Reserve)"); }
+    return { pts, why, perf };
+  }
+  function deloadSuggest(dk) {
+    const w = arcWeek(today()), m = rankMeta();
+    if (!w || w < 2 || isDeloadWeek(w) || isDeloadWeek(w - 1) || isDeloadWeek(w - 2)) return null;
+    if (m.dlNo && daysBetween(parseKey(m.dlNo), parseKey(dk)) < 7) return null;
+    const s = deloadSignals(dk);
+    return (s.pts >= 3 && s.perf) || s.pts >= 4 ? s : null;
+  }
+  function renderDeloadCard(dk) {
+    const card = $("dlCard");
+    if (!card) return;
+    let s = null;
+    try { s = deloadSuggest(dk); } catch (e) { s = null; }
+    card.hidden = !s;
+    if (!s) return;
+    $("dlWhy").innerHTML = s.why.map((t) => "<li>" + esc(t) + "</li>").join("");
+  }
+  if ($("dlCard")) {
+    $("dlYes").addEventListener("click", () => {
+      const m = rankMeta(), w = arcWeek(today());
+      m.deloadWeeks = m.deloadWeeks || {}; m.deloadWeeks[w] = 1;
+      if (S().autoDeload && (w + 1) % 4 === 0) { m.deloadSkip = m.deloadSkip || {}; m.deloadSkip[w + 1] = 1; }
+      saveLocal(); hap("tap");
+      todaySig = ""; renderAll();
+      toast("Deload-Woche aktiv: halbe Sätze, nicht ans Limit.");
+    });
+    $("dlNo").addEventListener("click", () => { rankMeta().dlNo = todayKey(); saveLocal(); $("dlCard").hidden = true; toast("Okay. Das System fragt frühestens in einer Woche wieder."); });
+  }
+
+  // ---- Zusammenfassung fürs KI-Coaching ----
+  function gameContext() {
+    const parts = [];
+    const w = arcWeek(today());
+    if (w) parts.push("Episode " + w + ": " + epTitle(w));
+    const id = classId();
+    parts.push(id ? "Klasse: " + CLASSES[id].n + " (" + CLASSES[id].b + ")" : "noch keine Klasse");
+    const n = shCount();
+    if (n) parts.push("Schatten-Armee: " + n + " Schatten");
+    const g = gMeta().cur;
+    if (g) parts.push(g.entered ? "Er ist gerade in einem " + (g.red ? "Red Gate" : g.job ? "Job-Wechsel-Gate" : RANK_L[g.rank] + "-Rang-Gate") + ", noch " + mmss(gateLeft(g)) + " Minuten" : "Ein " + RANK_L[g.rank] + "-Rang-Gate ist offen und wartet");
+    const inv = gMeta().inv || {};
+    parts.push("Inventar: " + (inv.elixir || 0) + " Elixier, " + (inv.rune || 0) + " Rune, " + (inv.key || 0) + " Schlüssel");
+    return "Spielstand: " + parts.join(". ") + ".";
+  }
+
+  buildHapLab();
   window.__waGame = true;
   applyAura();
   setTimeout(() => { try { gateTick(); renderGate(); } catch (e) { /* ignore */ } }, 1200);
