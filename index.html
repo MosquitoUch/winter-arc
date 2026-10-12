@@ -1644,6 +1644,13 @@ main[data-dir="l"] > section:not([hidden]) { animation: viewInL 260ms cubic-bezi
                 <div class="field"><label for="sndVol">Lautstärke der eigenen Töne</label><input type="range" id="sndVol" min="20" max="100" step="5"></div>
                 <small class="fhint">Eigene Dateien (MP3, WAV oder M4A, bis 3 MB und 10 Sekunden) bleiben nur auf diesem Handy gespeichert und werden nirgends hochgeladen. Nimm nur Töne, die du selbst nutzen darfst.</small>
               </details>
+              <details class="mini" id="vpBox"><summary>Coach-Stimme und Voice-Pack</summary>
+                <p class="fhint" id="vpState"></p>
+                <div class="row"><button class="btn small" id="vpExport">Satzliste exportieren</button><button class="btn small" id="vpPick">Voice-Pack laden (ZIP)</button><input type="file" class="sr" id="vpFile" accept=".zip,application/zip" tabindex="-1"></div>
+                <div class="row"><button class="btn small" id="vpTest">Probe hören</button><button class="btn small danger" id="vpDel" hidden>Voice-Pack entfernen</button></div>
+                <div class="field"><label for="vpVol">Lautstärke des Voice-Packs</label><input type="range" id="vpVol" min="20" max="100" step="5"></div>
+                <small class="fhint">So kommt deine eigene Stimme in die App: 1. Satzliste exportieren. 2. Am PC mit dem Skript make_voicepack.py durch dein Stimmmodell schicken, zum Beispiel eine Piper-Stimme. 3. Das fertige ZIP hier laden. Die Clips bleiben nur auf diesem Handy. Fehlt ein Clip, spricht die Systemstimme den ganzen Satz. Das Voice-Pack ist nicht im Backup, heb das ZIP also auf.</small>
+              </details>
               <div class="toggle"><span>Atmender Glow<small>Ring, Balken und Tab-Symbol leuchten ruhig in deiner Farbe.</small></span><button class="switch" role="switch" aria-checked="true" id="swGlow" aria-label="Atmender Glow"></button></div>
               <details class="mini"><summary>Eigenes Hintergrundbild</summary>
                 <div class="row"><button class="btn small" id="bgPick">Bild wählen</button><button class="btn small" id="bgRemove" style="display:none">Entfernen</button></div>
@@ -3225,7 +3232,7 @@ main[data-dir="l"] > section:not([hidden]) { animation: viewInL 260ms cubic-bezi
       xpFloat(li.querySelector('.set[data-i="' + i + '"]') || btn, "+10 XP");
       shards(li.querySelector('.set[data-i="' + i + '"]') || btn);
       const pr = sessionProgress(dk, session);
-      if (pr.done === pr.total) { stopTimer(); celebrate(dk); if (window.__waGame) say("Training abgeschlossen. Stark gemacht."); }
+      if (pr.done === pr.total) { stopTimer(); celebrate(dk); if (window.__waGame) say("Training abgeschlossen. Stark gemacht.", ["training_abgeschlossen"]); }
       else if (n > 1) startTimer(S().rest || 120);
       checkGoals();
     }
@@ -3483,11 +3490,11 @@ main[data-dir="l"] > section:not([hidden]) { animation: viewInL 260ms cubic-bezi
     const left = timer.end - Date.now();
     $("timertime").textContent = fmtClock(left);
     $("timerbar").style.transform = "scaleX(" + Math.max(0, Math.min(1, left / timer.total)).toFixed(4) + ")";
-    if (left > 0 && left <= 10500 && !timer.said && timer.total > 20000) { timer.said = true; if (window.__waGame) say("Noch zehn Sekunden."); }
+    if (left > 0 && left <= 10500 && !timer.said && timer.total > 20000) { timer.said = true; if (window.__waGame) say("Noch zehn Sekunden.", ["noch_zehn_sekunden"]); }
     if (left <= 0) {
       if (!timer.finished) {
         timer.finished = true;
-        if (window.__waGame && voiceOn()) { const nx = nextSetText(); setTimeout(() => say("Pause vorbei." + (nx ? " " + nx : "")), 350); }
+        if (window.__waGame && voiceOn()) { const nx = nextSet(); setTimeout(() => say("Pause vorbei." + (nx.text ? " " + nx.text : ""), ["pause_vorbei"].concat(nx.parts)), 350); }
         $("timer").classList.add("done");
         $("timerlabel").textContent = "Nächster Satz";
         $("timertime").textContent = "Los";
@@ -4439,10 +4446,15 @@ main[data-dir="l"] > section:not([hidden]) { animation: viewInL 260ms cubic-bezi
       const nl = dv.getUint16(p + 28, true), el = dv.getUint16(p + 30, true), cl = dv.getUint16(p + 32, true), lo = dv.getUint32(p + 42, true);
       const name = dec.decode(buf.subarray(p + 46, p + 46 + nl));
       p += 46 + nl + el + cl;
-      if (method !== 0) continue;
+      if (method !== 0 && method !== 8) continue;
       if (dv.getUint32(lo, true) !== 0x04034b50) continue;
       const start = lo + 30 + dv.getUint16(lo + 26, true) + dv.getUint16(lo + 28, true);
-      out.push({ name, data: buf.subarray(start, start + csize) });
+      let data = buf.subarray(start, start + csize);
+      if (method === 8) {
+        if (!window.DecompressionStream) continue;
+        try { data = new Uint8Array(await new Response(new Blob([data]).stream().pipeThrough(new DecompressionStream("deflate-raw"))).arrayBuffer()); } catch (e) { continue; }
+      }
+      out.push({ name, data });
     }
     return out;
   }
@@ -6320,7 +6332,7 @@ main[data-dir="l"] > section:not([hidden]) { animation: viewInL 260ms cubic-bezi
     document.body.classList.toggle("train-mode", trainMode);
     $("trainBtn").setAttribute("aria-pressed", trainMode ? "true" : "false");
     $("trainBtn").textContent = trainMode ? "Trainingsmodus beenden" : "Trainingsmodus starten";
-    if (trainMode) { primeAudio(); wakeOn(); toast("Bildschirm bleibt an. Tipp auf einen Satz für die Zahlentasten."); if (window.__waGame) { const nx = nextSetText(); say("Training gestartet." + (nx ? " Los geht es mit " + nx : "")); } }
+    if (trainMode) { primeAudio(); wakeOn(); toast("Bildschirm bleibt an. Tipp auf einen Satz für die Zahlentasten."); if (window.__waGame) { const nx = nextSet(); say("Training gestartet." + (nx.text ? " Los geht es mit " + nx.text : ""), ["training_gestartet"].concat(nx.parts.length ? ["los_gehts_mit"].concat(nx.parts) : [])); } }
     else if (!wakeNeeded()) wakeOff();
     window.scrollTo(0, 0);
   });
@@ -8365,6 +8377,7 @@ main[data-dir="l"] > section:not([hidden]) { animation: viewInL 260ms cubic-bezi
     el.classList.remove("open"); void el.offsetWidth; el.classList.add("open");
     sysSound();
     hap("pr");
+    if (window.__waGame) sysVoice(it.title);
   }
   function sysClose() {
     $("sysWin").hidden = true;
@@ -8402,7 +8415,7 @@ main[data-dir="l"] > section:not([hidden]) { animation: viewInL 260ms cubic-bezi
         if (lines.length) {
           if (lvUp) lines.push({ t: "Level", v: prev._lv + " → " + X.lv });
           sysShow(oUp ? "Rang-Aufstieg" : "Neuer Rang", lines, oUp ? R.overall.idx : null, note);
-        } else if (lvUp) { toast("Level " + X.lv + " erreicht"); hap("set"); }
+        } else if (lvUp) { toast("Level " + X.lv + " erreicht"); hap("set"); if (window.__waGame && voiceOn()) say("Level aufgestiegen.", ["level_up"]); }
       }
       if (JSON.stringify(prev) !== JSON.stringify(cur)) { m.ranks = cur; saveLocal(); }
       if (window.__waGame) { try { checkAch(R, X); } catch (e) { /* ignore */ } }
@@ -8688,15 +8701,85 @@ main[data-dir="l"] > section:not([hidden]) { animation: viewInL 260ms cubic-bezi
     } catch (e) { toast("Die Lizenz konnte nicht erstellt werden."); }
   }
 
-  // ---- Coach-Stimme ----
+  // ---- Coach-Stimme: Systemstimme oder eigenes Voice-Pack ----
   let deVoice = null;
   function pickVoice() {
     try { const vs = speechSynthesis.getVoices() || []; deVoice = vs.filter((v) => /^de/i.test(v.lang)).sort((a, b) => (b.localService ? 1 : 0) - (a.localService ? 1 : 0))[0] || null; } catch (e) { deVoice = null; }
   }
   if (window.speechSynthesis) { pickVoice(); try { speechSynthesis.addEventListener("voiceschanged", pickVoice); } catch (e) { /* ignore */ } }
-  const voiceOn = () => !!S().voice && !!window.speechSynthesis;
-  function say(text) {
-    if (!voiceOn() || !text) return;
+  // Voice-Pack: einzelne Audio-Clips, aus denen die App ihre Sätze zusammensetzt
+  const vslug = (s) => String(s || "").toLowerCase().replace(/ä/g, "ae").replace(/ö/g, "oe").replace(/ü/g, "ue").replace(/ß/g, "ss").replace(/[^a-z0-9]+/g, "_").replace(/^_+|_+$/g, "").slice(0, 60) || "x";
+  const VP_FIXED = [
+    ["stimme_an", "Coach-Stimme an. Ich sage dir, wann die Pause vorbei ist."],
+    ["training_gestartet", "Training gestartet."],
+    ["los_gehts_mit", "Los geht's mit"],
+    ["noch_zehn_sekunden", "Noch zehn Sekunden."],
+    ["pause_vorbei", "Pause vorbei."],
+    ["training_abgeschlossen", "Training abgeschlossen. Stark gemacht."],
+    ["satz", "Satz"], ["von", "von"], ["ziel", "Ziel"], ["bis", "bis"], ["sekunden", "Sekunden"],
+    ["rang_aufstieg", "Rang-Aufstieg."], ["neuer_rang", "Neuer Rang."], ["level_up", "Level aufgestiegen."],
+    ["quest_geschafft", "Daily Quest abgeschlossen."], ["erfolg", "Erfolg freigeschaltet."],
+    ["boss_besiegt", "Boss besiegt."], ["boss_lebt", "Der Boss lebt noch."]
+  ];
+  const vp = { ids: new Set(), buf: {}, srcs: [], gain: null };
+  const vpLoadIndex = () => { const v = S().voicePack; vp.ids = new Set(v && v.ids ? v.ids : []); vp.buf = {}; };
+  vpLoadIndex();
+  function vpList() {
+    const out = VP_FIXED.map(([id, text]) => ({ id, text }));
+    for (let n = 1; n <= 100; n++) out.push({ id: "zahl_" + n, text: String(n) });
+    const names = {};
+    ((state.plan && state.plan.days) || []).forEach((d) => (d.exercises || []).forEach((e) => { if (e && e.name && !isRun(e)) names[vslug(e.name)] = e.name; }));
+    Object.keys(names).sort().forEach((k) => out.push({ id: "uebung_" + k, text: names[k] }));
+    return out;
+  }
+  function vpTrim(b) {
+    try {
+      const ch = b.numberOfChannels, len = b.length, sr = b.sampleRate, th = 0.012;
+      let s = 0, e = len - 1;
+      const loud = (i) => { for (let c = 0; c < ch; c++) if (Math.abs(b.getChannelData(c)[i]) > th) return true; return false; };
+      while (s < len && !loud(s)) s++;
+      while (e > s && !loud(e)) e--;
+      const pad = Math.round(sr * 0.02);
+      s = Math.max(0, s - pad); e = Math.min(len - 1, e + pad);
+      if (e - s < sr * 0.05 || (s === 0 && e === len - 1)) return b;
+      const out = audioCtx.createBuffer(ch, e - s + 1, sr);
+      for (let c = 0; c < ch; c++) out.copyToChannel(b.getChannelData(c).subarray(s, e + 1), c);
+      return out;
+    } catch (err) { return b; }
+  }
+  async function vpBuffer(id) {
+    if (vp.buf[id]) return vp.buf[id];
+    const rec = await mdb.get("vp:" + id);
+    if (!rec || !rec.blob) return null;
+    const ab = await rec.blob.arrayBuffer();
+    const b = await new Promise((res, rej) => { try { const pr = audioCtx.decodeAudioData(ab, res, rej); if (pr && pr.catch) pr.catch(rej); } catch (e) { rej(e); } });
+    vp.buf[id] = vpTrim(b);
+    return vp.buf[id];
+  }
+  function vpStop() { vp.srcs.forEach((s) => { try { s.stop(); } catch (e) { /* ignore */ } }); vp.srcs = []; }
+  async function vpPlay(parts) {
+    if (!parts || !parts.length || !vp.ids.size || !parts.every((p) => vp.ids.has(p))) return false;
+    primeAudio();
+    if (!audioCtx) return false;
+    let bufs;
+    try { bufs = await Promise.all(parts.map(vpBuffer)); } catch (e) { return false; }
+    if (bufs.some((b) => !b)) return false;
+    vpStop();
+    try { if (window.speechSynthesis) speechSynthesis.cancel(); } catch (e) { /* ignore */ }
+    const g = audioCtx.createGain();
+    g.gain.value = Math.max(0.2, Math.min(1, (S().voiceVol || 100) / 100));
+    g.connect(audioCtx.destination);
+    let t = audioCtx.currentTime + 0.04;
+    bufs.forEach((b, i) => {
+      const s = audioCtx.createBufferSource();
+      s.buffer = b; s.connect(g); s.start(t); vp.srcs.push(s);
+      t += b.duration + (/[.!?]$/.test((VP_FIXED.find((x) => x[0] === parts[i]) || [])[1] || "") ? 0.22 : 0.07);
+    });
+    return true;
+  }
+  const voiceOn = () => !!S().voice && (!!window.speechSynthesis || vp.ids.size > 0);
+  function ttsSay(text) {
+    if (!window.speechSynthesis || !text) return;
     try {
       speechSynthesis.cancel();
       const u = new SpeechSynthesisUtterance(text);
@@ -8705,32 +8788,106 @@ main[data-dir="l"] > section:not([hidden]) { animation: viewInL 260ms cubic-bezi
       speechSynthesis.speak(u);
     } catch (e) { /* ignore */ }
   }
-  function nextSetText() {
+  function say(text, parts, force) {
+    if ((!voiceOn() && !force) || !text) return;
+    if (parts && parts.length && vp.ids.size) vpPlay(parts).then((ok) => { if (!ok) ttsSay(text); });
+    else ttsSay(text);
+  }
+  function nextSet() {
     const dk = todayKey(), s = effSession(today());
-    if (!s) return "";
+    if (!s) return { text: "", parts: [] };
     for (const e of s.exercises) {
       if (e.skipped || isRun(e)) continue;
       const lg = exLog(dk, e), n = setCount(e);
       for (let i = 0; i < n; i++) if (!lg.done[i]) {
         const rng = parseRange(e.reps);
         const goal = rng ? (rng.low === rng.high ? String(rng.low) : rng.low + " bis " + rng.high) + (rng.secs ? " Sekunden" : "") : "";
-        return e.name + (n > 1 ? ", Satz " + (i + 1) + " von " + n : "") + (goal ? ". Ziel " + goal : "") + ".";
+        const parts = ["uebung_" + vslug(e.name)];
+        if (n > 1) parts.push("satz", "zahl_" + (i + 1), "von", "zahl_" + n);
+        if (rng) { parts.push("ziel", "zahl_" + rng.low); if (rng.high !== rng.low) parts.push("bis", "zahl_" + rng.high); if (rng.secs) parts.push("sekunden"); }
+        return { text: e.name + (n > 1 ? ", Satz " + (i + 1) + " von " + n : "") + (goal ? ". Ziel " + goal : "") + ".", parts };
       }
     }
-    return "";
+    return { text: "", parts: [] };
   }
+  const nextSetText = () => nextSet().text;
+  const SYS_VOICE = { "Rang-Aufstieg": ["rang_aufstieg", "Rang-Aufstieg."], "Neuer Rang": ["neuer_rang", "Neuer Rang."], "Quest abgeschlossen": ["quest_geschafft", "Daily Quest abgeschlossen."], "Erfolg freigeschaltet": ["erfolg", "Erfolg freigeschaltet."], "Erfolge freigeschaltet": ["erfolg", "Erfolg freigeschaltet."], "Boss besiegt": ["boss_besiegt", "Boss besiegt."], "Der Boss lebt noch": ["boss_lebt", "Der Boss lebt noch."] };
+  function sysVoice(title) { const v = SYS_VOICE[title]; if (v && voiceOn()) setTimeout(() => say(v[1], [v[0]]), 650); }
   function renderVoiceBtn() {
     const b = $("voiceBtn");
     if (!b) return;
-    b.hidden = !window.speechSynthesis;
+    b.hidden = !window.speechSynthesis && !vp.ids.size;
     b.setAttribute("aria-pressed", S().voice ? "true" : "false");
     b.textContent = S().voice ? "Coach-Stimme an" : "Coach-Stimme aus";
   }
   if ($("voiceBtn")) $("voiceBtn").addEventListener("click", () => {
-    S().voice = !S().voice; saveSettings(); renderVoiceBtn(); hap("tap");
-    if (S().voice) say("Coach-Stimme an. Ich sage dir, wann die Pause vorbei ist.");
-    else try { speechSynthesis.cancel(); } catch (e) { /* ignore */ }
+    S().voice = !S().voice; saveSettings(); renderVoiceBtn(); renderVpUi(); hap("tap");
+    if (S().voice) say("Coach-Stimme an. Ich sage dir, wann die Pause vorbei ist.", ["stimme_an"]);
+    else { try { speechSynthesis.cancel(); } catch (e) { /* ignore */ } vpStop(); }
   });
+  // ---- Voice-Pack in den Einstellungen ----
+  function renderVpUi() {
+    const st = $("vpState");
+    if (!st) return;
+    const v = S().voicePack;
+    if (!v || !vp.ids.size) st.textContent = "Aktiv: Systemstimme deines Handys. Mit einem Voice-Pack spricht der Coach mit deiner eigenen Stimme.";
+    else {
+      const miss = vpList().filter((x) => !vp.ids.has(x.id)).map((x) => x.text);
+      st.textContent = "Aktiv: Voice-Pack „" + (v.name || "Eigene Stimme") + "“ mit " + vp.ids.size + " Clips." + (miss.length ? " Fehlt für deinen Plan: " + miss.slice(0, 6).join(", ") + (miss.length > 6 ? " und " + (miss.length - 6) + " weitere" : "") + ". Diese Sätze spricht die Systemstimme." : " Alles für deinen Plan ist dabei.");
+    }
+    $("vpDel").hidden = !vp.ids.size;
+    $("vpVol").value = S().voiceVol || 100;
+  }
+  async function vpImport(file) {
+    const st = $("vpState");
+    st.textContent = "Voice-Pack wird gelesen …";
+    let files;
+    try { files = await readZip(file); } catch (e) { st.textContent = "Das ist keine gültige ZIP-Datei."; return; }
+    let name = file.name.replace(/\.zip$/i, "");
+    const man = files.find((f) => /(^|\/)manifest\.json$/i.test(f.name));
+    if (man) { try { const j = JSON.parse(new TextDecoder().decode(man.data)); if (j && j.name) name = String(j.name).slice(0, 40); } catch (e) { /* ignore */ } }
+    const MIME = { wav: "audio/wav", mp3: "audio/mpeg", ogg: "audio/ogg", opus: "audio/ogg", m4a: "audio/mp4", webm: "audio/webm", flac: "audio/flac" };
+    const clips = files.map((f) => { const m = f.name.match(/([^/\\]+)\.(wav|mp3|ogg|opus|m4a|webm|flac)$/i); return m ? { id: vslug(m[1]), ext: m[2].toLowerCase(), data: f.data } : null; }).filter(Boolean);
+    if (!clips.length) { st.textContent = "Im ZIP sind keine Audiodateien (WAV, MP3, OGG, M4A)."; return; }
+    const total = clips.reduce((a, c) => a + c.data.length, 0);
+    if (total > 80 * 1024 * 1024) { st.textContent = "Das Voice-Pack ist größer als 80 MB. Wandle die Clips mit dem Skript in OGG oder MP3 um."; return; }
+    const old = (S().voicePack && S().voicePack.ids) || [];
+    try {
+      for (let i = 0; i < clips.length; i++) {
+        if (i % 10 === 0) st.textContent = "Speichere Clip " + (i + 1) + " von " + clips.length + " …";
+        await mdb.put("vp:" + clips[i].id, new Blob([clips[i].data], { type: MIME[clips[i].ext] || "audio/wav" }), clips[i].id);
+      }
+      const ids = clips.map((c) => c.id);
+      for (const id of old) if (ids.indexOf(id) < 0) { try { await mdb.del("vp:" + id); } catch (e) { /* ignore */ } }
+      S().voicePack = { name, ids, at: todayKey() };
+      saveSettings(); vpLoadIndex(); renderVpUi(); renderVoiceBtn();
+      toast("Voice-Pack geladen: " + ids.length + " Clips");
+      say("Coach-Stimme an. Ich sage dir, wann die Pause vorbei ist.", ["stimme_an"], true);
+    } catch (e) { st.textContent = "Speichern fehlgeschlagen. Ist genug Speicher frei?"; }
+  }
+  if ($("vpExport")) {
+    $("vpExport").addEventListener("click", () => {
+      const data = { app: "winter-arc", version: 1, hinweis: "Du darfst die Texte ändern, die IDs aber nicht. Jede ID wird zu einer Audiodatei mit genau diesem Namen.", clips: vpList() };
+      saveBlobFile(new Blob([JSON.stringify(data, null, 2)], { type: "application/json" }), "voicepack-saetze.json", true).then((r) => { if (r === "download") toast("Satzliste gespeichert"); });
+    });
+    $("vpPick").addEventListener("click", () => $("vpFile").click());
+    $("vpFile").addEventListener("change", (ev) => { const f = ev.target.files && ev.target.files[0]; ev.target.value = ""; if (f) vpImport(f); });
+    $("vpTest").addEventListener("click", () => {
+      primeAudio();
+      const nx = nextSet();
+      const parts = nx.parts.length ? ["pause_vorbei"].concat(nx.parts) : ["pause_vorbei", "uebung_klimmzuege", "satz", "zahl_2", "von", "zahl_3", "ziel", "zahl_6", "bis", "zahl_8"];
+      say("Pause vorbei. " + (nx.text || "Klimmzüge, Satz 2 von 3. Ziel 6 bis 8."), parts, true);
+    });
+    $("vpDel").addEventListener("click", async () => {
+      const ids = (S().voicePack && S().voicePack.ids) || [];
+      for (const id of ids) { try { await mdb.del("vp:" + id); } catch (e) { /* ignore */ } }
+      S().voicePack = null; saveSettings(); vpLoadIndex(); renderVpUi(); renderVoiceBtn();
+      toast("Voice-Pack entfernt, die Systemstimme spricht wieder");
+    });
+    $("vpVol").addEventListener("change", function () { S().voiceVol = +this.value || 100; saveSettings(); });
+    $("vpBox").addEventListener("toggle", () => { if ($("vpBox").open) renderVpUi(); });
+    renderVpUi();
+  }
 
   // ---- Sprach-Eingabe in den Zahlentasten ----
   const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
