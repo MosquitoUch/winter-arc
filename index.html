@@ -741,6 +741,9 @@ pre.prompt { white-space: pre-wrap; margin: 0 0 12px; padding: 14px; border-radi
 .syslines li span { color: var(--ink-2); text-align: left; }
 .syslines li b { font-family: var(--display); font-size: 18px; color: var(--ink); white-space: nowrap; }
 .sysbox .btn { width: 100%; margin-top: 4px; }
+#ocrImg { max-height: 28vh; }
+.ocrauto { display: flex; align-items: center; gap: 10px; color: var(--ink-2); font-size: 14px; min-height: 40px; }
+.ocrauto input { width: 20px; height: 20px; accent-color: var(--ice); }
 .sysnote { margin: 0; color: var(--ink-2); font-size: 13px; }
 .sysov.open .sysnote { animation: sysIn 360ms ease-out both; animation-delay: 620ms; }
 .sysov.open .sysbox { animation: sysOpen 520ms cubic-bezier(.2, .9, .2, 1) both; }
@@ -1837,6 +1840,21 @@ main[data-dir="l"] > section:not([hidden]) { animation: viewInL 260ms cubic-bezi
     <ul class="syslines" id="sysLines"></ul>
     <p class="sysnote" id="sysNote" hidden></p>
     <button class="btn primary" id="sysOk">Bestätigen</button>
+  </div>
+</div>
+
+<div class="overlay sheetov" id="ocrSheet" role="dialog" aria-modal="true" aria-labelledby="ocrTitle" hidden>
+  <div class="sheet">
+    <h3 id="ocrTitle">Garmin-Bild gelesen</h3>
+    <p id="ocrMsg"></p>
+    <img id="ocrImg" alt="Dein Garmin-Bild">
+    <div class="two">
+      <div class="field"><label for="ocrDur">Schlafdauer</label><input id="ocrDur" class="inp" inputmode="text" autocomplete="off" placeholder="7:30"></div>
+      <div class="field"><label for="ocrScore">Score</label><input id="ocrScore" class="inp" inputmode="numeric" autocomplete="off" placeholder="82"></div>
+    </div>
+    <div class="field" id="ocrRhrF" hidden><label for="ocrRhr">Ruhepuls</label><input id="ocrRhr" class="inp" inputmode="numeric" autocomplete="off"></div>
+    <label class="ocrauto"><input type="checkbox" id="ocrAuto"> Neue Garmin-Bilder automatisch auslesen</label>
+    <div class="row"><button class="btn primary" id="ocrOk">Übernehmen</button><button class="btn" id="ocrCancel">Verwerfen</button></div>
   </div>
 </div>
 
@@ -4519,10 +4537,181 @@ main[data-dir="l"] > section:not([hidden]) { animation: viewInL 260ms cubic-bezi
     try {
       const blob = await fileToBlobKeep(f, 1600);
       await savePhoto(todayKey(), "sleep", blob);
-      toast("Screenshot gespeichert");
       renderSleepRow(todayKey()); renderSleepBlock();
+      if (S().ocr !== false) ocrFromFile(f, blob); else toast("Screenshot gespeichert");
     } catch (e) { toast("Der Screenshot konnte nicht gespeichert werden. Nimm ein JPG oder PNG."); }
   };
+  // ---- Garmin-Bild auslesen (Texterkennung läuft komplett auf dem Handy) ----
+  const OCR = {
+    lib: "https://cdn.jsdelivr.net/npm/tesseract.js@6.0.1/dist/tesseract.min.js",
+    worker: "https://cdn.jsdelivr.net/npm/tesseract.js@6.0.1/dist/worker.min.js",
+    core: "https://cdn.jsdelivr.net/npm/tesseract.js-core@6.0.0",
+    lang: "https://cdn.jsdelivr.net/npm/@tesseract.js-data/deu@1.0.0/4.0.0_best_int"
+  };
+  let ocrWorker = null, ocrBusy = false, ocrIdle = 0, ocrUrl = "";
+  function ocrLib() {
+    if (window.Tesseract) return Promise.resolve(window.Tesseract);
+    return new Promise((res, rej) => {
+      const sc = document.createElement("script");
+      sc.src = OCR.lib; sc.async = true;
+      sc.onload = () => (window.Tesseract ? res(window.Tesseract) : rej(new Error("lib")));
+      sc.onerror = () => rej(new Error("net"));
+      document.head.appendChild(sc);
+    });
+  }
+  async function ocrGetWorker(onProg) {
+    if (ocrWorker) return ocrWorker;
+    const T = await ocrLib();
+    ocrWorker = await T.createWorker("deu", 1, {
+      workerPath: OCR.worker, corePath: OCR.core, langPath: OCR.lang,
+      logger: (m) => { if (onProg && m && typeof m.progress === "number") onProg(m.status || "", m.progress); }
+    });
+    return ocrWorker;
+  }
+  // Bild vorbereiten: Graustufen, dunkle Screenshots invertieren, Kontrast strecken, kleine Bilder hochskalieren
+  async function ocrPrep(file) {
+    let bmp;
+    try { bmp = await createImageBitmap(file, { imageOrientation: "from-image" }); } catch (e) { bmp = await createImageBitmap(file); }
+    const long = Math.max(bmp.width, bmp.height);
+    const sc = long > 2200 ? 2200 / long : long < 1100 ? 1100 / long : 1;
+    const cv = document.createElement("canvas");
+    cv.width = Math.round(bmp.width * sc); cv.height = Math.round(bmp.height * sc);
+    const cx = cv.getContext("2d", { willReadFrequently: true });
+    cx.drawImage(bmp, 0, 0, cv.width, cv.height);
+    if (bmp.close) bmp.close();
+    const im = cx.getImageData(0, 0, cv.width, cv.height), d = im.data, n = d.length / 4;
+    const g = new Uint8ClampedArray(n);
+    const hist = new Uint32Array(256);
+    let sum = 0;
+    for (let i = 0; i < n; i++) { const v = (d[i * 4] * 0.299 + d[i * 4 + 1] * 0.587 + d[i * 4 + 2] * 0.114) | 0; g[i] = v; hist[v]++; sum += v; }
+    const dark = sum / n < 110;
+    let lo = 0, hi = 255, acc = 0;
+    for (let v = 0; v < 256; v++) { acc += hist[v]; if (acc > n * 0.02) { lo = v; break; } }
+    acc = 0;
+    for (let v = 255; v >= 0; v--) { acc += hist[v]; if (acc > n * 0.02) { hi = v; break; } }
+    const span = Math.max(1, hi - lo);
+    for (let i = 0; i < n; i++) {
+      let v = Math.max(0, Math.min(255, ((g[i] - lo) * 255) / span));
+      if (dark) v = 255 - v;
+      d[i * 4] = d[i * 4 + 1] = d[i * 4 + 2] = v;
+    }
+    cx.putImageData(im, 0, 0);
+    return cv;
+  }
+  // Aus dem erkannten Text Schlafdauer, Score und Ruhepuls herauslesen
+  function ocrParse(text, words) {
+    const t = String(text || "").replace(/[|]/g, " ").replace(/(\d)[oO](\d)/g, "$10$2").replace(/,/g, ".");
+    const low = t.toLowerCase();
+    const out = { min: 0, score: 0, rhr: 0 };
+    let m = low.match(/(\d{1,2})\s*(?:std|stunden?|h|hrs?)\.?\s*(?:und\s*)?(\d{1,2})\s*(?:min|minuten|m)\b/);
+    if (m && +m[1] <= 16 && +m[2] < 60) out.min = +m[1] * 60 + +m[2];
+    if (!out.min) { m = low.match(/(?:^|\s)(\d{1,2})\s*(?:std|stunden?|h)\b/); if (m && +m[1] >= 2 && +m[1] <= 16) out.min = +m[1] * 60; }
+    const ws = (words || []).map((w) => ({ t: String(w.text || "").trim(), h: w.bbox ? w.bbox.y1 - w.bbox.y0 : 0 })).filter((w) => w.t);
+    if (!out.min) {
+      let best = null;
+      ws.forEach((w) => {
+        const mm = w.t.match(/^(\d{1,2})[:.](\d{2})(?:h|std)?$/i);
+        if (!mm || +mm[1] < 2 || +mm[1] > 13 || +mm[2] > 59) return;
+        const rank = (mm[1].length === 2 && mm[1][0] === "0" ? 0 : 1000) + w.h;
+        if (!best || rank > best.rank) best = { rank, v: +mm[1] * 60 + +mm[2] };
+      });
+      if (!best) { m = low.match(/(?:^|\s)([2-9]|1[0-3]):([0-5]\d)(?!\d)/); if (m) best = { v: +m[1] * 60 + +m[2] }; }
+      if (best) out.min = best.v;
+    }
+    m = low.match(/(?:schlaf[\s-]*(?:wert|score|punkt\w*|qualit\w*)|sleep\s*score|score)\D{0,18}?(\d{1,3})(?!\s*(?:%|bpm|min|std|h\b|:))/);
+    if (m && +m[1] >= 1 && +m[1] <= 100) out.score = +m[1];
+    if (!out.score) {
+      let best = null;
+      ws.forEach((w, i) => {
+        if (!/^\d{1,3}$/.test(w.t)) return;
+        const v = +w.t, nx = ws[i + 1] ? ws[i + 1].t.toLowerCase() : "";
+        if (v < 15 || v > 100 || /^(std|h|min|m|%|bpm|uhr|stunden?|minuten)/.test(nx)) return;
+        if (!best || w.h > best.h) best = { h: w.h, v };
+      });
+      if (best) out.score = best.v;
+    }
+    m = low.match(/(?:ruhe[\s-]*(?:hf|herz\w*|puls)|resting\s*(?:hr|heart\s*rate))\D{0,14}?(\d{2,3})/);
+    if (m && +m[1] >= 30 && +m[1] <= 120) out.rhr = +m[1];
+    return out;
+  }
+  function ocrStatus(txt) { const el = $("sleepInfo"); if (el) el.textContent = txt; }
+  async function ocrFromFile(file, blob) {
+    if (ocrBusy) return;
+    ocrBusy = true;
+    clearTimeout(ocrIdle);
+    const first = !ocrWorker && !window.Tesseract;
+    toast(first ? "Bild gespeichert. Texterkennung wird einmalig geladen, etwa 5 MB." : "Bild gespeichert. Ich lese die Werte aus.");
+    ocrStatus("Lese Werte aus dem Bild …");
+    try {
+      const w = await ocrGetWorker((st, pr) => { if (/load|init/i.test(st)) ocrStatus("Texterkennung wird geladen … " + Math.round(pr * 100) + " %"); });
+      ocrStatus("Lese Werte aus dem Bild …");
+      const cv = await ocrPrep(file);
+      const pass = async (canvas, psm, k) => {
+        await w.setParameters({ tessedit_pageseg_mode: psm });
+        const r = await w.recognize(canvas, {}, { text: true, blocks: true });
+        const words = [];
+        ((r.data && r.data.blocks) || []).forEach((bl) => (bl.paragraphs || []).forEach((pa) => (pa.lines || []).forEach((ln) => (ln.words || []).forEach((wd) => words.push({ text: wd.text, bbox: { y0: wd.bbox.y0 * k, y1: wd.bbox.y1 * k } })))));
+        return { text: (r.data && r.data.text) || "", words };
+      };
+      const a1 = await pass(cv, "3", 1);
+      const res = ocrParse(a1.text, a1.words);
+      {
+        // Weitere Durchgänge: verkleinert und als verstreuter Text, damit sehr große Zahlen (der Score im Ring) erkannt werden.
+        // Mehrere Größen stimmen ab, das macht einzelne Verleser unschädlich.
+        const votes = { score: {}, min: {} };
+        if (res.score) votes.score[res.score] = 1;
+        if (res.min) votes.min[res.min] = 1;
+        for (const k of [0.3, 0.45, 0.6]) {
+          const small = document.createElement("canvas");
+          small.width = Math.round(cv.width * k); small.height = Math.round(cv.height * k);
+          small.getContext("2d").drawImage(cv, 0, 0, small.width, small.height);
+          const ax = await pass(small, "11", 1 / k);
+          const rx = ocrParse(ax.text, ax.words);
+          if (rx.score) votes.score[rx.score] = (votes.score[rx.score] || 0) + 1;
+          if (rx.min) votes.min[rx.min] = (votes.min[rx.min] || 0) + 1;
+          if (!res.rhr && rx.rhr) res.rhr = rx.rhr;
+        }
+        const top = (o) => { let bk = 0, bv = 0; Object.keys(o).forEach((key) => { if (o[key] > bv) { bv = o[key]; bk = +key; } }); return bk; };
+        res.score = top(votes.score);
+        res.min = top(votes.min);
+        await w.setParameters({ tessedit_pageseg_mode: "3" });
+      }
+      ocrOpen(res, blob || file);
+    } catch (e) {
+      toast(navigator.onLine === false ? "Für das erste Auslesen brauchst du einmal Internet. Danach geht es auch offline." : "Das Bild konnte nicht ausgelesen werden. Trag die Werte bitte selbst ein.");
+    } finally {
+      ocrBusy = false;
+      renderSleepRow(todayKey());
+      ocrIdle = setTimeout(() => { if (ocrWorker && !ocrBusy) { try { ocrWorker.terminate(); } catch (e) { /* ignore */ } ocrWorker = null; } }, 90000);
+    }
+  }
+  function ocrOpen(res, img) {
+    if (ocrUrl) { try { URL.revokeObjectURL(ocrUrl); } catch (e) { /* ignore */ } }
+    ocrUrl = URL.createObjectURL(img);
+    $("ocrImg").src = ocrUrl;
+    const found = [res.min ? "Dauer" : "", res.score ? "Score" : "", res.rhr ? "Ruhepuls" : ""].filter(Boolean);
+    $("ocrMsg").textContent = found.length ? "Erkannt: " + found.join(", ") + ". Prüf die Werte kurz und übernimm sie." : "Ich konnte nichts sicher erkennen. Trag die Werte selbst ein, das Bild ist gespeichert.";
+    $("ocrDur").value = res.min ? Math.floor(res.min / 60) + ":" + pad(res.min % 60) : "";
+    $("ocrScore").value = res.score ? String(res.score) : "";
+    $("ocrRhr").value = res.rhr ? String(res.rhr) : "";
+    $("ocrRhrF").hidden = !res.rhr;
+    $("ocrAuto").checked = S().ocr !== false;
+    $("ocrSheet").hidden = false;
+    hap(found.length ? "set" : "tap");
+  }
+  function ocrClose() { $("ocrSheet").hidden = true; }
+  $("ocrCancel").addEventListener("click", ocrClose);
+  $("ocrSheet").addEventListener("click", (ev) => { if (ev.target === $("ocrSheet")) ocrClose(); });
+  $("ocrAuto").addEventListener("change", function () { S().ocr = this.checked; saveSettings(); });
+  $("ocrOk").addEventListener("click", () => {
+    const dur = $("ocrDur").value.trim(), sc = $("ocrScore").value.trim(), rh = $("ocrRhr").value.trim();
+    if (dur) { const mn = parseSleep(dur); if (mn < 60 || mn > 1000) { toast("Schlafdauer bitte so eingeben: 7:30"); return; } $("sleepDur").value = Math.floor(mn / 60) + ":" + pad(mn % 60); }
+    if (sc) $("sleepScore").value = sc;
+    saveSleepFields();
+    if (rh && $("rhrIn")) { $("rhrIn").value = rh; saveVitals(); }
+    ocrClose();
+    toast("Werte übernommen");
+  });
   $("sleepFile").addEventListener("change", onSleepFile);
   $("sleepFileCam").addEventListener("change", onSleepFile);
   function renderSleepRow(dk) {
