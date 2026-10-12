@@ -744,6 +744,7 @@ pre.prompt { white-space: pre-wrap; margin: 0 0 12px; padding: 14px; border-radi
 .syslines li b { font-family: var(--display); font-size: 18px; color: var(--ink); white-space: nowrap; }
 .sysbox .btn { width: 100%; margin-top: 4px; }
 #ocrImg { max-height: 28vh; }
+.vpsub { margin: 14px 0 0; font-size: 15px; font-weight: 600; }
 .ocrauto { display: flex; align-items: center; gap: 10px; color: var(--ink-2); font-size: 14px; min-height: 40px; }
 .ocrauto input { width: 20px; height: 20px; accent-color: var(--ice); }
 .questcard { position: relative; margin: 0 0 20px; padding: 14px 16px; border-radius: 16px; border: 1px solid rgba(var(--acc-rgb), .45); background: linear-gradient(180deg, rgba(var(--acc-rgb), .09), rgba(0, 0, 0, .3)); box-shadow: 0 0 22px rgba(var(--acc-rgb), .12); overflow: hidden; }
@@ -1648,8 +1649,12 @@ main[data-dir="l"] > section:not([hidden]) { animation: viewInL 260ms cubic-bezi
                 <p class="fhint" id="vpState"></p>
                 <div class="row"><button class="btn small" id="vpExport">Satzliste exportieren</button><button class="btn small" id="vpPick">Voice-Pack laden (ZIP)</button><input type="file" class="sr" id="vpFile" accept=".zip,application/zip" tabindex="-1"></div>
                 <div class="row"><button class="btn small" id="vpTest">Probe hören</button><button class="btn small danger" id="vpDel" hidden>Voice-Pack entfernen</button></div>
-                <div class="field"><label for="vpVol">Lautstärke des Voice-Packs</label><input type="range" id="vpVol" min="20" max="100" step="5"></div>
-                <small class="fhint">So kommt deine eigene Stimme in die App: 1. Satzliste exportieren. 2. Am PC mit dem Skript make_voicepack.py durch dein Stimmmodell schicken, zum Beispiel eine Piper-Stimme. 3. Das fertige ZIP hier laden. Die Clips bleiben nur auf diesem Handy. Fehlt ein Clip, spricht die Systemstimme den ganzen Satz. Das Voice-Pack ist nicht im Backup, heb das ZIP also auf.</small>
+                <div class="field"><label for="vpVol">Lautstärke der eigenen Stimme</label><input type="range" id="vpVol" min="20" max="100" step="5"></div>
+                <h4 class="vpsub">Eigenes Stimmmodell (Piper)</h4>
+                <p class="fhint" id="pmState"></p>
+                <div class="row"><button class="btn small" id="pmPick">Modell laden (.onnx und .json)</button><input type="file" class="sr" id="pmFile" multiple tabindex="-1"><button class="btn small danger" id="pmDel" hidden>Modell entfernen</button></div>
+                <div class="field"><label for="pmSpeed">Sprechtempo des Modells</label><input type="range" id="pmSpeed" min="70" max="140" step="5"></div>
+                <small class="fhint">Reihenfolge: Ist ein eigenes Modell geladen, spricht es. Sonst das Voice-Pack, sonst die Systemstimme. Voice-Pack: 1. Satzliste exportieren. 2. Am PC mit dem Skript make_voicepack.py durch dein Stimmmodell schicken, zum Beispiel eine Piper-Stimme. 3. Das fertige ZIP hier laden. Die Clips bleiben nur auf diesem Handy. Fehlt ein Clip, spricht die Systemstimme den ganzen Satz. Das Voice-Pack ist nicht im Backup, heb das ZIP also auf.</small>
               </details>
               <div class="toggle"><span>Atmender Glow<small>Ring, Balken und Tab-Symbol leuchten ruhig in deiner Farbe.</small></span><button class="switch" role="switch" aria-checked="true" id="swGlow" aria-label="Atmender Glow"></button></div>
               <details class="mini"><summary>Eigenes Hintergrundbild</summary>
@@ -3470,6 +3475,7 @@ main[data-dir="l"] > section:not([hidden]) { animation: viewInL 260ms cubic-bezi
   const timer = { end: 0, total: 0, id: 0, finished: false, said: false };
   function startTimer(sec) {
     timer.said = false;
+    if (window.__waGame && voiceOn() && piperOn()) { const nx = nextSet(); piperWarm(["Noch zehn Sekunden.", "Pause vorbei." + (nx.text ? " " + nx.text : "")]); }
     timer.total = sec * 1000;
     timer.end = Date.now() + timer.total;
     timer.finished = false;
@@ -8777,7 +8783,156 @@ main[data-dir="l"] > section:not([hidden]) { animation: viewInL 260ms cubic-bezi
     });
     return true;
   }
-  const voiceOn = () => !!S().voice && (!!window.speechSynthesis || vp.ids.size > 0);
+  // ---- Eigenes Stimmmodell (Piper): spricht jeden Satz frei, direkt auf dem Handy ----
+  const PIPER = {
+    ort: "https://cdn.jsdelivr.net/npm/onnxruntime-web@1.18.0/dist/ort.wasm.min.js",
+    ortWasm: "https://cdn.jsdelivr.net/npm/onnxruntime-web@1.18.0/dist/",
+    phon: "https://cdn.jsdelivr.net/npm/@diffusionstudio/vits-web@1.0.3/dist/piper-DeOu3H9E.js",
+    data: "https://cdn.jsdelivr.net/npm/@diffusionstudio/piper-wasm@1.0.0/build/piper_phonemize"
+  };
+  const pm = { sess: null, cfg: null, cache: new Map(), chain: Promise.resolve(), loading: null };
+  const piperOn = () => !!(S().piper && S().piper.ok && S().piper.on !== false) && !!window.WebAssembly;
+  function pmScript(src) {
+    return new Promise((res, rej) => { const sc = document.createElement("script"); sc.src = src; sc.async = true; sc.onload = res; sc.onerror = () => rej(new Error("net")); document.head.appendChild(sc); });
+  }
+  async function pmLoad() {
+    if (pm.sess && pm.cfg) return pm;
+    if (pm.loading) return pm.loading;
+    pm.loading = (async () => {
+      if (!window.ort) await pmScript(PIPER.ort);
+      const ort = window.ort;
+      ort.env.wasm.wasmPaths = PIPER.ortWasm;
+      ort.env.wasm.numThreads = self.crossOriginIsolated ? Math.min(4, navigator.hardwareConcurrency || 2) : 1;
+      const [mr, cr] = await Promise.all([mdb.get("piper:model"), mdb.get("piper:cfg")]);
+      if (!mr || !cr) throw new Error("kein Modell");
+      pm.cfg = JSON.parse(await cr.blob.text());
+      pm.sess = await ort.InferenceSession.create(new Uint8Array(await mr.blob.arrayBuffer()), { executionProviders: ["wasm"] });
+      return pm;
+    })();
+    try { return await pm.loading; } finally { pm.loading = null; }
+  }
+  async function pmIds(text) {
+    const mod = await import(PIPER.phon);
+    const voice = (pm.cfg.espeak && pm.cfg.espeak.voice) || "de";
+    return new Promise((res, rej) => {
+      let done = false;
+      mod.createPiperPhonemize({
+        print: (l) => {
+          if (done) return;
+          try {
+            const j = JSON.parse(l);
+            if (!j || !j.phoneme_ids) return;
+            done = true;
+            // Die IDs immer aus der Tabelle des eigenen Modells bilden, sonst passen sie nicht zu jedem Modell
+            const map = pm.cfg.phoneme_id_map;
+            if (map && j.phonemes && map["^"] && map["_"] && map["$"]) {
+              const ids = map["^"].concat(map["_"]);
+              j.phonemes.forEach((ph) => { if (map[ph]) { ids.push.apply(ids, map[ph]); ids.push.apply(ids, map["_"]); } });
+              ids.push.apply(ids, map["$"]);
+              res(ids);
+            } else res(j.phoneme_ids);
+          } catch (e) { /* weitere Zeilen */ }
+        },
+        printErr: () => {},
+        locateFile: (f) => (f.endsWith(".wasm") ? PIPER.data + ".wasm" : f.endsWith(".data") ? PIPER.data + ".data" : f)
+      }).then((inst) => {
+        inst.callMain(["-l", voice, "--input", JSON.stringify([{ text }]), "--espeak_data", "/espeak-ng-data"]);
+        setTimeout(() => { if (!done) rej(new Error("phonemize")); }, 15000);
+      }, rej);
+    });
+  }
+  async function pmSynth(text) {
+    const key = text.trim();
+    if (pm.cache.has(key)) return pm.cache.get(key);
+    const job = pm.chain.then(async () => {
+      if (pm.cache.has(key)) return pm.cache.get(key);
+      await pmLoad();
+      const ort = window.ort, cfg = pm.cfg;
+      const ids = await pmIds(key);
+      const inf = cfg.inference || {};
+      const feeds = {
+        input: new ort.Tensor("int64", BigInt64Array.from(ids.map((x) => BigInt(x))), [1, ids.length]),
+        input_lengths: new ort.Tensor("int64", BigInt64Array.from([BigInt(ids.length)]), [1]),
+        scales: new ort.Tensor("float32", Float32Array.from([inf.noise_scale != null ? inf.noise_scale : 0.667, (inf.length_scale != null ? inf.length_scale : 1) / (S().piperSpeed || 1), inf.noise_w != null ? inf.noise_w : 0.8]), [3])
+      };
+      if (cfg.speaker_id_map && Object.keys(cfg.speaker_id_map).length) feeds.sid = new ort.Tensor("int64", BigInt64Array.from([0n]), [1]);
+      const out = await pm.sess.run(feeds);
+      const data = (out.output || out[Object.keys(out)[0]]).data;
+      primeAudio();
+      const sr = (cfg.audio && cfg.audio.sample_rate) || 22050;
+      const buf = audioCtx.createBuffer(1, data.length, sr);
+      buf.copyToChannel(data instanceof Float32Array ? data : Float32Array.from(data), 0);
+      if (pm.cache.size > 40) pm.cache.delete(pm.cache.keys().next().value);
+      pm.cache.set(key, buf);
+      return buf;
+    });
+    pm.chain = job.catch(() => {});
+    return job;
+  }
+  async function piperSay(text) {
+    const buf = await pmSynth(text);
+    primeAudio();
+    vpStop();
+    try { if (window.speechSynthesis) speechSynthesis.cancel(); } catch (e) { /* ignore */ }
+    const g = audioCtx.createGain();
+    g.gain.value = Math.max(0.2, Math.min(1, (S().voiceVol || 100) / 100));
+    g.connect(audioCtx.destination);
+    const s = audioCtx.createBufferSource();
+    s.buffer = buf; s.connect(g); s.start(audioCtx.currentTime + 0.03);
+    vp.srcs.push(s);
+  }
+  function piperWarm(texts) { if (!piperOn()) return; texts.filter(Boolean).forEach((t) => { pmSynth(t).catch(() => {}); }); }
+  function renderPmUi() {
+    const st = $("pmState");
+    if (!st) return;
+    const p = S().piper;
+    st.textContent = p && p.ok ? "Aktiv: „" + p.name + "“ (" + Math.round((p.sr || 22050) / 1000) + " kHz). Der Coach spricht jeden Satz frei mit deinem Modell. Vor dem ersten Satz lädt die App einmalig die Sprach-Engine, etwa 30 MB." :
+      p && p.model && !p.cfg ? "Modell gespeichert. Wähle jetzt noch die passende .json-Datei dazu." : p && p.cfg && !p.model ? "Konfiguration gespeichert. Wähle jetzt noch die .onnx-Datei dazu." :
+      "Kein eigenes Modell geladen. Ein Piper-Modell besteht aus zwei Dateien: stimme.onnx und stimme.onnx.json. Du kannst beide auf einmal auswählen.";
+    $("pmDel").hidden = !(p && (p.model || p.cfg));
+    $("pmSpeed").value = Math.round((S().piperSpeed || 1) * 100);
+  }
+  async function pmImport(files) {
+    const st = $("pmState");
+    const p = Object.assign({}, S().piper || {});
+    for (const f of files) {
+      const n = f.name.toLowerCase();
+      if (n.endsWith(".json")) {
+        let cfg;
+        try { cfg = JSON.parse(await f.text()); } catch (e) { st.textContent = "Die .json-Datei ist nicht lesbar."; return; }
+        if (!cfg.audio || !cfg.espeak) { st.textContent = "Das sieht nicht nach einer Piper-Konfiguration aus (es fehlen audio und espeak)."; return; }
+        await mdb.put("piper:cfg", new Blob([JSON.stringify(cfg)], { type: "application/json" }), f.name);
+        p.cfg = true; p.sr = cfg.audio.sample_rate;
+      } else if (n.endsWith(".onnx")) {
+        if (f.size > 200 * 1024 * 1024) { st.textContent = "Das Modell ist größer als 200 MB, das ist fürs Handy zu viel."; return; }
+        st.textContent = "Modell wird gespeichert …";
+        await mdb.put("piper:model", f, f.name);
+        p.model = true; p.name = f.name.replace(/\.onnx$/i, "");
+      }
+    }
+    p.ok = !!(p.model && p.cfg); p.on = true;
+    S().piper = p; saveSettings();
+    pm.sess = null; pm.cfg = null; pm.cache.clear();
+    renderPmUi(); renderVoiceBtn();
+    if (p.ok) {
+      st.textContent = "Modell wird geladen und getestet …";
+      try { await piperSay("Hallo. Ab jetzt spreche ich mit deiner Stimme."); renderPmUi(); toast("Eigenes Stimmmodell aktiv"); }
+      catch (e) { st.textContent = "Das Modell ließ sich nicht starten. " + (navigator.onLine === false ? "Beim ersten Mal brauchst du Internet für die Sprach-Engine." : "Ist es ein Piper-Modell im ONNX-Format?"); S().piper.ok = false; saveSettings(); }
+    }
+  }
+  if ($("pmPick")) {
+    $("pmPick").addEventListener("click", () => $("pmFile").click());
+    $("pmFile").addEventListener("change", (ev) => { const fs = Array.prototype.slice.call(ev.target.files || []); ev.target.value = ""; if (fs.length) pmImport(fs).catch(() => { $("pmState").textContent = "Speichern fehlgeschlagen. Ist genug Speicher frei?"; }); });
+    $("pmDel").addEventListener("click", async () => {
+      try { await mdb.del("piper:model"); await mdb.del("piper:cfg"); } catch (e) { /* ignore */ }
+      S().piper = null; saveSettings(); pm.sess = null; pm.cfg = null; pm.cache.clear();
+      renderPmUi(); renderVoiceBtn(); toast("Stimmmodell entfernt");
+    });
+    $("pmSpeed").addEventListener("change", function () { S().piperSpeed = (+this.value || 100) / 100; saveSettings(); pm.cache.clear(); });
+    renderPmUi();
+  }
+
+  const voiceOn = () => !!S().voice && (!!window.speechSynthesis || vp.ids.size > 0 || piperOn());
   function ttsSay(text) {
     if (!window.speechSynthesis || !text) return;
     try {
@@ -8790,8 +8945,9 @@ main[data-dir="l"] > section:not([hidden]) { animation: viewInL 260ms cubic-bezi
   }
   function say(text, parts, force) {
     if ((!voiceOn() && !force) || !text) return;
-    if (parts && parts.length && vp.ids.size) vpPlay(parts).then((ok) => { if (!ok) ttsSay(text); });
-    else ttsSay(text);
+    const rest = () => { if (parts && parts.length && vp.ids.size) vpPlay(parts).then((ok) => { if (!ok) ttsSay(text); }); else ttsSay(text); };
+    if (piperOn()) piperSay(text).catch(rest);
+    else rest();
   }
   function nextSet() {
     const dk = todayKey(), s = effSession(today());
@@ -8816,7 +8972,7 @@ main[data-dir="l"] > section:not([hidden]) { animation: viewInL 260ms cubic-bezi
   function renderVoiceBtn() {
     const b = $("voiceBtn");
     if (!b) return;
-    b.hidden = !window.speechSynthesis && !vp.ids.size;
+    b.hidden = !window.speechSynthesis && !vp.ids.size && !piperOn();
     b.setAttribute("aria-pressed", S().voice ? "true" : "false");
     b.textContent = S().voice ? "Coach-Stimme an" : "Coach-Stimme aus";
   }
