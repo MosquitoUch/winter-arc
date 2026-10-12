@@ -744,6 +744,26 @@ pre.prompt { white-space: pre-wrap; margin: 0 0 12px; padding: 14px; border-radi
 .syslines li b { font-family: var(--display); font-size: 18px; color: var(--ink); white-space: nowrap; }
 .sysbox .btn { width: 100%; margin-top: 4px; }
 #ocrImg { max-height: 28vh; }
+.vsel { min-height: 40px; padding: 6px 10px; border-radius: 10px; border: 1px solid var(--line-2); background: var(--surface); color: var(--ink); font: inherit; font-size: 14px; max-width: 100%; }
+.vltext { width: 100%; min-height: 52px; padding: 8px 10px; border-radius: 10px; border: 1px solid var(--line-2); background: var(--surface); color: var(--ink); font: inherit; font-size: 14px; resize: vertical; }
+#vpLines { display: grid; gap: 10px; margin-top: 10px; }
+.aifab { position: fixed; right: 16px; bottom: calc(86px + env(safe-area-inset-bottom, 0px)); z-index: 55; display: inline-flex; align-items: center; gap: 8px; min-height: 52px; padding: 0 18px; border-radius: 999px; border: 1px solid rgba(var(--acc-rgb), .7); background: rgba(6, 10, 16, .92); color: var(--ice); font: inherit; font-weight: 700; box-shadow: 0 0 22px rgba(var(--acc-rgb), .35); }
+.aifab svg { width: 20px; height: 20px; }
+body.timer-on .aifab { bottom: calc(150px + env(safe-area-inset-bottom, 0px)); }
+.aipanel { position: fixed; left: 0; right: 0; bottom: 0; z-index: 75; max-height: 70vh; display: grid; grid-template-rows: auto minmax(0, 1fr) auto auto auto; gap: 10px; padding: 14px 16px calc(14px + env(safe-area-inset-bottom, 0px)); border-radius: 22px 22px 0 0; border: 1px solid rgba(var(--acc-rgb), .5); border-bottom: 0; background: linear-gradient(180deg, rgba(10, 16, 24, .98), rgba(4, 8, 12, .98)); box-shadow: 0 -10px 40px rgba(0, 0, 0, .6), 0 0 30px rgba(var(--acc-rgb), .15); animation: padIn 200ms cubic-bezier(.2, .8, .2, 1); }
+.aihead { display: flex; align-items: center; gap: 10px; }
+.aihead b { flex: 1; min-width: 0; font-family: var(--display); font-size: 20px; }
+.ailog { list-style: none; margin: 0; padding: 0; overflow-y: auto; display: grid; gap: 8px; align-content: start; min-height: 60px; }
+.aib { max-width: 86%; padding: 9px 12px; border-radius: 14px; font-size: 15px; line-height: 1.35; overflow-wrap: anywhere; }
+.aib.me { justify-self: end; background: var(--surface-2); border: 1px solid var(--line-2); }
+.aib.ai { justify-self: start; border: 1px solid rgba(var(--acc-rgb), .45); background: rgba(var(--acc-rgb), .07); }
+.aib.sys { justify-self: center; color: var(--mute); font-size: 12px; padding: 2px 8px; }
+.aistatus { margin: 0; min-height: 18px; color: var(--ink-2); font-size: 13px; }
+.aimic { width: 100%; min-height: 56px; font-size: 17px; }
+.aimic svg { width: 20px; height: 20px; margin-right: 6px; vertical-align: -4px; }
+.aimic.live { animation: breathe 1.2s ease-in-out infinite; }
+.aiform { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 8px; }
+.aiset { margin-top: 26px; }
 .vpsub { margin: 14px 0 0; font-size: 15px; font-weight: 600; }
 .ocrauto { display: flex; align-items: center; gap: 10px; color: var(--ink-2); font-size: 14px; min-height: 40px; }
 .ocrauto input { width: 20px; height: 20px; accent-color: var(--ice); }
@@ -1161,7 +1181,7 @@ main[data-dir="l"] > section:not([hidden]) { animation: viewInL 260ms cubic-bezi
             <ul class="restlist" id="restlist" hidden aria-label="Erholungsziele"></ul>
             <p class="rest-note" id="restnote" hidden>Heute wächst du. Geh spazieren, dehn dich und schlaf früh.</p>
             <div class="row" id="freeRow" hidden style="margin-top:14px"><button class="btn small" id="exAddFree">Trotzdem trainiert? Freies Training eintragen</button></div>
-            <div class="row" id="trainRow" hidden style="margin-top:14px"><button class="btn small" id="trainBtn" aria-pressed="false">Trainingsmodus starten</button><button class="btn small" id="voiceBtn" aria-pressed="false" hidden>Coach-Stimme aus</button></div>
+            <div class="row" id="trainRow" hidden style="margin-top:14px"><button class="btn small" id="trainBtn" aria-pressed="false">Trainingsmodus starten</button><button class="btn small" id="voiceBtn" aria-pressed="false" hidden>Coach-Stimme aus</button><select class="vsel" id="voiceSel" aria-label="Wer coacht heute" hidden></select></div>
           </div>
 
           <div class="ampel idle" id="ampelCard" role="status">
@@ -1592,6 +1612,15 @@ main[data-dir="l"] > section:not([hidden]) { animation: viewInL 260ms cubic-bezi
         </div>
         <details style="margin-top:16px"><summary style="color:var(--ink-2);cursor:pointer">Vorschau anzeigen</summary><pre class="summary" id="summaryPreview"></pre></details>
       </div>
+      <div class="block aiset">
+        <h2 class="bh">KI-Coach im Training</h2>
+        <p class="lead">Im Training tippst du auf „Coach" unten rechts und sprichst einfach. Der Coach kennt deinen Plan, deine Sätze, deinen Check-in und deine Ränge, antwortet in der Persönlichkeit deines aktiven Stimm-Profils und kann Sätze für dich eintragen oder eine Pause starten.</p>
+        <div class="field"><label for="aiKey">API-Schlüssel von Anthropic</label><input id="aiKey" class="inp" type="password" autocomplete="off" spellcheck="false" placeholder="sk-ant-…"><small class="fhint">Bleibt nur auf diesem Handy, nicht im Backup. Gib die App mit Schlüssel nicht weiter. Bezahlt wird nach Nutzung, setz dir in der Anthropic-Konsole ein Ausgabelimit.</small></div>
+        <div class="field"><label for="aiModel">Modell</label><input id="aiModel" class="inp" autocomplete="off" spellcheck="false"><small class="fhint">Standard: claude-haiku-5-5, schnell und günstig.</small></div>
+        <label class="ocrauto"><input type="checkbox" id="aiSpeak"> Antworten vorlesen</label>
+        <div class="row"><button class="btn small" id="aiTest">Verbindung testen</button><button class="btn small danger" id="aiKeyDel" hidden>Schlüssel löschen</button></div>
+        <p class="fhint" id="aiUsage"></p>
+      </div>
     </section>
 
     <!-- PLAN -->
@@ -1645,16 +1674,32 @@ main[data-dir="l"] > section:not([hidden]) { animation: viewInL 260ms cubic-bezi
                 <div class="field"><label for="sndVol">Lautstärke der eigenen Töne</label><input type="range" id="sndVol" min="20" max="100" step="5"></div>
                 <small class="fhint">Eigene Dateien (MP3, WAV oder M4A, bis 3 MB und 10 Sekunden) bleiben nur auf diesem Handy gespeichert und werden nirgends hochgeladen. Nimm nur Töne, die du selbst nutzen darfst.</small>
               </details>
-              <details class="mini" id="vpBox"><summary>Coach-Stimme und Voice-Pack</summary>
+              <details class="mini" id="vpBox"><summary>Coach-Stimmen und Sprüche</summary>
+                <div class="field"><label for="vpProf">Profil bearbeiten</label><div class="row"><select id="vpProf" class="vsel"></select><button class="btn small" id="vpNew">Neues Profil</button><button class="btn small danger" id="vpDelProf" hidden>Löschen</button></div></div>
+                <div class="two">
+                  <div class="field"><label for="vpName">Name</label><input id="vpName" class="inp" autocomplete="off" maxlength="30"></div>
+                  <div class="field"><label for="vpRole">Rolle</label><select id="vpRole"><option value="normal">Normal</option><option value="motivation">Motivator, für wenig Energie</option><option value="ruhig">Ruhig, für Deload und lockere Tage</option></select></div>
+                </div>
+                <label class="ocrauto"><input type="checkbox" id="vpAuto"> Profil automatisch wählen: Motivator bei Energie 1 bis 2 oder roter Ampel, Ruhig bei Deload und Ruhetagen</label>
+                <details class="mini"><summary>Sprüche dieses Profils</summary>
+                  <small class="fhint">Eine Zeile pro Spruch, die App wählt zufällig. Platzhalter: {next} nächster Satz, {uebung} Übung, {wdh} Wiederholungen, {diff} Unterschied, {level} Level, {rang} Gesamtrang, {name} dein Name.</small>
+                  <div id="vpLines"></div>
+                  <div class="row"><button class="btn small" id="vpLinesReset">Alle Sprüche zurücksetzen</button></div>
+                </details>
+                <details class="mini"><summary>Persönlichkeit für den KI-Coach</summary>
+                  <textarea id="vpStyle" class="vltext" rows="4" spellcheck="false"></textarea>
+                  <small class="fhint">So redet der KI-Coach, wenn dieses Profil aktiv ist. Leer lassen für den Standard der Rolle.</small>
+                </details>
+                <h4 class="vpsub">Voice-Pack (fertige Audio-Clips)</h4>
                 <p class="fhint" id="vpState"></p>
                 <div class="row"><button class="btn small" id="vpExport">Satzliste exportieren</button><button class="btn small" id="vpPick">Voice-Pack laden (ZIP)</button><input type="file" class="sr" id="vpFile" accept=".zip,application/zip" tabindex="-1"></div>
                 <div class="row"><button class="btn small" id="vpTest">Probe hören</button><button class="btn small danger" id="vpDel" hidden>Voice-Pack entfernen</button></div>
-                <div class="field"><label for="vpVol">Lautstärke der eigenen Stimme</label><input type="range" id="vpVol" min="20" max="100" step="5"></div>
                 <h4 class="vpsub">Eigenes Stimmmodell (Piper)</h4>
                 <p class="fhint" id="pmState"></p>
                 <div class="row"><button class="btn small" id="pmPick">Modell laden (.onnx und .json)</button><input type="file" class="sr" id="pmFile" multiple tabindex="-1"><button class="btn small danger" id="pmDel" hidden>Modell entfernen</button></div>
-                <div class="field"><label for="pmSpeed">Sprechtempo des Modells</label><input type="range" id="pmSpeed" min="70" max="140" step="5"></div>
-                <small class="fhint">Reihenfolge: Ist ein eigenes Modell geladen, spricht es. Sonst das Voice-Pack, sonst die Systemstimme. Voice-Pack: 1. Satzliste exportieren. 2. Am PC mit dem Skript make_voicepack.py durch dein Stimmmodell schicken, zum Beispiel eine Piper-Stimme. 3. Das fertige ZIP hier laden. Die Clips bleiben nur auf diesem Handy. Fehlt ein Clip, spricht die Systemstimme den ganzen Satz. Das Voice-Pack ist nicht im Backup, heb das ZIP also auf.</small>
+                <div class="field"><label for="pmSpeed">Sprechtempo der Modelle</label><input type="range" id="pmSpeed" min="70" max="140" step="5"></div>
+                <div class="field"><label for="vpVol">Lautstärke der eigenen Stimmen</label><input type="range" id="vpVol" min="20" max="100" step="5"></div>
+                <small class="fhint">Jedes Profil spricht mit seinem Modell, sonst mit seinem Voice-Pack, sonst mit der Systemstimme. Voice-Pack: Satzliste exportieren, am PC mit make_voicepack.py durch dein Modell schicken, ZIP hier laden. Ändere vorher die Sprüche, denn die Liste enthält genau die Sprüche dieses Profils. Clips und Modelle bleiben nur auf diesem Handy und sind nicht im Backup.</small>
               </details>
               <div class="toggle"><span>Atmender Glow<small>Ring, Balken und Tab-Symbol leuchten ruhig in deiner Farbe.</small></span><button class="switch" role="switch" aria-checked="true" id="swGlow" aria-label="Atmender Glow"></button></div>
               <details class="mini"><summary>Eigenes Hintergrundbild</summary>
@@ -1953,6 +1998,15 @@ main[data-dir="l"] > section:not([hidden]) { animation: viewInL 260ms cubic-bezi
     </div>
     <div class="row"><button class="btn primary" id="whOk">Übernehmen</button><button class="btn" id="whCancel">Abbrechen</button><button class="btn" id="whClear">Leeren</button></div>
   </div>
+</div>
+
+<button class="aifab" id="aiFab" hidden aria-label="KI-Coach fragen"><svg aria-hidden="true"><use href="#i-mic"/></svg>Coach</button>
+<div class="aipanel" id="aiPanel" hidden role="dialog" aria-label="KI-Coach">
+  <div class="aihead"><span class="systag sm"><span>!</span>Coach</span><b id="aiPanelName"></b><button class="btn small" id="aiClose">Schließen</button></div>
+  <ul class="ailog" id="aiLog" aria-live="polite"></ul>
+  <p class="aistatus" id="aiStatus"></p>
+  <button class="btn primary aimic" id="aiMic"><svg aria-hidden="true"><use href="#i-mic"/></svg>Sprechen</button>
+  <form class="aiform" id="aiForm"><label class="sr" for="aiText">Frage an den Coach</label><input id="aiText" class="inp" autocomplete="off" placeholder="Oder tippen …"><button class="btn small" type="submit">Senden</button></form>
 </div>
 
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
@@ -3237,7 +3291,7 @@ main[data-dir="l"] > section:not([hidden]) { animation: viewInL 260ms cubic-bezi
       xpFloat(li.querySelector('.set[data-i="' + i + '"]') || btn, "+10 XP");
       shards(li.querySelector('.set[data-i="' + i + '"]') || btn);
       const pr = sessionProgress(dk, session);
-      if (pr.done === pr.total) { stopTimer(); celebrate(dk); if (window.__waGame) say("Training abgeschlossen. Stark gemacht.", ["training_abgeschlossen"]); }
+      if (pr.done === pr.total) { stopTimer(); celebrate(dk); if (window.__waGame) coach("done", {}); }
       else if (n > 1) startTimer(S().rest || 120);
       checkGoals();
     }
@@ -3475,7 +3529,7 @@ main[data-dir="l"] > section:not([hidden]) { animation: viewInL 260ms cubic-bezi
   const timer = { end: 0, total: 0, id: 0, finished: false, said: false };
   function startTimer(sec) {
     timer.said = false;
-    if (window.__waGame && voiceOn() && piperOn()) { const nx = nextSet(); piperWarm(["Noch zehn Sekunden.", "Pause vorbei." + (nx.text ? " " + nx.text : "")]); }
+    timer.voice = window.__waGame && voiceOn() ? coachRestPrep() : null;
     timer.total = sec * 1000;
     timer.end = Date.now() + timer.total;
     timer.finished = false;
@@ -3496,11 +3550,11 @@ main[data-dir="l"] > section:not([hidden]) { animation: viewInL 260ms cubic-bezi
     const left = timer.end - Date.now();
     $("timertime").textContent = fmtClock(left);
     $("timerbar").style.transform = "scaleX(" + Math.max(0, Math.min(1, left / timer.total)).toFixed(4) + ")";
-    if (left > 0 && left <= 10500 && !timer.said && timer.total > 20000) { timer.said = true; if (window.__waGame) say("Noch zehn Sekunden.", ["noch_zehn_sekunden"]); }
+    if (left > 0 && left <= 10500 && !timer.said && timer.total > 20000) { timer.said = true; if (window.__waGame && timer.voice) sayLine(timer.voice.ten); }
     if (left <= 0) {
       if (!timer.finished) {
         timer.finished = true;
-        if (window.__waGame && voiceOn()) { const nx = nextSet(); setTimeout(() => say("Pause vorbei." + (nx.text ? " " + nx.text : ""), ["pause_vorbei"].concat(nx.parts)), 350); }
+        if (window.__waGame && voiceOn()) { const ln = (timer.voice && timer.voice.over) || coachRestPrep().over; setTimeout(() => sayLine(ln), 350); }
         $("timer").classList.add("done");
         $("timerlabel").textContent = "Nächster Satz";
         $("timertime").textContent = "Los";
@@ -3909,7 +3963,7 @@ main[data-dir="l"] > section:not([hidden]) { animation: viewInL 260ms cubic-bezi
 
   // ================= Today extras =================
   function renderTodayExtras(dk) {
-    if (window.__waGame) { renderQuest(dk); renderVoiceBtn(); }
+    if (window.__waGame) { renderQuest(dk); renderVoiceBtn(); renderAiFab(); }
     renderSteps(dk);
     renderGoal();
     renderSessNote(dk);
@@ -5995,6 +6049,7 @@ main[data-dir="l"] > section:not([hidden]) { animation: viewInL 260ms cubic-bezi
     if (name === "today") fitDayname();
     window.scrollTo(0, 0);
     snow.toggle(name === "today");
+    if (window.__waGame) { renderAiFab(); if (name === "coach") renderAiSettings(); }
   }
   document.querySelector(".tabs").addEventListener("click", (ev) => { const b = ev.target.closest(".tab"); if (b) { hap("tab"); showTab(b.dataset.tab); } });
   // Wischen links/rechts wechselt den Tab, die Seite folgt dabei dem Finger
@@ -6338,8 +6393,9 @@ main[data-dir="l"] > section:not([hidden]) { animation: viewInL 260ms cubic-bezi
     document.body.classList.toggle("train-mode", trainMode);
     $("trainBtn").setAttribute("aria-pressed", trainMode ? "true" : "false");
     $("trainBtn").textContent = trainMode ? "Trainingsmodus beenden" : "Trainingsmodus starten";
-    if (trainMode) { primeAudio(); wakeOn(); toast("Bildschirm bleibt an. Tipp auf einen Satz für die Zahlentasten."); if (window.__waGame) { const nx = nextSet(); say("Training gestartet." + (nx.text ? " Los geht es mit " + nx.text : ""), ["training_gestartet"].concat(nx.parts.length ? ["los_gehts_mit"].concat(nx.parts) : [])); } }
+    if (trainMode) { primeAudio(); wakeOn(); toast("Bildschirm bleibt an. Tipp auf einen Satz für die Zahlentasten."); if (window.__waGame && voiceOn()) coachStart(); }
     else if (!wakeNeeded()) wakeOff();
+    if (window.__waGame) renderAiFab();
     window.scrollTo(0, 0);
   });
 
@@ -7224,6 +7280,8 @@ main[data-dir="l"] > section:not([hidden]) { animation: viewInL 260ms cubic-bezi
       const pn = pendingNotes[dk] && pendingNotes[dk][e.id];
       const parts = noteParts(pn != null ? pn : lg.note);
       const v = Math.min(999, Math.max(1, Math.round(+numpad.val)));
+      const prevItems = window.__waGame && voiceOn() && !numpad.secs ? historyFor(e.name).filter((x) => x.date < dk && !x.perf.secs) : null;
+      if (prevItems) setTimeout(() => coachSetFeedback(e.name, numpad.i, v, numpad.showKg ? numpad.kg : 0, prevItems), 0);
       if (numpad.i < parts.reps.length) parts.reps[numpad.i] = v; else parts.reps.push(v);
       parts.secs = numpad.secs;
       if (numpad.showKg) parts.weight = numpad.kg;
@@ -8421,7 +8479,7 @@ main[data-dir="l"] > section:not([hidden]) { animation: viewInL 260ms cubic-bezi
         if (lines.length) {
           if (lvUp) lines.push({ t: "Level", v: prev._lv + " → " + X.lv });
           sysShow(oUp ? "Rang-Aufstieg" : "Neuer Rang", lines, oUp ? R.overall.idx : null, note);
-        } else if (lvUp) { toast("Level " + X.lv + " erreicht"); hap("set"); if (window.__waGame && voiceOn()) say("Level aufgestiegen.", ["level_up"]); }
+        } else if (lvUp) { toast("Level " + X.lv + " erreicht"); hap("set"); if (window.__waGame && voiceOn()) coach("level_up", { level: X.lv }); }
       }
       if (JSON.stringify(prev) !== JSON.stringify(cur)) { m.ranks = cur; saveLocal(); }
       if (window.__waGame) { try { checkAch(R, X); } catch (e) { /* ignore */ } }
@@ -8707,37 +8765,142 @@ main[data-dir="l"] > section:not([hidden]) { animation: viewInL 260ms cubic-bezi
     } catch (e) { toast("Die Lizenz konnte nicht erstellt werden."); }
   }
 
-  // ---- Coach-Stimme: Systemstimme oder eigenes Voice-Pack ----
+  // ---- Coach-Stimme v13: Stimm-Profile, Situations-Sprüche, Voice-Pack und Piper pro Profil ----
   let deVoice = null;
   function pickVoice() {
     try { const vs = speechSynthesis.getVoices() || []; deVoice = vs.filter((v) => /^de/i.test(v.lang)).sort((a, b) => (b.localService ? 1 : 0) - (a.localService ? 1 : 0))[0] || null; } catch (e) { deVoice = null; }
   }
   if (window.speechSynthesis) { pickVoice(); try { speechSynthesis.addEventListener("voiceschanged", pickVoice); } catch (e) { /* ignore */ } }
-  // Voice-Pack: einzelne Audio-Clips, aus denen die App ihre Sätze zusammensetzt
   const vslug = (s) => String(s || "").toLowerCase().replace(/ä/g, "ae").replace(/ö/g, "oe").replace(/ü/g, "ue").replace(/ß/g, "ss").replace(/[^a-z0-9]+/g, "_").replace(/^_+|_+$/g, "").slice(0, 60) || "x";
-  const VP_FIXED = [
-    ["stimme_an", "Coach-Stimme an. Ich sage dir, wann die Pause vorbei ist."],
-    ["training_gestartet", "Training gestartet."],
-    ["los_gehts_mit", "Los geht's mit"],
-    ["noch_zehn_sekunden", "Noch zehn Sekunden."],
-    ["pause_vorbei", "Pause vorbei."],
-    ["training_abgeschlossen", "Training abgeschlossen. Stark gemacht."],
-    ["satz", "Satz"], ["von", "von"], ["ziel", "Ziel"], ["bis", "bis"], ["sekunden", "Sekunden"],
-    ["rang_aufstieg", "Rang-Aufstieg."], ["neuer_rang", "Neuer Rang."], ["level_up", "Level aufgestiegen."],
-    ["quest_geschafft", "Daily Quest abgeschlossen."], ["erfolg", "Erfolg freigeschaltet."],
-    ["boss_besiegt", "Boss besiegt."], ["boss_lebt", "Der Boss lebt noch."]
+  const SITS = [
+    ["start", "Trainingsstart"], ["low_energy", "Start bei wenig Energie"], ["skipped", "Start nach ausgelassenem Tag"],
+    ["ten", "Noch 10 Sekunden Pause"], ["rest_over", "Pause vorbei"], ["last_set", "Vor dem letzten Satz"],
+    ["set_pr", "Neuer Rekord im Satz"], ["set_better", "Mehr als letztes Mal"], ["set_worse", "Weniger als letztes Mal"],
+    ["done", "Training fertig"], ["rank_up", "Rang-Aufstieg"], ["level_up", "Level-Aufstieg"], ["quest", "Daily Quest geschafft"],
+    ["boss_won", "Boss besiegt"], ["boss_alive", "Boss lebt noch"], ["achievement", "Erfolg freigeschaltet"], ["voice_on", "Stimme eingeschaltet"]
   ];
-  const vp = { ids: new Set(), buf: {}, srcs: [], gain: null };
-  const vpLoadIndex = () => { const v = S().voicePack; vp.ids = new Set(v && v.ids ? v.ids : []); vp.buf = {}; };
-  vpLoadIndex();
-  function vpList() {
-    const out = VP_FIXED.map(([id, text]) => ({ id, text }));
-    for (let n = 1; n <= 100; n++) out.push({ id: "zahl_" + n, text: String(n) });
-    const names = {};
-    ((state.plan && state.plan.days) || []).forEach((d) => (d.exercises || []).forEach((e) => { if (e && e.name && !isRun(e)) names[vslug(e.name)] = e.name; }));
-    Object.keys(names).sort().forEach((k) => out.push({ id: "uebung_" + k, text: names[k] }));
+  const LINES = {
+    normal: {
+      start: ["Training gestartet. Los geht's mit {next}", "Auf geht's. Erste Übung: {next}"],
+      low_energy: ["Wenig Energie heute. Wir ziehen es trotzdem durch, sauber und ruhig."],
+      skipped: ["Gestern ist ausgefallen. Heute holen wir uns das zurück."],
+      ten: ["Noch zehn Sekunden.", "Zehn Sekunden. Mach dich bereit."],
+      rest_over: ["Pause vorbei. {next}", "Weiter geht's. {next}"],
+      last_set: ["Letzter Satz. {next} Gib alles.", "Das ist der letzte Satz. {next}"],
+      set_pr: ["Neuer Rekord. {wdh} Wiederholungen!", "Bestwert geknackt. Stark."],
+      set_better: ["{diff} mehr als letztes Mal. Gut so.", "Besser als letztes Mal."],
+      set_worse: ["{diff} weniger als letztes Mal. Kein Problem, der nächste Satz zählt.", "Heute etwas weniger. Weiter."],
+      done: ["Training abgeschlossen. Stark gemacht.", "Fertig für heute. Gute Arbeit."],
+      rank_up: ["Rang-Aufstieg."], level_up: ["Level aufgestiegen. Level {level}."], quest: ["Daily Quest abgeschlossen."],
+      boss_won: ["Boss besiegt."], boss_alive: ["Der Boss lebt noch. Nächstes Mal."], achievement: ["Erfolg freigeschaltet."],
+      voice_on: ["Coach-Stimme an. Ich sage dir, wann die Pause vorbei ist."]
+    },
+    motivation: {
+      start: ["Na endlich. Hör auf zu jammern, wir fangen an. {next}", "Aufstehen, Jäger. {next}"],
+      low_energy: ["Keine Energie? Interessiert hier keinen. Monster trainieren auch müde.", "Müde? Gut. Dann sehen wir mal, was du wirklich drauf hast."],
+      skipped: ["Gestern geschwänzt. Heute zahlst du dafür.", "Ein Tag Pause und schon weich? Nicht mit mir."],
+      ten: ["Zehn Sekunden. Steh auf.", "Noch zehn. Keine Ausreden."],
+      rest_over: ["Pause vorbei, du Schnecke. {next}", "Genug ausgeruht. {next}"],
+      last_set: ["Letzter Satz. Wenn du jetzt schlappmachst, bleibst du E-Rang. {next}", "Letzter. Alles, was du hast. {next}"],
+      set_pr: ["Na also! {wdh}. Ich wusste, dass da mehr geht.", "Rekord. Siehst du? Jammern war umsonst."],
+      set_better: ["{diff} mehr. Endlich zeigst du was.", "Besser als letztes Mal. Weiter so, nicht nachlassen."],
+      set_worse: ["{diff} weniger als letztes Mal? Ernsthaft? Nächster Satz, und diesmal richtig.", "Schwach. Der nächste Satz wird besser, verstanden?"],
+      done: ["Geschafft. Hätte nicht gedacht, dass du durchhältst. Respekt.", "Fertig. Heute warst du kein Schwächling."],
+      rank_up: ["Rang-Aufstieg. Na bitte, geht doch."], level_up: ["Level {level}. Ruh dich bloß nicht darauf aus."], quest: ["Quest erledigt. Wurde auch Zeit."],
+      boss_won: ["Boss erledigt. So macht man das."], boss_alive: ["Der Boss lacht dich aus. Nächstes Mal machst du ihn platt."], achievement: ["Erfolg freigeschaltet. Nicht schlecht, Jäger."],
+      voice_on: ["Ich bin da. Und ich lasse dich nicht hängen, auch wenn du es willst."]
+    },
+    ruhig: {
+      start: ["Ganz ruhig. Wir beginnen mit {next}", "Schön, dass du da bist. Erste Übung: {next}"],
+      low_energy: ["Wenig Energie heute. Das ist okay. Wir gehen es sanft an."],
+      skipped: ["Gestern war Pause. Kein Stress, heute geht es einfach weiter."],
+      ten: ["Noch zehn Sekunden. Atme tief ein.", "Zehn Sekunden. Lockere die Schultern."],
+      rest_over: ["Weiter, in deinem Tempo. {next}", "Wenn du bereit bist: {next}"],
+      last_set: ["Letzter Satz. Sauber und kontrolliert. {next}"],
+      set_pr: ["Schön. Ein neuer Bestwert, ganz entspannt.", "{wdh} Wiederholungen. Ruhig und stark."],
+      set_better: ["{diff} mehr als letztes Mal. Schön."], set_worse: ["Etwas weniger als letztes Mal. Völlig in Ordnung."],
+      done: ["Fertig. Gönn dir jetzt Ruhe.", "Geschafft. Trink etwas und atme durch."],
+      rank_up: ["Ein neuer Rang. Verdient."], level_up: ["Level {level}. Schritt für Schritt."], quest: ["Daily Quest erledigt. Schön."],
+      boss_won: ["Boss besiegt. Gut gemacht."], boss_alive: ["Der Boss steht noch. Nächstes Mal."], achievement: ["Ein neuer Erfolg."],
+      voice_on: ["Ich begleite dich heute ruhig durchs Training."]
+    }
+  };
+  const STYLE = {
+    normal: "Freundlicher, klarer Trainer. Motivierend, aber sachlich. Duzt.",
+    motivation: "Harter, spöttischer Motivator im Stil eines Anime-Mentors. Darf spielerisch beleidigen und provozieren (zum Beispiel Schnecke, E-Rang, Weichei), wird aber nie verletzend, nie über Aussehen oder Persönliches. Lobt selten, dann aber ehrlich.",
+    ruhig: "Ruhiger, gelassener Begleiter. Sanft, entspannt, lobt leise, achtet auf Atmung und saubere Technik."
+  };
+  const ROLE_NAME = { normal: "Normal", motivation: "Motivator", ruhig: "Ruhig" };
+  function voices() {
+    const s = S();
+    if (!s.voices || !s.voices.list || !s.voices.list.length) {
+      s.voices = { active: "std", auto: false, list: [{ id: "std", name: "Standard", role: "normal", pack: s.voicePack || null, piper: s.piper || null, lines: null, style: "" }] };
+    }
+    return s.voices;
+  }
+  const profById = (id) => voices().list.find((p) => p.id === id) || null;
+  function autoRole() {
+    try {
+      const dk = todayKey(), r = readiness(dk), c = checkinOf(dk), s = effSession(today());
+      if ((c.energy && c.energy <= 2) || (r.hasInput && r.pts >= 3.5)) return "motivation";
+      if (!s || s.deload || /mobil|locker|entspann|yoga|dehn/i.test((s && s.name) || "")) return "ruhig";
+    } catch (e) { /* ignore */ }
+    return "normal";
+  }
+  function curProf() {
+    const V = voices();
+    if (V.auto) { const p = V.list.find((x) => x.role === autoRole()); if (p) return p; }
+    return profById(V.active) || V.list[0];
+  }
+  const linesOf = (p, sit) => { const own = p.lines && p.lines[sit]; return (own && own.length ? own : (LINES[p.role] || LINES.normal)[sit]) || []; };
+  const styleOf = (p) => (p.style && p.style.trim()) || STYLE[p.role] || STYLE.normal;
+  const kClip = (pid, id) => (pid === "std" ? "vp:" + id : "vp@" + pid + ":" + id);
+  const kModel = (pid) => (pid === "std" ? "piper:model" : "piper@" + pid + ":model");
+  const kCfg = (pid) => (pid === "std" ? "piper:cfg" : "piper@" + pid + ":cfg");
+  const packIds = (p) => new Set((p && p.pack && p.pack.ids) || []);
+  const piperOk = (p) => !!(p && p.piper && p.piper.ok) && !!window.WebAssembly;
+
+  // ---- Platzhalter und Clip-Teile ----
+  const rankSpoken = (l) => (l === "S+" ? "S plus" : l);
+  function fillLine(tpl, v) {
+    return String(tpl).replace(/\{(\w+)\}/g, (m, k) => {
+      if (k === "next") return (v.next && v.next.text) || "";
+      if (k === "rang") return v.rang ? rankSpoken(v.rang) : "";
+      return v[k] != null ? String(v[k]) : "";
+    }).replace(/\s+/g, " ").trim();
+  }
+  function lineSegments(tpl) {
+    const out = [];
+    String(tpl).split(/(\{\w+\})/).forEach((seg) => { const m = seg.match(/^\{(\w+)\}$/); if (m) out.push({ ph: m[1] }); else if (seg.trim()) out.push({ lit: seg.trim() }); });
     return out;
   }
+  function lineParts(sit, i, tpl, v) {
+    const parts = [];
+    let k = 0, ok = true;
+    lineSegments(tpl).forEach((s) => {
+      if (s.lit != null) { parts.push("s_" + sit + "_" + i + "_" + k++); return; }
+      const ph = s.ph;
+      if (ph === "next") { if (v.next && v.next.parts) parts.push.apply(parts, v.next.parts); }
+      else if (ph === "uebung") parts.push("uebung_" + vslug(v.uebung));
+      else if (ph === "rang") parts.push("rang_" + vslug(String(v.rang || "").replace("+", "plus")));
+      else if (ph === "name") parts.push("name");
+      else { const n = Math.round(+v[ph]); if (n >= 1 && n <= 100) parts.push("zahl_" + n); else ok = false; }
+    });
+    return ok ? parts : null;
+  }
+  const lastPick = {};
+  function pickLine(sit, v, prof) {
+    const p = prof || curProf(), list = linesOf(p, sit);
+    if (!list.length) return null;
+    let i = Math.floor(Math.random() * list.length);
+    if (list.length > 1 && lastPick[p.id + sit] === i) i = (i + 1) % list.length;
+    lastPick[p.id + sit] = i;
+    const vv = Object.assign({ name: (S().partner && S().partner.me) || "Jäger" }, v || {});
+    return { text: fillLine(list[i], vv), parts: lineParts(sit, i, list[i], vv), prof: p };
+  }
+
+  // ---- Wiedergabe ----
+  const vp = { buf: {}, srcs: [] };
   function vpTrim(b) {
     try {
       const ch = b.numberOfChannels, len = b.length, sr = b.sampleRate, th = 0.012;
@@ -8753,60 +8916,69 @@ main[data-dir="l"] > section:not([hidden]) { animation: viewInL 260ms cubic-bezi
       return out;
     } catch (err) { return b; }
   }
-  async function vpBuffer(id) {
-    if (vp.buf[id]) return vp.buf[id];
-    const rec = await mdb.get("vp:" + id);
+  async function vpBuffer(pid, id) {
+    const key = pid + "|" + id;
+    if (vp.buf[key]) return vp.buf[key];
+    const rec = await mdb.get(kClip(pid, id));
     if (!rec || !rec.blob) return null;
     const ab = await rec.blob.arrayBuffer();
     const b = await new Promise((res, rej) => { try { const pr = audioCtx.decodeAudioData(ab, res, rej); if (pr && pr.catch) pr.catch(rej); } catch (e) { rej(e); } });
-    vp.buf[id] = vpTrim(b);
-    return vp.buf[id];
+    vp.buf[key] = vpTrim(b);
+    return vp.buf[key];
   }
   function vpStop() { vp.srcs.forEach((s) => { try { s.stop(); } catch (e) { /* ignore */ } }); vp.srcs = []; }
-  async function vpPlay(parts) {
-    if (!parts || !parts.length || !vp.ids.size || !parts.every((p) => vp.ids.has(p))) return false;
+  const outGain = () => { const g = audioCtx.createGain(); g.gain.value = Math.max(0.2, Math.min(1, (S().voiceVol || 100) / 100)); g.connect(audioCtx.destination); return g; };
+  async function vpPlay(prof, parts) {
+    const ids = packIds(prof);
+    if (!parts || !parts.length || !ids.size || !parts.every((p) => ids.has(p))) return false;
     primeAudio();
     if (!audioCtx) return false;
     let bufs;
-    try { bufs = await Promise.all(parts.map(vpBuffer)); } catch (e) { return false; }
+    try { bufs = await Promise.all(parts.map((p) => vpBuffer(prof.id, p))); } catch (e) { return false; }
     if (bufs.some((b) => !b)) return false;
     vpStop();
     try { if (window.speechSynthesis) speechSynthesis.cancel(); } catch (e) { /* ignore */ }
-    const g = audioCtx.createGain();
-    g.gain.value = Math.max(0.2, Math.min(1, (S().voiceVol || 100) / 100));
-    g.connect(audioCtx.destination);
+    const g = outGain();
     let t = audioCtx.currentTime + 0.04;
-    bufs.forEach((b, i) => {
-      const s = audioCtx.createBufferSource();
-      s.buffer = b; s.connect(g); s.start(t); vp.srcs.push(s);
-      t += b.duration + (/[.!?]$/.test((VP_FIXED.find((x) => x[0] === parts[i]) || [])[1] || "") ? 0.22 : 0.07);
-    });
+    bufs.forEach((b) => { const s = audioCtx.createBufferSource(); s.buffer = b; s.connect(g); s.start(t); vp.srcs.push(s); t += b.duration + 0.09; });
     return true;
   }
-  // ---- Eigenes Stimmmodell (Piper): spricht jeden Satz frei, direkt auf dem Handy ----
+  function ttsSay(text) {
+    if (!window.speechSynthesis || !text) return;
+    try {
+      speechSynthesis.cancel();
+      const u = new SpeechSynthesisUtterance(text);
+      u.lang = "de-DE"; if (deVoice) u.voice = deVoice;
+      u.rate = 1.04; u.pitch = 1;
+      speechSynthesis.speak(u);
+    } catch (e) { /* ignore */ }
+  }
+
+  // ---- Piper pro Profil ----
   const PIPER = {
     ort: "https://cdn.jsdelivr.net/npm/onnxruntime-web@1.18.0/dist/ort.wasm.min.js",
     ortWasm: "https://cdn.jsdelivr.net/npm/onnxruntime-web@1.18.0/dist/",
     phon: "https://cdn.jsdelivr.net/npm/@diffusionstudio/vits-web@1.0.3/dist/piper-DeOu3H9E.js",
     data: "https://cdn.jsdelivr.net/npm/@diffusionstudio/piper-wasm@1.0.0/build/piper_phonemize"
   };
-  const pm = { sess: null, cfg: null, cache: new Map(), chain: Promise.resolve(), loading: null };
-  const piperOn = () => !!(S().piper && S().piper.ok && S().piper.on !== false) && !!window.WebAssembly;
+  const pm = { pid: null, sess: null, cfg: null, cache: new Map(), chain: Promise.resolve(), loading: null };
   function pmScript(src) {
     return new Promise((res, rej) => { const sc = document.createElement("script"); sc.src = src; sc.async = true; sc.onload = res; sc.onerror = () => rej(new Error("net")); document.head.appendChild(sc); });
   }
-  async function pmLoad() {
-    if (pm.sess && pm.cfg) return pm;
-    if (pm.loading) return pm.loading;
+  async function pmLoad(pid) {
+    if (pm.pid === pid && pm.sess && pm.cfg) return pm;
+    if (pm.loading && pm.loadingPid === pid) return pm.loading;
+    pm.loadingPid = pid;
     pm.loading = (async () => {
       if (!window.ort) await pmScript(PIPER.ort);
       const ort = window.ort;
       ort.env.wasm.wasmPaths = PIPER.ortWasm;
       ort.env.wasm.numThreads = self.crossOriginIsolated ? Math.min(4, navigator.hardwareConcurrency || 2) : 1;
-      const [mr, cr] = await Promise.all([mdb.get("piper:model"), mdb.get("piper:cfg")]);
+      const [mr, cr] = await Promise.all([mdb.get(kModel(pid)), mdb.get(kCfg(pid))]);
       if (!mr || !cr) throw new Error("kein Modell");
-      pm.cfg = JSON.parse(await cr.blob.text());
-      pm.sess = await ort.InferenceSession.create(new Uint8Array(await mr.blob.arrayBuffer()), { executionProviders: ["wasm"] });
+      const cfg = JSON.parse(await cr.blob.text());
+      const sess = await ort.InferenceSession.create(new Uint8Array(await mr.blob.arrayBuffer()), { executionProviders: ["wasm"] });
+      pm.pid = pid; pm.cfg = cfg; pm.sess = sess; pm.cache.clear();
       return pm;
     })();
     try { return await pm.loading; } finally { pm.loading = null; }
@@ -8823,7 +8995,6 @@ main[data-dir="l"] > section:not([hidden]) { animation: viewInL 260ms cubic-bezi
             const j = JSON.parse(l);
             if (!j || !j.phoneme_ids) return;
             done = true;
-            // Die IDs immer aus der Tabelle des eigenen Modells bilden, sonst passen sie nicht zu jedem Modell
             const map = pm.cfg.phoneme_id_map;
             if (map && j.phonemes && map["^"] && map["_"] && map["$"]) {
               const ids = map["^"].concat(map["_"]);
@@ -8841,14 +9012,14 @@ main[data-dir="l"] > section:not([hidden]) { animation: viewInL 260ms cubic-bezi
       }, rej);
     });
   }
-  async function pmSynth(text) {
-    const key = text.trim();
+  async function pmSynth(pid, text) {
+    const key = pid + "|" + text.trim();
     if (pm.cache.has(key)) return pm.cache.get(key);
     const job = pm.chain.then(async () => {
       if (pm.cache.has(key)) return pm.cache.get(key);
-      await pmLoad();
+      await pmLoad(pid);
       const ort = window.ort, cfg = pm.cfg;
-      const ids = await pmIds(key);
+      const ids = await pmIds(text.trim());
       const inf = cfg.inference || {};
       const feeds = {
         input: new ort.Tensor("int64", BigInt64Array.from(ids.map((x) => BigInt(x))), [1, ids.length]),
@@ -8869,133 +9040,160 @@ main[data-dir="l"] > section:not([hidden]) { animation: viewInL 260ms cubic-bezi
     pm.chain = job.catch(() => {});
     return job;
   }
-  async function piperSay(text) {
-    const buf = await pmSynth(text);
-    primeAudio();
-    vpStop();
+  async function piperSay(prof, text) {
+    const buf = await pmSynth(prof.id, text);
+    primeAudio(); vpStop();
     try { if (window.speechSynthesis) speechSynthesis.cancel(); } catch (e) { /* ignore */ }
-    const g = audioCtx.createGain();
-    g.gain.value = Math.max(0.2, Math.min(1, (S().voiceVol || 100) / 100));
-    g.connect(audioCtx.destination);
     const s = audioCtx.createBufferSource();
-    s.buffer = buf; s.connect(g); s.start(audioCtx.currentTime + 0.03);
+    s.buffer = buf; s.connect(outGain()); s.start(audioCtx.currentTime + 0.03);
     vp.srcs.push(s);
+    return new Promise((res) => { s.onended = res; });
   }
-  function piperWarm(texts) { if (!piperOn()) return; texts.filter(Boolean).forEach((t) => { pmSynth(t).catch(() => {}); }); }
-  function renderPmUi() {
-    const st = $("pmState");
-    if (!st) return;
-    const p = S().piper;
-    st.textContent = p && p.ok ? "Aktiv: „" + p.name + "“ (" + Math.round((p.sr || 22050) / 1000) + " kHz). Der Coach spricht jeden Satz frei mit deinem Modell. Vor dem ersten Satz lädt die App einmalig die Sprach-Engine, etwa 30 MB." :
-      p && p.model && !p.cfg ? "Modell gespeichert. Wähle jetzt noch die passende .json-Datei dazu." : p && p.cfg && !p.model ? "Konfiguration gespeichert. Wähle jetzt noch die .onnx-Datei dazu." :
-      "Kein eigenes Modell geladen. Ein Piper-Modell besteht aus zwei Dateien: stimme.onnx und stimme.onnx.json. Du kannst beide auf einmal auswählen.";
-    $("pmDel").hidden = !(p && (p.model || p.cfg));
-    $("pmSpeed").value = Math.round((S().piperSpeed || 1) * 100);
-  }
-  async function pmImport(files) {
-    const st = $("pmState");
-    const p = Object.assign({}, S().piper || {});
-    for (const f of files) {
-      const n = f.name.toLowerCase();
-      if (n.endsWith(".json")) {
-        let cfg;
-        try { cfg = JSON.parse(await f.text()); } catch (e) { st.textContent = "Die .json-Datei ist nicht lesbar."; return; }
-        if (!cfg.audio || !cfg.espeak) { st.textContent = "Das sieht nicht nach einer Piper-Konfiguration aus (es fehlen audio und espeak)."; return; }
-        await mdb.put("piper:cfg", new Blob([JSON.stringify(cfg)], { type: "application/json" }), f.name);
-        p.cfg = true; p.sr = cfg.audio.sample_rate;
-      } else if (n.endsWith(".onnx")) {
-        if (f.size > 200 * 1024 * 1024) { st.textContent = "Das Modell ist größer als 200 MB, das ist fürs Handy zu viel."; return; }
-        st.textContent = "Modell wird gespeichert …";
-        await mdb.put("piper:model", f, f.name);
-        p.model = true; p.name = f.name.replace(/\.onnx$/i, "");
-      }
-    }
-    p.ok = !!(p.model && p.cfg); p.on = true;
-    S().piper = p; saveSettings();
-    pm.sess = null; pm.cfg = null; pm.cache.clear();
-    renderPmUi(); renderVoiceBtn();
-    if (p.ok) {
-      st.textContent = "Modell wird geladen und getestet …";
-      try { await piperSay("Hallo. Ab jetzt spreche ich mit deiner Stimme."); renderPmUi(); toast("Eigenes Stimmmodell aktiv"); }
-      catch (e) { st.textContent = "Das Modell ließ sich nicht starten. " + (navigator.onLine === false ? "Beim ersten Mal brauchst du Internet für die Sprach-Engine." : "Ist es ein Piper-Modell im ONNX-Format?"); S().piper.ok = false; saveSettings(); }
-    }
-  }
-  if ($("pmPick")) {
-    $("pmPick").addEventListener("click", () => $("pmFile").click());
-    $("pmFile").addEventListener("change", (ev) => { const fs = Array.prototype.slice.call(ev.target.files || []); ev.target.value = ""; if (fs.length) pmImport(fs).catch(() => { $("pmState").textContent = "Speichern fehlgeschlagen. Ist genug Speicher frei?"; }); });
-    $("pmDel").addEventListener("click", async () => {
-      try { await mdb.del("piper:model"); await mdb.del("piper:cfg"); } catch (e) { /* ignore */ }
-      S().piper = null; saveSettings(); pm.sess = null; pm.cfg = null; pm.cache.clear();
-      renderPmUi(); renderVoiceBtn(); toast("Stimmmodell entfernt");
-    });
-    $("pmSpeed").addEventListener("change", function () { S().piperSpeed = (+this.value || 100) / 100; saveSettings(); pm.cache.clear(); });
-    renderPmUi();
-  }
+  function piperWarm(texts, prof) { const p = prof || curProf(); if (!piperOk(p)) return; texts.filter(Boolean).forEach((t) => { pmSynth(p.id, t).catch(() => {}); }); }
 
-  const voiceOn = () => !!S().voice && (!!window.speechSynthesis || vp.ids.size > 0 || piperOn());
-  function ttsSay(text) {
-    if (!window.speechSynthesis || !text) return;
-    try {
-      speechSynthesis.cancel();
-      const u = new SpeechSynthesisUtterance(text);
-      u.lang = "de-DE"; if (deVoice) u.voice = deVoice;
-      u.rate = 1.04; u.pitch = 1;
-      speechSynthesis.speak(u);
-    } catch (e) { /* ignore */ }
+  // ---- Sprechen ----
+  const voiceOn = () => !!S().voice;
+  const piperOn = () => piperOk(curProf());
+  // say: freier Text (Piper → Systemstimme), parts nur für Voice-Packs
+  function say(text, parts, force, prof) {
+    if ((!voiceOn() && !force) || !text) return Promise.resolve();
+    const p = prof || curProf();
+    const rest = () => { if (parts && parts.length && packIds(p).size) return vpPlay(p, parts).then((ok) => { if (!ok) ttsSay(text); }); ttsSay(text); return Promise.resolve(); };
+    if (piperOk(p)) return piperSay(p, text).catch(rest);
+    return rest();
   }
-  function say(text, parts, force) {
-    if ((!voiceOn() && !force) || !text) return;
-    const rest = () => { if (parts && parts.length && vp.ids.size) vpPlay(parts).then((ok) => { if (!ok) ttsSay(text); }); else ttsSay(text); };
-    if (piperOn()) piperSay(text).catch(rest);
-    else rest();
-  }
+  function sayLine(line, force) { if (line) return say(line.text, line.parts, force, line.prof); return Promise.resolve(); }
+  function coach(sit, v, force) { if (!voiceOn() && !force) return; sayLine(pickLine(sit, v), force); }
   function nextSet() {
     const dk = todayKey(), s = effSession(today());
-    if (!s) return { text: "", parts: [] };
+    if (!s) return { text: "", parts: [], last: false };
+    let remaining = 0, found = null;
     for (const e of s.exercises) {
       if (e.skipped || isRun(e)) continue;
       const lg = exLog(dk, e), n = setCount(e);
       for (let i = 0; i < n; i++) if (!lg.done[i]) {
-        const rng = parseRange(e.reps);
-        const goal = rng ? (rng.low === rng.high ? String(rng.low) : rng.low + " bis " + rng.high) + (rng.secs ? " Sekunden" : "") : "";
-        const parts = ["uebung_" + vslug(e.name)];
-        if (n > 1) parts.push("satz", "zahl_" + (i + 1), "von", "zahl_" + n);
-        if (rng) { parts.push("ziel", "zahl_" + rng.low); if (rng.high !== rng.low) parts.push("bis", "zahl_" + rng.high); if (rng.secs) parts.push("sekunden"); }
-        return { text: e.name + (n > 1 ? ", Satz " + (i + 1) + " von " + n : "") + (goal ? ". Ziel " + goal : "") + ".", parts };
+        remaining++;
+        if (!found) {
+          const rng = parseRange(e.reps);
+          const goal = rng ? (rng.low === rng.high ? String(rng.low) : rng.low + " bis " + rng.high) + (rng.secs ? " Sekunden" : "") : "";
+          const parts = ["uebung_" + vslug(e.name)];
+          if (n > 1) parts.push("satz", "zahl_" + (i + 1), "von", "zahl_" + n);
+          if (rng) { parts.push("ziel", "zahl_" + rng.low); if (rng.high !== rng.low) parts.push("bis", "zahl_" + rng.high); if (rng.secs) parts.push("sekunden"); }
+          found = { text: e.name + (n > 1 ? ", Satz " + (i + 1) + " von " + n : "") + (goal ? ". Ziel " + goal : "") + ".", parts, name: e.name };
+        }
       }
     }
-    return { text: "", parts: [] };
+    if (!found) return { text: "", parts: [], last: false };
+    found.last = remaining === 1;
+    return found;
   }
   const nextSetText = () => nextSet().text;
-  const SYS_VOICE = { "Rang-Aufstieg": ["rang_aufstieg", "Rang-Aufstieg."], "Neuer Rang": ["neuer_rang", "Neuer Rang."], "Quest abgeschlossen": ["quest_geschafft", "Daily Quest abgeschlossen."], "Erfolg freigeschaltet": ["erfolg", "Erfolg freigeschaltet."], "Erfolge freigeschaltet": ["erfolg", "Erfolg freigeschaltet."], "Boss besiegt": ["boss_besiegt", "Boss besiegt."], "Der Boss lebt noch": ["boss_lebt", "Der Boss lebt noch."] };
-  function sysVoice(title) { const v = SYS_VOICE[title]; if (v && voiceOn()) setTimeout(() => say(v[1], [v[0]]), 650); }
+  // Pause: Sätze schon beim Start auswählen und bei Piper vorrechnen
+  function coachRestPrep() {
+    const nx = nextSet();
+    const lines = { ten: pickLine("ten", {}), over: pickLine(nx.last ? "last_set" : "rest_over", { next: nx, uebung: nx.name }) };
+    if (piperOn()) piperWarm([lines.ten && lines.ten.text, lines.over && lines.over.text]);
+    return lines;
+  }
+  function coachStart() {
+    const nx = nextSet(), dk = todayKey();
+    const c = checkinOf(dk), r = readiness(dk);
+    const y = dateKey(addDays(today(), -1)), ys = effSession(addDays(today(), -1));
+    let pre = null;
+    if ((c.energy && c.energy <= 2) || (r.hasInput && r.pts >= 3.5)) pre = pickLine("low_energy", {});
+    else if (ys && !ys.free && y >= (S().arcStart || "") && sessionProgress(y, ys).done === 0) pre = pickLine("skipped", {});
+    const main = pickLine("start", { next: nx, uebung: nx.name });
+    if (pre) sayLine(pre).then(() => setTimeout(() => sayLine(main), 250)); else sayLine(main);
+  }
+  // Rückmeldung direkt nach einem eingetragenen Satz
+  function coachSetFeedback(name, i, v, weight, prevItems) {
+    if (!voiceOn() || !v) return;
+    const prev = prevItems.length ? prevItems[prevItems.length - 1] : null;
+    let best = 0;
+    prevItems.forEach((it) => { if ((it.perf.weight || 0) >= (weight || 0) - 0.01) it.perf.reps.forEach((x) => { if (x > best) best = x; }); });
+    const vars = { wdh: v, uebung: name };
+    if (prevItems.length >= 1 && v > best) { coach("set_pr", vars); return; }
+    if (!prev || Math.abs((prev.perf.weight || 0) - (weight || 0)) > 0.01) return;
+    const lv = prev.perf.reps[i];
+    if (lv == null) return;
+    if (v > lv) coach("set_better", Object.assign(vars, { diff: v - lv }));
+    else if (v < lv) coach("set_worse", Object.assign(vars, { diff: lv - v }));
+  }
+  const SYS_SIT = { "Rang-Aufstieg": "rank_up", "Neuer Rang": "rank_up", "Quest abgeschlossen": "quest", "Erfolg freigeschaltet": "achievement", "Erfolge freigeschaltet": "achievement", "Boss besiegt": "boss_won", "Der Boss lebt noch": "boss_alive" };
+  function sysVoice(title) {
+    const sit = SYS_SIT[title];
+    if (!sit || !voiceOn()) return;
+    let rang = "";
+    try { const o = (rankMeta().ranks || {})._overall; if (o != null) rang = RANK_L[o]; } catch (e) { /* ignore */ }
+    setTimeout(() => coach(sit, { rang, level: (rankMeta().ranks || {})._lv }), 650);
+  }
+
+  // ---- Auswahl auf „Heute" ----
   function renderVoiceBtn() {
     const b = $("voiceBtn");
     if (!b) return;
-    b.hidden = !window.speechSynthesis && !vp.ids.size && !piperOn();
+    b.hidden = false;
     b.setAttribute("aria-pressed", S().voice ? "true" : "false");
     b.textContent = S().voice ? "Coach-Stimme an" : "Coach-Stimme aus";
+    const sel = $("voiceSel");
+    if (sel) {
+      const V = voices();
+      sel.hidden = !S().voice || V.list.length < 2;
+      sel.innerHTML = '<option value="auto">Automatisch (' + esc(ROLE_NAME[autoRole()]) + ")</option>" + V.list.map((p) => '<option value="' + esc(p.id) + '">' + esc(p.name) + "</option>").join("");
+      sel.value = V.auto ? "auto" : V.active;
+    }
   }
   if ($("voiceBtn")) $("voiceBtn").addEventListener("click", () => {
-    S().voice = !S().voice; saveSettings(); renderVoiceBtn(); renderVpUi(); hap("tap");
-    if (S().voice) say("Coach-Stimme an. Ich sage dir, wann die Pause vorbei ist.", ["stimme_an"]);
+    S().voice = !S().voice; saveSettings(); renderVoiceBtn(); hap("tap");
+    if (S().voice) coach("voice_on", {});
     else { try { speechSynthesis.cancel(); } catch (e) { /* ignore */ } vpStop(); }
   });
-  // ---- Voice-Pack in den Einstellungen ----
+  if ($("voiceSel")) $("voiceSel").addEventListener("change", function () {
+    const V = voices();
+    if (this.value === "auto") V.auto = true; else { V.auto = false; V.active = this.value; }
+    saveSettings(); renderVoiceBtn(); hap("tap");
+    coach("voice_on", {});
+  });
+
+  // ---- Einstellungen: Profile, Sprüche, Voice-Pack, Piper ----
+  let edPid = "std";
+  const edProf = () => profById(edPid) || voices().list[0];
+  function vpList(p) {
+    const out = [];
+    SITS.forEach(([sit]) => linesOf(p, sit).forEach((tpl, i) => { let k = 0; lineSegments(tpl).forEach((s) => { if (s.lit != null) out.push({ id: "s_" + sit + "_" + i + "_" + k++, text: s.lit }); }); }));
+    [["satz", "Satz"], ["von", "von"], ["ziel", "Ziel"], ["bis", "bis"], ["sekunden", "Sekunden"], ["name", (S().partner && S().partner.me) || "Jäger"]].forEach(([id, text]) => out.push({ id, text }));
+    RANK_L.forEach((l) => out.push({ id: "rang_" + vslug(l.replace("+", "plus")), text: rankSpoken(l) }));
+    for (let n = 1; n <= 100; n++) out.push({ id: "zahl_" + n, text: String(n) });
+    const names = {};
+    ((state.plan && state.plan.days) || []).forEach((d) => (d.exercises || []).forEach((e) => { if (e && e.name && !isRun(e)) names[vslug(e.name)] = e.name; }));
+    Object.keys(names).sort().forEach((k) => out.push({ id: "uebung_" + k, text: names[k] }));
+    return out;
+  }
   function renderVpUi() {
     const st = $("vpState");
     if (!st) return;
-    const v = S().voicePack;
-    if (!v || !vp.ids.size) st.textContent = "Aktiv: Systemstimme deines Handys. Mit einem Voice-Pack spricht der Coach mit deiner eigenen Stimme.";
+    const V = voices(), p = edProf();
+    $("vpProf").innerHTML = V.list.map((x) => '<option value="' + esc(x.id) + '">' + esc(x.name) + (x.role !== "normal" ? " (" + ROLE_NAME[x.role] + ")" : "") + "</option>").join("");
+    $("vpProf").value = p.id;
+    if (document.activeElement !== $("vpName")) $("vpName").value = p.name;
+    $("vpRole").value = p.role;
+    $("vpDelProf").hidden = p.id === "std";
+    $("vpAuto").checked = !!V.auto;
+    const ids = packIds(p);
+    if (!ids.size) st.textContent = "Voice-Pack: keins. Dieses Profil spricht mit " + (piperOk(p) ? "seinem Modell." : "der Systemstimme deines Handys.");
     else {
-      const miss = vpList().filter((x) => !vp.ids.has(x.id)).map((x) => x.text);
-      st.textContent = "Aktiv: Voice-Pack „" + (v.name || "Eigene Stimme") + "“ mit " + vp.ids.size + " Clips." + (miss.length ? " Fehlt für deinen Plan: " + miss.slice(0, 6).join(", ") + (miss.length > 6 ? " und " + (miss.length - 6) + " weitere" : "") + ". Diese Sätze spricht die Systemstimme." : " Alles für deinen Plan ist dabei.");
+      const miss = vpList(p).filter((x) => !ids.has(x.id)).map((x) => x.text);
+      st.textContent = "Voice-Pack „" + (p.pack.name || "Eigene Stimme") + "“ mit " + ids.size + " Clips." + (miss.length ? " Fehlt: " + miss.slice(0, 5).map((t) => "„" + t.slice(0, 30) + "“").join(", ") + (miss.length > 5 ? " und " + (miss.length - 5) + " weitere" : "") + ". Diese Sätze spricht die Systemstimme." : " Alles für deinen Plan und deine Sprüche ist dabei.");
     }
-    $("vpDel").hidden = !vp.ids.size;
+    $("vpDel").hidden = !ids.size;
     $("vpVol").value = S().voiceVol || 100;
+    if (document.activeElement !== $("vpStyle")) $("vpStyle").value = p.style || "";
+    $("vpStyle").placeholder = STYLE[p.role] || STYLE.normal;
+    $("vpLines").innerHTML = SITS.map(([sit, label]) => '<div class="field"><label for="vl-' + sit + '">' + esc(label) + '</label><textarea class="vltext" id="vl-' + sit + '" data-sit="' + sit + '" rows="2" spellcheck="false">' + esc(linesOf(p, sit).join("\n")) + "</textarea></div>").join("");
+    renderPmUi();
   }
   async function vpImport(file) {
-    const st = $("vpState");
+    const st = $("vpState"), p = edProf();
     st.textContent = "Voice-Pack wird gelesen …";
     let files;
     try { files = await readZip(file); } catch (e) { st.textContent = "Das ist keine gültige ZIP-Datei."; return; }
@@ -9005,43 +9203,124 @@ main[data-dir="l"] > section:not([hidden]) { animation: viewInL 260ms cubic-bezi
     const MIME = { wav: "audio/wav", mp3: "audio/mpeg", ogg: "audio/ogg", opus: "audio/ogg", m4a: "audio/mp4", webm: "audio/webm", flac: "audio/flac" };
     const clips = files.map((f) => { const m = f.name.match(/([^/\\]+)\.(wav|mp3|ogg|opus|m4a|webm|flac)$/i); return m ? { id: vslug(m[1]), ext: m[2].toLowerCase(), data: f.data } : null; }).filter(Boolean);
     if (!clips.length) { st.textContent = "Im ZIP sind keine Audiodateien (WAV, MP3, OGG, M4A)."; return; }
-    const total = clips.reduce((a, c) => a + c.data.length, 0);
-    if (total > 80 * 1024 * 1024) { st.textContent = "Das Voice-Pack ist größer als 80 MB. Wandle die Clips mit dem Skript in OGG oder MP3 um."; return; }
-    const old = (S().voicePack && S().voicePack.ids) || [];
+    if (clips.reduce((a, c) => a + c.data.length, 0) > 80 * 1024 * 1024) { st.textContent = "Das Voice-Pack ist größer als 80 MB. Wandle die Clips mit dem Skript in OGG oder MP3 um."; return; }
+    const old = (p.pack && p.pack.ids) || [];
     try {
       for (let i = 0; i < clips.length; i++) {
         if (i % 10 === 0) st.textContent = "Speichere Clip " + (i + 1) + " von " + clips.length + " …";
-        await mdb.put("vp:" + clips[i].id, new Blob([clips[i].data], { type: MIME[clips[i].ext] || "audio/wav" }), clips[i].id);
+        await mdb.put(kClip(p.id, clips[i].id), new Blob([clips[i].data], { type: MIME[clips[i].ext] || "audio/wav" }), clips[i].id);
       }
       const ids = clips.map((c) => c.id);
-      for (const id of old) if (ids.indexOf(id) < 0) { try { await mdb.del("vp:" + id); } catch (e) { /* ignore */ } }
-      S().voicePack = { name, ids, at: todayKey() };
-      saveSettings(); vpLoadIndex(); renderVpUi(); renderVoiceBtn();
+      for (const id of old) if (ids.indexOf(id) < 0) { try { await mdb.del(kClip(p.id, id)); } catch (e) { /* ignore */ } }
+      p.pack = { name, ids, at: todayKey() };
+      Object.keys(vp.buf).forEach((k) => { if (k.indexOf(p.id + "|") === 0) delete vp.buf[k]; });
+      saveSettings(); renderVpUi(); renderVoiceBtn();
       toast("Voice-Pack geladen: " + ids.length + " Clips");
-      say("Coach-Stimme an. Ich sage dir, wann die Pause vorbei ist.", ["stimme_an"], true);
+      sayLine(pickLine("voice_on", {}, p), true);
     } catch (e) { st.textContent = "Speichern fehlgeschlagen. Ist genug Speicher frei?"; }
   }
+  function renderPmUi() {
+    const st = $("pmState");
+    if (!st) return;
+    const p = edProf(), m = p.piper;
+    st.textContent = m && m.ok ? "Modell „" + m.name + "“ aktiv (" + Math.round((m.sr || 22050) / 1000) + " kHz). Spricht jeden Satz frei. Vor dem ersten Satz lädt die App einmalig die Sprach-Engine, etwa 30 MB." :
+      m && m.model && !m.cfg ? "Modell gespeichert. Wähle jetzt noch die passende .json-Datei dazu." : m && m.cfg && !m.model ? "Konfiguration gespeichert. Wähle jetzt noch die .onnx-Datei dazu." :
+      "Kein eigenes Modell. Ein Piper-Modell besteht aus zwei Dateien: stimme.onnx und stimme.onnx.json. Du kannst beide auf einmal auswählen.";
+    $("pmDel").hidden = !(m && (m.model || m.cfg));
+    $("pmSpeed").value = Math.round((S().piperSpeed || 1) * 100);
+  }
+  async function pmImport(files) {
+    const st = $("pmState"), p = edProf();
+    const m = Object.assign({}, p.piper || {});
+    for (const f of files) {
+      const n = f.name.toLowerCase();
+      if (n.endsWith(".json")) {
+        let cfg;
+        try { cfg = JSON.parse(await f.text()); } catch (e) { st.textContent = "Die .json-Datei ist nicht lesbar."; return; }
+        if (!cfg.audio || !cfg.espeak) { st.textContent = "Das sieht nicht nach einer Piper-Konfiguration aus (es fehlen audio und espeak)."; return; }
+        await mdb.put(kCfg(p.id), new Blob([JSON.stringify(cfg)], { type: "application/json" }), f.name);
+        m.cfg = true; m.sr = cfg.audio.sample_rate;
+      } else if (n.endsWith(".onnx")) {
+        if (f.size > 200 * 1024 * 1024) { st.textContent = "Das Modell ist größer als 200 MB, das ist fürs Handy zu viel."; return; }
+        st.textContent = "Modell wird gespeichert …";
+        await mdb.put(kModel(p.id), f, f.name);
+        m.model = true; m.name = f.name.replace(/\.onnx$/i, "");
+      }
+    }
+    m.ok = !!(m.model && m.cfg);
+    p.piper = m; saveSettings();
+    if (pm.pid === p.id) { pm.pid = null; pm.sess = null; pm.cfg = null; pm.cache.clear(); }
+    renderPmUi();
+    if (m.ok) {
+      st.textContent = "Modell wird geladen und getestet …";
+      try { await piperSay(p, "Hallo. Ab jetzt spreche ich mit dieser Stimme."); renderPmUi(); toast("Stimmmodell aktiv: " + p.name); }
+      catch (e) { st.textContent = "Das Modell ließ sich nicht starten. " + (navigator.onLine === false ? "Beim ersten Mal brauchst du Internet für die Sprach-Engine." : "Ist es ein Piper-Modell im ONNX-Format?"); p.piper.ok = false; saveSettings(); }
+    }
+  }
   if ($("vpExport")) {
+    $("vpProf").addEventListener("change", function () { edPid = this.value; renderVpUi(); });
+    $("vpNew").addEventListener("click", () => {
+      const V = voices(), used = V.list.map((x) => x.role);
+      const role = used.indexOf("motivation") < 0 ? "motivation" : used.indexOf("ruhig") < 0 ? "ruhig" : "normal";
+      const p = { id: "p" + Date.now().toString(36), name: role === "motivation" ? "Motivator" : role === "ruhig" ? "Entspannt" : "Profil " + (V.list.length + 1), role, pack: null, piper: null, lines: null, style: "" };
+      V.list.push(p); edPid = p.id; saveSettings(); renderVpUi(); renderVoiceBtn(); hap("tap");
+    });
+    $("vpDelProf").addEventListener("click", async () => {
+      const p = edProf();
+      if (p.id === "std") return;
+      for (const id of (p.pack && p.pack.ids) || []) { try { await mdb.del(kClip(p.id, id)); } catch (e) { /* ignore */ } }
+      try { await mdb.del(kModel(p.id)); await mdb.del(kCfg(p.id)); } catch (e) { /* ignore */ }
+      const V = voices();
+      V.list = V.list.filter((x) => x.id !== p.id);
+      if (V.active === p.id) V.active = "std";
+      edPid = "std"; saveSettings(); renderVpUi(); renderVoiceBtn(); toast("Profil gelöscht");
+    });
+    $("vpName").addEventListener("change", function () { const p = edProf(); p.name = this.value.trim().slice(0, 30) || p.name; saveSettings(); renderVpUi(); renderVoiceBtn(); });
+    $("vpRole").addEventListener("change", function () { const p = edProf(); p.role = this.value; saveSettings(); renderVpUi(); renderVoiceBtn(); });
+    $("vpAuto").addEventListener("change", function () { voices().auto = this.checked; saveSettings(); renderVoiceBtn(); });
+    $("vpStyle").addEventListener("change", function () { edProf().style = this.value.trim().slice(0, 1200); saveSettings(); });
+    $("vpLines").addEventListener("change", (ev) => {
+      const ta = ev.target.closest("textarea[data-sit]");
+      if (!ta) return;
+      const p = edProf(), sit = ta.dataset.sit;
+      const list = ta.value.split("\n").map((x) => x.trim()).filter(Boolean).slice(0, 12);
+      p.lines = p.lines || {};
+      if (list.length) p.lines[sit] = list; else delete p.lines[sit];
+      saveSettings();
+      if (!list.length) ta.value = linesOf(p, sit).join("\n");
+    });
+    $("vpLinesReset").addEventListener("click", () => { edProf().lines = null; saveSettings(); renderVpUi(); toast("Sprüche zurückgesetzt"); });
     $("vpExport").addEventListener("click", () => {
-      const data = { app: "winter-arc", version: 1, hinweis: "Du darfst die Texte ändern, die IDs aber nicht. Jede ID wird zu einer Audiodatei mit genau diesem Namen.", clips: vpList() };
-      saveBlobFile(new Blob([JSON.stringify(data, null, 2)], { type: "application/json" }), "voicepack-saetze.json", true).then((r) => { if (r === "download") toast("Satzliste gespeichert"); });
+      const p = edProf();
+      const data = { app: "winter-arc", version: 2, profil: p.name, hinweis: "Du darfst die Texte ändern, die IDs aber nicht. Jede ID wird zu einer Audiodatei mit genau diesem Namen. Ändere Sprüche lieber in der App, dann exportiere neu.", clips: vpList(p) };
+      saveBlobFile(new Blob([JSON.stringify(data, null, 2)], { type: "application/json" }), "voicepack-" + vslug(p.name) + ".json", true).then((r) => { if (r === "download") toast("Satzliste gespeichert"); });
     });
     $("vpPick").addEventListener("click", () => $("vpFile").click());
     $("vpFile").addEventListener("change", (ev) => { const f = ev.target.files && ev.target.files[0]; ev.target.value = ""; if (f) vpImport(f); });
     $("vpTest").addEventListener("click", () => {
       primeAudio();
-      const nx = nextSet();
-      const parts = nx.parts.length ? ["pause_vorbei"].concat(nx.parts) : ["pause_vorbei", "uebung_klimmzuege", "satz", "zahl_2", "von", "zahl_3", "ziel", "zahl_6", "bis", "zahl_8"];
-      say("Pause vorbei. " + (nx.text || "Klimmzüge, Satz 2 von 3. Ziel 6 bis 8."), parts, true);
+      const p = edProf(), nx = nextSet();
+      const v = nx.text ? { next: nx, uebung: nx.name } : { next: { text: "Klimmzüge, Satz 2 von 3. Ziel 6 bis 8.", parts: ["uebung_klimmzuege", "satz", "zahl_2", "von", "zahl_3", "ziel", "zahl_6", "bis", "zahl_8"] }, uebung: "Klimmzüge" };
+      sayLine(pickLine("rest_over", v, p), true);
     });
     $("vpDel").addEventListener("click", async () => {
-      const ids = (S().voicePack && S().voicePack.ids) || [];
-      for (const id of ids) { try { await mdb.del("vp:" + id); } catch (e) { /* ignore */ } }
-      S().voicePack = null; saveSettings(); vpLoadIndex(); renderVpUi(); renderVoiceBtn();
-      toast("Voice-Pack entfernt, die Systemstimme spricht wieder");
+      const p = edProf();
+      for (const id of (p.pack && p.pack.ids) || []) { try { await mdb.del(kClip(p.id, id)); } catch (e) { /* ignore */ } }
+      p.pack = null; saveSettings(); renderVpUi(); renderVoiceBtn();
+      toast("Voice-Pack entfernt");
     });
     $("vpVol").addEventListener("change", function () { S().voiceVol = +this.value || 100; saveSettings(); });
     $("vpBox").addEventListener("toggle", () => { if ($("vpBox").open) renderVpUi(); });
+    $("pmPick").addEventListener("click", () => $("pmFile").click());
+    $("pmFile").addEventListener("change", (ev) => { const fs = Array.prototype.slice.call(ev.target.files || []); ev.target.value = ""; if (fs.length) pmImport(fs).catch(() => { $("pmState").textContent = "Speichern fehlgeschlagen. Ist genug Speicher frei?"; }); });
+    $("pmDel").addEventListener("click", async () => {
+      const p = edProf();
+      try { await mdb.del(kModel(p.id)); await mdb.del(kCfg(p.id)); } catch (e) { /* ignore */ }
+      p.piper = null; saveSettings();
+      if (pm.pid === p.id) { pm.pid = null; pm.sess = null; pm.cfg = null; pm.cache.clear(); }
+      renderPmUi(); toast("Stimmmodell entfernt");
+    });
+    $("pmSpeed").addEventListener("change", function () { S().piperSpeed = (+this.value || 100) / 100; saveSettings(); pm.cache.clear(); });
     renderVpUi();
   }
 
@@ -9084,6 +9363,223 @@ main[data-dir="l"] > section:not([hidden]) { animation: viewInL 260ms cubic-bezi
       try { rec.start(); } catch (e) { rec.onend(); }
     });
   }
+  // ---------- KI-Coach im Training (Claude API, Schlüssel bleibt nur auf diesem Gerät) ----------
+  const AI_KEY_LS = "winterarc.aikey", AI_USE_LS = "winterarc.aiusage";
+  const aiKey = () => { try { return localStorage.getItem(AI_KEY_LS) || ""; } catch (e) { return ""; } };
+  const aiModel = () => (S().aiModel || "claude-haiku-5-5").trim();
+  const ai = { hist: [], pendingTool: [], last: 0, busy: false, rec: null };
+  function aiUsageAdd(u) {
+    if (!u) return;
+    try {
+      const m = todayKey().slice(0, 7);
+      let o = JSON.parse(localStorage.getItem(AI_USE_LS) || "{}");
+      if (o.m !== m) o = { m, in: 0, out: 0, n: 0 };
+      o.in += u.input_tokens || 0; o.out += u.output_tokens || 0; o.n++;
+      localStorage.setItem(AI_USE_LS, JSON.stringify(o));
+    } catch (e) { /* ignore */ }
+  }
+  function aiUsageText() {
+    let o = {};
+    try { o = JSON.parse(localStorage.getItem(AI_USE_LS) || "{}"); } catch (e) { /* ignore */ }
+    if (!o.n || o.m !== todayKey().slice(0, 7)) return "Diesen Monat noch keine Fragen.";
+    const pin = +S().aiPriceIn || 0.1, pout = +S().aiPriceOut || 0.5;
+    const usd = (o.in * pin + o.out * pout) / 1e6;
+    return "Diesen Monat: " + o.n + " Antworten, " + fmtInt(o.in + o.out) + " Tokens, etwa " + (usd < 0.01 ? "unter 1 Cent" : usd.toFixed(2).replace(".", ",") + " $") + ".";
+  }
+  // Was der Coach über dein Training weiß
+  function aiContext() {
+    const dk = todayKey(), now = today(), s = effSession(now);
+    const L = [];
+    L.push("Datum: " + longDate(now) + ", Uhrzeit " + pad(new Date().getHours()) + ":" + pad(new Date().getMinutes()) + ". Arc-Tag " + arcDay() + " von " + (S().arcLength || 90) + ", Woche " + (arcWeek(now) || "-") + ".");
+    if (!s) L.push("Heute ist kein Training geplant (Ruhetag).");
+    else {
+      L.push("Heutige Einheit: " + (s.name || "Training") + (s.deload ? " (Deload-Woche: halbe Sätze, nicht ans Limit)" : "") + ".");
+      s.exercises.forEach((e) => {
+        if (e.skipped) return;
+        if (isRun(e)) { L.push("- " + e.name + " (Lauf) " + (e.reps || "")); return; }
+        const lg = exLog(dk, e), n = setCount(e), d = lg.done.filter(Boolean).length;
+        const prev = historyFor(e.name).filter((x) => x.date < dk);
+        const last = prev.length ? prev[prev.length - 1] : null;
+        L.push("- " + e.name + ": " + n + " × " + (e.reps || "?") + (e.extra ? " (" + e.extra + ")" : "") + ", erledigt " + d + "/" + n + (lg.note ? ", heute eingetragen: " + lg.note : "") + (last ? ", letztes Mal (" + shortDate(parseKey(last.date)) + "): " + last.note : ""));
+      });
+      const nx = nextSet();
+      L.push(nx.text ? "Als Nächstes: " + nx.text + (nx.last ? " Das ist der letzte Satz der Einheit." : "") : "Alle Sätze für heute sind erledigt.");
+    }
+    if (!$("timer").hidden && !timer.finished) L.push("Pause läuft gerade, noch " + Math.max(0, Math.round((timer.end - Date.now()) / 1000)) + " Sekunden.");
+    const c = checkinOf(dk), sl = (state.logs[dk] && state.logs[dk].sleep) || {}, r = readiness(dk);
+    L.push("Check-in: Energie " + (c.energy || "-") + "/5, Muskelkater " + (c.soreness || "-") + "/5, Schlaf " + (sl.min ? fmtSleep(sl.min) : "-") + (sl.score ? ", Score " + sl.score : "") + ". Bereitschaft " + (r.hasInput ? r.score + "/100" + (r.why.length ? " (" + r.why.join(", ") + ")" : "") : "unbekannt") + ".");
+    try {
+      const R = computeRanks(), X = computeXP();
+      L.push("Level " + X.lv + ". Gesamtrang " + (R.overall ? RANK_L[R.overall.idx] + " (" + RANK_T[R.overall.idx] + ")" : "noch keiner") + ". Bereiche: " + R.cats.filter((x) => x.has).map((x) => x.n + " " + RANK_L[x.idx] + " (" + x.fmt(x.v) + (x.next != null ? ", nächster Rang ab " + x.fmt(x.next) : "") + ")").join("; ") + ".");
+    } catch (e) { /* ignore */ }
+    try { const q = questState(dk); L.push("Daily Quest: " + q.items.map((i) => (i.done ? "[x] " : "[ ] ") + i.t).join(", ") + "."); } catch (e) { /* ignore */ }
+    L.push("Körpergewicht: " + (S().bodyweight || "unbekannt") + " kg.");
+    return L.join("\n");
+  }
+  function aiSystem() {
+    const p = curProf(), name = (S().partner && S().partner.me) || "";
+    return "Du bist der KI-Coach in der Winter-Arc-Trainings-App" + (name ? " von " + name : "") + ". Du sprichst mit ihm während des Trainings, er hört dich über Kopfhörer.\n" +
+      "Persönlichkeit: " + styleOf(p) + "\n" +
+      "Regeln:\n" +
+      "- Antworte auf Deutsch und kurz: höchstens 2 bis 3 Sätze, meistens unter 35 Wörtern. Deine Antwort wird vorgelesen, also keine Listen, kein Markdown, keine Emojis.\n" +
+      "- Bleib in deiner Persönlichkeit, aber fachlich korrekt und ehrlich. Erfinde keine Werte, nutze die Trainingsdaten unten.\n" +
+      "- Sicherheit geht vor: Bei Gelenkschmerzen, stechendem Schmerz, Schwindel, Brustschmerz, Atemnot oder Verletzungsverdacht lässt du jeden Spott weg, rätst ruhig zum Abbrechen und bei Bedarf zu ärztlicher Abklärung. Klingt er nicht nach Trainingsfrust, sondern wirklich niedergeschlagen, bist du freundlich und ernst.\n" +
+      "- Spott ist nur spielerisch und betrifft das Training, nie Aussehen, Herkunft oder Privates.\n" +
+      "- Sagt er, wie viele Wiederholungen oder Sekunden er im aktuellen Satz geschafft hat, nutze das Tool satz_eintragen und bestätige kurz in deinem Stil. Will er eine Pause, nutze pause_starten. Schreib bei einem Tool immer trotzdem einen kurzen Satz dazu.\n\n" +
+      "Trainingsdaten:\n" + aiContext();
+  }
+  const AI_TOOLS = [
+    { name: "satz_eintragen", description: "Trägt den nächsten offenen Satz der aktuellen Übung als erledigt ein, mit den geschafften Wiederholungen (bei Halteübungen Sekunden).", input_schema: { type: "object", properties: { wiederholungen: { type: "integer", description: "Geschaffte Wiederholungen oder Sekunden" }, zusatzgewicht_kg: { type: "number", description: "Nur angeben, wenn er ein Zusatzgewicht nennt" } }, required: ["wiederholungen"] } },
+    { name: "pause_starten", description: "Startet den Pausen-Timer.", input_schema: { type: "object", properties: { sekunden: { type: "integer", description: "Dauer in Sekunden, 15 bis 600" } }, required: ["sekunden"] } }
+  ];
+  // Nächsten offenen Satz eintragen, wie über die Zahlentasten
+  function aiLogSet(reps, kg) {
+    const dk = todayKey(), s = effSession(today());
+    if (!s) return "Heute ist kein Training geplant.";
+    for (const e of s.exercises) {
+      if (e.skipped || isRun(e)) continue;
+      const lg = exLog(dk, e), n = setCount(e);
+      for (let i = 0; i < n; i++) if (!lg.done[i]) {
+        const v = Math.max(1, Math.min(999, Math.round(+reps || 0)));
+        const pn = pendingNotes[dk] && pendingNotes[dk][e.id];
+        const parts = noteParts(pn != null ? pn : lg.note);
+        if (i < parts.reps.length) parts.reps[i] = v; else parts.reps.push(v);
+        const rng = parseRange(e.reps);
+        parts.secs = !!(rng && rng.secs) || parts.secs;
+        if (kg != null && isFinite(kg)) parts.weight = +kg;
+        pendingNotes[dk] = pendingNotes[dk] || {};
+        pendingNotes[dk][e.id] = buildNote(parts);
+        commitNote(dk, e.id, true);
+        const li = $("exlist").querySelector('[data-id="' + CSS.escape(e.id) + '"]');
+        const btn = li && li.querySelector('.set[data-i="' + i + '"]');
+        if (btn && btn.getAttribute("aria-pressed") !== "true") onSetClick(btn);
+        return "Eingetragen: " + e.name + " Satz " + (i + 1) + " mit " + v + (parts.secs ? " s" : " Wdh") + (kg ? " und " + fmtN(kg) + " kg" : "") + ".";
+      }
+    }
+    return "Es gibt keinen offenen Satz mehr.";
+  }
+  function aiAddBubble(who, text) {
+    const log = $("aiLog");
+    if (!log) return;
+    const li = document.createElement("li");
+    li.className = "aib " + who;
+    li.textContent = text;
+    log.appendChild(li);
+    while (log.children.length > 30) log.removeChild(log.firstChild);
+    log.scrollTop = log.scrollHeight;
+  }
+  const aiStatus = (t) => { if ($("aiStatus")) $("aiStatus").textContent = t || ""; };
+  async function aiAsk(question) {
+    const key = aiKey();
+    if (!key) { aiStatus("Trag zuerst unter Coach deinen API-Schlüssel ein."); return; }
+    if (ai.busy || !question.trim()) return;
+    ai.busy = true;
+    if (Date.now() - ai.last > 30 * 60 * 1000) { ai.hist = []; ai.pendingTool = []; }
+    ai.last = Date.now();
+    aiAddBubble("me", question);
+    aiStatus("Coach denkt nach …");
+    const userContent = ai.pendingTool.concat([{ type: "text", text: question }]);
+    ai.pendingTool = [];
+    const msgs = ai.hist.concat([{ role: "user", content: userContent }]);
+    try {
+      const res = await fetch("https://api.anthropic.com/v1/messages", {
+        method: "POST",
+        headers: { "content-type": "application/json", "x-api-key": key, "anthropic-version": "2023-06-01", "anthropic-dangerous-direct-browser-access": "true" },
+        body: JSON.stringify({ model: aiModel(), max_tokens: 300, system: aiSystem(), tools: AI_TOOLS, messages: msgs })
+      });
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        const msg = res.status === 401 ? "Der API-Schlüssel stimmt nicht." : res.status === 429 ? "Zu viele Anfragen, kurz warten." : res.status === 529 || res.status >= 500 ? "Der KI-Dienst ist gerade überlastet." : res.status === 404 ? "Das Modell „" + aiModel() + "“ gibt es nicht. Prüf den Modellnamen unter Coach." : "Fehler " + res.status + (err.error && err.error.message ? ": " + err.error.message : "");
+        aiStatus(msg); aiAddBubble("sys", msg);
+        ai.pendingTool = userContent.filter((c) => c.type === "tool_result");
+        return;
+      }
+      const data = await res.json();
+      aiUsageAdd(data.usage);
+      const blocks = data.content || [];
+      let text = blocks.filter((b) => b.type === "text").map((b) => b.text).join(" ").trim();
+      const results = [];
+      blocks.filter((b) => b.type === "tool_use").forEach((b) => {
+        let out = "";
+        if (b.name === "satz_eintragen") out = aiLogSet(b.input && b.input.wiederholungen, b.input && b.input.zusatzgewicht_kg);
+        else if (b.name === "pause_starten") { const sec = Math.max(15, Math.min(600, Math.round(+(b.input && b.input.sekunden) || 120))); startTimer(sec); out = "Pause von " + sec + " Sekunden gestartet."; }
+        else out = "Unbekanntes Werkzeug.";
+        results.push({ type: "tool_result", tool_use_id: b.id, content: out });
+        aiAddBubble("sys", out);
+        if (!text) text = out;
+      });
+      ai.hist = msgs.concat([{ role: "assistant", content: blocks }]).slice(-14);
+      while (ai.hist.length && (ai.hist[0].role !== "user" || (Array.isArray(ai.hist[0].content) && ai.hist[0].content.some((c) => c.type === "tool_result")))) ai.hist.shift();
+      ai.pendingTool = results;
+      if (text) { aiAddBubble("ai", text); if (S().aiSpeak !== false) say(text, null, true); }
+      aiStatus("");
+    } catch (e) {
+      ai.pendingTool = userContent.filter((c) => c.type === "tool_result");
+      aiStatus(navigator.onLine === false ? "Kein Internet. Der KI-Coach braucht eine Verbindung." : "Keine Verbindung zum KI-Dienst.");
+    } finally { ai.busy = false; }
+  }
+  function aiListen() {
+    if (!SR) { aiStatus("Spracheingabe gibt es hier nicht. Tipp deine Frage ein."); $("aiText").focus(); return; }
+    if (ai.rec) { try { ai.rec.stop(); } catch (e) { /* ignore */ } return; }
+    let rec;
+    try { rec = new SR(); } catch (e) { aiStatus("Spracheingabe ist hier nicht verfügbar."); return; }
+    ai.rec = rec;
+    rec.lang = "de-DE"; rec.interimResults = true; rec.maxAlternatives = 1;
+    try { speechSynthesis.cancel(); } catch (e) { /* ignore */ }
+    vpStop();
+    let final = "";
+    $("aiMic").classList.add("live"); $("aiMic").textContent = "Ich höre zu …"; aiStatus(""); buzz(10);
+    rec.onresult = (ev) => {
+      let interim = "";
+      for (let i = ev.resultIndex; i < ev.results.length; i++) { if (ev.results[i].isFinal) final += ev.results[i][0].transcript; else interim += ev.results[i][0].transcript; }
+      aiStatus(final + interim);
+    };
+    rec.onerror = (ev) => { if (ev && ev.error === "not-allowed") aiStatus("Erlaube den Mikrofonzugriff, dann klappt es."); else if (ev && ev.error === "no-speech") aiStatus("Nichts gehört. Tipp nochmal auf Sprechen."); };
+    rec.onend = () => {
+      ai.rec = null;
+      $("aiMic").classList.remove("live"); $("aiMic").innerHTML = '<svg aria-hidden="true"><use href="#i-mic"/></svg>Sprechen';
+      if (final.trim()) aiAsk(final.trim());
+    };
+    try { rec.start(); } catch (e) { rec.onend(); }
+  }
+  function aiOpen(listen) {
+    $("aiPanel").hidden = false;
+    $("aiPanelName").textContent = curProf().name;
+    if (!aiKey()) aiStatus("Trag zuerst unter Coach deinen API-Schlüssel ein.");
+    else if (listen) aiListen();
+  }
+  function renderAiFab() {
+    const f = $("aiFab");
+    if (!f) return;
+    f.hidden = !(aiKey() && S().aiFab !== false && (currentTab === "today" || trainMode));
+  }
+  function renderAiSettings() {
+    if (!$("aiKey")) return;
+    const k = aiKey();
+    $("aiKey").value = k ? "••••••••" + k.slice(-4) : "";
+    $("aiModel").value = aiModel();
+    $("aiSpeak").checked = S().aiSpeak !== false;
+    $("aiUsage").textContent = aiUsageText();
+    $("aiKeyDel").hidden = !k;
+  }
+  if ($("aiFab")) {
+    $("aiFab").addEventListener("click", () => { primeAudio(); hap("tap"); aiOpen(true); });
+    $("aiClose").addEventListener("click", () => { $("aiPanel").hidden = true; if (ai.rec) try { ai.rec.abort(); } catch (e) { /* ignore */ } });
+    $("aiMic").addEventListener("click", () => { primeAudio(); aiListen(); });
+    $("aiForm").addEventListener("submit", (ev) => { ev.preventDefault(); const t = $("aiText").value.trim(); if (!t) return; $("aiText").value = ""; primeAudio(); aiAsk(t); });
+    $("aiKey").addEventListener("change", function () {
+      const v = this.value.trim();
+      if (!v || v.indexOf("••") === 0) return;
+      try { localStorage.setItem(AI_KEY_LS, v); } catch (e) { toast("Der Schlüssel konnte nicht gespeichert werden."); return; }
+      renderAiSettings(); renderAiFab(); toast("Schlüssel gespeichert, nur auf diesem Gerät");
+    });
+    $("aiKeyDel").addEventListener("click", () => { try { localStorage.removeItem(AI_KEY_LS); } catch (e) { /* ignore */ } renderAiSettings(); renderAiFab(); toast("Schlüssel gelöscht"); });
+    $("aiModel").addEventListener("change", function () { S().aiModel = this.value.trim() || "claude-haiku-5-5"; saveSettings(); });
+    $("aiSpeak").addEventListener("change", function () { S().aiSpeak = this.checked; saveSettings(); });
+    $("aiTest").addEventListener("click", () => { $("aiPanel").hidden = false; $("aiPanelName").textContent = curProf().name; aiAsk("Kurzer Verbindungstest: Sag mir in einem Satz, was heute ansteht."); });
+    renderAiSettings();
+  }
+
   window.__waGame = true;
 
   // ---------- Vitalwerte im Check-in ----------

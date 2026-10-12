@@ -6,7 +6,9 @@ Die App kann auf drei Arten sprechen. Sie nimmt die erste, die verfügbar ist:
 2. **Voice-Pack**: fertige Audio-Clips, aus denen die App ihre Sätze zusammensetzt.
 3. **Systemstimme** des Handys.
 
-Alles findest du in der App unter **Plan → Aussehen → Coach-Stimme und Voice-Pack**.
+Alles findest du in der App unter **Plan → Aussehen → Coach-Stimmen und Sprüche**.
+Du kannst mehrere **Stimm-Profile** anlegen (zum Beispiel Motivator und Entspannt). Jedes hat eigene Sprüche,
+eine eigene Persönlichkeit für den KI-Coach und optional ein eigenes Modell oder Voice-Pack.
 
 ## 1. Piper-Modell laden
 
@@ -23,7 +25,7 @@ oder mit Audio, das du selbst erzeugt hast und nutzen darfst.
 
 Für Modelle, die nicht auf dem Handy laufen (XTTS, StyleTTS, alles Eigene):
 
-1. In der App „Satzliste exportieren" → `voicepack-saetze.json`
+1. In der App das Profil wählen, Sprüche fertig schreiben, dann „Satzliste exportieren" → `voicepack-<profil>.json`
 2. Am PC:
 
 ```
