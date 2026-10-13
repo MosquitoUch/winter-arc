@@ -980,6 +980,8 @@ body.train-mode .ex:not(.is-next):not(.is-done) { opacity: .6; }
 
 /* Sanfte Übergänge */
 @keyframes viewIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+main { position: relative; }
+main[data-dir="n"] > section:not([hidden]) { animation: none !important; }
 main > section:not([hidden]) { animation: viewIn 220ms cubic-bezier(.2, .8, .2, 1); }
 .btn, .gtg-btn, .ci-btn, .habit, .pfood, .tab { transition: transform 120ms ease, background 160ms, border-color 160ms, color 160ms; }
 .btn:active, .pfood:active, .ci-btn:active, .tab:active { transform: scale(0.97); }
@@ -6506,29 +6508,33 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
   // ================= Tabs =================
   const TABS = ["today", "week", "progress", "body", "tools", "coach", "plan"];
   let currentTab = "today";
-  function showTab(name) {
-    if (TABS.indexOf(name) < 0) name = "today";
-    const dir = TABS.indexOf(name) - TABS.indexOf(currentTab);
-    const mainEl = document.querySelector("main");
-    if (mainEl) mainEl.dataset.dir = dir > 0 ? "r" : dir < 0 ? "l" : "";
-    currentTab = name;
-    TABS.forEach((t) => { $("view-" + t).hidden = t !== name; });
-    document.querySelectorAll(".tab").forEach((b) => { if (b.dataset.tab === name) b.setAttribute("aria-current", "page"); else b.removeAttribute("aria-current"); });
-    try { localStorage.setItem("winterarc.tab", name); } catch (e) { /* ignore */ }
+  function renderTabContent(name) {
     if (name === "week") renderWeek();
     if (name === "progress") renderProgress();
     if (name === "body") renderBody();
     if (name === "tools") renderTools();
     if (name === "plan") renderPlanView();
+  }
+  function showTab(name, noAnim) {
+    if (TABS.indexOf(name) < 0) name = "today";
+    const dir = TABS.indexOf(name) - TABS.indexOf(currentTab);
+    const mainEl = document.querySelector("main");
+    if (mainEl) mainEl.dataset.dir = noAnim ? "n" : dir > 0 ? "r" : dir < 0 ? "l" : "";
+    currentTab = name;
+    TABS.forEach((t) => { $("view-" + t).hidden = t !== name; });
+    document.querySelectorAll(".tab").forEach((b) => { if (b.dataset.tab === name) b.setAttribute("aria-current", "page"); else b.removeAttribute("aria-current"); });
+    try { localStorage.setItem("winterarc.tab", name); } catch (e) { /* ignore */ }
+    renderTabContent(name);
     if (name === "today") fitDayname();
     window.scrollTo(0, 0);
     snow.toggle(name === "today");
     if (window.__waGame) { renderAiFab(); if (name === "coach") renderAiSettings(); }
   }
   document.querySelector(".tabs").addEventListener("click", (ev) => { const b = ev.target.closest(".tab"); if (b) { hap("tab"); showTab(b.dataset.tab); } });
-  // Wischen links/rechts wechselt den Tab, die Seite folgt dabei dem Finger
+  // Wischen links/rechts: Karussell, die Nachbarseite schiebt sich mit dem Finger herein
   (() => {
-    let sx = null, sy = 0, st = 0, lock = 0, view = null;
+    let sx = null, sy = 0, st = 0, lock = 0, view = null, nb = null, nbName = "", sign = 0, W = 360;
+    const mainEl = document.querySelector("main");
     const hScroll = (el) => {
       for (; el && el !== document.body; el = el.parentElement) {
         if (el.scrollWidth > el.clientWidth + 4) { const ox = getComputedStyle(el).overflowX; if (ox === "auto" || ox === "scroll") return true; }
@@ -6536,15 +6542,32 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
       return false;
     };
     const blocked = (t) => !!document.querySelector('[role="dialog"]:not([hidden]), .overlay:not([hidden])') || !t || !t.closest || !!t.closest("input, textarea, select, canvas, .wheel, [data-noswipe]") || hScroll(t);
-    const reset = (anim) => {
-      if (!view) return;
+    const clearEl = (el) => { el.style.transition = ""; el.style.transform = ""; el.style.opacity = ""; el.style.position = ""; el.style.top = ""; el.style.left = ""; el.style.right = ""; el.style.animation = ""; el.style.willChange = ""; el.style.pointerEvents = ""; };
+    const dropNb = () => { if (nb) { nb.hidden = true; clearEl(nb); nb = null; nbName = ""; } };
+    const prep = (name) => {
+      dropNb();
+      renderTabContent(name);
+      if (window.__waGame && name === "coach") { try { renderAiSettings(); } catch (e) { /* ignore */ } }
+      nb = $("view-" + name); nbName = name;
+      const cs = getComputedStyle(mainEl), top = Math.max(0, window.scrollY - mainEl.getBoundingClientRect().top - window.scrollY + window.scrollY);
+      nb.hidden = false;
+      nb.style.position = "absolute"; nb.style.animation = "none"; nb.style.willChange = "transform"; nb.style.pointerEvents = "none";
+      nb.style.left = "0"; nb.style.right = "0";
+      nb.style.top = Math.max(0, -mainEl.getBoundingClientRect().top) + "px";
+      nb.style.transition = "none";
+      void cs;
+    };
+    const setX = (el, x) => { el.style.transition = "none"; el.style.transform = "translate3d(" + x.toFixed(1) + "px,0,0)"; };
+    const settle = (el, x, ms) => { el.style.transition = "transform " + ms + "ms cubic-bezier(.2,.9,.2,1)"; el.style.transform = "translate3d(" + x + "px,0,0)"; };
+    const finish = (name) => {
       const v = view; view = null;
-      v.style.transition = anim ? "transform 240ms cubic-bezier(.2,.9,.2,1), opacity 240ms" : "";
-      v.style.transform = ""; v.style.opacity = "";
-      if (anim) setTimeout(() => { v.style.transition = ""; }, 260);
+      if (v) clearEl(v);
+      dropNb();
+      document.documentElement.style.overflowX = "";
+      if (name) { hap("tab"); showTab(name, true); }
     };
     document.addEventListener("touchstart", (e) => {
-      if (e.touches.length !== 1) { sx = null; reset(true); return; }
+      if (e.touches.length !== 1) { sx = null; if (view) { settle(view, 0, 200); if (nb) settle(nb, sign * W, 200); setTimeout(() => finish(null), 220); } return; }
       const t = e.touches[0]; sx = t.clientX; sy = t.clientY; st = Date.now(); lock = 0;
       if (sx < 28 || sx > window.innerWidth - 28 || blocked(e.target)) lock = -1;
     }, { passive: true });
@@ -6553,27 +6576,30 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
       const t = e.touches[0], dx = t.clientX - sx, dy = t.clientY - sy;
       if (!lock) {
         if (Math.abs(dx) < 12 && Math.abs(dy) < 12) return;
-        if (Math.abs(dx) > Math.abs(dy) * 1.6) { lock = 1; view = $("view-" + currentTab); } else { lock = -1; return; }
+        if (Math.abs(dx) > Math.abs(dy) * 1.6) { lock = 1; view = $("view-" + currentTab); W = mainEl.clientWidth || window.innerWidth; document.documentElement.style.overflowX = "hidden"; } else { lock = -1; return; }
       }
       if (!view || reduced()) return;
-      const i = TABS.indexOf(currentTab), edge = (dx > 0 && i === 0) || (dx < 0 && i === TABS.length - 1);
-      const off = edge ? dx * 0.12 : dx * 0.42;
-      view.style.transition = "none";
-      view.style.transform = "translateX(" + off.toFixed(1) + "px)";
-      view.style.opacity = String(Math.max(0.5, 1 - Math.abs(off) / 420));
+      const i = TABS.indexOf(currentTab), sg = dx < 0 ? 1 : -1, ti = i + sg;
+      if (ti < 0 || ti >= TABS.length) { dropNb(); sign = 0; setX(view, dx * 0.12); return; }
+      if (sg !== sign || !nb) { sign = sg; prep(TABS[ti]); }
+      setX(view, dx);
+      setX(nb, sg * W + dx);
     }, { passive: true });
     document.addEventListener("touchend", (e) => {
       if (sx == null) return;
       const t = e.changedTouches[0], dx = t.clientX - sx, dy = t.clientY - sy, dt = Date.now() - st, was = lock;
       sx = null;
       const horiz = was === 1 || (was === 0 && Math.abs(dx) > Math.abs(dy) * 2);
-      const go = horiz && (Math.abs(dx) > 90 || (Math.abs(dx) > 50 && dt < 320));
-      if (!go) { reset(true); return; }
+      const go = horiz && (Math.abs(dx) > W * 0.3 || (Math.abs(dx) > 50 && dt < 320));
       const n = TABS.indexOf(currentTab) + (dx < 0 ? 1 : -1);
-      if (n < 0 || n >= TABS.length) { reset(true); return; }
-      reset(false); hap("tab"); showTab(TABS[n]);
+      const ok = go && n >= 0 && n < TABS.length;
+      if (!view) { if (ok) { hap("tab"); showTab(TABS[n]); } return; }
+      if (!ok || !nb) { settle(view, 0, 240); if (nb) settle(nb, sign * W, 240); setTimeout(() => finish(null), 250); return; }
+      settle(view, -sign * W, 260); settle(nb, 0, 260);
+      const target = TABS[n];
+      setTimeout(() => finish(target), 270);
     }, { passive: true });
-    document.addEventListener("touchcancel", () => { sx = null; reset(true); }, { passive: true });
+    document.addEventListener("touchcancel", () => { sx = null; if (view) { settle(view, 0, 200); if (nb) settle(nb, sign * W, 200); setTimeout(() => finish(null), 220); } }, { passive: true });
   })();
   document.addEventListener("click", (ev) => {
     const g = ev.target.closest("[data-goto]");
