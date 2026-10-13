@@ -146,6 +146,19 @@ body.timer-on .app { padding-bottom: calc(200px + env(safe-area-inset-bottom, 0p
 .pfood { min-height: 40px; padding: 7px 12px; border-radius: 12px; border: 1px solid var(--line-2); background: var(--surface); color: var(--ink-2); font-size: 14px; }
 .pfood b { color: var(--ice); font-weight: 600; margin-left: 4px; }
 .pfood:active { border-color: var(--ice-deep); }
+
+.foodrow { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
+.foodrow .btn { min-height: 40px; padding: 7px 14px; font-size: 14px; }
+.foodbox { text-align: left; justify-items: stretch; }
+.foodbox h2 { text-align: center; }
+.foodgrid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 100%; }
+.foodgrid .field { margin: 0; min-width: 0; }
+.foodgrid .full { grid-column: 1 / -1; }
+.foodgrid label { text-align: left; font-size: 12px; color: var(--ink-2); display: block; margin-bottom: 4px; }
+.foodgrid .inp { width: 100%; box-sizing: border-box; }
+.foodsum { margin: 0; font-size: 14px; color: var(--ink); text-align: center; min-height: 20px; }
+.foodstat { margin: 0; font-size: 13px; color: var(--ink-2); text-align: center; min-height: 18px; }
+.foodkeep { display: flex; gap: 8px; align-items: center; font-size: 13px; color: var(--ink-2); }
 .pcustom { display: flex; gap: 8px; margin-top: 10px; align-items: center; flex-wrap: wrap; }
 .pcustom input { width: 92px; min-height: 40px; padding: 7px 10px; border-radius: 10px; border: 1px solid var(--line-2); background: var(--surface); color: var(--ink); }
 .pcustom .btn { min-height: 40px; padding: 7px 14px; font-size: 14px; }
@@ -1515,6 +1528,8 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
             <div class="pbar" id="pbar"><i></i></div>
             <p class="pkcal" id="pkcal"></p>
             <div class="pfoods" id="pfoods"></div>
+            <div class="pfoods" id="pprods" style="margin-top:8px"></div>
+            <div class="foodrow"><button class="btn small" id="fscan">Etikett fotografieren</button><button class="btn small" id="fman">Produkt eintragen</button><input type="file" id="foodFile" accept="image/*" capture="environment" hidden></div>
             <div class="pcustom">
               <label class="sr" for="pinput">Eigene Menge in Gramm Protein</label>
               <input type="number" inputmode="numeric" min="1" max="200" id="pinput" placeholder="g">
@@ -2189,6 +2204,27 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
     <ul class="grlist" id="grList"></ul>
     <button class="grquit" id="grLater" hidden>Prüfung verschieben (kein Fehlschlag)</button>
     <button class="grquit" id="grQuit">Gate verlassen</button>
+  </div>
+</div>
+
+<div class="sysov" id="foodWin" role="dialog" aria-modal="true" aria-labelledby="foodTitle" hidden>
+  <div class="sysbox clsbox foodbox">
+    <div class="systag"><span>!</span>System</div>
+    <h2 id="foodTitle">Nährwerte</h2>
+    <p class="foodstat" id="foodStat" aria-live="polite"></p>
+    <div class="foodgrid">
+      <div class="field full"><label for="fName">Produkt</label><input class="inp" id="fName" maxlength="40" autocomplete="off" placeholder="z. B. Gouda"></div>
+      <div class="field"><label for="fK">kcal pro 100 g</label><input class="inp" id="fK" type="number" inputmode="decimal" min="0" step="any"></div>
+      <div class="field"><label for="fP">Eiweiß pro 100 g</label><input class="inp" id="fP" type="number" inputmode="decimal" min="0" step="any"></div>
+      <div class="field"><label for="fF">Fett pro 100 g</label><input class="inp" id="fF" type="number" inputmode="decimal" min="0" step="any"></div>
+      <div class="field"><label for="fC">Kohlenhydr. pro 100 g</label><input class="inp" id="fC" type="number" inputmode="decimal" min="0" step="any"></div>
+      <div class="field full"><label for="fG">Menge in Gramm</label><input class="inp" id="fG" type="number" inputmode="decimal" min="1" step="any" placeholder="z. B. 100"></div>
+    </div>
+    <p class="foodsum" id="foodSum"></p>
+    <label class="foodkeep"><input type="checkbox" id="fKeep" checked> Produkt merken</label>
+    <button class="btn primary" id="foodOk">Eintragen</button>
+    <button class="btn" id="foodDel" hidden>Produkt löschen</button>
+    <button class="btn" id="foodCancel">Abbrechen</button>
   </div>
 </div>
 
@@ -3466,10 +3502,11 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
       pf.innerHTML = FOODS.map((f, i) => '<button class="pfood" data-f="' + i + '">' + esc(f.l) + "<b>+" + f.g + " g" + (f.k ? ", " + f.k + " kcal" : "") + "</b></button>").join("");
       pf.dataset.built = "1";
     }
+    try { renderProds(); } catch (e) { /* ignore */ }
     const list = (state.logs[dk] && state.logs[dk].protein) || [];
     const kt = +S().kcalTarget || 3200;
     const ksum = list.reduce((a, p) => a + (p.k || 0), 0), nk = list.filter((p) => !p.k).length;
-    $("pkcal").textContent = list.length ? "Etwa " + Math.round(ksum).toLocaleString("de-DE") + " kcal von " + kt.toLocaleString("de-DE") + (nk ? ". " + nk + (nk === 1 ? " Eintrag" : " Einträge") + " ohne kcal" : "") + "." : "";
+    $("pkcal").textContent = list.length ? "Etwa " + Math.round(ksum).toLocaleString("de-DE") + " kcal von " + kt.toLocaleString("de-DE") + (nk ? ". " + nk + (nk === 1 ? " Eintrag" : " Einträge") + " ohne kcal" : "") + "." + fcSum(list) : "";
     $("pundo").disabled = !list.length;
     $("plog").textContent = list.length ? "Heute: " + list.slice(-6).map((p) => p.l).join(", ") + (list.length > 6 ? " und mehr" : "") : "";
     if (typeof patchRestRing === "function" && restReady) patchRestRing(dk);
@@ -3739,11 +3776,15 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
       if (/protein/i.test(h)) { if (total >= target) l.habits[h] = true; else delete l.habits[h]; }
     });
   }
-  function addProtein(label, g, k) {
+  function addProtein(label, g, k, fat, carb) {
     const dk = todayKey();
     const l = ensureLog(dk);
     const before = proteinTotal(dk);
-    l.protein.push(k ? { l: label, g, k } : { l: label, g });
+    const en = { l: label, g };
+    if (k) en.k = k;
+    if (fat > 0) en.f = fat;
+    if (carb > 0) en.c = carb;
+    l.protein.push(en);
     const total = before + g;
     syncProteinHabit(l, total);
     saveLog(dk);
@@ -3775,6 +3816,125 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
     saveLog(dk);
     renderProtein(dk); renderHabits(dk);
   });
+
+
+  // ================= Nährwert-Etikett =================
+  function fcSum(list) {
+    const f = list.reduce((a, p) => a + (+p.f || 0), 0), c = list.reduce((a, p) => a + (+p.c || 0), 0);
+    return f || c ? " Fett " + Math.round(f) + " g, Kohlenhydrate " + Math.round(c) + " g (nur erfasste Produkte)." : "";
+  }
+  const prods = () => { const m = rankMeta(); if (!Array.isArray(m.prods)) m.prods = []; return m.prods; };
+  let foodCur = null, foodBusy = false;
+  function renderProds() {
+    const w = $("pprods");
+    if (!w) return;
+    w.innerHTML = prods().map((p, i) => '<button class="pfood" data-pi="' + i + '">' + esc(p.n) + "<b>" + Math.round(p.k) + " kcal / 100 g</b></button>").join("");
+  }
+  const fv = (id) => num($(id).value) || 0;
+  function foodCalc() {
+    const g = fv("fG");
+    const r = (v) => Math.round(v * g / 100 * 10) / 10;
+    $("foodSum").textContent = g > 0 ? g + " g = " + Math.round(fv("fK") * g / 100) + " kcal, " + r(fv("fP")) + " g Eiweiß, " + r(fv("fF")) + " g Fett, " + r(fv("fC")) + " g Kohlenhydrate" : "";
+    $("foodOk").disabled = !(g > 0 && ($("fName").value.trim() || fv("fK") > 0 || fv("fP") > 0));
+  }
+  function foodOpen(pr, idx, status) {
+    foodCur = idx == null ? null : idx;
+    $("foodTitle").textContent = pr && pr.n ? pr.n : "Nährwerte";
+    $("fName").value = pr ? pr.n || "" : "";
+    $("fK").value = pr && pr.k ? pr.k : ""; $("fP").value = pr && pr.p ? pr.p : "";
+    $("fF").value = pr && pr.f ? pr.f : ""; $("fC").value = pr && pr.c ? pr.c : "";
+    $("fG").value = pr && pr.g ? pr.g : "";
+    $("fKeep").checked = idx == null; $("fKeep").parentNode.hidden = idx != null;
+    $("foodDel").hidden = idx == null;
+    $("foodStat").textContent = status || "";
+    foodCalc();
+    $("foodWin").hidden = false;
+    document.body.style.overflow = "hidden";
+  }
+  function foodClose() { $("foodWin").hidden = true; document.body.style.overflow = ""; foodBusy = false; }
+  function foodShrink(file) {
+    return new Promise((res, rej) => {
+      const img = new Image(), url = URL.createObjectURL(file);
+      img.onload = () => {
+        const sc = Math.min(1, 1400 / Math.max(img.width, img.height));
+        const cv = document.createElement("canvas");
+        cv.width = Math.round(img.width * sc); cv.height = Math.round(img.height * sc);
+        cv.getContext("2d").drawImage(img, 0, 0, cv.width, cv.height);
+        URL.revokeObjectURL(url);
+        res(cv.toDataURL("image/jpeg", 0.85).split(",")[1]);
+      };
+      img.onerror = () => { URL.revokeObjectURL(url); rej(new Error("img")); };
+      img.src = url;
+    });
+  }
+  async function foodScan(file) {
+    const key = aiKey();
+    foodOpen(null, null, key ? "Lese das Etikett …" : "Für das Foto brauchst du unter Coach einen API-Schlüssel. Trag die Werte von Hand ein.");
+    if (!key) return;
+    foodBusy = true;
+    try {
+      const b64 = await foodShrink(file);
+      const res = await fetch("https://api.anthropic.com/v1/messages", {
+        method: "POST",
+        headers: { "content-type": "application/json", "x-api-key": key, "anthropic-version": "2023-06-01", "anthropic-dangerous-direct-browser-access": "true" },
+        body: JSON.stringify({
+          model: aiModel(), max_tokens: 300,
+          system: "Du liest Nährwerttabellen von Lebensmittelverpackungen. Antworte nur mit einem JSON-Objekt, ohne weiteren Text.",
+          messages: [{ role: "user", content: [
+            { type: "image", source: { type: "base64", media_type: "image/jpeg", data: b64 } },
+            { type: "text", text: 'Lies die Nährwerttabelle. Gib die Werte pro 100 g (bzw. 100 ml) zurück. Steht nur eine Portion drin, rechne anhand der Portionsgröße auf 100 g um. Format: {"name":"kurzer deutscher Produktname oder leer","kcal":0,"protein":0,"fett":0,"kohlenhydrate":0}. Zahlen ohne Einheit, Dezimalpunkt. Ist nichts lesbar: {"fehler":"unleserlich"}.' }
+          ] }]
+        })
+      });
+      if (!res.ok) {
+        foodBusy = false;
+        $("foodStat").textContent = res.status === 401 ? "Der API-Schlüssel stimmt nicht." : res.status === 429 ? "Zu viele Anfragen, kurz warten." : res.status === 404 ? "Das Modell gibt es nicht. Prüf den Namen unter Coach." : "Fehler " + res.status + ". Trag die Werte von Hand ein.";
+        return;
+      }
+      const data = await res.json();
+      try { aiUsageAdd(data.usage); } catch (e) { /* ignore */ }
+      foodBusy = false;
+      if ($("foodWin").hidden) return;
+      const txt = (data.content || []).filter((b) => b.type === "text").map((b) => b.text).join(" ");
+      const m = txt.match(/\{[\s\S]*\}/);
+      const o = m ? JSON.parse(m[0]) : {};
+      if (o.fehler || !(+o.kcal > 0 || +o.protein > 0)) { $("foodStat").textContent = "Das Etikett war nicht lesbar. Mach ein schärferes Foto oder trag die Werte von Hand ein."; return; }
+      $("fName").value = String(o.name || "").slice(0, 40);
+      $("fK").value = Math.round(+o.kcal || 0); $("fP").value = Math.round((+o.protein || 0) * 10) / 10;
+      $("fF").value = Math.round((+o.fett || 0) * 10) / 10; $("fC").value = Math.round((+o.kohlenhydrate || 0) * 10) / 10;
+      $("foodStat").textContent = "Gelesen. Prüf die Werte kurz und gib deine Menge ein.";
+      foodCalc();
+      $("fG").focus();
+    } catch (e) {
+      foodBusy = false;
+      $("foodStat").textContent = navigator.onLine === false ? "Kein Internet. Trag die Werte von Hand ein." : "Das Etikett konnte nicht gelesen werden. Trag die Werte von Hand ein.";
+    }
+  }
+  function foodSave() {
+    const g = fv("fG");
+    if (!(g > 0)) return;
+    const name = $("fName").value.trim() || "Produkt";
+    const pr = { n: name, k: fv("fK"), p: fv("fP"), f: fv("fF"), c: fv("fC"), g };
+    const L = prods();
+    if (foodCur != null && L[foodCur]) L[foodCur] = pr;
+    else if ($("fKeep").checked) { const i = L.findIndex((x) => x.n.toLowerCase() === name.toLowerCase()); if (i >= 0) L[i] = pr; else L.push(pr); }
+    const r = (v) => Math.round(v * g / 100 * 10) / 10;
+    const kc = Math.round(pr.k * g / 100);
+    foodClose();
+    saveLocal(); renderProds();
+    addProtein(name + " " + Math.round(g) + " g", r(pr.p), kc, r(pr.f), r(pr.c));
+    toast(name + ": " + kc + " kcal, " + r(pr.p) + " g Eiweiß eingetragen.");
+  }
+  if ($("fscan")) {
+    $("fscan").addEventListener("click", () => $("foodFile").click());
+    $("foodFile").addEventListener("change", function () { const f = this.files && this.files[0]; this.value = ""; if (f) foodScan(f); });
+    $("fman").addEventListener("click", () => foodOpen(null, null, ""));
+    ["fName", "fK", "fP", "fF", "fC", "fG"].forEach((id) => $(id).addEventListener("input", foodCalc));
+    $("foodOk").addEventListener("click", foodSave);
+    $("foodCancel").addEventListener("click", foodClose);
+    $("foodDel").addEventListener("click", () => { if (foodCur != null) { prods().splice(foodCur, 1); saveLocal(); renderProds(); } foodClose(); });
+    $("pprods").addEventListener("click", (ev) => { const b = ev.target.closest("[data-pi]"); if (!b) return; const i = +b.dataset.pi, pr = prods()[i]; if (pr) { hap("tap"); foodOpen(pr, i, ""); } });
+  }
 
   function celebrate(dk) {
     if (celebrated[dk]) return;
