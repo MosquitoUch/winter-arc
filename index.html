@@ -2187,6 +2187,7 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
     <div class="grtime" id="grTime" role="timer">0:00</div>
     <div class="grbar"><i id="grBar"></i></div>
     <ul class="grlist" id="grList"></ul>
+    <button class="grquit" id="grLater" hidden>Prüfung verschieben (kein Fehlschlag)</button>
     <button class="grquit" id="grQuit">Gate verlassen</button>
   </div>
 </div>
@@ -10109,6 +10110,7 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
     $("grTime").textContent = mmss(left);
     $("grBar").style.width = (100 * left / g.limit).toFixed(1) + "%";
     $("grTime").classList.toggle("low", left <= 60);
+    if ($("grLater")) $("grLater").hidden = !(g.job && !g.tasks.some((t) => t.done));
     if (left === 60 && !g.warned) { g.warned = 1; hap("herz"); }
     if (left <= 0 && !g.tasks.every((t) => t.done)) gateFail(true);
   }
@@ -10238,6 +10240,13 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
       if (t.done) { hap("set"); try { sndOverride("set"); } catch (e) { /* ignore */ } }
       b.classList.toggle("ok", t.done); b.setAttribute("aria-pressed", t.done); b.querySelector("i").textContent = t.done ? "✓" : "";
       if (g.tasks.every((x) => x.done)) setTimeout(gateClear, 350);
+    });
+    $("grLater").addEventListener("click", () => {
+      const G = gMeta(), g = G.cur;
+      if (!g || !g.job || g.tasks.some((t) => t.done)) return;
+      G.cur = null;
+      saveLocal(); gateRunClose(); renderGate(); renderJob();
+      toast("Prüfung verschoben. Kein Fehlschlag, du startest sie, wenn du Zeit hast.");
     });
     $("grQuit").addEventListener("click", () => {
       const g = gMeta().cur;
@@ -10559,7 +10568,10 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
       '<button class="btn small" id="clsChange"' + (can ? "" : " disabled") + ">" + (can ? "Klasse wechseln" : "Wechsel möglich ab " + shortDate(parseKey(next))) + "</button>";
   }
   if ($("jobCard")) {
-    $("jobGo").addEventListener("click", () => { hap("tap"); if (jobMeta().passed) openClsPick(); else jobStart(); });
+    $("jobGo").addEventListener("click", () => { hap("tap"); if (jobMeta().passed) { openClsPick(); return; }
+      const b = $("jobGo");
+      if (!b.dataset.sure) { b.dataset.sure = "1"; b.textContent = "Sicher? Danach läuft die Zeit. Nochmal tippen."; setTimeout(() => { delete b.dataset.sure; renderJob(); }, 4000); return; }
+      delete b.dataset.sure; jobStart(); });
     $("clsList").addEventListener("click", (ev) => {
       const b = ev.target.closest("button[data-c]");
       if (!b) return;
