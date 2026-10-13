@@ -1235,6 +1235,14 @@ main[data-dir="l"] > section:not([hidden]) { animation: viewInL 260ms cubic-bezi
 .shpend { display: grid; grid-template-columns: 44px minmax(0, 1fr) auto; gap: 12px; align-items: center; margin-top: 10px; padding: 10px 12px; border-radius: 14px; border: 1px dashed rgba(185, 168, 255, .55); background: rgba(120, 90, 255, .08); }
 .shpt { display: grid; min-width: 0; }
 .shpt small { color: var(--mute); font-size: 12px; }
+.armybonus { grid-column: 1 / -1; margin: 0 0 4px; font-size: 13px; color: var(--ink-2); }
+.shd i { display: block; margin-top: 4px; font-style: normal; font-size: 11px; color: var(--ice); }
+.hidcard { position: relative; margin: 0 0 20px; padding: 14px 16px; border-radius: 16px; border: 1px solid rgba(255, 194, 61, .65); background: linear-gradient(135deg, rgba(255, 194, 61, .14), rgba(0, 0, 0, .4)); box-shadow: 0 0 26px rgba(255, 194, 61, .2); }
+.hidcard .systag { color: #FFC23D; border-color: rgba(255, 194, 61, .6); font-size: 12px; padding: 2px 10px; }
+.hidcard .systag span { border-color: #FFC23D; }
+.hidcard h3 { margin: 8px 0 4px; font-family: var(--display); font-size: 22px; line-height: 1.1; }
+.hidcard p { margin: 0 0 10px; color: var(--ink-2); font-size: 14px; }
+.hidcard .btn { border-color: #FFC23D; color: #FFD97A; }
 .jobcard { position: relative; margin: 0 0 20px; padding: 14px 16px; border-radius: 16px; border: 1px solid rgba(180, 140, 255, .6); background: linear-gradient(135deg, rgba(180, 140, 255, .14), rgba(0, 0, 0, .4)); box-shadow: 0 0 26px rgba(180, 140, 255, .2); }
 .jobcard .systag { color: #CDB6FF; border-color: rgba(180, 140, 255, .6); font-size: 12px; padding: 2px 10px; }
 .jobcard .systag span { border-color: #CDB6FF; }
@@ -1393,6 +1401,13 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
           <div class="gatecard" id="gateCard" hidden>
             <div class="gportal" aria-hidden="true"><b id="gateRank">C</b></div>
             <div><span class="systag sm"><span>!</span>Gate</span><h3 id="gateTitle"></h3><p id="gateMeta"></p><button class="btn small" id="gateEnter">Betreten</button></div>
+          </div>
+
+          <div class="hidcard" id="hidCard" hidden>
+            <span class="systag sm"><span>!</span>Verborgene Quest</span>
+            <h3 id="hidTitle">Das System hat dir etwas zugeflüstert</h3>
+            <p id="hidText"></p>
+            <div class="row"><button class="btn small" id="hidDone">Erledigt</button><button class="btn small" id="hidSkip">Nicht heute</button></div>
           </div>
 
           <div class="jobcard" id="jobCard" hidden>
@@ -8773,6 +8788,7 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
     const mm0 = rankMeta();
     const cl = mm0.cls && mm0.cls.id ? mm0.cls : null;
     let xp = 0;
+    const sb = shTotals();
     Object.keys(state.logs).forEach((dk) => {
       const l = state.logs[dk] || {};
       const runeX = mm0.gates && mm0.gates.runes && mm0.gates.runes[dk] ? 2 : 1;
@@ -8794,13 +8810,14 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
       if (proteinTotal(dk) >= pt) vx += 10;
       vx += habitStats(dk).n * 3;
       if (ck === "guardian") vx *= 1.5;
-      xp += Math.round((sx + rx + vx) * (ck === "necro" ? 1.1 : 1));
+      xp += Math.round((sx * (1 + sb.set / 100) + rx * (1 + sb.run / 100) + vx) * (ck === "necro" ? 1.1 : 1));
     });
     xp += (state.tests.entries || []).length * 50;
     const mm = rankMeta();
     xp += Object.keys(mm.quests || {}).length * 50;
     xp += Object.keys(mm.bosses || {}).filter((k) => mm.bosses[k].won).length * 200;
     xp += Object.keys(mm.ach || {}).length * 25;
+    xp += Object.keys((mm.hid && mm.hid.done) || {}).length * 30;
     ((mm.gates && mm.gates.log) || []).forEach((g) => { if (g.res === "won") xp += g.xp || 0; });
     xp += ((mm.shadows && mm.shadows.list) || []).length * (cl && cl.id === "necro" ? 30 : 15);
     SKILLS.forEach((sk) => { const l = Math.min(sk.levels.length, ((state.skills || {})[sk.key] || {}).level || 0); xp += l * 30 + (l >= sk.levels.length ? 70 : 0); });
@@ -9158,6 +9175,8 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
     { id: "army10", n: "Schattenheer", d: "10 Schatten in deiner Armee", title: "Herr der Schatten" },
     { id: "job", n: "Job-Wechsel", d: "Prüfung bestanden und Klasse gewählt" },
     { id: "rival50", n: "Über dich hinaus", d: "50 Sätze gegen dein Schatten-Ich gewonnen", title: "Der Unaufhaltsame" },
+    { id: "brk1", n: "Ausbruch gestoppt", d: "Einen Dungeon Break geräumt", title: "Der Ausbruchsstopper" },
+    { id: "hid5", n: "Auserwählt", d: "5 verborgene Quests erfüllt", title: "Der Auserwählte" },
     { id: "skill1", n: "Erste Technik", d: "Eine Skill-Stufe geschafft" },
     { id: "master1", n: "Meister einer Kunst", d: "Einen Skill komplett gemeistert", title: "Der Meister" }
   ];
@@ -9180,6 +9199,7 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
       arc: arcDay() > (S().arcLength || 90),
       gWon: ((m.gates && m.gates.log) || []).filter((g) => g.res === "won"),
       shadows: ((m.shadows && m.shadows.list) || []).length, cls: !!(m.cls && m.cls.id), rival: rivalWinsTotal(),
+      hid: Object.keys((m.hid && m.hid.done) || {}).length,
       skLv: SKILLS.reduce((a, sk) => a + (((state.skills || {})[sk.key] || {}).level || 0), 0), skMax: SKILLS.some((sk) => (((state.skills || {})[sk.key] || {}).level || 0) >= sk.levels.length)
     };
   }
@@ -9192,6 +9212,7 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
     lv10: (s) => s.lv >= 10, lv30: (s) => s.lv >= 30, arc: (s) => s.arc,
     gate1: (s) => s.gWon.length >= 1, gate10: (s) => s.gWon.length >= 10, gateS: (s) => s.gWon.some((g) => g.rank >= 5), gateRed: (s) => s.gWon.some((g) => g.red),
     arise1: (s) => s.shadows >= 1, army10: (s) => s.shadows >= 10, job: (s) => s.cls, rival50: (s) => s.rival >= 50,
+    brk1: (s) => s.gWon.some((g) => g.brk), hid5: (s) => s.hid >= 5,
     skill1: (s) => s.skLv >= 1, master1: (s) => s.skMax
   };
   function checkAch(R, X) {
@@ -10226,6 +10247,77 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
     renderGate();
   }
   const hhmm = (ts) => { const d = new Date(ts); return pad(d.getHours()) + ":" + pad(d.getMinutes()); };
+  function breakInfo() {
+    let missed = 0, anchor = "start";
+    for (let i = 1; i <= 14; i++) {
+      const dk = dateKey(addDays(today(), -i)), se = effSession(parseKey(dk));
+      if (!se) break;
+      if (se.free) continue;
+      const l = state.logs[dk] || {};
+      let did = false;
+      Object.keys(l.exercises || {}).forEach((id) => { const x = l.exercises[id]; if (x && x.done && x.done.some(Boolean)) did = true; });
+      Object.keys(l.runs || {}).forEach((id) => { const r = l.runs[id]; if (r && r.km) did = true; });
+      if (did) { anchor = dk; break; }
+      missed++;
+    }
+    return { missed, anchor };
+  }
+  function gateSpawnBreak(n) {
+    const G = gMeta(), now = Date.now();
+    const rank = Math.max(0, Math.min(5, playerRank() + (n >= 4 ? 1 : 0)));
+    const g = gateMake(rank, false, now, Math.min(5, GATE_N[rank] + 1));
+    g.brk = true; g.limit = Math.round(GATE_MIN[rank] * 1.5) * 60; g.expires = now + 20 * 3600e3;
+    G.cur = g; G.lastDay = todayKey();
+    saveLocal();
+    sysShow("Dungeon Break", [{ t: "Verpasst", v: n + " Trainingstage" }, { t: "Rang", v: RANK_L[rank] + "-Rang" }, { t: "Zeitlimit drinnen", v: Math.round(g.limit / 60) + " Min." }], rank, "Weil du nicht trainiert hast, ist ein Gate ausgebrochen. Räum es ab, bevor es sich ausbreitet. Es schließt um " + hhmm(g.expires) + ".", { hap: "gate", voice: { sit: "gate_open", vars: { rang: RANK_L[rank] } } });
+    renderGate();
+  }
+  // ---- Verborgene Quests ----
+  const HID_POOL = ["30 Liegestütze in unter 2 Minuten", "40 Kniebeugen in 90 Sekunden", "45 Sekunden Hollow Hold am Stück", "Geh 10 Minuten vor die Tür, ohne Handy", "Trink jetzt zwei große Gläser Wasser", "1 Minute Unterarmstütz am Stück", "15 Burpees ohne Pause", "5 Minuten Hüfte und Schultern dehnen", "20 Sekunden Handstand an der Wand", "20 Dips in unter 3 Minuten, an Stuhl oder Barren", "Mach 3 Minuten Schattenboxen", "Schreib auf, wofür du heute trainierst"];
+  function hidMeta() {
+    const m = rankMeta();
+    if (!m.hid) m.hid = { cur: null, done: {}, seen: {} };
+    if (!m.hid.done) m.hid.done = {};
+    if (!m.hid.seen) m.hid.seen = {};
+    return m.hid;
+  }
+  function hidTick() {
+    const H = hidMeta(), now = Date.now(), dk = todayKey();
+    if (H.cur && (H.cur.d !== dk || now > H.cur.exp)) { H.cur = null; saveLocal(); renderHid(); }
+    if (H.cur || H.seen[dk]) return;
+    const h = hashStr("hid" + dk);
+    const at = new Date(); at.setHours(8 + ((h >>> 8) % 12), (h >>> 4) % 60, 0, 0);
+    if (now < at.getTime()) return;
+    H.seen[dk] = 1;
+    const ks = Object.keys(H.seen).sort();
+    if (ks.length > 60) ks.slice(0, ks.length - 60).forEach((k) => delete H.seen[k]);
+    if (h % 5 !== 0 || new Date(now).getHours() >= 21) { saveLocal(); return; }
+    const rw = ["elixir", "rune", "key"][(h >>> 12) % 3];
+    H.cur = { d: dk, t: HID_POOL[(h >>> 16) % HID_POOL.length], exp: endOfDay(now), rw };
+    saveLocal();
+    sysShow("Verborgene Quest", [{ t: "Belohnung", v: ITEMS[rw].n + " + 30 XP" }, { t: "Frist", v: "bis heute Abend" }], null, H.cur.t + ". Du findest sie unter Heute.", { hap: "gate" });
+    renderHid();
+  }
+  function renderHid() {
+    const card = $("hidCard");
+    if (!card) return;
+    const H = hidMeta();
+    card.hidden = !H.cur;
+    if (H.cur) $("hidText").textContent = H.cur.t + ". Belohnung: " + ITEMS[H.cur.rw].n + " und 30 XP.";
+  }
+  if ($("hidCard")) {
+    $("hidDone").addEventListener("click", () => {
+      const H = hidMeta(), c = H.cur;
+      if (!c) return;
+      const G = gMeta();
+      G.inv[c.rw] = (G.inv[c.rw] || 0) + 1;
+      H.done[c.d] = 1; H.cur = null;
+      saveLocal(); hap("pr");
+      sysShow("Verborgene Quest erfüllt", [{ t: "Belohnung", v: ITEMS[c.rw].n }, { t: "XP", v: "+30" }], null, "Das System hat zugesehen.");
+      renderHid(); renderInv(); checkRanks();
+    });
+    $("hidSkip").addEventListener("click", () => { const H = hidMeta(); H.cur = null; saveLocal(); renderHid(); });
+  }
   function gateLog(g, res, extra) {
     const G = gMeta();
     G.log.push(Object.assign({ id: g.id, rank: g.rank, red: g.red, res, d: todayKey() }, extra || {}));
@@ -10236,6 +10328,7 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
   function gateTick() {
     if (!window.__waGame) return;
     const G = gMeta(), now = Date.now(), dk = todayKey();
+    try { hidTick(); } catch (e) { /* ignore */ }
     const g = G.cur;
     if (g) {
       if (!g.entered && now > g.expires) { gateLog(g, "closed"); toast("Das Gate hat sich geschlossen."); renderGate(); return; }
@@ -10255,6 +10348,12 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
     let ok = ((h >>> 16) % 100) < 50 && G.lastDay !== y && !late;
     try { const r = readiness(dk); if (r.hasInput && r.score < 45) ok = false; } catch (e) { /* ignore */ }
     saveLocal();
+    try {
+      let lowR = false;
+      try { const r0 = readiness(dk); if (r0.hasInput && r0.score < 45) lowR = true; } catch (e) { /* ignore */ }
+      const bi = breakInfo();
+      if (!late && !lowR && bi.missed >= 2 && G.brkFor !== bi.anchor) { G.brkFor = bi.anchor; saveLocal(); gateSpawnBreak(bi.missed); return; }
+    } catch (e) { /* ignore */ }
     if (ok) gateSpawn(false);
   }
   function gateLeft(g) { return Math.max(0, Math.ceil((g.entered + g.limit * 1000 - Date.now()) / 1000)); }
@@ -10265,17 +10364,18 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
     const G = gMeta(), g = G.cur;
     card.hidden = !g || !!g.entered;
     if (g && !card.hidden) {
-      card.style.setProperty("--gc", GATE_COL[g.rank]);
+      card.style.setProperty("--gc", g.brk ? "#FF8A3D" : GATE_COL[g.rank]);
       card.classList.toggle("s", g.rank >= 5);
       const left = Math.max(0, g.expires - Date.now());
       const hL = Math.floor(left / 3600e3), mL = Math.floor((left % 3600e3) / 60e3);
       $("gateRank").textContent = RANK_L[g.rank];
-      $("gateTitle").textContent = (g.rank >= 5 ? "S-Rang-Gate" : RANK_L[g.rank] + "-Rang-Gate");
-      $("gateMeta").textContent = "Schließt in " + (hL ? hL + " h " : "") + mL + " Min. · drinnen " + GATE_MIN[g.rank] + " Min. für " + g.tasks.length + " Aufgaben";
+      $("gateTitle").textContent = g.brk ? "Dungeon Break" : (g.rank >= 5 ? "S-Rang-Gate" : RANK_L[g.rank] + "-Rang-Gate");
+      $("gateMeta").textContent = (g.brk ? "Ausgebrochen, weil du nicht trainiert hast. " : "") + "Schließt in " + (hL ? hL + " h " : "") + mL + " Min. · drinnen " + Math.round(g.limit / 60) + " Min. für " + g.tasks.length + " Aufgaben";
     }
     if (g && g.entered) gateRunOpen(); else if ($("gateRun")) $("gateRun").hidden = true;
     renderInv();
     if (typeof renderJob === "function") renderJob();
+    if (typeof renderHid === "function") renderHid();
   }
   let gateIv = 0, gateGiveUp = 0;
   function gateRunOpen() {
@@ -10286,12 +10386,12 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
       document.body.style.overflow = "hidden";
       try { wakeOn(); } catch (e) { /* ignore */ }
     }
-    ov.style.setProperty("--gc", g.red ? "#FF3B3B" : g.job ? "#B48CFF" : GATE_COL[g.rank]);
+    ov.style.setProperty("--gc", g.red ? "#FF3B3B" : g.job ? "#B48CFF" : g.brk ? "#FF8A3D" : GATE_COL[g.rank]);
     ov.classList.toggle("red", g.red);
     ov.classList.toggle("job", !!g.job);
     $("grBadge").innerHTML = rankBadge(g.rank, false);
-    $("grTitle").textContent = g.job ? "Prüfung des Job-Wechsels" : g.red ? "Red Gate" : RANK_L[g.rank] + "-Rang-Gate";
-    $("grSub").textContent = g.job ? "Kein Ausgang. Besteh die Prüfung, dann wählst du deine Klasse." : g.red ? "Kein Ausgang, bis alle Aufgaben erledigt sind." : "Erledige alle Aufgaben, bevor die Zeit abläuft.";
+    $("grTitle").textContent = g.job ? "Prüfung des Job-Wechsels" : g.brk ? "Dungeon Break" : g.red ? "Red Gate" : RANK_L[g.rank] + "-Rang-Gate";
+    $("grSub").textContent = g.job ? "Kein Ausgang. Besteh die Prüfung, dann wählst du deine Klasse." : g.red ? "Kein Ausgang, bis alle Aufgaben erledigt sind." : g.brk ? "Ein ausgebrochenes Gate. Doppelte Beute, wenn du es räumst." : "Erledige alle Aufgaben, bevor die Zeit abläuft.";
     $("grList").innerHTML = g.tasks.map((t, i) => '<li><button class="grt' + (t.done ? " ok" : "") + '" data-i="' + i + '" aria-pressed="' + t.done + '"><b>' + t.c + (t.s ? " s" : "") + "</b><span>" + esc(t.n) + '</span><i aria-hidden="true">' + (t.done ? "✓" : "") + "</i></button></li>").join("");
     gateGiveUp = 0;
     $("grQuit").textContent = g.red || g.job ? "Aufgeben" : "Gate verlassen";
@@ -10327,8 +10427,8 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
   }
   function gateLoot(g, fast) {
     const rnd = seeded(hashStr("loot" + g.id));
-    const rolls = 1 + (g.rank >= 3 ? 1 : 0) + (g.rank >= 5 ? 1 : 0) + (g.red ? 1 : 0) + (fast ? 1 : 0);
-    const nothing = Math.max(0.12, 0.5 - 0.07 * g.rank - (g.red ? 0.15 : 0));
+    const rolls = 1 + (g.rank >= 3 ? 1 : 0) + (g.rank >= 5 ? 1 : 0) + (g.red ? 1 : 0) + (g.brk ? 1 : 0) + (fast ? 1 : 0);
+    const nothing = Math.max(0.08, 0.5 - 0.07 * g.rank - (g.red ? 0.15 : 0) - (g.brk ? 0.1 : 0) - shTotals().loot / 100);
     const got = [];
     for (let i = 0; i < rolls; i++) {
       const x = rnd();
@@ -10352,10 +10452,10 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
       renderGate(); renderJob(); checkRanks();
       return;
     }
-    const xp = Math.round(GATE_XP[g.rank] * (g.red ? 1.5 : 1));
+    const xp = Math.round(GATE_XP[g.rank] * (g.red ? 1.5 : 1) * (g.brk ? 1.5 : 1) * (1 + shTotals().gate / 100));
     const loot = gateLoot(g, fast);
     loot.forEach((k) => { G.inv[k] = (G.inv[k] || 0) + 1; });
-    gateLog(g, "won", { xp, loot, t: used });
+    gateLog(g, "won", { xp, loot, t: used, brk: !!g.brk });
     gateRunClose();
     const cnt = {};
     loot.forEach((k) => { cnt[k] = (cnt[k] || 0) + 1; });
@@ -10363,8 +10463,8 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
       .concat(Object.keys(cnt).map((k) => ({ t: ITEMS[k].n, v: "× " + cnt[k] })));
     if (!loot.length) lines.push({ t: "Beute", v: "keine" });
     let sh = null;
-    if (g.rank >= 2 || g.red) { const nm = SH_NAMES[g.rank][hashStr("n" + g.id) % 3]; sh = shadowOffer("gate", g.rank + (g.red ? 1 : 0), (g.red ? "Roter " : "") + nm); lines.push({ t: "Gate-Wächter", v: sh.n }); }
-    sysShow(g.red ? "Red Gate überlebt" : "Gate geräumt", lines, g.rank, sh ? "Der Wächter liegt am Boden. Willst du seinen Schatten?" : fast ? "Schnell geräumt: eine Extra-Chance auf Beute." : "Die Beute liegt in deinem Inventar unter Fortschritt.", sh ? Object.assign(offerOpts(sh), { badgeHtml: "" }) : {});
+    if (g.rank >= 2 || g.red || g.brk) { const nm = SH_NAMES[g.rank][hashStr("n" + g.id) % 3]; sh = shadowOffer("gate", g.rank + (g.red || g.brk ? 1 : 0), (g.red ? "Roter " : "") + nm); lines.push({ t: "Gate-Wächter", v: sh.n }); }
+    sysShow(g.brk ? "Dungeon Break gestoppt" : g.red ? "Red Gate überlebt" : "Gate geräumt", lines, g.rank, sh ? "Der Wächter liegt am Boden. Willst du seinen Schatten?" : fast ? "Schnell geräumt: eine Extra-Chance auf Beute." : "Die Beute liegt in deinem Inventar unter Fortschritt.", sh ? Object.assign(offerOpts(sh), { badgeHtml: "" }) : {});
     renderGate();
     checkRanks();
   }
@@ -10587,6 +10687,18 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
     if (!m.shadows.pend) m.shadows.pend = [];
     return m.shadows;
   }
+  const SH_TYPES = [{ k: "set", n: "Satz-XP", m: 1, cap: 25 }, { k: "run", n: "Lauf-XP", m: 1, cap: 25 }, { k: "gate", n: "Gate-XP", m: 2, cap: 40 }, { k: "loot", n: "Beute-Chance", m: 1, cap: 15 }];
+  function shBonus(sh) {
+    const t = SH_TYPES[hashStr(String(sh.id || sh.n)) % SH_TYPES.length];
+    const mul = classId() === "necro" ? 2 : 1;
+    return { k: t.k, n: t.n, v: (1 + (sh.rank || 0)) * t.m * mul, cap: t.cap };
+  }
+  function shTotals() {
+    const tot = { set: 0, run: 0, gate: 0, loot: 0 };
+    ((rankMeta().shadows || {}).list || []).forEach((x) => { const b = shBonus(x); tot[b.k] += b.v; });
+    SH_TYPES.forEach((t) => { tot[t.k] = Math.min(t.cap, tot[t.k]); });
+    return tot;
+  }
   const shCount = () => ((rankMeta().shadows || {}).list || []).length;
   function prunePend() {
     const S0 = shMeta(), now = Date.now();
@@ -10665,7 +10777,9 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
     const power = list.reduce((s, x) => s + x.rank + 1, 0);
     $("armyCount").textContent = list.length ? list.length + " · Stärke " + power : "";
     $("armyPend").innerHTML = S0.pend.map((p) => '<div class="shpend">' + shadowFig(p.rank) + '<div class="shpt"><b>' + esc(p.n) + "</b><small>" + RANK_L[p.rank] + "-Rang · " + (3 - p.tries) + (3 - p.tries === 1 ? " Versuch" : " Versuche") + ' übrig</small></div><button class="btn small" data-x="' + p.id + '">Extrahieren</button></div>').join("");
-    g.innerHTML = list.length ? list.map((s) => '<div class="shd">' + shadowFig(s.rank) + "<b>" + esc(s.n) + "</b><small>" + RANK_L[s.rank] + "-Rang · " + shortDate(parseKey(s.d)) + "</small></div>").join("") :
+    const tb = shTotals();
+    const bonusTxt = SH_TYPES.filter((t) => tb[t.k] > 0).map((t) => t.n + " +" + tb[t.k] + " %").join(" · ");
+    g.innerHTML = list.length ? '<p class="armybonus">Passivboni deiner Armee: ' + (bonusTxt || "keine") + (classId() === "necro" ? " (Schattenbeschwörer: doppelt)" : "") + "</p>" + list.map((s) => { const b = shBonus(s); return '<div class="shd">' + shadowFig(s.rank) + "<b>" + esc(s.n) + "</b><small>" + RANK_L[s.rank] + "-Rang · " + shortDate(parseKey(s.d)) + "</small><i>" + b.n + " +" + b.v + " %</i></div>"; }).join("") :
       '<p class="armyempty">Noch keine Schatten. Räum ein Gate ab C-Rang oder besiege einen Boss.</p>';
   }
   if ($("armyPend")) $("armyPend").addEventListener("click", (ev) => {
