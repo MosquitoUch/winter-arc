@@ -797,6 +797,16 @@ body.timer-on .aifab { bottom: calc(150px + env(safe-area-inset-bottom, 0px)); }
 .aib.ai { justify-self: start; border: 1px solid rgba(var(--acc-rgb), .45); background: rgba(var(--acc-rgb), .07); }
 .aib.sys { justify-self: center; color: var(--mute); font-size: 12px; padding: 2px 8px; }
 .aistatus { margin: 0; min-height: 18px; color: var(--ink-2); font-size: 13px; }
+.livetalk { position: fixed; inset: 0; z-index: 90; display: grid; grid-template-rows: auto 1fr auto auto minmax(0, 1fr); justify-items: center; gap: 12px; padding: calc(16px + env(safe-area-inset-top, 0px)) 20px calc(24px + env(safe-area-inset-bottom, 0px)); background: radial-gradient(circle at 50% 35%, #0b1a2a, #03060b 70%); }
+.livetop { width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.livetop b { font-family: var(--display); font-size: 20px; }
+.liveorb { align-self: center; width: 150px; height: 150px; border-radius: 50%; border: 1px solid rgba(var(--acc-rgb), .6); background: radial-gradient(circle at 40% 35%, rgba(var(--acc-rgb), .55), rgba(var(--acc-rgb), .08) 70%); box-shadow: 0 0 40px rgba(var(--acc-rgb), .35); padding: 0; transition: transform .25s; }
+.liveorb[data-s="listening"] { animation: breathe 1.6s ease-in-out infinite; }
+.liveorb[data-s="thinking"] { animation: breathe .7s ease-in-out infinite; opacity: .75; }
+.liveorb[data-s="speaking"] { transform: scale(1.18); box-shadow: 0 0 70px rgba(var(--acc-rgb), .65); }
+.livestate { margin: 0; color: var(--ink-2); font-size: 14px; text-align: center; }
+.liveyou { margin: 0; color: var(--mute); font-size: 15px; text-align: center; max-width: 34ch; min-height: 22px; overflow-wrap: anywhere; }
+.liveai { margin: 0; font-size: 19px; line-height: 1.4; text-align: center; max-width: 30ch; overflow-y: auto; overflow-wrap: anywhere; align-self: start; }
 .aimic { width: 100%; min-height: 56px; font-size: 17px; }
 .aimic svg { width: 20px; height: 20px; margin-right: 6px; vertical-align: -4px; }
 .aimic.live { animation: breathe 1.2s ease-in-out infinite; }
@@ -1879,6 +1889,10 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
         <div class="field"><label for="aiKey">API-Schlüssel von Anthropic</label><input id="aiKey" class="inp" type="password" autocomplete="off" spellcheck="false" placeholder="sk-ant-…"><small class="fhint">Bleibt nur auf diesem Handy, nicht im Backup. Gib die App mit Schlüssel nicht weiter. Bezahlt wird nach Nutzung, setz dir in der Anthropic-Konsole ein Ausgabelimit.</small></div>
         <div class="field"><label for="aiModel">Modell</label><input id="aiModel" class="inp" autocomplete="off" spellcheck="false"><small class="fhint">Standard: claude-haiku-5-5, schnell und günstig.</small></div>
         <label class="ocrauto"><input type="checkbox" id="aiSpeak"> Antworten vorlesen</label>
+        <div class="field"><label for="liveLang">Gespräch: Sprache der Antworten</label><select id="liveLang" class="inp"><option value="en">Englisch (du sprichst Deutsch)</option><option value="de">Deutsch</option></select></div>
+        <label class="ocrauto"><input type="checkbox" id="liveBarge"> Dazwischenreden erlauben (nur mit Kopfhörern)</label>
+        <div class="field"><label for="liveTts">Gespräch: eigene Stimme (Server-Adresse)</label><input id="liveTts" class="inp" type="url" autocomplete="off" spellcheck="false" placeholder="leer = Handy-Stimme"><small class="fhint">Optional. Die App schickt pro Satz einen POST mit {"text","lang"} und erwartet Audio (wav/mp3) zurück. Leer lassen nutzt die Stimme deines Handys.</small></div>
+        <div class="row"><button class="btn small primary" id="liveStart2">Gespräch starten</button></div>
         <div class="row"><button class="btn small" id="aiTest">Verbindung testen</button><button class="btn small danger" id="aiKeyDel" hidden>Schlüssel löschen</button></div>
         <p class="fhint" id="aiUsage"></p>
       </div>
@@ -2306,8 +2320,15 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
 </div>
 
 <button class="aifab" id="aiFab" hidden aria-label="KI-Coach fragen"><svg aria-hidden="true"><use href="#i-mic"/></svg>Coach</button>
+<div class="livetalk" id="liveTalk" hidden role="dialog" aria-label="Live-Gespräch">
+  <div class="livetop"><b id="liveName"></b><button class="btn small" id="liveEnd">Beenden</button></div>
+  <button class="liveorb" id="liveOrb" data-s="idle" aria-label="Antwort unterbrechen"><span></span></button>
+  <p class="livestate" id="liveState" aria-live="polite"></p>
+  <p class="liveyou" id="liveYou"></p>
+  <p class="liveai" id="liveAi"></p>
+</div>
 <div class="aipanel" id="aiPanel" hidden role="dialog" aria-label="KI-Coach">
-  <div class="aihead"><span class="systag sm"><span>!</span>Coach</span><b id="aiPanelName"></b><button class="btn small" id="aiClose">Schließen</button></div>
+  <div class="aihead"><span class="systag sm"><span>!</span>Coach</span><b id="aiPanelName"></b><button class="btn small" id="liveStart">Gespräch</button><button class="btn small" id="aiClose">Schließen</button></div>
   <ul class="ailog" id="aiLog" aria-live="polite"></ul>
   <p class="aistatus" id="aiStatus"></p>
   <button class="btn primary aimic" id="aiMic"><svg aria-hidden="true"><use href="#i-mic"/></svg>Sprechen</button>
@@ -10186,6 +10207,219 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
     $("aiSpeak").addEventListener("change", function () { S().aiSpeak = this.checked; saveSettings(); });
     $("aiTest").addEventListener("click", () => { $("aiPanel").hidden = false; $("aiPanelName").textContent = curProf().name; aiAsk("Kurzer Verbindungstest: Sag mir in einem Satz, was heute ansteht."); });
     renderAiSettings();
+  }
+
+  // ================= Live-Gespräch =================
+  const live = { on: false, state: "idle", rec: null, gen: 0, ctl: null, hist: [], pending: 0, done: true, chain: Promise.resolve(), srcs: [], wl: null, buf: "", partial: null, last: 0 };
+  const liveLang = () => (S().liveLang === "de" ? "de" : "en");
+  function liveSet(st, txt) {
+    live.state = st;
+    const o = $("liveOrb"); if (o) o.dataset.s = st;
+    if ($("liveState")) $("liveState").textContent = txt != null ? txt : ({ listening: "Ich höre zu …", thinking: "Denke nach …", speaking: "Tippe auf den Kreis zum Unterbrechen" }[st] || "");
+  }
+  function liveSystem() {
+    const p = curProf(), name = (S().partner && S().partner.me) || "", en = liveLang() === "en";
+    return "You are the voice of the AI coach in the Winter-Arc training app" + (name ? " of " + name : "") + ". This is a live spoken conversation over headphones or speaker.\n" +
+      "Personality (described in German): " + styleOf(p) + "\n" +
+      "Rules:\n" +
+      "- The user speaks German. His words come from speech recognition and can contain errors, so interpret them generously.\n" +
+      "- Always answer in " + (en ? "English (simple, natural spoken English)" : "German") + ".\n" +
+      "- Speak like a person: one to three short sentences, usually under 30 words. No lists, no markdown, no emojis, no stage directions.\n" +
+      "- Stay in character, factually correct and honest. Do not invent numbers; use the training data below.\n" +
+      "- Safety first: with pain, dizziness, chest pain, shortness of breath or injury, drop all teasing and advise calmly to stop and, if needed, see a doctor. If he sounds genuinely down, be kind and serious.\n" +
+      "- Teasing stays playful and only about training.\n\nTraining data (German):\n" + aiContext();
+  }
+  function liveStopSpeech() {
+    if (live.partial) { live.hist.push({ role: "assistant", content: live.partial }); live.partial = null; }
+    live.gen++;
+    try { if (live.ctl) live.ctl.abort(); } catch (e) { /* ignore */ }
+    live.ctl = null;
+    try { speechSynthesis.cancel(); } catch (e) { /* ignore */ }
+    live.srcs.forEach((s) => { try { s.stop(); } catch (e) { /* ignore */ } }); live.srcs = [];
+    live.pending = 0; live.chain = Promise.resolve(); live.buf = ""; live.done = true;
+  }
+  function liveInterrupt() { if (!live.on || (live.state !== "speaking" && live.state !== "thinking")) return; liveStopSpeech(); liveSet("listening"); buzz(10); }
+  function liveEnded(gen) {
+    if (!live.on || gen !== live.gen || !live.done || live.pending > 0) return;
+    liveSet("listening");
+    if (!live.rec) liveListen();
+  }
+  function liveSysSay(t, gen, res) {
+    if (!window.speechSynthesis) { res(); return; }
+    let fin = false;
+    const end = () => { if (!fin) { fin = true; res(); } };
+    try {
+      const u = new SpeechSynthesisUtterance(t), vs = speechSynthesis.getVoices() || [], lg = liveLang();
+      u.lang = lg === "en" ? "en-US" : "de-DE";
+      const cand = vs.filter((v) => (v.lang || "").toLowerCase().indexOf(lg) === 0);
+      u.voice = cand.find((v) => /natural|google|neural/i.test(v.name)) || cand[0] || null;
+      u.rate = 1.05;
+      u.onend = end; u.onerror = end;
+      speechSynthesis.speak(u);
+      setTimeout(end, 2500 + t.length * 110);
+    } catch (e) { end(); }
+  }
+  function liveSpeak(t, gen) {
+    t = t.replace(/[*_#`]/g, "").trim();
+    if (!t || gen !== live.gen) return;
+    live.pending++;
+    if (live.state !== "speaking") liveSet("speaking");
+    const url = (S().liveTts || "").trim();
+    let pre = null;
+    if (url) {
+      primeAudio();
+      pre = fetch(url, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ text: t, lang: liveLang() }) })
+        .then((r) => { if (!r.ok) throw new Error("tts"); return r.arrayBuffer(); })
+        .then((b) => audioCtx.decodeAudioData(b)).catch(() => null);
+    }
+    live.chain = live.chain.then(() => (pre ? pre : Promise.resolve(null))).then((buf) => new Promise((res) => {
+      if (gen !== live.gen) { res(); return; }
+      if (pre && buf) {
+        const s = audioCtx.createBufferSource(); s.buffer = buf; s.connect(outGain()); s.onended = res;
+        live.srcs.push(s); s.start();
+      } else liveSysSay(t, gen, res);
+    })).then(() => { if (gen !== live.gen) return; live.pending--; liveEnded(gen); });
+  }
+  function liveFlush(fin, gen) {
+    for (;;) {
+      const re = /[.!?…]+["”')\]]*\s+/g; let m, cut = -1;
+      while ((m = re.exec(live.buf))) { if (m.index >= 7) { cut = m.index + m[0].length; break; } }
+      if (cut < 0 && live.buf.length > 90) { const c = live.buf.indexOf(", ", 40); if (c > 0) cut = c + 2; }
+      if (cut < 0) break;
+      const sent = live.buf.slice(0, cut); live.buf = live.buf.slice(cut);
+      liveSpeak(sent, gen);
+    }
+    if (fin && live.buf.trim()) { liveSpeak(live.buf, gen); live.buf = ""; }
+  }
+  async function liveSend(text) {
+    const key = aiKey();
+    if (!key) { liveStop("Trag zuerst unter Coach deinen API-Schlüssel ein."); return; }
+    liveStopSpeech();
+    const gen = live.gen;
+    if (Date.now() - live.last > 30 * 60 * 1000) live.hist = [];
+    live.last = Date.now();
+    live.hist.push({ role: "user", content: text });
+    live.hist = live.hist.slice(-20);
+    while (live.hist.length && live.hist[0].role !== "user") live.hist.shift();
+    $("liveYou").textContent = text; $("liveAi").textContent = "";
+    liveSet("thinking");
+    const ctl = new AbortController(); live.ctl = ctl; live.done = false; live.buf = "";
+    let full = "";
+    const u = { input_tokens: 0, output_tokens: 0 };
+    try {
+      const res = await fetch("https://api.anthropic.com/v1/messages", {
+        method: "POST", signal: ctl.signal,
+        headers: { "content-type": "application/json", "x-api-key": key, "anthropic-version": "2023-06-01", "anthropic-dangerous-direct-browser-access": "true" },
+        body: JSON.stringify({ model: aiModel(), max_tokens: 250, stream: true, system: liveSystem(), messages: live.hist })
+      });
+      if (gen !== live.gen) return;
+      if (!res.ok) {
+        live.hist.pop();
+        const msg = res.status === 401 ? "Der API-Schlüssel stimmt nicht." : res.status === 429 ? "Zu viele Anfragen, kurz warten." : res.status === 404 ? "Das Modell gibt es nicht. Prüf den Namen unter Coach." : "Fehler " + res.status;
+        live.done = true; liveSet("listening", msg); if (!live.rec) liveListen();
+        return;
+      }
+      const rd = res.body.getReader(), dec = new TextDecoder();
+      let sb = "";
+      for (;;) {
+        const r = await rd.read();
+        if (r.done) break;
+        if (gen !== live.gen) { try { rd.cancel(); } catch (e) { /* ignore */ } return; }
+        sb += dec.decode(r.value, { stream: true });
+        let i;
+        while ((i = sb.indexOf("\n\n")) >= 0) {
+          const ev = sb.slice(0, i); sb = sb.slice(i + 2);
+          const line = ev.split("\n").find((l) => l.indexOf("data:") === 0);
+          if (!line) continue;
+          let j; try { j = JSON.parse(line.slice(5)); } catch (e) { continue; }
+          if (j.type === "content_block_delta" && j.delta && j.delta.type === "text_delta") {
+            full += j.delta.text; live.buf += j.delta.text; live.partial = full;
+            $("liveAi").textContent = full;
+            liveFlush(false, gen);
+          } else if (j.type === "message_start" && j.message && j.message.usage) u.input_tokens = j.message.usage.input_tokens || 0;
+          else if (j.type === "message_delta" && j.usage) u.output_tokens = j.usage.output_tokens || 0;
+        }
+      }
+      if (gen !== live.gen) return;
+      liveFlush(true, gen);
+      if (full) live.hist.push({ role: "assistant", content: full });
+      live.partial = null; live.ctl = null; live.done = true;
+      aiUsageAdd(u);
+      liveEnded(gen);
+    } catch (e) {
+      if (gen !== live.gen) return;
+      live.done = true;
+      liveSet("listening", navigator.onLine === false ? "Kein Internet." : "Verbindung unterbrochen.");
+      if (!live.rec) liveListen();
+    }
+  }
+  function liveListen() {
+    if (!live.on || live.rec) return;
+    if (!SR) { liveStop("Spracheingabe gibt es auf diesem Gerät nicht."); return; }
+    let rec;
+    try { rec = new SR(); } catch (e) { liveStop("Spracheingabe ist hier nicht verfügbar."); return; }
+    live.rec = rec;
+    rec.lang = "de-DE"; rec.interimResults = true; rec.maxAlternatives = 1;
+    let final = "";
+    rec.onresult = (ev) => {
+      let interim = "";
+      for (let i = ev.resultIndex; i < ev.results.length; i++) { if (ev.results[i].isFinal) final += ev.results[i][0].transcript; else interim += ev.results[i][0].transcript; }
+      const t = (final + interim).trim();
+      if (live.state === "speaking" || live.state === "thinking") {
+        if (S().liveBarge !== false && t.length >= 4) liveInterrupt(); else return;
+      }
+      if (t) $("liveYou").textContent = t;
+    };
+    rec.onerror = (ev) => { if (ev && (ev.error === "not-allowed" || ev.error === "service-not-allowed")) liveStop("Erlaube den Mikrofonzugriff, dann klappt es."); };
+    rec.onend = () => {
+      if (live.rec === rec) live.rec = null;
+      if (!live.on) return;
+      const t = final.trim();
+      if (t) { liveSend(t); }
+      if (S().liveBarge !== false || live.state === "listening") setTimeout(liveListen, 250);
+    };
+    try { rec.start(); } catch (e) { live.rec = null; setTimeout(liveListen, 600); }
+  }
+  async function liveStart() {
+    if (live.on) return;
+    if (!aiKey()) { toast("Trag zuerst unter Coach deinen API-Schlüssel ein."); return; }
+    if (!SR) { toast("Spracheingabe gibt es hier nicht."); return; }
+    primeAudio();
+    try { speechSynthesis.cancel(); } catch (e) { /* ignore */ }
+    vpStop();
+    if ($("aiPanel")) $("aiPanel").hidden = true;
+    live.on = true; live.done = true; live.pending = 0;
+    $("liveName").textContent = curProf().name;
+    $("liveYou").textContent = ""; $("liveAi").textContent = "";
+    $("liveTalk").hidden = false;
+    liveSet("listening");
+    try { if (navigator.wakeLock) live.wl = await navigator.wakeLock.request("screen"); } catch (e) { live.wl = null; }
+    buzz(15);
+    liveListen();
+  }
+  function liveStop(msg) {
+    live.on = false;
+    liveStopSpeech();
+    const r = live.rec; live.rec = null;
+    if (r) try { r.abort(); } catch (e) { /* ignore */ }
+    try { if (live.wl) live.wl.release(); } catch (e) { /* ignore */ }
+    live.wl = null;
+    liveSet("idle", "");
+    if ($("liveTalk")) $("liveTalk").hidden = true;
+    if (msg) toast(msg);
+  }
+  if ($("liveStart")) {
+    $("liveStart").addEventListener("click", liveStart);
+    $("liveStart2").addEventListener("click", liveStart);
+    $("liveEnd").addEventListener("click", () => liveStop());
+    $("liveOrb").addEventListener("click", liveInterrupt);
+    $("liveLang").value = liveLang();
+    $("liveLang").addEventListener("change", function () { S().liveLang = this.value; saveSettings(); });
+    $("liveBarge").checked = S().liveBarge !== false;
+    $("liveBarge").addEventListener("change", function () { S().liveBarge = this.checked; saveSettings(); });
+    $("liveTts").value = S().liveTts || "";
+    $("liveTts").addEventListener("change", function () { S().liveTts = this.value.trim(); saveSettings(); });
+    document.addEventListener("visibilitychange", () => { if (document.hidden && live.on && !live.wl) { /* Browser pausiert ggf. Mikro im Hintergrund */ } });
   }
 
   // ---------- v14: Gates, Inventar, Items, Aura ----------
