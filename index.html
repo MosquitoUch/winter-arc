@@ -1892,6 +1892,9 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
         <div class="field"><label for="liveLang">Gespräch: Sprache der Antworten</label><select id="liveLang" class="inp"><option value="en">Englisch (du sprichst Deutsch)</option><option value="de">Deutsch</option></select></div>
         <label class="ocrauto"><input type="checkbox" id="liveBarge"> Dazwischenreden erlauben (nur mit Kopfhörern)</label>
         <div class="field"><label for="liveTts">Gespräch: eigene Stimme (Server-Adresse)</label><input id="liveTts" class="inp" type="url" autocomplete="off" spellcheck="false" placeholder="leer = Handy-Stimme"><small class="fhint">Optional. Die App schickt pro Satz einen POST mit {"text","lang"} und erwartet Audio (wav/mp3) zurück. Leer lassen nutzt die Stimme deines Handys.</small></div>
+        <div class="field"><label for="elKey">Gespräch: ElevenLabs-Schlüssel</label><input id="elKey" class="inp" type="password" autocomplete="off" spellcheck="false" placeholder="sk_…"><small class="fhint">Bleibt nur auf diesem Handy, nicht im Backup. Leg bei ElevenLabs einen eigenen Schlüssel an und begrenz ihn.</small></div>
+        <div class="field"><label for="elVoice">Gespräch: ElevenLabs Voice-ID</label><input id="elVoice" class="inp" autocomplete="off" spellcheck="false" placeholder="z. B. 21m00Tcm4TlvDq8ikWAM"></div>
+        <div class="field"><label for="elModel">Gespräch: ElevenLabs-Modell</label><input id="elModel" class="inp" autocomplete="off" spellcheck="false" placeholder="eleven_flash_v2_5"><small class="fhint">Schlüssel und Voice-ID gesetzt = ElevenLabs hat Vorrang vor der Server-Adresse. Flash ist am schnellsten.</small></div>
         <div class="row"><button class="btn small primary" id="liveStart2">Gespräch starten</button></div>
         <div class="row"><button class="btn small" id="aiTest">Verbindung testen</button><button class="btn small danger" id="aiKeyDel" hidden>Schlüssel löschen</button></div>
         <p class="fhint" id="aiUsage"></p>
@@ -10210,7 +10213,7 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
   }
 
   // ================= Live-Gespräch =================
-  const live = { on: false, state: "idle", rec: null, gen: 0, ctl: null, hist: [], pending: 0, done: true, chain: Promise.resolve(), srcs: [], wl: null, buf: "", partial: null, last: 0 };
+  const live = { on: false, state: "idle", rec: null, gen: 0, ctl: null, hist: [], pending: 0, done: true, chain: Promise.resolve(), srcs: [], wl: null, buf: "", partial: null, last: 0, elMsg: "" };
   const liveLang = () => (S().liveLang === "de" ? "de" : "en");
   function liveSet(st, txt) {
     live.state = st;
@@ -10259,14 +10262,32 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
       setTimeout(end, 2500 + t.length * 110);
     } catch (e) { end(); }
   }
+  const EL_KEY_LS = "winterarc.elkey";
+  function elKey() { try { return localStorage.getItem(EL_KEY_LS) || ""; } catch (e) { return ""; } }
+  function elFail(st) {
+    const m = st === 401 ? "ElevenLabs: Der Schlüssel stimmt nicht." : st === 402 || st === 429 ? "ElevenLabs: Credits oder Limit erreicht." : st === 404 || st === 422 ? "ElevenLabs: Voice-ID oder Modell stimmt nicht." : "ElevenLabs-Fehler " + st;
+    if (live.elMsg !== m) { live.elMsg = m; toast(m + " Handy-Stimme springt ein."); }
+  }
   function liveSpeak(t, gen) {
     t = t.replace(/[*_#`]/g, "").trim();
     if (!t || gen !== live.gen) return;
     live.pending++;
     if (live.state !== "speaking") liveSet("speaking");
-    const url = (S().liveTts || "").trim();
+    const url = (S().liveTts || "").trim(), elk = elKey(), elv = (S().elVoice || "").trim();
     let pre = null;
-    if (url) {
+    if (elk && elv) {
+      primeAudio();
+      const body = { text: t, model_id: (S().elModel || "").trim() || "eleven_flash_v2_5" };
+      if (/flash_v2_5|turbo_v2_5|multilingual_v2/.test(body.model_id)) body.language_code = liveLang();
+      pre = fetch("https://api.elevenlabs.io/v1/text-to-speech/" + encodeURIComponent(elv) + "?output_format=mp3_44100_128", {
+        method: "POST",
+        headers: { "content-type": "application/json", "xi-api-key": elk, accept: "audio/mpeg" },
+        body: JSON.stringify(body)
+      }).then((r) => {
+        if (!r.ok) { elFail(r.status); throw new Error("el"); }
+        return r.arrayBuffer();
+      }).then((b) => audioCtx.decodeAudioData(b)).catch(() => null);
+    } else if (url) {
       primeAudio();
       pre = fetch(url, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ text: t, lang: liveLang() }) })
         .then((r) => { if (!r.ok) throw new Error("tts"); return r.arrayBuffer(); })
@@ -10417,6 +10438,17 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
     $("liveLang").addEventListener("change", function () { S().liveLang = this.value; saveSettings(); });
     $("liveBarge").checked = S().liveBarge !== false;
     $("liveBarge").addEventListener("change", function () { S().liveBarge = this.checked; saveSettings(); });
+    $("elKey").value = elKey() ? "••••••••" + elKey().slice(-4) : "";
+    $("elKey").addEventListener("change", function () {
+      const v = this.value.trim();
+      if (v.indexOf("••") === 0) return;
+      try { if (v) localStorage.setItem(EL_KEY_LS, v); else localStorage.removeItem(EL_KEY_LS); } catch (e) { toast("Der Schlüssel konnte nicht gespeichert werden."); return; }
+      live.elMsg = ""; this.value = v ? "••••••••" + v.slice(-4) : ""; toast(v ? "Schlüssel gespeichert, nur auf diesem Gerät" : "Schlüssel gelöscht");
+    });
+    $("elVoice").value = S().elVoice || "";
+    $("elVoice").addEventListener("change", function () { S().elVoice = this.value.trim(); saveSettings(); live.elMsg = ""; });
+    $("elModel").value = S().elModel || "";
+    $("elModel").addEventListener("change", function () { S().elModel = this.value.trim(); saveSettings(); live.elMsg = ""; });
     $("liveTts").value = S().liveTts || "";
     $("liveTts").addEventListener("change", function () { S().liveTts = this.value.trim(); saveSettings(); });
     document.addEventListener("visibilitychange", () => { if (document.hidden && live.on && !live.wl) { /* Browser pausiert ggf. Mikro im Hintergrund */ } });
