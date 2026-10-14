@@ -991,6 +991,7 @@ body.train-mode .ex:not(.is-next):not(.is-done) { opacity: .6; }
 /* Sanfte Übergänge */
 @keyframes viewIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
 main { position: relative; }
+html, body { overscroll-behavior-x: none; }
 main[data-dir="n"] > section:not([hidden]) { animation: none !important; }
 main > section:not([hidden]) { animation: viewIn 220ms cubic-bezier(.2, .8, .2, 1); }
 .btn, .gtg-btn, .ci-btn, .habit, .pfood, .tab { transition: transform 120ms ease, background 160ms, border-color 160ms, color 160ms; }
@@ -6554,7 +6555,7 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
     if (name === "tools") renderTools();
     if (name === "plan") renderPlanView();
   }
-  function showTab(name, noAnim) {
+  function showTab(name, noAnim, keepY) {
     if (TABS.indexOf(name) < 0) name = "today";
     const dir = TABS.indexOf(name) - TABS.indexOf(currentTab);
     const mainEl = document.querySelector("main");
@@ -6565,14 +6566,14 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
     try { localStorage.setItem("winterarc.tab", name); } catch (e) { /* ignore */ }
     renderTabContent(name);
     if (name === "today") fitDayname();
-    window.scrollTo(0, 0);
+    window.scrollTo(0, keepY > 0 ? keepY : 0);
     snow.toggle(name === "today");
     if (window.__waGame) { renderAiFab(); if (name === "coach") renderAiSettings(); }
   }
   document.querySelector(".tabs").addEventListener("click", (ev) => { const b = ev.target.closest(".tab"); if (b) { hap("tab"); showTab(b.dataset.tab); } });
   // Wischen links/rechts: Karussell, die Nachbarseite schiebt sich mit dem Finger herein
   (() => {
-    let sx = null, sy = 0, st = 0, lock = 0, view = null, nb = null, nbName = "", sign = 0, W = 360;
+    let sx = null, sy = 0, st = 0, lock = 0, view = null, nb = null, nbName = "", sign = 0, W = 360, keepY = 0;
     const mainEl = document.querySelector("main");
     const hScroll = (el) => {
       for (; el && el !== document.body; el = el.parentElement) {
@@ -6588,22 +6589,30 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
       renderTabContent(name);
       if (window.__waGame && name === "coach") { try { renderAiSettings(); } catch (e) { /* ignore */ } }
       nb = $("view-" + name); nbName = name;
-      const cs = getComputedStyle(mainEl), top = Math.max(0, window.scrollY - mainEl.getBoundingClientRect().top - window.scrollY + window.scrollY);
+      // Die Nachbarseite steht beim Wischen genau dort, wo sie nach dem Wechsel liegen bleibt:
+      // oben im Bild (bzw. unter dem Kopf, solange der noch sichtbar ist). keepY ist die Scrollposition danach.
+      const y = window.scrollY, mainTop = mainEl.getBoundingClientRect().top + y;
+      keepY = Math.max(0, Math.min(y, mainTop));
       nb.hidden = false;
       nb.style.position = "absolute"; nb.style.animation = "none"; nb.style.willChange = "transform"; nb.style.pointerEvents = "none";
       nb.style.left = "0"; nb.style.right = "0";
-      nb.style.top = Math.max(0, -mainEl.getBoundingClientRect().top) + "px";
+      nb.style.top = Math.max(0, y - mainTop) + "px";
       nb.style.transition = "none";
-      void cs;
+      if (name === "today") { try { fitDayname(); } catch (e) { /* ignore */ } }
     };
     const setX = (el, x) => { el.style.transition = "none"; el.style.transform = "translate3d(" + x.toFixed(1) + "px,0,0)"; };
     const settle = (el, x, ms) => { el.style.transition = "transform " + ms + "ms cubic-bezier(.2,.9,.2,1)"; el.style.transform = "translate3d(" + x + "px,0,0)"; };
     const finish = (name) => {
       const v = view; view = null;
+      // wo die neue Seite gerade im Bild steht, damit nach dem Wechsel nichts springt
+      const want = name && nb ? nb.getBoundingClientRect().top : null;
       if (v) clearEl(v);
       dropNb();
       document.documentElement.style.overflowX = "";
-      if (name) { hap("tab"); showTab(name, true); }
+      if (name) {
+        hap("tab"); showTab(name, true, keepY);
+        if (want != null) { const now = $("view-" + name).getBoundingClientRect().top, d = now - want; if (Math.abs(d) >= 1) window.scrollBy(0, d); }
+      }
     };
     document.addEventListener("touchstart", (e) => {
       if (e.touches.length !== 1) { sx = null; if (view) { settle(view, 0, 200); if (nb) settle(nb, sign * W, 200); setTimeout(() => finish(null), 220); } return; }
