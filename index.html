@@ -453,6 +453,13 @@ pre.prompt { white-space: pre-wrap; margin: 0 0 12px; padding: 14px; border-radi
 .tab svg { width: 24px; height: 24px; }
 .tab[aria-current="page"] { color: var(--ice); }
 .tab[aria-current="page"]::before { content: ""; position: absolute; top: 0; width: 8px; height: 9px; background: var(--ice); clip-path: polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%); }
+/* Markierung, die beim Wischen mit dem Finger mitgleitet */
+.tabglide { position: absolute; left: 0; top: 4px; bottom: calc(4px + env(safe-area-inset-bottom, 0px)); width: 0; border-radius: 14px; pointer-events: none; opacity: 0; background: radial-gradient(120% 90% at 50% 0%, rgba(var(--acc-rgb), .2), rgba(var(--acc-rgb), .04) 70%); border: 1px solid rgba(var(--acc-rgb), .22); transition: transform 300ms cubic-bezier(.2, .9, .2, 1), width 300ms cubic-bezier(.2, .9, .2, 1), opacity 200ms; }
+.tabglide.on { opacity: 1; }
+.tabglide::before { content: ""; position: absolute; top: -4px; left: 50%; width: 8px; height: 9px; margin-left: -4px; background: var(--ice); clip-path: polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%); filter: drop-shadow(0 0 4px rgba(var(--acc-rgb), .9)); }
+.tabs:has(.tabglide.on) .tab[aria-current="page"]::before { display: none; }
+@media (min-width: 600px) { .tabglide { bottom: 4px; } }
+@media (prefers-reduced-motion: reduce) { .tabglide { transition: none; } }
 
 .toast {
   position: fixed; left: 50%; top: calc(16px + env(safe-area-inset-top, 0px)); transform: translate(-50%, -20px); z-index: 60;
@@ -700,11 +707,21 @@ pre.prompt { white-space: pre-wrap; margin: 0 0 12px; padding: 14px; border-radi
 .restlist li.ok button { border-color: var(--ice-deep); color: var(--ink); }
 .restlist .rn { font-weight: 600; color: var(--ink); }
 .restlist .rt { font-size: 13px; color: var(--mute); text-align: right; }
-.rbadge { display: inline-grid; place-items: center; width: 34px; height: 38px; clip-path: polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%); font-family: var(--display); font-weight: 800; font-size: 19px; color: #000; background: var(--rc, #8A8F98); flex: none; }
-.rbadge.big { width: 76px; height: 86px; font-size: 44px; }
-.rbadge.r0 { --rc: #8A8F98; } .rbadge.r1 { --rc: #C98E5A; } .rbadge.r2 { --rc: #C3D0DD; } .rbadge.r3 { --rc: #5FD4FF; } .rbadge.r4 { --rc: #B48CFF; } .rbadge.r5 { --rc: linear-gradient(135deg, #FFF2A8, #FFC23D 55%, #FF8A1F); }
-.rbadge.r5 { background: var(--rc); filter: drop-shadow(0 0 10px rgba(255, 194, 61, .6)); }
-.rbadge.rn0 { --rc: var(--line-2); color: var(--mute); }
+.rbadge { position: relative; display: inline-grid; place-items: center; width: 34px; height: 38px; flex: none; font-family: var(--display); font-weight: 900; font-size: 16px; line-height: 1; --rl: #D0D4DA; --rg: rgba(0, 0, 0, 0); --ly: 6%; color: var(--rl); }
+.rbadge .remb { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; }
+.rbadge .rbl { position: relative; display: block; margin: 0; padding: var(--ly) 0 0; font: inherit; color: inherit; letter-spacing: -.01em; text-shadow: 0 0 .35em var(--rg), 0 1px 0 rgba(0, 0, 0, .85); }
+.rbadge.big { width: 76px; height: 86px; font-size: 36px; }
+.rbadge.r1 { --rl: #FFC08A; --rg: rgba(201, 142, 90, .5); }
+.rbadge.r2 { --rl: #F2F7FC; --rg: rgba(195, 208, 221, .5); --ly: 10%; }
+.rbadge.r3 { --rl: #9BEBFF; --rg: rgba(95, 212, 255, .8); }
+.rbadge.r4 { --rl: #DCCBFF; --rg: rgba(180, 140, 255, .8); }
+.rbadge.r5 { --rl: #FFE08A; --rg: rgba(255, 194, 61, .9); --ly: 17%; }
+.rbadge.r6 { --rl: #FFFFFF; --rg: rgba(255, 155, 232, .95); --ly: 17%; font-size: 12px; }
+.rbadge.r3 .remb, .rbadge.r4 .remb, .rbadge.r5 .remb { filter: drop-shadow(0 0 .22em var(--rg)); }
+.rbadge.r6 .remb { filter: drop-shadow(0 0 .3em var(--rg)); animation: mythShift 5s ease-in-out infinite; }
+@keyframes mythShift { 0%, 100% { filter: drop-shadow(0 0 .3em rgba(255, 155, 232, .9)) hue-rotate(0deg); } 50% { filter: drop-shadow(0 0 .42em rgba(95, 240, 220, .85)) hue-rotate(-30deg); } }
+@media (prefers-reduced-motion: reduce) { .rbadge.r6 .remb { animation: none; } }
+.rbadge.rn0 { --rl: var(--mute); }
 .rankhero { display: flex; align-items: center; gap: 18px; margin-top: 14px; }
 .rhtxt { display: grid; gap: 6px; min-width: 0; flex: 1; }
 .rhk { font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--mute); }
@@ -879,8 +896,8 @@ button.qbox { cursor: pointer; }
 .rrtab thead th { border-top: 0; font-weight: 600; }
 .rrtab thead small { display: none; }
 .rrtab tbody th small { display: block; color: var(--mute); font-weight: 400; font-size: 11px; }
-.rrtab thead .rbadge { width: 24px; height: 28px; font-size: 13px; }
-.rrtab thead .rbadge.r6 { font-size: 11px; }
+.rrtab thead .rbadge { width: 24px; height: 28px; font-size: 11px; }
+.rrtab thead .rbadge.r6 { font-size: 9px; }
 .rrtab thead th:first-child, .rrtab tbody th { width: 84px; }
 .rrtab tbody th { text-align: left; font-weight: 600; }
 .rrtab td { color: var(--mute); }
@@ -895,9 +912,8 @@ button.qbox { cursor: pointer; }
 .relist .rl { display: grid; gap: 2px; min-width: 0; }
 .relist .rl small { color: var(--mute); font-size: 12px; overflow-wrap: anywhere; }
 .relist li.ign .rl { opacity: .45; text-decoration: line-through; }
-.rbadge.r6 { --rc: linear-gradient(135deg, #FFFFFF, #FF9BE8 40%, #8F7BFF); background: var(--rc); filter: drop-shadow(0 0 12px rgba(190, 140, 255, .75)); font-size: 15px; }
-.rbadge.big.r6 { font-size: 34px; }
-.rankchip .rbadge.r6 { font-size: 12px; }
+.rbadge.big.r6 { font-size: 28px; }
+.rankchip .rbadge.r6 { font-size: 10px; }
 .wheels { position: relative; display: flex; align-items: center; justify-content: center; gap: 6px; height: 200px; perspective: 520px; user-select: none; }
 .whbar { position: absolute; left: 12%; right: 12%; top: 50%; height: 44px; margin-top: -22px; border-radius: 12px; background: rgba(255, 255, 255, .07); border: 1px solid var(--line-2); pointer-events: none; }
 .wheel { position: relative; width: 84px; height: 200px; overflow-y: auto; scroll-snap-type: y mandatory; scrollbar-width: none; overscroll-behavior: contain; touch-action: pan-y; -webkit-overflow-scrolling: touch; }
@@ -906,7 +922,7 @@ button.qbox { cursor: pointer; }
 .wheel .wpad { height: 78px; }
 .whsep { font-family: var(--display); font-size: 30px; color: var(--mute); z-index: 1; }
 .rankchip { display: inline-flex; align-items: center; gap: 8px; margin: 10px 0 0; padding: 4px 12px 4px 4px; min-height: 40px; border-radius: 999px; border: 1px solid var(--line-2); background: rgba(0, 0, 0, .3); color: var(--ink); font: inherit; font-size: 14px; font-weight: 600; }
-.rankchip .rbadge { width: 26px; height: 30px; font-size: 15px; }
+.rankchip .rbadge { width: 26px; height: 30px; font-size: 12px; }
 .rankup .rec-box { display: grid; justify-items: center; gap: 6px; }
 .cmpmode { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
 .cmpmode .chip { min-height: 36px; padding: 6px 14px; font-size: 13px; }
@@ -1184,6 +1200,9 @@ main[data-dir="l"] > section:not([hidden]) { animation: viewInL 260ms cubic-bezi
 .gatecard h3 { margin: 6px 0 2px; font-family: var(--display); font-size: 22px; line-height: 1.1; }
 .gatecard p { margin: 0 0 10px; color: var(--ink-2); font-size: 13px; }
 .gatecard .btn { border-color: var(--gc); color: var(--gc); }
+.gatecard .btn.danger { border-color: var(--warn); color: var(--warn); background: rgba(255, 179, 138, .08); animation: gateArm 1.1s ease-in-out infinite; }
+@keyframes gateArm { 0%, 100% { box-shadow: 0 0 0 0 rgba(255, 179, 138, 0); } 50% { box-shadow: 0 0 16px 2px rgba(255, 179, 138, .35); } }
+@media (prefers-reduced-motion: reduce) { .gatecard .btn.danger { animation: none; } }
 .gaterun { --gc: #5FD4FF; position: fixed; inset: 0; z-index: 75; display: flex; justify-content: center; overflow-y: auto; background: radial-gradient(120% 60% at 50% 0%, color-mix(in srgb, var(--gc) 22%, #000), #000 70%); padding: calc(18px + env(safe-area-inset-top, 0px)) 16px calc(18px + env(safe-area-inset-bottom, 0px)); }
 .gaterun.red { background: radial-gradient(120% 70% at 50% 0%, #4a0606, #000 72%); }
 .grbox { width: min(520px, 100%); display: grid; gap: 14px; align-content: start; }
@@ -1973,6 +1992,8 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
                 <p class="fhint" id="vpState"></p>
                 <div class="row"><button class="btn small" id="vpExport">Satzliste exportieren</button><button class="btn small" id="vpPick">Voice-Pack laden (ZIP)</button><input type="file" class="sr" id="vpFile" accept=".zip,application/zip" tabindex="-1"></div>
                 <div class="row"><button class="btn small" id="vpTest">Probe hören</button><button class="btn small danger" id="vpDel" hidden>Voice-Pack entfernen</button></div>
+                <div class="row"><button class="btn small primary" id="vpEl">Mit ElevenLabs vertonen</button><button class="btn small" id="vpElStop" hidden>Anhalten</button></div>
+                <small class="fhint">Erzeugt alle Sätze dieses Profils einmalig mit deiner ElevenLabs-Stimme (Schlüssel und Voice-ID unter Coach). Danach spielen sie sofort und offline, ohne weitere Credits. Fehlende Clips werden beim nächsten Mal ergänzt.</small>
                 <h4 class="vpsub">Eigenes Stimmmodell (Piper)</h4>
                 <p class="fhint" id="pmState"></p>
                 <div class="row"><button class="btn small" id="pmPick">Modell laden (.onnx und .json)</button><input type="file" class="sr" id="pmFile" multiple tabindex="-1"><button class="btn small danger" id="pmDel" hidden>Modell entfernen</button></div>
@@ -2162,6 +2183,7 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
 </div>
 
 <nav class="tabs" aria-label="Bereiche">
+  <span class="tabglide" id="tabGlide" aria-hidden="true"></span>
   <button class="tab" data-tab="today" aria-current="page"><svg aria-hidden="true"><use href="#i-today"/></svg>Heute</button>
   <button class="tab" data-tab="week"><svg aria-hidden="true"><use href="#i-week"/></svg>Woche</button>
   <button class="tab" data-tab="progress"><svg aria-hidden="true"><use href="#i-prog"/></svg>Fortschritt</button>
@@ -6555,8 +6577,23 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
     if (name === "tools") renderTools();
     if (name === "plan") renderPlanView();
   }
+  const tabScroll = {};
+  function tabGlide(f, anim) {
+    const g = $("tabGlide");
+    if (!g) return;
+    const btn = (i) => document.querySelector('.tabs .tab[data-tab="' + TABS[i] + '"]');
+    const a = Math.max(0, Math.min(TABS.length - 1, Math.floor(f))), b = Math.min(TABS.length - 1, a + 1), t = Math.max(0, Math.min(1, f - a));
+    const A = btn(a), B = btn(b);
+    if (!A || !B || !A.offsetWidth) return;
+    const x = A.offsetLeft + (B.offsetLeft - A.offsetLeft) * t, w = A.offsetWidth + (B.offsetWidth - A.offsetWidth) * t;
+    g.style.transition = anim && g.classList.contains("on") ? "" : "none";
+    g.style.width = w.toFixed(1) + "px"; g.style.transform = "translate3d(" + x.toFixed(1) + "px,0,0)";
+    if (!g.classList.contains("on")) { void g.offsetWidth; g.classList.add("on"); }
+  }
+  window.addEventListener("resize", () => tabGlide(TABS.indexOf(currentTab), false));
   function showTab(name, noAnim, keepY) {
     if (TABS.indexOf(name) < 0) name = "today";
+    if (name !== currentTab) tabScroll[currentTab] = window.scrollY;
     const dir = TABS.indexOf(name) - TABS.indexOf(currentTab);
     const mainEl = document.querySelector("main");
     if (mainEl) mainEl.dataset.dir = noAnim ? "n" : dir > 0 ? "r" : dir < 0 ? "l" : "";
@@ -6566,11 +6603,18 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
     try { localStorage.setItem("winterarc.tab", name); } catch (e) { /* ignore */ }
     renderTabContent(name);
     if (name === "today") fitDayname();
-    window.scrollTo(0, keepY > 0 ? keepY : 0);
+    window.scrollTo(0, Math.max(0, keepY != null ? keepY : tabScroll[name] || 0));
+    tabGlide(TABS.indexOf(name), true);
     snow.toggle(name === "today");
     if (window.__waGame) { renderAiFab(); if (name === "coach") renderAiSettings(); }
   }
-  document.querySelector(".tabs").addEventListener("click", (ev) => { const b = ev.target.closest(".tab"); if (b) { hap("tab"); showTab(b.dataset.tab); } });
+  document.querySelector(".tabs").addEventListener("click", (ev) => {
+    const b = ev.target.closest(".tab");
+    if (!b) return;
+    hap("tab");
+    if (b.dataset.tab === currentTab) { window.scrollTo({ top: 0, behavior: reduced() ? "auto" : "smooth" }); return; }
+    showTab(b.dataset.tab);
+  });
   // Wischen links/rechts: Karussell, die Nachbarseite schiebt sich mit dem Finger herein
   (() => {
     let sx = null, sy = 0, st = 0, lock = 0, view = null, nb = null, nbName = "", sign = 0, W = 360, keepY = 0;
@@ -6591,12 +6635,14 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
       nb = $("view-" + name); nbName = name;
       // Die Nachbarseite steht beim Wischen genau dort, wo sie nach dem Wechsel liegen bleibt:
       // oben im Bild (bzw. unter dem Kopf, solange der noch sichtbar ist). keepY ist die Scrollposition danach.
-      const y = window.scrollY, mainTop = mainEl.getBoundingClientRect().top + y;
-      keepY = Math.max(0, Math.min(y, mainTop));
+      const y = window.scrollY, mainTop = mainEl.getBoundingClientRect().top + y, docH = document.documentElement.scrollHeight, oldH = view ? view.offsetHeight : 0;
       nb.hidden = false;
       nb.style.position = "absolute"; nb.style.animation = "none"; nb.style.willChange = "transform"; nb.style.pointerEvents = "none";
       nb.style.left = "0"; nb.style.right = "0";
-      nb.style.top = Math.max(0, y - mainTop) + "px";
+      // Ziel-Scrollposition: gemerkte Stelle dieses Tabs, sonst sein Anfang (oben im Bild bzw. unter dem Kopf)
+      const maxY = Math.max(0, docH - oldH + nb.offsetHeight - window.innerHeight);
+      keepY = Math.min(maxY, tabScroll[name] != null ? tabScroll[name] : Math.max(0, Math.min(y, mainTop)));
+      nb.style.top = (y - keepY) + "px";
       nb.style.transition = "none";
       if (name === "today") { try { fitDayname(); } catch (e) { /* ignore */ } }
     };
@@ -6615,7 +6661,7 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
       }
     };
     document.addEventListener("touchstart", (e) => {
-      if (e.touches.length !== 1) { sx = null; if (view) { settle(view, 0, 200); if (nb) settle(nb, sign * W, 200); setTimeout(() => finish(null), 220); } return; }
+      if (e.touches.length !== 1) { sx = null; if (view) { settle(view, 0, 200); if (nb) settle(nb, sign * W, 200); tabGlide(TABS.indexOf(currentTab), true); setTimeout(() => finish(null), 220); } return; }
       const t = e.touches[0]; sx = t.clientX; sy = t.clientY; st = Date.now(); lock = 0;
       if (sx < 28 || sx > window.innerWidth - 28 || blocked(e.target)) lock = -1;
     }, { passive: true });
@@ -6628,10 +6674,11 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
       }
       if (!view || reduced()) return;
       const i = TABS.indexOf(currentTab), sg = dx < 0 ? 1 : -1, ti = i + sg;
-      if (ti < 0 || ti >= TABS.length) { dropNb(); sign = 0; setX(view, dx * 0.12); return; }
+      if (ti < 0 || ti >= TABS.length) { dropNb(); sign = 0; setX(view, dx * 0.12); tabGlide(i, false); return; }
       if (sg !== sign || !nb) { sign = sg; prep(TABS[ti]); }
       setX(view, dx);
       setX(nb, sg * W + dx);
+      tabGlide(i + sg * Math.min(1, Math.abs(dx) / W), false);
     }, { passive: true });
     document.addEventListener("touchend", (e) => {
       if (sx == null) return;
@@ -6642,12 +6689,12 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
       const n = TABS.indexOf(currentTab) + (dx < 0 ? 1 : -1);
       const ok = go && n >= 0 && n < TABS.length;
       if (!view) { if (ok) { hap("tab"); showTab(TABS[n]); } return; }
-      if (!ok || !nb) { settle(view, 0, 240); if (nb) settle(nb, sign * W, 240); setTimeout(() => finish(null), 250); return; }
-      settle(view, -sign * W, 260); settle(nb, 0, 260);
+      if (!ok || !nb) { settle(view, 0, 240); if (nb) settle(nb, sign * W, 240); tabGlide(TABS.indexOf(currentTab), true); setTimeout(() => finish(null), 250); return; }
+      settle(view, -sign * W, 260); settle(nb, 0, 260); tabGlide(n, true);
       const target = TABS[n];
       setTimeout(() => finish(target), 270);
     }, { passive: true });
-    document.addEventListener("touchcancel", () => { sx = null; if (view) { settle(view, 0, 200); if (nb) settle(nb, sign * W, 200); setTimeout(() => finish(null), 220); } }, { passive: true });
+    document.addEventListener("touchcancel", () => { sx = null; if (view) { settle(view, 0, 200); if (nb) settle(nb, sign * W, 200); tabGlide(TABS.indexOf(currentTab), true); setTimeout(() => finish(null), 220); } }, { passive: true });
   })();
   document.addEventListener("click", (ev) => {
     const g = ev.target.closest("[data-goto]");
@@ -8639,6 +8686,121 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
   // ---------- Ränge (v10: System-Status) ----------
   const RANK_L = ["E", "D", "C", "B", "A", "S", "S+"];
   const RANK_T = ["Rekrut", "Kämpfer", "Veteran", "Elite", "Meister", "Legende", "Mythos"];
+  // Rang-Embleme: E Eisen, D Bronze, C Stahl mit Klingen, B Eiskristall, A Arkan mit Schwingen, S Gold mit Krone, S+ Prisma
+  const RANK_EMB = [
+    // E – Rekrut: abgenutztes Eisen, angeschlagener Schild
+    (p) => `<defs>
+      <linearGradient id="${p}m" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#D3D7DD"/><stop offset=".45" stop-color="#8A8F98"/><stop offset="1" stop-color="#3E434B"/></linearGradient>
+      <linearGradient id="${p}c" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1B1F25"/><stop offset="1" stop-color="#0B0D11"/></linearGradient></defs>
+      <path d="M50 9 L84 21 L80 23 L86 27 L86 58 C86 82 70 97 50 105 C30 97 14 82 14 58 L14 21 Z" fill="url(#${p}m)"/>
+      <path d="M50 18 L76 27 L76 58 C76 75 66 87 50 95 C34 87 24 75 24 58 L24 27 Z" fill="url(#${p}c)"/>
+      <path d="M24 27 L50 18 L76 27" fill="none" stroke="#fff" stroke-opacity=".18" stroke-width="1.5"/>
+      <path d="M67 92 L62 84 L65 79" fill="none" stroke="#3E434B" stroke-width="1.6" stroke-linecap="round"/>`,
+
+    // D – Kämpfer: Bronze, Querbalken, Nieten
+    (p) => `<defs>
+      <linearGradient id="${p}m" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFD3A2"/><stop offset=".45" stop-color="#C98E5A"/><stop offset="1" stop-color="#6A3F1E"/></linearGradient>
+      <linearGradient id="${p}b" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#7A4A24"/><stop offset=".5" stop-color="#E2A872"/><stop offset="1" stop-color="#7A4A24"/></linearGradient>
+      <linearGradient id="${p}c" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#22170F"/><stop offset="1" stop-color="#0D0906"/></linearGradient></defs>
+      <path d="M4 34 L14 28 L86 28 L96 34 L86 40 L14 40 Z" fill="url(#${p}b)"/>
+      <path d="M50 8 L85 19 L85 58 C85 82 70 97 50 106 C30 97 15 82 15 58 L15 19 Z" fill="url(#${p}m)"/>
+      <path d="M50 17 L76 25 L76 58 C76 75 66 87 50 95 C34 87 24 75 24 58 L24 25 Z" fill="url(#${p}c)"/>
+      <g fill="#FFE2BF"><circle cx="20" cy="24" r="2.2"/><circle cx="80" cy="24" r="2.2"/><circle cx="20" cy="70" r="2.2"/><circle cx="80" cy="70" r="2.2"/></g>
+      <path d="M24 25 L50 17 L76 25" fill="none" stroke="#FFE2BF" stroke-opacity=".35" stroke-width="1.5"/>`,
+
+    // C – Veteran: Stahl, zwei gekreuzte Klingen hinter dem Schild
+    (p) => `<defs>
+      <linearGradient id="${p}m" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFFFFF"/><stop offset=".4" stop-color="#C3D0DD"/><stop offset="1" stop-color="#5D6B7B"/></linearGradient>
+      <linearGradient id="${p}k" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#F4F8FC"/><stop offset="1" stop-color="#8495A8"/></linearGradient>
+      <linearGradient id="${p}c" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#18202A"/><stop offset="1" stop-color="#0A0E13"/></linearGradient></defs>
+      <g transform="rotate(-40 50 56)"><g><path d="M47.5 18 L52.5 18 L52.5 100 L50 109 L47.5 100 Z" fill="url(#${p}k)"/><rect x="37" y="14" width="26" height="4.5" rx="2" fill="#E9EFF5"/><rect x="47.6" y="3" width="4.8" height="11" rx="1.5" fill="#7C5A2E"/><circle cx="50" cy="2.5" r="3.2" fill="#E9EFF5"/></g></g>
+      <g transform="rotate(40 50 56)"><g><path d="M47.5 18 L52.5 18 L52.5 100 L50 109 L47.5 100 Z" fill="url(#${p}k)"/><rect x="37" y="14" width="26" height="4.5" rx="2" fill="#E9EFF5"/><rect x="47.6" y="3" width="4.8" height="11" rx="1.5" fill="#7C5A2E"/><circle cx="50" cy="2.5" r="3.2" fill="#E9EFF5"/></g></g>
+      <path d="M50 14 L80 24 L80 58 C80 80 67 93 50 101 C33 93 20 80 20 58 L20 24 Z" fill="url(#${p}m)"/>
+      <path d="M50 22 L72 29 L72 58 C72 74 63 85 50 92 C37 85 28 74 28 58 L28 29 Z" fill="url(#${p}c)"/>
+      <path d="M28 29 L50 22 L72 29" fill="none" stroke="#fff" stroke-opacity=".4" stroke-width="1.5"/>`,
+
+    // B – Elite: Eiskristall, Hexagon mit Frostsplittern
+    (p) => `<defs>
+      <linearGradient id="${p}m" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#F2FDFF"/><stop offset=".45" stop-color="#5FD4FF"/><stop offset="1" stop-color="#1667A0"/></linearGradient>
+      <linearGradient id="${p}c" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0E2233"/><stop offset="1" stop-color="#050C14"/></linearGradient></defs>
+      <g fill="url(#${p}m)">
+        <path d="M50 1 L54 14 L50 18 L46 14 Z"/><path d="M50 111 L54 98 L50 94 L46 98 Z"/>
+        <path d="M3 27 L16 30 L17 36 L11 35 Z"/><path d="M97 27 L84 30 L83 36 L89 35 Z"/>
+        <path d="M3 85 L16 82 L17 76 L11 77 Z"/><path d="M97 85 L84 82 L83 76 L89 77 Z"/>
+      </g>
+      <path d="M50 14 L86 35 L86 77 L50 98 L14 77 L14 35 Z" fill="url(#${p}m)"/>
+      <path d="M50 23 L78 39.5 L78 72.5 L50 89 L22 72.5 L22 39.5 Z" fill="url(#${p}c)"/>
+      <g stroke="#fff" stroke-opacity=".55" stroke-width="1.2" fill="none"><path d="M50 14 L50 23 M86 35 L78 39.5 M86 77 L78 72.5 M50 98 L50 89 M14 77 L22 72.5 M14 35 L22 39.5"/></g>
+      <path d="M22 39.5 L50 23 L78 39.5" fill="none" stroke="#E8FBFF" stroke-opacity=".5" stroke-width="1.4"/>`,
+
+    // A – Meister: Arkanes Violett, Runenring + Schwingen
+    (p) => `<defs>
+      <linearGradient id="${p}m" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F1E9FF"/><stop offset=".45" stop-color="#B48CFF"/><stop offset="1" stop-color="#4B2A9E"/></linearGradient>
+      <linearGradient id="${p}w" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#5B3BB0"/><stop offset="1" stop-color="#D9C6FF"/></linearGradient>
+      <linearGradient id="${p}v" x1="1" y1="0" x2="0" y2="0"><stop offset="0" stop-color="#5B3BB0"/><stop offset="1" stop-color="#D9C6FF"/></linearGradient>
+      <linearGradient id="${p}c" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1D1233"/><stop offset="1" stop-color="#0B0716"/></linearGradient></defs>
+      <circle cx="50" cy="58" r="44" fill="none" stroke="#B48CFF" stroke-opacity=".55" stroke-width="2" stroke-dasharray="3 5"/>
+      <path d="M30 40 L2 26 L10 40 L0 46 L12 54 L4 62 L28 66 Z" fill="url(#${p}w)"/>
+      <path d="M70 40 L98 26 L90 40 L100 46 L88 54 L96 62 L72 66 Z" fill="url(#${p}v)"/>
+      <path d="M50 6 L80 36 L74 84 L50 106 L26 84 L20 36 Z" fill="url(#${p}m)"/>
+      <path d="M50 16 L71 38 L66 80 L50 95 L34 80 L29 38 Z" fill="url(#${p}c)"/>
+      <path d="M29 38 L50 16 L71 38" fill="none" stroke="#fff" stroke-opacity=".4" stroke-width="1.4"/>
+      <circle cx="50" cy="10" r="2.6" fill="#fff"/>`,
+
+    // S – Legende: Gold, Krone, Sonnenstrahlen, Lorbeer
+    (p) => `<defs>
+      <linearGradient id="${p}m" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFF6C4"/><stop offset=".4" stop-color="#FFC23D"/><stop offset="1" stop-color="#9A5208"/></linearGradient>
+      <radialGradient id="${p}r" cx=".5" cy=".55" r=".5"><stop offset=".35" stop-color="#FFC23D" stop-opacity=".9"/><stop offset="1" stop-color="#FF8A1F" stop-opacity="0"/></radialGradient>
+      <linearGradient id="${p}c" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2A1C06"/><stop offset="1" stop-color="#110B02"/></linearGradient></defs>
+      <g fill="url(#${p}r)">${[0,30,60,90,120,150,180,210,240,270,300,330].map((a)=>`<path d="M48 60 L50 6 L52 60 Z" transform="rotate(${a} 50 60)"/>`).join("")}</g>
+      <g fill="url(#${p}m)">
+        <ellipse cx="14" cy="76" rx="4" ry="8" transform="rotate(-35 14 76)"/><ellipse cx="10" cy="62" rx="4" ry="8" transform="rotate(-15 10 62)"/><ellipse cx="11" cy="48" rx="3.5" ry="7" transform="rotate(10 11 48)"/>
+        <ellipse cx="86" cy="76" rx="4" ry="8" transform="rotate(35 86 76)"/><ellipse cx="90" cy="62" rx="4" ry="8" transform="rotate(15 90 62)"/><ellipse cx="89" cy="48" rx="3.5" ry="7" transform="rotate(-10 89 48)"/>
+        <path d="M26 30 L26 14 L36 22 L50 6 L64 22 L74 14 L74 30 Z"/>
+      </g>
+      <path d="M50 26 L80 32 L80 60 C80 82 67 96 50 104 C33 96 20 82 20 60 L20 32 Z" fill="url(#${p}m)"/>
+      <path d="M50 34 L72 38.5 L72 60 C72 76 62 87 50 94 C38 87 28 76 28 60 L28 38.5 Z" fill="url(#${p}c)"/>
+      <g fill="#fff"><circle cx="50" cy="12" r="2.4"/><circle cx="27" cy="17" r="1.8"/><circle cx="73" cy="17" r="1.8"/></g>
+      <path d="M28 38.5 L50 34 L72 38.5" fill="none" stroke="#FFF6C4" stroke-opacity=".55" stroke-width="1.4"/>`,
+
+    // S+ – Mythos: Prisma (weiß, pink, violett, türkis), Stern, Splitterflügel, Orbit
+    (p) => `<defs>
+      <linearGradient id="${p}m" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FFFFFF"/><stop offset=".3" stop-color="#FF9BE8"/><stop offset=".65" stop-color="#8F7BFF"/><stop offset="1" stop-color="#4FF0DC"/></linearGradient>
+      <linearGradient id="${p}n" x1="1" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFFFFF"/><stop offset=".35" stop-color="#4FF0DC"/><stop offset=".7" stop-color="#8F7BFF"/><stop offset="1" stop-color="#FF9BE8"/></linearGradient>
+      <radialGradient id="${p}g" cx=".5" cy=".52" r=".5"><stop offset=".2" stop-color="#FFFFFF" stop-opacity=".95"/><stop offset=".55" stop-color="#FF9BE8" stop-opacity=".5"/><stop offset="1" stop-color="#8F7BFF" stop-opacity="0"/></radialGradient>
+      <linearGradient id="${p}c" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1E1236"/><stop offset="1" stop-color="#0A0614"/></linearGradient></defs>
+      <path d="M50 2 L57 46 L98 58 L57 68 L50 110 L43 68 L2 58 L43 46 Z" fill="url(#${p}g)"/>
+      <path d="M32 44 L4 20 L12 38 L0 40 L14 52 L4 60 L30 64 Z" fill="url(#${p}n)"/>
+      <path d="M68 44 L96 20 L88 38 L100 40 L86 52 L96 60 L70 64 Z" fill="url(#${p}m)"/>
+      <ellipse cx="50" cy="62" rx="46" ry="13" fill="none" stroke="url(#${p}n)" stroke-width="2.4" transform="rotate(-14 50 62)"/>
+      <path d="M30 28 L30 14 L40 21 L50 4 L60 21 L70 14 L70 28 Z" fill="url(#${p}n)"/>
+      <path d="M50 22 L80 34 L78 62 C76 84 64 97 50 106 C36 97 24 84 22 62 L20 34 Z" fill="url(#${p}m)"/>
+      <path d="M50 31 L72 40 L70 62 C68 78 60 88 50 95 C40 88 32 78 30 62 L28 40 Z" fill="url(#${p}c)"/>
+      <path d="M28 40 L50 31 L72 40" fill="none" stroke="#fff" stroke-opacity=".6" stroke-width="1.4"/>
+      <path d="M50 8 L52.5 13 L50 18 L47.5 13 Z" fill="#fff"/>
+      <g fill="#fff"><path d="M88 14 L89.4 18 L93 19 L89.4 20 L88 24 L86.6 20 L83 19 L86.6 18 Z"/><path d="M12 92 L13 95 L16 96 L13 97 L12 100 L11 97 L8 96 L11 95 Z"/></g>`
+  ];
+  const RANK_SVG_NONE = '<path d="M50 9 L84 20 L84 58 C84 81 69 96 50 104 C31 96 16 81 16 58 L16 20 Z" fill="rgba(255,255,255,.04)" stroke="currentColor" stroke-opacity=".4" stroke-width="3" stroke-dasharray="6 5"/>';
+  (function () {
+    try {
+      const sv = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+      sv.setAttribute("width", "0"); sv.setAttribute("height", "0"); sv.setAttribute("aria-hidden", "true");
+      sv.style.position = "absolute"; sv.style.pointerEvents = "none";
+      sv.innerHTML = RANK_EMB.map((f, i) => '<symbol id="rk' + i + '" viewBox="0 0 100 112">' + f("rk" + i + "_") + "</symbol>").join("") + '<symbol id="rkn" viewBox="0 0 100 112">' + RANK_SVG_NONE + "</symbol>";
+      document.body.appendChild(sv);
+    } catch (e) { /* ignore */ }
+  })();
+  // Emblem als Bild (für die Hunter-Lizenz auf Canvas)
+  function rankEmbImage(idx) {
+    return new Promise((res) => {
+      try {
+        const svg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 112" width="400" height="448">' + RANK_EMB[idx]("x_") + "</svg>";
+        const im = new Image();
+        im.onload = () => res(im); im.onerror = () => res(null);
+        im.src = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(svg);
+      } catch (e) { res(null); }
+    });
+  }
   const MAXR = 6;
   const FORM_DAYS = 28;
   function rankScore(v, pts) {
@@ -8858,7 +9020,8 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
     while (rest >= need && lv < 999) { rest -= need; lv++; need = 100 + 20 * (lv - 1); }
     return { xp, lv, cur: rest, need };
   }
-  const rankBadge = (idx, big) => '<span class="rbadge r' + idx + (big ? " big" : "") + '" aria-hidden="true">' + RANK_L[idx] + "</span>";
+  const rankBadge = (idx, big) => '<span class="rbadge r' + idx + (big ? " big" : "") + '" aria-hidden="true"><svg class="remb" viewBox="0 0 100 112"><use href="#rk' + idx + '"/></svg><b class="rbl">' + RANK_L[idx] + "</b></span>";
+  const rankNone = () => '<span class="rbadge rn0" aria-hidden="true"><svg class="remb" viewBox="0 0 100 112"><use href="#rkn"/></svg><b class="rbl">–</b></span>';
   function radarSvg(attrs) {
     const W = 320, H = 286, cx = 160, cy = 146, R = 98, n = attrs.length;
     const pt = (i, f) => { const a = -Math.PI / 2 + (i * 2 * Math.PI) / n; return [cx + Math.cos(a) * R * f, cy + Math.sin(a) * R * f]; };
@@ -8888,7 +9051,7 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
     const wornTitle = rankMeta().title || R.title;
     const head = '<div class="sw-top"><span class="sw-tag">Status</span><span class="sw-name">' + esc(name) + "</span></div>" +
       '<div class="sw-head"><div class="sw-lv"><small>Level</small><b>' + X.lv + "</b></div>" +
-      '<div class="sw-main"><div class="sw-rank">' + (o ? rankBadge(o.idx) : '<span class="rbadge rn0" aria-hidden="true">–</span>') +
+      '<div class="sw-main"><div class="sw-rank">' + (o ? rankBadge(o.idx) : rankNone()) +
       "<div><b>" + (o ? RANK_L[o.idx] + "-Rang · " + RANK_T[o.idx] : "Noch ohne Rang") + "</b><span>" + (wornTitle ? "Titel: " + esc(wornTitle) : "Trag Leistungen ein, um einen Titel zu bekommen") + "</span>" + (function () { const ci = classId(), an = shCount(); const t = [ci ? "Klasse: " + CLASSES[ci].n : "", an ? "Armee: " + an + " Schatten" : ""].filter(Boolean).join(" · "); return t ? '<span class="sw-cls">' + esc(t) + "</span>" : ""; })() + "</div></div>" +
       '<div class="sw-xp"><div class="rbar"><i style="width:' + Math.round((X.cur / X.need) * 100) + '%"></i></div><small>' + fmtInt(X.cur) + " / " + fmtInt(X.need) + " XP bis Level " + (X.lv + 1) + "</small></div></div></div>";
     const tiles = '<div class="sw-attrs">' + R.attrs.map((a) => '<div class="sw-at' + (a.has ? "" : " off") + '"><span>' + a.s + "</span><b>" + (a.has ? a.stat : "–") + "</b>" + (a.has ? '<em class="rk r' + a.idx + '">' + RANK_L[a.idx] + "</em>" : "<em>–</em>") + "<small>" + esc(a.n) + "</small></div>").join("") + "</div>";
@@ -8906,7 +9069,7 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
       return head + A.cats.map((c) => {
         const attrs = c.edit ? ' data-k="' + c.k + '" tabindex="0" role="button" aria-label="' + esc(c.n) + ' korrigieren"' : "";
         const edHint = c.edit ? " · Tippen zum Korrigieren" : "";
-        if (!c.has) return '<li class="none' + (c.edit ? " editable" : "") + '"' + attrs + '><span class="rbadge rn0" aria-hidden="true">–</span><span class="rname">' + esc(c.n) + '</span><span class="rval">–</span><span class="rnext">Noch keine Daten' + (c.hint ? " (" + c.hint + ")" : "") + esc(edHint) + "</span></li>";
+        if (!c.has) return '<li class="none' + (c.edit ? " editable" : "") + '"' + attrs + '>' + rankNone() + '<span class="rname">' + esc(c.n) + '</span><span class="rval">–</span><span class="rnext">Noch keine Daten' + (c.hint ? " (" + c.hint + ")" : "") + esc(edHint) + "</span></li>";
         const nextTxt = c.idx >= MAXR ? "Höchster Rang erreicht" : "Nächster Rang " + RANK_L[c.idx + 1] + " ab " + c.fmt(c.next);
         const formTxt = c.fidx != null ? (c.fidx < c.idx ? " · Form: " + RANK_L[c.fidx] : "") : c.k !== "skills" ? " · Form: keine Daten in 4 Wochen" : "";
         return "<li" + (c.edit ? ' class="editable"' : "") + attrs + ">" + rankBadge(c.idx) + '<span class="rname">' + esc(c.n) + '</span><span class="rval">' + esc(c.fmt(c.v)) + '</span><div class="rbar"><i style="width:' + Math.round(c.frac * 100) + '%"></i></div><span class="rnext">' + esc((c.u ? c.u + ". " : "") + RANK_T[c.idx] + ". " + nextTxt + formTxt + edHint) + "</span></li>";
@@ -8916,7 +9079,7 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
   function renderRankReq(R) {
     const t = $("rankReq");
     if (!t) return;
-    const head = "<thead><tr><th></th>" + [1, 2, 3, 4, 5, 6].map((i) => '<th><span class="rbadge r' + i + '" aria-hidden="true">' + RANK_L[i] + '</span><small>' + RANK_T[i] + "</small></th>").join("") + "</tr></thead>";
+    const head = "<thead><tr><th></th>" + [1, 2, 3, 4, 5, 6].map((i) => "<th>" + rankBadge(i) + "<small>" + RANK_T[i] + "</small></th>").join("") + "</tr></thead>";
     const unitOf = { run: "Zeit", core: "Sek.", herz: "bpm", vo2: "ml/kg/min", motor: "m/Schlag", kraft: "% KG", schlaf: "Score" };
     const body = R.attrs.map((A) => '<tr class="rr-g"><th colspan="7">' + A.s + " · " + esc(A.n) + "</th></tr>" + A.cats.map((c) => {
       const cells = [1, 2, 3, 4, 5, 6].map((i) => '<td class="' + (c.has && c.idx >= i ? "got" : "") + (c.has && c.idx === i ? " cur" : "") + '">' + esc(c.fmt(c.pts[i]).replace(" Wdh.", "").replace(" bpm", "").replace(" m", "").replace("Ø ", "")) + "</td>").join("");
@@ -9344,10 +9507,19 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
     // Rang-Hexagon
     const RC = ["#8A8F98", "#C98E5A", "#C3D0DD", "#5FD4FF", "#B48CFF", "#FFC23D", "#FF9BE8"];
     const hx = 200, hy = 280, hr = 100;
-    g.save(); g.beginPath();
-    for (let i = 0; i < 6; i++) { const a = -Math.PI / 2 + i * Math.PI / 3; const px = hx + Math.cos(a) * hr, py = hy + Math.sin(a) * hr; if (i) g.lineTo(px, py); else g.moveTo(px, py); }
-    g.closePath(); g.fillStyle = o ? RC[o.idx] : "#333"; g.shadowColor = o ? RC[o.idx] : "#000"; g.shadowBlur = 40; g.fill(); g.restore();
-    g.fillStyle = "#000"; g.font = "800 " + (o && o.idx === 6 ? 84 : 110) + "px " + disp; g.textAlign = "center"; g.fillText(o ? RANK_L[o.idx] : "–", hx, hy + 38);
+    const emb = o ? await rankEmbImage(o.idx) : null;
+    if (emb) {
+      const LC = ["#D0D4DA", "#FFC08A", "#F2F7FC", "#9BEBFF", "#DCCBFF", "#FFE08A", "#FFFFFF"], LY = [0.06, 0.06, 0.1, 0.06, 0.06, 0.17, 0.17];
+      const ew = 220, eh = 246, ex = hx - ew / 2, ey = hy - eh / 2;
+      g.save(); g.shadowColor = RC[o.idx]; g.shadowBlur = o.idx >= 3 ? 40 : 14; g.drawImage(emb, ex, ey, ew, eh); g.restore();
+      g.save(); g.shadowColor = RC[o.idx]; g.shadowBlur = 24; g.fillStyle = LC[o.idx]; g.font = "900 " + (o.idx === 6 ? 66 : 92) + "px " + disp; g.textAlign = "center"; g.textBaseline = "middle";
+      g.fillText(RANK_L[o.idx], hx, ey + eh / 2 + eh * LY[o.idx] / 2 + 4); g.restore(); g.textBaseline = "alphabetic";
+    } else {
+      g.save(); g.beginPath();
+      for (let i = 0; i < 6; i++) { const a = -Math.PI / 2 + i * Math.PI / 3; const px = hx + Math.cos(a) * hr, py = hy + Math.sin(a) * hr; if (i) g.lineTo(px, py); else g.moveTo(px, py); }
+      g.closePath(); g.fillStyle = o ? RC[o.idx] : "#333"; g.shadowColor = o ? RC[o.idx] : "#000"; g.shadowBlur = 40; g.fill(); g.restore();
+      g.fillStyle = "#000"; g.font = "800 " + (o && o.idx === 6 ? 84 : 110) + "px " + disp; g.textAlign = "center"; g.fillText(o ? RANK_L[o.idx] : "–", hx, hy + 38);
+    }
     g.textAlign = "left"; g.fillStyle = "#fff"; g.font = "800 74px " + disp; g.fillText(name.toUpperCase().slice(0, 16), 340, 250);
     g.fillStyle = "rgba(255,255,255,0.75)"; g.font = "500 34px " + body; g.fillText(title ? "Titel: " + title : (o ? RANK_T[o.idx] : "Ohne Rang"), 340, 300);
     g.fillStyle = ice; g.font = "800 44px " + disp; g.fillText("LEVEL " + X.lv + (o ? "  ·  " + RANK_L[o.idx] + "-RANG " + RANK_T[o.idx].toUpperCase() : ""), 340, 356);
@@ -9947,6 +10119,74 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
       p.pack = null; saveSettings(); renderVpUi(); renderVoiceBtn();
       toast("Voice-Pack entfernt");
     });
+    // Voice-Pack mit ElevenLabs: nur fehlende Clips, Zeichenzählung vor dem Start, zweimal tippen
+    const vel = { armed: false, run: false, stop: false };
+    function velTodo(p) { const have = packIds(p); return vpList(p).filter((x) => !have.has(x.id) && x.text && x.text.trim()); }
+    const velSpoken = (t) => /[0-9A-Za-zÄÖÜäöüß]/.test(t);
+    function velSilence() {
+      const sr = 24000, n = Math.round(sr * 0.12), b = new ArrayBuffer(44 + n * 2), v = new DataView(b);
+      const w = (o, str) => { for (let i = 0; i < str.length; i++) v.setUint8(o + i, str.charCodeAt(i)); };
+      w(0, "RIFF"); v.setUint32(4, 36 + n * 2, true); w(8, "WAVEfmt "); v.setUint32(16, 16, true); v.setUint16(20, 1, true); v.setUint16(22, 1, true);
+      v.setUint32(24, sr, true); v.setUint32(28, sr * 2, true); v.setUint16(32, 2, true); v.setUint16(34, 16, true); w(36, "data"); v.setUint32(40, n * 2, true);
+      return new Blob([b], { type: "audio/wav" });
+    }
+    function velReset() { vel.armed = false; $("vpEl").textContent = "Mit ElevenLabs vertonen"; $("vpEl").classList.remove("danger"); }
+    async function velRun(p) {
+      const key = elKey(), voice = (S().elVoice || "").trim(), model = (S().elModel || "").trim() || "eleven_flash_v2_5";
+      const todo = velTodo(p), st = $("vpState");
+      vel.run = true; vel.stop = false; $("vpElStop").hidden = false; $("vpEl").disabled = true;
+      const ids = Array.from(packIds(p));
+      let done = 0, fail = "";
+      const one = async (c) => {
+        if (!velSpoken(c.text)) { await mdb.put(kClip(p.id, c.id), velSilence(), c.id); return true; }
+        for (let tries = 0; tries < 3; tries++) {
+          const body = { text: c.text, model_id: model };
+          if (/flash_v2_5|turbo_v2_5/.test(model)) body.language_code = "de";
+          const r = await fetch("https://api.elevenlabs.io/v1/text-to-speech/" + encodeURIComponent(voice) + "?output_format=mp3_44100_128", {
+            method: "POST", headers: { "content-type": "application/json", "xi-api-key": key, accept: "audio/mpeg" }, body: JSON.stringify(body)
+          });
+          if (r.ok) { const blob = new Blob([await r.arrayBuffer()], { type: "audio/mpeg" }); await mdb.put(kClip(p.id, c.id), blob, c.id); return true; }
+          if (r.status === 429) { await new Promise((res) => setTimeout(res, 1500 * (tries + 1))); continue; }
+          fail = r.status === 401 ? "Der ElevenLabs-Schlüssel stimmt nicht." : r.status === 402 ? "Deine ElevenLabs-Credits sind aufgebraucht." : r.status === 404 || r.status === 422 ? "Voice-ID oder Modell stimmt nicht." : "ElevenLabs-Fehler " + r.status + ".";
+          return false;
+        }
+        fail = "ElevenLabs bremst gerade (zu viele Anfragen).";
+        return false;
+      };
+      try {
+        for (let i = 0; i < todo.length && !vel.stop && !fail; i += 2) {
+          const batch = todo.slice(i, i + 2);
+          const res = await Promise.all(batch.map((c) => one(c).catch(() => { fail = fail || (navigator.onLine === false ? "Kein Internet." : "Verbindung zu ElevenLabs fehlgeschlagen."); return false; })));
+          batch.forEach((c, k) => { if (res[k]) { ids.push(c.id); done++; } });
+          st.textContent = "ElevenLabs vertont … " + done + " von " + todo.length + " Clips";
+          if (done && done % 10 === 0) { p.pack = { name: (p.pack && p.pack.name) || "ElevenLabs", ids: ids.slice(), at: todayKey() }; saveSettings(); }
+        }
+      } finally {
+        if (done) { p.pack = { name: (p.pack && p.pack.name) || "ElevenLabs", ids, at: todayKey() }; Object.keys(vp.buf).forEach((k) => { if (k.indexOf(p.id + "|") === 0) delete vp.buf[k]; }); saveSettings(); }
+        vel.run = false; $("vpElStop").hidden = true; $("vpEl").disabled = false; velReset();
+        renderVpUi(); renderVoiceBtn();
+        const msg = fail ? fail + " " + done + " Clips gespeichert, der Rest kommt beim nächsten Mal." : vel.stop ? "Angehalten. " + done + " Clips gespeichert." : "Fertig: " + done + " Clips mit deiner Stimme.";
+        $("vpState").textContent = msg + " " + $("vpState").textContent;
+        toast(msg);
+        if (done && !fail && !vel.stop) sayLine(pickLine("voice_on", {}, p), true);
+      }
+    }
+    $("vpEl").addEventListener("click", () => {
+      if (vel.run) return;
+      if (!elKey() || !(S().elVoice || "").trim()) { toast("Trag zuerst unter Coach deinen ElevenLabs-Schlüssel und die Voice-ID ein."); return; }
+      const p = edProf(), todo = velTodo(p);
+      if (!todo.length) { toast("Alle Clips sind schon da."); return; }
+      const chars = todo.reduce((a, c) => a + (velSpoken(c.text) ? c.text.length : 0), 0), model = (S().elModel || "").trim() || "eleven_flash_v2_5";
+      if (!vel.armed) {
+        vel.armed = true;
+        $("vpState").textContent = todo.length + " Clips mit zusammen " + chars + " Zeichen für „" + p.name + "“. Das kostet ungefähr " + (/flash|turbo/.test(model) ? Math.ceil(chars / 2) + " bis " + chars : chars) + " Credits (" + model + "). Tipp nochmal zum Starten.";
+        $("vpEl").textContent = "Jetzt vertonen (" + todo.length + " Clips)"; $("vpEl").classList.add("danger");
+        setTimeout(() => { if (vel.armed && !vel.run) { velReset(); renderVpUi(); } }, 12000);
+        return;
+      }
+      vel.armed = false; primeAudio(); velRun(p);
+    });
+    $("vpElStop").addEventListener("click", () => { vel.stop = true; });
     $("vpVol").addEventListener("change", function () { S().voiceVol = +this.value || 100; saveSettings(); });
     $("vpBox").addEventListener("toggle", () => { if ($("vpBox").open) renderVpUi(); });
     $("pmPick").addEventListener("click", () => $("pmFile").click());
@@ -10222,7 +10462,7 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
   }
 
   // ================= Live-Gespräch =================
-  const live = { on: false, state: "idle", rec: null, gen: 0, ctl: null, hist: [], pending: 0, done: true, chain: Promise.resolve(), srcs: [], wl: null, buf: "", partial: null, last: 0, elMsg: "" };
+  const live = { on: false, state: "idle", rec: null, gen: 0, ctl: null, hist: [], pending: 0, done: true, chain: Promise.resolve(), srcs: [], wl: null, buf: "", partial: null, last: 0, elMsg: "", pendingTool: [] };
   const liveLang = () => (S().liveLang === "de" ? "de" : "en");
   function liveSet(st, txt) {
     live.state = st;
@@ -10239,7 +10479,8 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
       "- Speak like a person: one to three short sentences, usually under 30 words. No lists, no markdown, no emojis, no stage directions.\n" +
       "- Stay in character, factually correct and honest. Do not invent numbers; use the training data below.\n" +
       "- Safety first: with pain, dizziness, chest pain, shortness of breath or injury, drop all teasing and advise calmly to stop and, if needed, see a doctor. If he sounds genuinely down, be kind and serious.\n" +
-      "- Teasing stays playful and only about training.\n\nTraining data (German):\n" + aiContext();
+      "- Teasing stays playful and only about training.\n" +
+      "- If he says how many reps or seconds he just did in the current set, call satz_eintragen. If he wants a rest or break, call pause_starten. Always add one short spoken sentence too.\n\nTraining data (German):\n" + aiContext();
   }
   function liveStopSpeech() {
     if (live.partial) { live.hist.push({ role: "assistant", content: live.partial }); live.partial = null; }
@@ -10326,11 +10567,14 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
     if (!key) { liveStop("Trag zuerst unter Coach deinen API-Schlüssel ein."); return; }
     liveStopSpeech();
     const gen = live.gen;
-    if (Date.now() - live.last > 30 * 60 * 1000) live.hist = [];
+    if (Date.now() - live.last > 30 * 60 * 1000) { live.hist = []; live.pendingTool = []; }
     live.last = Date.now();
-    live.hist.push({ role: "user", content: text });
+    const pend = live.pendingTool || [];
+    live.pendingTool = [];
+    live.hist.push({ role: "user", content: pend.length ? pend.concat([{ type: "text", text }]) : text });
     live.hist = live.hist.slice(-20);
-    while (live.hist.length && live.hist[0].role !== "user") live.hist.shift();
+    const hasRes = (m) => Array.isArray(m.content) && m.content.some((c) => c.type === "tool_result");
+    while (live.hist.length && (live.hist[0].role !== "user" || hasRes(live.hist[0]))) live.hist.shift();
     $("liveYou").textContent = text; $("liveAi").textContent = "";
     liveSet("thinking");
     const ctl = new AbortController(); live.ctl = ctl; live.done = false; live.buf = "";
@@ -10340,17 +10584,18 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
       const res = await fetch("https://api.anthropic.com/v1/messages", {
         method: "POST", signal: ctl.signal,
         headers: { "content-type": "application/json", "x-api-key": key, "anthropic-version": "2023-06-01", "anthropic-dangerous-direct-browser-access": "true" },
-        body: JSON.stringify({ model: aiModel(), max_tokens: 250, stream: true, system: liveSystem(), messages: live.hist })
+        body: JSON.stringify({ model: aiModel(), max_tokens: 300, stream: true, system: liveSystem(), tools: AI_TOOLS, messages: live.hist })
       });
       if (gen !== live.gen) return;
       if (!res.ok) {
-        live.hist.pop();
+        live.hist.pop(); live.pendingTool = pend;
         const msg = res.status === 401 ? "Der API-Schlüssel stimmt nicht." : res.status === 429 ? "Zu viele Anfragen, kurz warten." : res.status === 404 ? "Das Modell gibt es nicht. Prüf den Namen unter Coach." : "Fehler " + res.status;
         live.done = true; liveSet("listening", msg); if (!live.rec) liveListen();
         return;
       }
       const rd = res.body.getReader(), dec = new TextDecoder();
       let sb = "";
+      const tools = {}, tjson = {};
       for (;;) {
         const r = await rd.read();
         if (r.done) break;
@@ -10366,13 +10611,36 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
             full += j.delta.text; live.buf += j.delta.text; live.partial = full;
             $("liveAi").textContent = full;
             liveFlush(false, gen);
+          } else if (j.type === "content_block_start" && j.content_block && j.content_block.type === "tool_use") {
+            tools[j.index] = { type: "tool_use", id: j.content_block.id, name: j.content_block.name, input: {} }; tjson[j.index] = "";
+          } else if (j.type === "content_block_delta" && j.delta && j.delta.type === "input_json_delta" && tools[j.index]) {
+            tjson[j.index] += j.delta.partial_json || "";
+          } else if (j.type === "content_block_stop" && tools[j.index]) {
+            try { tools[j.index].input = tjson[j.index] ? JSON.parse(tjson[j.index]) : {}; } catch (e) { tools[j.index].input = {}; }
           } else if (j.type === "message_start" && j.message && j.message.usage) u.input_tokens = j.message.usage.input_tokens || 0;
           else if (j.type === "message_delta" && j.usage) u.output_tokens = j.usage.output_tokens || 0;
         }
       }
       if (gen !== live.gen) return;
       liveFlush(true, gen);
-      if (full) live.hist.push({ role: "assistant", content: full });
+      const tb = Object.keys(tools).sort((a, b) => a - b).map((k) => tools[k]);
+      if (tb.length) {
+        // Werkzeuge wie beim normalen Coach: Satz eintragen, Pause starten
+        const en = liveLang() === "en", results = [];
+        let say1 = "";
+        tb.forEach((b) => {
+          let out = "";
+          if (b.name === "satz_eintragen") { out = aiLogSet(b.input && b.input.wiederholungen, b.input && b.input.zusatzgewicht_kg); if (!say1) say1 = en ? "Logged." : out; }
+          else if (b.name === "pause_starten") { const sec = Math.max(15, Math.min(600, Math.round(+(b.input && b.input.sekunden) || 120))); startTimer(sec); out = "Pause von " + sec + " Sekunden gestartet."; if (!say1) say1 = en ? "Rest started, " + sec + " seconds." : out; }
+          else out = "Unbekanntes Werkzeug.";
+          results.push({ type: "tool_result", tool_use_id: b.id, content: out });
+          $("liveAi").textContent = (full ? full + " " : "") + "· " + out;
+        });
+        live.hist.push({ role: "assistant", content: (full.trim() ? [{ type: "text", text: full.trim() }] : []).concat(tb) });
+        live.pendingTool = results;
+        if (!full && say1) liveSpeak(say1, gen);
+        buzz(15);
+      } else if (full.trim()) live.hist.push({ role: "assistant", content: full.trim() });
       live.partial = null; live.ctl = null; live.done = true;
       aiUsageAdd(u);
       liveEnded(gen);
@@ -10800,7 +11068,24 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
     $("gateLog").innerHTML = G.log.slice(-6).reverse().map((l) => "<li>" + rankBadge(l.rank) + '<span><b>' + (l.red ? "Red Gate" : RANK_L[l.rank] + "-Rang") + "</b><small>" + shortDate(parseKey(l.d)) + " · " + resT[l.res] + (l.t ? " in " + mmss(l.t) : "") + "</small></span>" + (l.xp ? "<em>+" + l.xp + " XP</em>" : "") + "</li>").join("");
   }
   if ($("gateCard")) {
-    $("gateEnter").addEventListener("click", () => { hap("tap"); gateEnter(); });
+    // Sicherheitsfrage: erst beim zweiten Tippen betreten (die Zeit läuft sofort)
+    let gateArm = 0;
+    const gateDisarm = () => { gateArm = 0; const bt = $("gateEnter"); bt.textContent = "Betreten"; bt.classList.remove("danger"); };
+    $("gateEnter").addEventListener("click", () => {
+      const g = gMeta().cur;
+      if (!g || g.entered) return;
+      hap("tap");
+      if (!gateArm || Date.now() - gateArm > 6000) {
+        gateArm = Date.now();
+        const mins = Math.round((g.limit || GATE_MIN[g.rank] * 60) / 60);
+        const bt = $("gateEnter");
+        bt.textContent = g.red ? "Wirklich? Kein Ausgang bis zum Ende" : "Wirklich betreten? " + mins + " Min. laufen sofort";
+        bt.classList.add("danger");
+        setTimeout(() => { if (gateArm && Date.now() - gateArm >= 6000) gateDisarm(); }, 6100);
+        return;
+      }
+      gateDisarm(); gateEnter();
+    });
     $("grList").addEventListener("click", (ev) => {
       const b = ev.target.closest("button[data-i]");
       const g = gMeta().cur;
