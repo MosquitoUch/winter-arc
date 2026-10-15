@@ -1395,6 +1395,11 @@ main[data-dir="l"] > section:not([hidden]) { animation: viewInL 260ms cubic-bezi
 .ach > :not(.achic) { grid-column: 2; }
 .ach .achic { grid-row: 1 / span 6; }
 .achpn { font-variant-numeric: tabular-nums; font-size: 12px; color: var(--ink-2); }
+.raidsig { position: absolute; right: 14px; top: 48px; width: 54px; height: 54px; filter: drop-shadow(0 0 10px rgba(255, 77, 94, .55)); animation: sigPulse 3s ease-in-out infinite; }
+.raidcard.won .raidsig { filter: grayscale(1) opacity(.4); animation: none; }
+@keyframes sigPulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.06); } }
+.raidcard h3, .raiddesc { padding-right: 64px; }
+@media (prefers-reduced-motion: reduce) { .raidsig { animation: none; } }
 .raiddesc { margin: 0 0 10px; color: var(--mute); font-size: 13px; }
 .raidcard .qhead { flex-wrap: wrap; row-gap: 6px; }
 .raidcard .qstate { font-size: 14px; }
@@ -1652,6 +1657,7 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
 
           <div class="raidcard" id="raidCard" hidden>
             <div class="qhead"><span class="systag sm"><span>!</span>Wochen-Raid</span><span class="qstate" id="raidToday"></span></div>
+            <svg class="raidsig" viewBox="0 0 64 64" aria-hidden="true"><path d="M8 6l10 12 4-8 10 6 10-6 4 8 10-12-2 22c0 14-10 26-22 32C20 54 10 42 10 28z" fill="rgba(255,60,80,.14)" stroke="#FF4D5E" stroke-width="2" stroke-linejoin="round"/><path d="M16 32c5-7 11-10 16-10s11 3 16 10c-5 7-11 10-16 10s-11-3-16-10z" fill="#1A0306" stroke="#FF8A95" stroke-width="1.6"/><path d="M32 24c2.4 3 2.4 13 0 16-2.4-3-2.4-13 0-16z" fill="#FF4D5E"/></svg>
             <h3 id="raidName"></h3>
             <p class="raiddesc" id="raidDesc"></p>
             <div class="raidbar" id="raidBar" role="presentation"><i></i></div>
@@ -9938,9 +9944,18 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
       g.fillStyle = "#fff"; g.font = "800 50px " + disp; g.fillText(a.has ? String(a.stat) : "–", x + 20, y + 88);
       if (a.has) { g.fillStyle = RC[a.idx]; g.font = "800 46px " + disp; g.textAlign = "right"; g.fillText(RANK_L[a.idx], x + bw - 20, y + 84); g.textAlign = "left"; }
     });
+    try {
+      if (window.__waGame) {
+        const E = eco(), ps = passState(), rw = Object.keys(rankMeta().raids || {}).filter((k) => rankMeta().raids[k].won).length;
+        g.fillStyle = "#FFD25C"; g.font = "800 34px " + disp; g.textAlign = "center";
+        if ("letterSpacing" in g) g.letterSpacing = "4px";
+        g.fillText("SAISON " + ps.lvl + "/30  ·  " + fmtG(E.gold) + " GOLD  ·  " + rw + (rw === 1 ? " RAID" : " RAIDS"), W / 2, 1352);
+        if ("letterSpacing" in g) g.letterSpacing = "0px";
+      }
+    } catch (e) { /* ignore */ }
     g.fillStyle = "rgba(255,255,255,0.5)"; g.font = "500 28px " + body; g.textAlign = "center";
     const d = today();
-    g.fillText("Tag " + Math.max(1, arcDay()) + " von " + (S().arcLength || 90) + " · ausgestellt am " + d.getDate() + "." + (d.getMonth() + 1) + "." + d.getFullYear(), W / 2, H - 92);
+    g.fillText("Tag " + Math.max(1, arcDay()) + " von " + (S().arcLength || 90) + " · ausgestellt am " + d.getDate() + "." + (d.getMonth() + 1) + "." + d.getFullYear(), W / 2, H - 52);
     return new Promise((res) => cv.toBlob((b) => res(b), "image/png"));
   }
   async function shareLicense() {
@@ -12701,6 +12716,26 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
     renderBounties(); bountyDot(); renderInv();
   });
 
+
+  // ================= v20: Einmalig „Neu im Winter Arc“ nach dem Update =================
+  const APP_FEATURES_VER = "v20";
+  function whatsNew() {
+    let seen = "";
+    try { seen = localStorage.getItem("winterarc.seenVer") || ""; } catch (e) { return; }
+    if (seen === APP_FEATURES_VER) return;
+    try { localStorage.setItem("winterarc.seenVer", APP_FEATURES_VER); } catch (e) { /* ignore */ }
+    if (!Object.keys(state.logs || {}).length || !window.__waGame) return;
+    sysShow("Neu im Winter Arc", [
+      { t: "Saison-Pass mit 30 Stufen", v: "Fortschritt" },
+      { t: "Gold und Händler", v: "Fortschritt" },
+      { t: "Wochen-Raid und Tägliche Truhe", v: "Heute" },
+      { t: "Kopfgelder der Woche", v: "Woche" },
+      { t: "Skill-Baum und neue Pfade", v: "Fortschritt" },
+      { t: "Heute anpassen", v: "unten auf Heute" },
+      { t: "Plan und Einstellungen", v: "Zahnrad oben" }
+    ], null, "Dein bisheriger Arc zählt mit: Startkapital in Gold und Saison-Stufen für die Tage, die schon hinter dir liegen. Hol dir deine Belohnungen ab.", { action: { label: "Zum Saison-Pass", fn: () => { sysClose(); showTab("progress"); setTimeout(() => { const b = $("passBlock"); if (b) b.scrollIntoView({ block: "start", behavior: "smooth" }); }, 200); } } });
+  }
+
   const deepHandled = handleDeepLink();
   initCollapsibles();
   initInfos();
@@ -12714,6 +12749,7 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
   setSync();
   renderBackupInfo();
   if (navigator.storage && navigator.storage.persist) { try { navigator.storage.persist(); } catch (e) { /* ignore */ } }
+  setTimeout(() => { try { whatsNew(); } catch (e) { /* ignore */ } }, 2200);
   if ("serviceWorker" in navigator && location.protocol === "https:") {
     window.addEventListener("load", () => { navigator.serviceWorker.register("sw.js").catch(() => {}); });
   }
