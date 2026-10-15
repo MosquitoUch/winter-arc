@@ -5786,13 +5786,25 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
     }
     return rows;
   }
+  function weekGameRows(ws) {
+    const rows = [];
+    if (!window.__waGame) return rows;
+    const k = dateKey(ws), m = rankMeta(), E = (m.eco || {});
+    const r = (m.raids || {})[k];
+    if (r) rows.push(["Raid-Boss " + (r.n || ""), r.won ? "besiegt" : "überlebt"]);
+    const b = (E.bounty || {})[k];
+    if (b) { const n = Object.keys(b).filter((x) => x !== "_all").length; if (n) rows.push(["Kopfgelder", n + " von 3"]); }
+    const g = (E.wk || {})[k];
+    if (g) rows.push(["Gold verdient", fmtG(g)]);
+    return rows;
+  }
   function renderReview() {
     const ws = addDays(startOfWeek(today()), -7 * revOffset);
     const wn = arcWeek(ws);
     const we = addDays(ws, 6);
     $("revWeekLabel").textContent = (wn ? "Woche " + wn + (window.__waGame ? " · " + epTitle(wn) : "") + ", " : "") + ws.getDate() + "." + (ws.getMonth() + 1) + ". bis " + we.getDate() + "." + (we.getMonth() + 1) + ".";
     const st = weekStats(ws);
-    const rows = reviewRows(st, ws);
+    const rows = reviewRows(st, ws).concat((() => { try { return weekGameRows(ws); } catch (e) { return []; } })());
     $("revList").innerHTML = rows.map((r) => "<li><span>" + esc(r[0]).replace(/^(\s+)/, "&nbsp;&nbsp;&nbsp;") + "</span><span><b>" + esc(r[1]) + "</b></span></li>").join("");
     const bw = +S().bodyweight || 75;
     $("revFoot").textContent = st.days ? "Bewegtes Gewicht = Wiederholungen mal Körpergewicht (" + fmtN(bw) + " kg) plus Zusatzgewicht. Liegestütze zählen mit 65 %, Klimmzüge und Dips mit 100 % des Körpergewichts. Nur Übungen, bei denen du Wiederholungen eingetragen hast." : "In dieser Woche gibt es noch keine Daten.";
@@ -11832,6 +11844,7 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
       if (qn) lines.push({ t: "Daily Quests", v: qn + " von 7" });
       const sn = shMeta().list.filter((s) => s.d >= a && s.d <= b).length;
       if (sn) lines.push({ t: "Neue Schatten", v: String(sn) });
+      try { weekGameRows(ws).forEach((r) => lines.push({ t: r[0], v: r[1] })); } catch (e) { /* ignore */ }
       if (m.ep.rk != null && nowRank != null && nowRank !== m.ep.rk) lines.push({ t: "Gesamtrang", v: RANK_L[m.ep.rk] + " → " + RANK_L[nowRank] });
     }
     m.ep.seen = w; m.ep.rk = nowRank != null ? nowRank : null;
@@ -12118,7 +12131,7 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
     if (!n) return;
     const E = eco();
     E.gold = Math.max(0, (E.gold || 0) + n);
-    if (n > 0) E.earned = (E.earned || 0) + n;
+    if (n > 0) { E.earned = (E.earned || 0) + n; const wk = dateKey(startOfWeek(today())); E.wk = E.wk || {}; E.wk[wk] = (E.wk[wk] || 0) + n; const ks = Object.keys(E.wk).sort(); while (ks.length > 20) delete E.wk[ks.shift()]; }
     E.log.unshift({ d: todayKey(), n, w: why || "" });
     if (E.log.length > 40) E.log.length = 40;
     saveLocal();
