@@ -1235,6 +1235,60 @@ main[data-dir="l"] > section:not([hidden]) { animation: viewInL 260ms cubic-bezi
 .invt em { font-style: normal; color: var(--ice); font-family: var(--display); }
 .invt small { color: var(--mute); font-size: 13px; }
 .invon { font-size: 13px; color: var(--ice); font-weight: 600; }
+/* v20: Gold, Händler, Saison-Pass, Raid */
+.coin { width: 1.05em; height: 1.05em; vertical-align: -.17em; margin-right: .25em; flex: none; filter: drop-shadow(0 0 3px rgba(255, 200, 80, .45)); }
+.coinpop { position: fixed; left: 50%; top: calc(70px + env(safe-area-inset-top, 0px)); z-index: 95; transform: translateX(-50%); display: inline-flex; align-items: center; gap: 2px; padding: 8px 16px; border-radius: 999px; background: rgba(20, 14, 2, .92); border: 1px solid rgba(255, 210, 92, .6); color: #FFE08A; font-family: var(--display); font-weight: 800; font-size: 20px; pointer-events: none; animation: coinUp 1.6s cubic-bezier(.2, .9, .2, 1) forwards; box-shadow: 0 0 24px rgba(255, 194, 61, .35); }
+@keyframes coinUp { 0% { opacity: 0; transform: translate(-50%, 14px) scale(.9); } 15% { opacity: 1; transform: translate(-50%, 0) scale(1.05); } 70% { opacity: 1; transform: translate(-50%, -6px) scale(1); } 100% { opacity: 0; transform: translate(-50%, -24px) scale(.96); } }
+.goldbal { float: right; display: inline-flex; align-items: center; font-family: var(--display); font-size: 20px; color: #FFE08A; font-weight: 800; }
+.shopit.deal { border-color: rgba(255, 210, 92, .7); box-shadow: 0 0 18px rgba(255, 194, 61, .15); }
+.shopit.owned { opacity: .6; }
+.shopit .btn { display: inline-flex; align-items: center; white-space: nowrap; }
+.shopit .btn:disabled { opacity: .45; }
+.shsw { width: 44px; height: 44px; clip-path: polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%); }
+.dealtag { display: inline-block; padding: 1px 7px; border-radius: 999px; background: rgba(255, 194, 61, .16); color: #FFD25C; font-size: 11px; font-weight: 700; }
+.goldlog { list-style: none; margin: 12px 0 0; padding: 0; display: grid; gap: 4px; font-size: 13px; color: var(--mute); }
+.goldlog li { display: flex; justify-content: space-between; gap: 10px; }
+.goldlog b { color: #FFD25C; font-family: var(--display); }
+.goldlog b.neg { color: var(--mute); }
+.titlechips { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-top: 14px; }
+.titlechips .tclab { width: 100%; font-size: 12px; color: var(--mute); text-transform: uppercase; letter-spacing: .08em; }
+.titlechips .chip[aria-pressed="true"] { border-color: var(--ice); color: var(--ink); background: rgba(var(--acc-rgb), .1); }
+.accent-btn.locked { opacity: .6; position: relative; }
+.accent-btn.locked i { filter: saturate(.5) brightness(.75); }
+.accent-btn small { font-size: 10px; color: var(--mute); font-weight: 600; }
+.passhead { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; margin-top: 6px; }
+.passhead b { font-family: var(--display); font-size: 26px; }
+.passhead span { color: var(--mute); font-size: 13px; }
+.passbar { height: 10px; margin-top: 8px; border-radius: 999px; background: rgba(255, 255, 255, .07); overflow: hidden; }
+.passbar i { display: block; height: 100%; width: var(--p, 0%); border-radius: inherit; background: linear-gradient(90deg, var(--ice-2), var(--ice), #FFF); box-shadow: 0 0 12px rgba(var(--acc-rgb), .6); transition: width .5s cubic-bezier(.2, .9, .2, 1); }
+.passnext { margin: 8px 0 0; font-size: 13px; color: var(--ink-2); }
+.passclaim { margin-top: 12px; width: 100%; animation: gateArm 1.4s ease-in-out infinite; }
+.passtrack { list-style: none; margin: 14px -20px 6px; padding: 6px 20px 10px; display: flex; gap: 8px; overflow-x: auto; scroll-snap-type: x proximity; scrollbar-width: none; overscroll-behavior-x: contain; }
+.passtrack::-webkit-scrollbar { display: none; }
+.ptier { position: relative; flex: none; width: 64px; padding: 8px 4px 8px; display: grid; justify-items: center; gap: 4px; border-radius: 14px; border: 1px solid var(--line); background: rgba(255, 255, 255, .02); scroll-snap-align: center; opacity: .55; }
+.ptier.big { width: 74px; border-color: rgba(var(--acc-rgb), .35); }
+.ptier .pn { font-family: var(--display); font-size: 13px; color: var(--mute); font-weight: 700; }
+.ptier .coin { width: 26px; height: 26px; margin: 0; }
+.ptier .pic { width: 28px; height: 28px; display: grid; place-items: center; font-size: 18px; color: var(--ice); }
+.ptier .pswatch { width: 26px; height: 26px; clip-path: polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%); }
+.ptier small { font-size: 10.5px; color: var(--ink-2); text-align: center; line-height: 1.15; max-width: 100%; overflow-wrap: anywhere; }
+.ptier em { position: absolute; top: 4px; right: 6px; font-style: normal; font-size: 11px; color: var(--ice); }
+.ptier.got { opacity: .8; }
+.ptier.ready { opacity: 1; border-color: #FFD25C; box-shadow: 0 0 14px rgba(255, 194, 61, .35); }
+.ptier.next { opacity: 1; border-color: var(--ice); }
+.tab.hasdot::after { content: ""; position: absolute; top: 6px; right: calc(50% - 16px); width: 8px; height: 8px; border-radius: 50%; background: #FFD25C; box-shadow: 0 0 8px rgba(255, 194, 61, .9); }
+.raidcard { position: relative; margin: 0 0 20px; padding: 14px 16px; border-radius: 16px; border: 1px solid rgba(255, 92, 92, .45); background: linear-gradient(180deg, rgba(255, 70, 70, .08), rgba(0, 0, 0, .3)); box-shadow: 0 0 22px rgba(255, 60, 60, .1); overflow: hidden; }
+.raidcard .systag { border-color: rgba(255, 110, 110, .6); color: #FF9A9A; }
+.raidcard .systag span { border-color: #FF9A9A; }
+.raidcard h3 { margin: 8px 0 2px; font-family: var(--display); font-size: 24px; letter-spacing: .02em; }
+.raiddesc { margin: 0 0 10px; color: var(--mute); font-size: 13px; }
+.raidbar { height: 14px; border-radius: 4px; background: rgba(255, 255, 255, .06); border: 1px solid rgba(255, 110, 110, .35); overflow: hidden; }
+.raidbar i { display: block; height: 100%; width: var(--hp, 100%); background: linear-gradient(90deg, #B3122B, #FF4D5E 70%, #FF9A9A); box-shadow: 0 0 12px rgba(255, 77, 94, .6); transition: width .6s cubic-bezier(.2, .9, .2, 1); }
+.raidnums { margin: 8px 0 0; font-size: 13px; color: var(--ink-2); font-variant-numeric: tabular-nums; }
+.raidcard.won { border-color: rgba(var(--acc-rgb), .6); background: linear-gradient(180deg, rgba(var(--acc-rgb), .08), rgba(0, 0, 0, .3)); }
+.raidcard.won .raidbar { border-color: rgba(var(--acc-rgb), .35); }
+@media (max-width: 919px) { #raidCard { order: 2; margin: 0 0 20px; } }
+@media (prefers-reduced-motion: reduce) { .coinpop, .passclaim { animation: none; } }
 .gatestats { margin: 16px 0 6px; color: var(--ink-2); font-size: 14px; }
 .gatelog { list-style: none; margin: 0; padding: 0; }
 .gatelog li { display: grid; grid-template-columns: 34px minmax(0, 1fr) auto; gap: 12px; align-items: center; padding: 8px 0; border-top: 1px solid var(--line); }
@@ -1387,6 +1441,7 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
     <symbol id="i-cl-monk" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="12" r="8.5"/><path d="M12 3.5a4.25 4.25 0 0 1 0 8.5 4.25 4.25 0 0 0 0 8.5"/><circle cx="12" cy="7.8" r="1.1" fill="currentColor"/><circle cx="12" cy="16.2" r="1.1"/></g></symbol>
     <symbol id="i-cl-guardian" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"><path d="M12 2.8l7.5 3v5.8c0 4.8-3.2 8.2-7.5 9.9-4.3-1.7-7.5-5.1-7.5-9.9V5.8z"/><path d="M12 7v10M8.5 11h7" stroke-linecap="round"/></g></symbol>
     <symbol id="i-img" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"><rect x="3.5" y="5" width="17" height="14" rx="2.5"/><path d="M3.5 16l5-5 4 4 3-3 5 5" stroke-linecap="round"/><circle cx="16" cy="9" r="1.5"/></g></symbol>
+    <symbol id="i-coin" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9.5" fill="#E8A92C"/><circle cx="12" cy="12" r="7.6" fill="#FFD25C"/><path d="M12 6.8l1.6 3.4 3.6.4-2.7 2.4.8 3.6L12 14.8l-3.3 1.8.8-3.6-2.7-2.4 3.6-.4z" fill="#C9831A"/><path d="M6.2 9.2a6.5 6.5 0 0 1 4.6-4.3" stroke="#FFF3C4" stroke-width="1.3" fill="none" stroke-linecap="round"/></symbol>
   </defs>
 </svg>
 
@@ -1463,6 +1518,14 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
             <div class="qhead"><span class="systag sm"><span>!</span>Daily Quest</span><span class="qstate" id="questState"></span></div>
             <ul class="qlist" id="questList"></ul>
             <p class="qnote" id="questNote"></p>
+          </div>
+
+          <div class="raidcard" id="raidCard" hidden>
+            <div class="qhead"><span class="systag sm"><span>!</span>Wochen-Raid</span><span class="qstate" id="raidToday"></span></div>
+            <h3 id="raidName"></h3>
+            <p class="raiddesc" id="raidDesc"></p>
+            <div class="raidbar" id="raidBar" role="presentation"><i></i></div>
+            <p class="raidnums" id="raidNums"></p>
           </div>
 
           <div class="goalcard" id="goalCard" data-coll="goal">
@@ -1635,6 +1698,15 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
             <p class="rrnote">Übungen: bester Satz am Stück, Zusatzgewicht wird in Wiederholungen umgerechnet. 5 km: beste Zeit, Läufe ab 4,8 km, längere werden umgerechnet. Ruhepuls: Schnitt aus 3 Messungen, weniger ist besser. Laufeffizienz: Meter pro Herzschlag bei Läufen ab 3 km. Maximalkraft: geschätztes Klimmzug-Maximum über Körpergewicht. Protein und Gewohnheiten: bester Zeitraum von 4 Wochen.</p>
           </details>
         </div>
+        <div class="block" id="passBlock">
+          <h2 class="bh">Saison-Pass <span class="achcount">Winter Arc</span></h2>
+          <div class="passhead" id="passHead"></div>
+          <div class="passbar" id="passBar"><i></i></div>
+          <p class="passnext" id="passNext"></p>
+          <button class="btn primary passclaim" id="passClaim" hidden>Belohnungen abholen</button>
+          <ol class="passtrack" id="passTrack" aria-label="Stufen des Saison-Passes"></ol>
+          <p class="lead">Jede XP aus deinem Training bringt dich eine Stufe weiter. Stufe 10, 20 und 30 schalten exklusive Farben frei, dazu Titel, Items und Gold. Nach Stufe 30 gibt es Bonusstufen.</p>
+        </div>
         <div class="block" id="clsBlock">
           <h2 class="bh">Klasse</h2>
           <div id="clsCur"></div>
@@ -1652,10 +1724,17 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
           <p class="gatestats" id="gateStats"></p>
           <ul class="gatelog" id="gateLog"></ul>
         </div>
+        <div class="block" id="shopBlock">
+          <h2 class="bh">Händler <span class="goldbal" id="shopGold"></span></h2>
+          <p class="lead">Gold bekommst du für Gates, Daily Quests, Erfolge, Bosse, den Wochen-Raid und Skill-Stufen. Jeden Tag ist ein Angebot 30 % günstiger. Zum Kaufen zweimal tippen.</p>
+          <div class="invgrid" id="shopGrid"></div>
+          <ul class="goldlog" id="goldLog"></ul>
+        </div>
         <div class="block" id="achBlock">
           <h2 class="bh">Erfolge <span class="achcount" id="achCount"></span></h2>
           <p class="lead">Besondere Momente deines Arcs. Manche schalten einen Titel frei, den du im Status-Fenster trägst. Tipp auf einen freigeschalteten Titel, um ihn anzulegen.</p>
           <div class="achgrid" id="achGrid"></div>
+          <div class="titlechips" id="titleChips" hidden></div>
         </div>
         <div class="block">
           <h2 class="bh">Dein Winter Arc</h2>
@@ -3392,6 +3471,7 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
     renderHabits(dk);
     renderProtein(dk);
     renderTodayExtras(dk);
+    try { renderRaid(); passDot(); } catch (e) { /* ignore */ }
   }
 
   function placeholderFor(e) {
@@ -6052,7 +6132,8 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
       const mastered = st.level >= sk.levels.length;
       if (window.__waGame) {
         const done = sk.levels[st.level - 1];
-        sysShow(mastered ? "Skill gemeistert" : "Neue Fähigkeit", [{ t: sk.name, v: st.level + " von " + sk.levels.length + " Stufen" }, { t: "Geschafft", v: done[0] }, { t: "Belohnung", v: "+" + (mastered ? 100 : 30) + " XP" }], null, mastered ? "Alle Stufen gemeistert. Das ist selten." : "Nächstes Ziel: " + sk.levels[st.level][0] + ", " + sk.levels[st.level][1] + ".");
+        try { if (!(st.goldAt || {})[st.level]) { st.goldAt = st.goldAt || {}; st.goldAt[st.level] = 1; goldAdd(mastered ? 100 : 25, sk.name + " Stufe " + st.level, true); } } catch (e) { /* ignore */ }
+        sysShow(mastered ? "Skill gemeistert" : "Neue Fähigkeit", [{ t: sk.name, v: st.level + " von " + sk.levels.length + " Stufen" }, { t: "Geschafft", v: done[0] }, { t: "Belohnung", v: "+" + (mastered ? 100 : 30) + " XP" }, { t: "Gold", v: "+" + (mastered ? 100 : 25) }], null, mastered ? "Alle Stufen gemeistert. Das ist selten." : "Nächstes Ziel: " + sk.levels[st.level][0] + ", " + sk.levels[st.level][1] + ".");
       } else toast(mastered ? sk.name + " gemeistert." : "Neue Stufe: " + sk.levels[st.level][0]);
       buzz([20, 40, 20]);
     } else if (b.dataset.act === "down" && st.level > 0) st.level--;
@@ -6163,7 +6244,8 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
         saveLocal();
         if (won && !(before && before.won)) {
           const bw0 = arcWeek(parseKey(tk)), sh = window.__waGame ? shadowOffer("boss", bw0 >= 13 ? 5 : bw0 >= 9 ? 4 : 3, bossName(tk)) : null;
-          sysShow("Boss besiegt", [{ t: bossName(tk), v: "0 % HP" }, { t: "Kritische Treffer", v: String(b.crits) }, { t: "Belohnung", v: "+200 XP" }], null, sh ? "Sein Schatten liegt vor dir. Extrahier ihn, solange du kannst." : "Der nächste Boss wartet am nächsten Testtag.", sh ? offerOpts(sh) : {});
+          goldAdd(150, "Boss " + bossName(tk), true);
+          sysShow("Boss besiegt", [{ t: bossName(tk), v: "0 % HP" }, { t: "Kritische Treffer", v: String(b.crits) }, { t: "Belohnung", v: "+200 XP" }, { t: "Gold", v: "+150" }], null, sh ? "Sein Schatten liegt vor dir. Extrahier ihn, solange du kannst." : "Der nächste Boss wartet am nächsten Testtag.", sh ? offerOpts(sh) : {});
         }
         else if (!won) sysShow("Der Boss lebt noch", [{ t: bossName(tk), v: (100 - b.dmg) + " % HP" }, { t: "Treffer", v: b.hits + " + " + b.crits + " kritisch" }], null, "Du kannst heute noch nachtesten und den Test erneut speichern.");
         checkRanks();
@@ -6177,7 +6259,7 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
 
   function renderProgress() {
     renderRanks();
-    if (window.__waGame) { renderAch(); renderClsBlock(); renderArmy(); }
+    if (window.__waGame) { renderAch(); renderClsBlock(); renderArmy(); try { renderPass(); renderShop(); renderTitleChips(); renderInv(); } catch (e) { /* ignore */ } }
     renderArcGrid();
     renderProgressChart();
     renderSkills();
@@ -7728,6 +7810,11 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
     { k: "donner", n: "Donner", a: "#FFD84D", b: "#B9DCFF", line: "Schnell, laut, kein Zögern." },
     { k: "abyss", n: "Abgrund", a: "#2FD6C3", b: "#D8FFF9", line: "Je tiefer du gehst, desto stärker kommst du zurück." },
     { k: "kaiser", n: "Kaiser", a: "#E8B64A", b: "#FFF6DD", line: "Disziplin ist eine Krone, die man täglich trägt." },
+    { k: "polar", n: "Polarnacht", a: "#4FF2C2", b: "#CFF6FF", lock: "pass", line: "Stufe 10. Die Nacht leuchtet für dich." },
+    { k: "phoenix", n: "Phönix", a: "#FF6A2E", b: "#FFE3A1", lock: "pass", line: "Stufe 20. Aus jeder Niederlage stehst du heller auf." },
+    { k: "prisma", n: "Prisma", a: "#FF9BE8", b: "#9FF7EA", lock: "pass", line: "Stufe 30. Mythos." },
+    { k: "schatten", n: "Schattenmonarch", a: "#8B6CFF", b: "#E3DBFF", lock: "shop", line: "Die Armee folgt deiner Farbe." },
+    { k: "blutgold", n: "Blutgold", a: "#D4213D", b: "#FFD27A", lock: "shop", line: "Bezahlt mit Schweiß." },
     { k: "eigen", n: "Eigene", custom: true }
   ];
   // ---- Farb-Generator: aus zwei Farben alle Töne berechnen ----
@@ -7808,7 +7895,8 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
       if (a.custom) sw = '<i class="rainbow"></i>';
       else if (a.a) sw = '<i style="background:linear-gradient(135deg,' + a.a + " 55%," + a.b + ' 55%)"></i>';
       else sw = '<i style="background:' + a.c + '"></i>';
-      return '<button class="accent-btn" data-k="' + a.k + '" aria-pressed="' + (a.k === cur ? "true" : "false") + '">' + sw + a.n + "</button>";
+      const lk = a.lock && !accOwned(a.k);
+      return '<button class="accent-btn' + (lk ? " locked" : "") + '" data-k="' + a.k + '" aria-pressed="' + (a.k === cur ? "true" : "false") + '">' + sw + a.n + (lk ? '<small>' + (a.lock === "pass" ? "Saison-Pass" : "Händler") + "</small>" : "") + "</button>";
     }).join("");
     const isC = cur === "eigen";
     $("accCustom").hidden = !isC;
@@ -7850,6 +7938,8 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
   $("accents").addEventListener("click", (ev) => {
     const b = ev.target.closest(".accent-btn");
     if (!b) return;
+    const lockA = ACCENTS.find((x) => x.k === b.dataset.k);
+    if (lockA && lockA.lock && !accOwned(lockA.k)) { toast(lockA.lock === "pass" ? "„" + lockA.n + "“ schaltest du im Saison-Pass frei (Fortschritt)." : "„" + lockA.n + "“ gibt es beim Händler (Fortschritt)."); return; }
     S().accent = b.dataset.k;
     const picked = ACCENTS.find((x) => x.k === b.dataset.k);
     if (picked && picked.line) toast(picked.line);
@@ -9071,6 +9161,7 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
     xp += Object.keys(mm.bosses || {}).filter((k) => mm.bosses[k].won).length * 200;
     xp += Object.keys(mm.ach || {}).length * 25;
     xp += Object.keys((mm.hid && mm.hid.done) || {}).length * 30;
+    xp += Object.keys(mm.raids || {}).filter((k) => mm.raids[k] && mm.raids[k].won).length * 150;
     ((mm.gates && mm.gates.log) || []).forEach((g) => { if (g.res === "won") xp += g.xp || 0; });
     xp += ((mm.shadows && mm.shadows.list) || []).length * (cl && cl.id === "necro" ? 30 : 15);
     SKILLS.forEach((sk) => { const l = Math.min(sk.levels.length, ((state.skills || {})[sk.key] || {}).level || 0); xp += l * 30 + (l >= sk.levels.length ? 70 : 0); });
@@ -9365,7 +9456,7 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
     dk = todayKey();
     // gestern nachträglich prüfen (falls es dort noch etwas Automatisches gab)
     const y = dateKey(addDays(today(), -1));
-    if (y >= m.questFrom && !(m.quests || {})[y] && questState(y).all) { m.quests = m.quests || {}; m.quests[y] = 1; saveLocal(); }
+    if (y >= m.questFrom && !(m.quests || {})[y] && questState(y).all) { m.quests = m.quests || {}; m.quests[y] = 1; saveLocal(); try { goldAdd(15, "Daily Quest von gestern", true); } catch (e) { /* ignore */ } }
     const q = questState(dk);
     const won = !!(m.quests || {})[dk];
     $("questState").textContent = won ? "Abgeschlossen · +50 XP" : q.done + " von " + q.items.length;
@@ -9382,7 +9473,8 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
       card.classList.add("done");
       $("questState").textContent = "Abgeschlossen · +50 XP";
       setNote(true);
-      sysShow("Quest abgeschlossen", [{ t: "Daily Quest", v: "erledigt" }, { t: "Belohnung", v: "+50 XP" }].concat(q.items.some((i) => i.pen) ? [{ t: "Strafquest", v: "abgearbeitet" }] : []), null, "Morgen wartet die nächste.");
+      try { goldAdd(15, "Daily Quest", true); } catch (e) { /* ignore */ }
+      sysShow("Quest abgeschlossen", [{ t: "Daily Quest", v: "erledigt" }, { t: "Belohnung", v: "+50 XP" }, { t: "Gold", v: "+15" }].concat(q.items.some((i) => i.pen) ? [{ t: "Strafquest", v: "abgearbeitet" }] : []), null, "Morgen wartet die nächste.");
       checkRanks();
     }
   }
@@ -9478,6 +9570,7 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
     saveLocal();
     const lines = fresh.slice(0, 5).map((a) => ({ t: a.n, v: a.title ? "Titel" : "+25 XP" }));
     if (fresh.length > 5) lines.push({ t: "und " + (fresh.length - 5) + " weitere", v: "" });
+    try { goldAdd(fresh.length * 20, fresh.length > 1 ? fresh.length + " Erfolge" : "Erfolg: " + fresh[0].n, true); lines.push({ t: "Gold", v: "+" + fresh.length * 20 }); } catch (e) { /* ignore */ }
     const titles = fresh.filter((a) => a.title).map((a) => a.title);
     sysShow(fresh.length > 1 ? "Erfolge freigeschaltet" : "Erfolg freigeschaltet", lines, null, titles.length ? "Neuer Titel: " + titles.join(", ") + ". Wähle ihn unter Erfolge." : fresh[0].d + ".");
     if ($("achGrid") && currentTab === "progress") renderAch();
@@ -9494,6 +9587,7 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
         '<span class="achic" aria-hidden="true">' + (on ? "★" : "?") + "</span><b>" + esc(on ? a.n : "???") + "</b><small>" + esc(a.d) + "</small>" +
         (a.title ? '<em>' + (on ? (worn ? "Getragen: " : "Titel: ") + esc(a.title) : "Schaltet einen Titel frei") + "</em>" : "") + "</button>";
     }).join("");
+    try { renderTitleChips(); } catch (e) { /* ignore */ }
   }
   if ($("achGrid")) $("achGrid").addEventListener("click", (ev) => {
     const b = ev.target.closest("button[data-a]");
@@ -10914,7 +11008,8 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
       G.inv[c.rw] = (G.inv[c.rw] || 0) + 1;
       H.done[c.d] = 1; H.cur = null;
       saveLocal(); hap("pr");
-      sysShow("Verborgene Quest erfüllt", [{ t: "Belohnung", v: ITEMS[c.rw].n }, { t: "XP", v: "+30" }], null, "Das System hat zugesehen.");
+      goldAdd(25, "Verborgene Quest", true);
+      sysShow("Verborgene Quest erfüllt", [{ t: "Belohnung", v: ITEMS[c.rw].n }, { t: "XP", v: "+30" }, { t: "Gold", v: "+25" }], null, "Das System hat zugesehen.");
       renderHid(); renderInv(); checkRanks();
     });
     $("hidSkip").addEventListener("click", () => { const H = hidMeta(); H.cur = null; saveLocal(); renderHid(); });
@@ -11047,6 +11142,7 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
     if (g.job) {
       gateLog(g, "won", { xp: 300, loot: [], t: used, job: true });
       jobMeta().passed = true;
+      goldAdd(100, "Prüfung des Job-Wechsels", true);
       saveLocal();
       gateRunClose();
       sysShow("Prüfung bestanden", [{ t: "Zeit", v: mmss(used) + " von " + mmss(g.limit) }, { t: "Belohnung", v: "+300 XP" }, { t: "Freigeschaltet", v: "Klassenwahl" }], g.rank, "Das System erkennt dich an. Wähle jetzt deine Klasse.", { action: { label: "Klasse wählen", fn: () => { sysClose(); openClsPick(); } }, okLabel: "Später" });
@@ -11060,7 +11156,9 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
     gateRunClose();
     const cnt = {};
     loot.forEach((k) => { cnt[k] = (cnt[k] || 0) + 1; });
-    const lines = [{ t: "Zeit", v: mmss(used) + " von " + mmss(g.limit) }, { t: "Belohnung", v: "+" + xp + " XP" }]
+    const gold = goldForGate(g.rank, g.red, g.brk) + (fast ? 5 : 0);
+    goldAdd(gold, (g.brk ? "Dungeon Break" : g.red ? "Red Gate" : RANK_L[g.rank] + "-Rang-Gate") + " geräumt", true);
+    const lines = [{ t: "Zeit", v: mmss(used) + " von " + mmss(g.limit) }, { t: "Belohnung", v: "+" + xp + " XP" }, { t: "Gold", v: "+" + gold }]
       .concat(Object.keys(cnt).map((k) => ({ t: ITEMS[k].n, v: "× " + cnt[k] })));
     if (!loot.length) lines.push({ t: "Beute", v: "keine" });
     let sh = null;
@@ -11735,6 +11833,7 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
     if (g) parts.push(g.entered ? "Er ist gerade in einem " + (g.red ? "Red Gate" : g.job ? "Job-Wechsel-Gate" : RANK_L[g.rank] + "-Rang-Gate") + ", noch " + mmss(gateLeft(g)) + " Minuten" : "Ein " + RANK_L[g.rank] + "-Rang-Gate ist offen und wartet");
     const inv = gMeta().inv || {};
     parts.push("Inventar: " + (inv.elixir || 0) + " Elixier, " + (inv.rune || 0) + " Rune, " + (inv.key || 0) + " Schlüssel");
+    try { parts.push("Gold: " + eco().gold); const r = raidState(); parts.push("Wochen-Raid gegen " + r.boss.n + ": " + Math.max(0, r.hp - r.dmg) + " von " + r.hp + " HP übrig" + (r.won ? " (besiegt)" : "")); parts.push("Saison-Pass Stufe " + passState().lvl + " von 30"); } catch (e) { /* ignore */ }
     return "Spielstand: " + parts.join(". ") + ".";
   }
 
@@ -11785,6 +11884,304 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
   }
   if ($("remindLater")) $("remindLater").addEventListener("click", () => { state.meta = state.meta || {}; state.meta.remindOff = todayKey(); saveLocal(); $("remindBanner").hidden = true; });
 
+
+  // ================= v20: Gold, Händler, Titel, Saison-Pass, Wochen-Raid =================
+  const COIN = '<svg class="coin" aria-hidden="true"><use href="#i-coin"/></svg>';
+  const fmtG = (n) => Math.round(n).toLocaleString("de-DE");
+  function goldForGate(rank, red, brk) { return Math.round([12, 20, 32, 50, 75, 110][Math.max(0, Math.min(5, rank))] * (red ? 1.5 : 1) * (brk ? 1.3 : 1)); }
+  function eco() {
+    const m = rankMeta();
+    if (!m.eco) m.eco = { gold: 0, log: [], titles: {}, acc: {}, buys: 0, pass: null };
+    const E = m.eco;
+    if (!E.log) E.log = [];
+    if (!E.titles) E.titles = {};
+    if (!E.acc) E.acc = {};
+    if (!E.init) {
+      // Startkapital: alles, was du vor dem Gold-System schon geschafft hast, zählt nachträglich
+      const won = ((m.gates && m.gates.log) || []).filter((g) => g.res === "won");
+      let g0 = won.reduce((a, g) => a + (g.job ? 100 : goldForGate(g.rank, g.red, g.brk)), 0);
+      g0 += Object.keys(m.quests || {}).length * 15 + Object.keys(m.ach || {}).length * 20;
+      g0 += Object.keys(m.bosses || {}).filter((k) => m.bosses[k].won).length * 150 + Object.keys((m.hid && m.hid.done) || {}).length * 25;
+      SKILLS.forEach((sk) => { g0 += (((state.skills || {})[sk.key] || {}).level || 0) * 25; });
+      g0 = Math.round(g0);
+      E.gold = (E.gold || 0) + g0; E.init = todayKey();
+      if (g0) E.log.unshift({ d: todayKey(), n: g0, w: "Startkapital aus deinem bisherigen Arc" });
+      saveLocal();
+    }
+    return E;
+  }
+  function coinPop(n) {
+    try {
+      const el = document.createElement("div");
+      el.className = "coinpop"; el.innerHTML = COIN + "<b>" + (n > 0 ? "+" : "") + fmtG(n) + "</b>";
+      document.body.appendChild(el);
+      setTimeout(() => el.remove(), 1700);
+    } catch (e) { /* ignore */ }
+  }
+  function goldAdd(n, why, quiet) {
+    n = Math.round(+n || 0);
+    if (!n) return;
+    const E = eco();
+    E.gold = Math.max(0, (E.gold || 0) + n);
+    E.log.unshift({ d: todayKey(), n, w: why || "" });
+    if (E.log.length > 40) E.log.length = 40;
+    saveLocal();
+    if (!quiet) coinPop(n);
+    renderGoldBits();
+  }
+  function renderGoldBits() {
+    document.querySelectorAll("[data-gold]").forEach((el) => { el.innerHTML = COIN + fmtG(eco().gold); });
+  }
+  const accOwned = (k) => !!((((state.meta || {}).eco || {}).acc || {})[k]);
+
+  // ---- Händler ----
+  const SHOP = [
+    { id: "elixir", it: "elixir", p: 70 },
+    { id: "rune", it: "rune", p: 90 },
+    { id: "key", it: "key", p: 140 },
+    { id: "acc_schatten", acc: "schatten", p: 300 },
+    { id: "acc_blutgold", acc: "blutgold", p: 350 },
+    { id: "t_gold", t: "Goldjunge", p: 150 },
+    { id: "t_freund", t: "Freund des Händlers", p: 250 },
+    { id: "t_unbez", t: "Der Unbezahlbare", p: 999 }
+  ];
+  const shopOwned = (s) => (s.acc ? accOwned(s.acc) : s.t ? !!eco().titles[s.t] : false);
+  function shopDeal() {
+    const dk = todayKey(), cand = SHOP.filter((s) => !shopOwned(s));
+    if (!cand.length) return null;
+    return cand[hashStr("deal" + dk) % cand.length].id;
+  }
+  const shopPrice = (s) => (shopDeal() === s.id ? Math.round(s.p * 0.7) : s.p);
+  function shopLabel(s) {
+    if (s.it) return { n: ITEMS[s.it].n, d: ITEMS[s.it].d, ic: ITEMS[s.it].ic };
+    if (s.acc) { const a = ACCENTS.find((x) => x.k === s.acc); return { n: "Farbe „" + (a ? a.n : s.acc) + "“", d: "Exklusives Farbthema mit eigener Stimmung. Unter Plan, Aussehen und Gefühl.", ic: "◐", sw: a }; }
+    return { n: "Titel „" + s.t + "“", d: "Trag ihn im Status-Fenster.", ic: "✦" };
+  }
+  let shopArm = "";
+  function renderShop() {
+    const el = $("shopGrid");
+    if (!el) return;
+    const E = eco(), deal = shopDeal();
+    $("shopGold").innerHTML = COIN + fmtG(E.gold);
+    el.innerHTML = SHOP.map((s) => {
+      const L = shopLabel(s), own = shopOwned(s), pr = shopPrice(s), can = E.gold >= pr;
+      const inv = s.it ? " <em>× " + ((gMeta().inv || {})[s.it] || 0) + "</em>" : "";
+      const sw = L.sw ? '<i class="shsw" style="background:linear-gradient(135deg,' + L.sw.a + " 55%," + L.sw.b + ' 55%)"></i>' : '<span class="invic" aria-hidden="true">' + L.ic + "</span>";
+      const btn = own ? '<span class="invon">Gehört dir</span>' : '<button class="btn small' + (shopArm === s.id ? " danger" : "") + '" data-buy="' + s.id + '"' + (can ? "" : " disabled") + ">" + (shopArm === s.id ? "Kaufen?" : COIN + fmtG(pr)) + "</button>";
+      return '<div class="inv shopit' + (deal === s.id ? " deal" : "") + (own ? " owned" : "") + '">' + sw + '<div class="invt"><b>' + esc(L.n) + inv + "</b><small>" + (deal === s.id && !own ? '<span class="dealtag">Angebot des Tages −30 %</span> ' : "") + esc(L.d) + "</small></div>" + btn + "</div>";
+    }).join("");
+    const lg = (E.log || []).slice(0, 5);
+    $("goldLog").innerHTML = lg.map((x) => "<li><span>" + esc(x.w || "Gold") + "</span><b class=\"" + (x.n < 0 ? "neg" : "") + "\">" + (x.n > 0 ? "+" : "") + fmtG(x.n) + "</b></li>").join("");
+  }
+  function shopBuy(id) {
+    const s = SHOP.find((x) => x.id === id), E = eco();
+    if (!s || shopOwned(s)) return;
+    const pr = shopPrice(s);
+    if (E.gold < pr) { toast("Dafür fehlen dir noch " + fmtG(pr - E.gold) + " Gold."); return; }
+    if (s.it) { const G = gMeta(); G.inv[s.it] = (G.inv[s.it] || 0) + 1; }
+    if (s.acc) E.acc[s.acc] = todayKey();
+    if (s.t) E.titles[s.t] = "shop";
+    E.buys = (E.buys || 0) + 1;
+    goldAdd(-pr, "Händler: " + shopLabel(s).n, false);
+    hap("pr"); buzz([15, 30, 15]);
+    toast(s.acc ? "Neue Farbe freigeschaltet. Du findest sie unter Plan, Aussehen und Gefühl." : s.t ? "Neuer Titel. Leg ihn unter Erfolge an." : shopLabel(s).n + " liegt in deinem Inventar.");
+    renderShop(); renderInv(); renderTitleChips();
+  }
+  if ($("shopGrid")) $("shopGrid").addEventListener("click", (ev) => {
+    const b = ev.target.closest("[data-buy]");
+    if (!b || b.disabled) return;
+    const id = b.dataset.buy;
+    if (shopArm !== id) { shopArm = id; renderShop(); hap("tap"); setTimeout(() => { if (shopArm === id) { shopArm = ""; renderShop(); } }, 5000); return; }
+    shopArm = ""; shopBuy(id);
+  });
+
+  // ---- Titel-Sammlung (außer den Erfolgs-Titeln) ----
+  function renderTitleChips() {
+    const el = $("titleChips");
+    if (!el) return;
+    const E = eco(), m = rankMeta(), ts = Object.keys(E.titles || {});
+    el.hidden = !ts.length;
+    el.innerHTML = ts.length ? '<span class="tclab">Weitere Titel</span>' + ts.map((t) => '<button class="chip" data-title="' + esc(t) + '" aria-pressed="' + (m.title === t) + '">' + esc(t) + "</button>").join("") : "";
+  }
+  if ($("titleChips")) $("titleChips").addEventListener("click", (ev) => {
+    const b = ev.target.closest("[data-title]");
+    if (!b) return;
+    const m = rankMeta(), t = b.dataset.title;
+    m.title = m.title === t ? "" : t;
+    saveLocal(); hap("tap");
+    toast(m.title ? "Du trägst jetzt den Titel „" + m.title + "“" : "Titel abgelegt");
+    renderTitleChips(); renderAch(); renderRanks();
+  });
+
+  // ---- Saison-Pass „Winter Arc“: 30 Stufen über die Saison, danach Bonusstufen ----
+  const PASS = [
+    { g: 30 }, { it: "elixir" }, { g: 40 }, { it: "rune" }, { t: "Frostgeboren" },
+    { g: 50 }, { it: "key" }, { g: 60 }, { it: "elixir" }, { acc: "polar" },
+    { g: 70 }, { it: "rune" }, { g: 80 }, { it: "key" }, { t: "Winterwolf" },
+    { g: 90 }, { it: "elixir" }, { g: 100 }, { it: "rune" }, { acc: "phoenix" },
+    { g: 110 }, { it: "key" }, { g: 120 }, { it: "elixir", n: 2 }, { t: "Herr des Winters" },
+    { g: 150 }, { it: "key", n: 2 }, { g: 200 }, { it: "rune", n: 2 }, { acc: "prisma", t: "Mythos des Winters" }
+  ];
+  function passMeta() {
+    const E = eco();
+    if (!E.pass) {
+      // Start: bisherige Saison-Tage zählen als Vorsprung, das Tempo richtet sich nach deinem bisherigen XP-Schnitt
+      const X = computeXP(), day = Math.max(1, Math.min(arcDay(), S().arcLength || 90)), len = S().arcLength || 90;
+      const retro = Math.min(12, Math.floor((day - 1) / 3));
+      const perDay = day > 3 ? X.xp / (day - 1) : 260;
+      const left = Math.max(14, len - day + 1);
+      const step = Math.max(400, Math.min(1500, Math.round((perDay * 0.85 * left) / Math.max(1, 30 - retro) / 50) * 50));
+      E.pass = { base: X.xp, retro, step, start: todayKey(), c: {}, bonus: 0 };
+      saveLocal();
+    }
+    return E.pass;
+  }
+  function passState() {
+    const P = passMeta(), xp = computeXP().xp;
+    const px = Math.max(0, xp - P.base) + P.retro * P.step;
+    const tier = Math.floor(px / P.step);
+    const lvl = Math.min(30, tier);
+    const claimable = PASS.reduce((a, _, i) => a + (i < lvl && !P.c[i] ? 1 : 0), 0) + Math.max(0, tier - 30 - (P.bonus || 0));
+    return { P, px, tier, lvl, frac: tier >= 30 ? (px % P.step) / P.step : (px - lvl * P.step) / P.step, claimable };
+  }
+  function passRwText(r) {
+    const parts = [];
+    if (r.g) parts.push(r.g + " Gold");
+    if (r.it) parts.push((r.n > 1 ? r.n + "× " : "") + ITEMS[r.it].n);
+    if (r.acc) { const a = ACCENTS.find((x) => x.k === r.acc); parts.push("Farbe " + (a ? a.n : r.acc)); }
+    if (r.t) parts.push("Titel „" + r.t + "“");
+    return parts.join(" + ");
+  }
+  function passIcon(r) {
+    if (r.acc) { const a = ACCENTS.find((x) => x.k === r.acc); return '<i class="pswatch" style="background:linear-gradient(135deg,' + (a ? a.a : "#fff") + " 55%," + (a ? a.b : "#fff") + ' 55%)"></i>'; }
+    if (r.t) return '<span class="pic">✦</span>';
+    if (r.it) return '<span class="pic">' + ITEMS[r.it].ic + "</span>";
+    return COIN;
+  }
+  function passGrant(r, why) {
+    if (r.g) goldAdd(r.g, why, true);
+    if (r.it) { const G = gMeta(); G.inv[r.it] = (G.inv[r.it] || 0) + (r.n || 1); }
+    const E = eco();
+    if (r.acc) E.acc[r.acc] = todayKey();
+    if (r.t) E.titles[r.t] = "pass";
+  }
+  function passClaimAll() {
+    const st = passState(), P = st.P, got = [];
+    PASS.forEach((r, i) => { if (i < st.lvl && !P.c[i]) { P.c[i] = todayKey(); passGrant(r, "Saison-Pass Stufe " + (i + 1)); got.push({ t: "Stufe " + (i + 1), v: passRwText(r) }); } });
+    const extra = Math.max(0, st.tier - 30 - (P.bonus || 0));
+    if (extra) { P.bonus = (P.bonus || 0) + extra; goldAdd(extra * 60, "Saison-Pass Bonusstufen", true); got.push({ t: extra + " Bonusstufe" + (extra > 1 ? "n" : ""), v: extra * 60 + " Gold" }); }
+    if (!got.length) return;
+    saveLocal(); hap("pr"); buzz([20, 40, 20]);
+    sysShow(got.length > 1 ? "Belohnungen abgeholt" : "Belohnung abgeholt", got.slice(0, 7).concat(got.length > 7 ? [{ t: "und " + (got.length - 7) + " weitere", v: "" }] : []), null, "Der Saison-Pass läuft weiter. Jede Stufe kommt aus deinem Training.");
+    renderPass(); renderInv(); renderShop(); renderTitleChips(); passDot();
+  }
+  function renderPass() {
+    const el = $("passTrack");
+    if (!el) return;
+    const st = passState(), P = st.P, len = S().arcLength || 90, left = Math.max(0, len - arcDay() + 1);
+    $("passHead").innerHTML = "<b>Stufe " + st.lvl + (st.tier > 30 ? " + " + (st.tier - 30) + " Bonus" : "") + "</b><span>von 30 · " + (left > 0 ? "noch " + left + (left === 1 ? " Tag" : " Tage") : "Saison beendet") + "</span>";
+    $("passBar").style.setProperty("--p", Math.round(Math.min(1, st.frac) * 100) + "%");
+    $("passNext").textContent = st.lvl < 30 ? Math.round(P.step - (st.px - st.lvl * P.step)) + " XP bis Stufe " + (st.lvl + 1) + ": " + passRwText(PASS[st.lvl]) : Math.round(P.step - (st.px % P.step)) + " XP bis zur nächsten Bonusstufe (60 Gold)";
+    $("passClaim").hidden = !st.claimable;
+    $("passClaim").textContent = st.claimable === 1 ? "Belohnung abholen" : st.claimable + " Belohnungen abholen";
+    el.innerHTML = PASS.map((r, i) => {
+      const on = i < st.lvl, got = !!P.c[i], cls = got ? "got" : on ? "ready" : i === st.lvl ? "next" : "";
+      return '<li class="ptier ' + cls + (r.acc || r.t ? " big" : "") + '" title="' + esc(passRwText(r)) + '"><span class="pn">' + (i + 1) + "</span>" + passIcon(r) + "<small>" + esc(r.g ? r.g + "" : r.it ? ITEMS[r.it].n.split(" ")[0] + (r.n > 1 ? " ×" + r.n : "") : r.acc ? (ACCENTS.find((x) => x.k === r.acc) || {}).n || "" : "Titel") + "</small>" + (got ? '<em aria-label="abgeholt">✓</em>' : "") + "</li>";
+    }).join("");
+    const cur = el.children[Math.max(0, Math.min(29, st.lvl - 1))];
+    if (cur && !renderPass.scrolled) { renderPass.scrolled = true; requestAnimationFrame(() => { el.scrollLeft = Math.max(0, cur.offsetLeft - el.clientWidth / 2 + cur.offsetWidth / 2); }); }
+  }
+  function passDot() {
+    const b = document.querySelector('.tabs .tab[data-tab="progress"]');
+    if (!b) return;
+    let n = 0;
+    try { n = passState().claimable; } catch (e) { n = 0; }
+    b.classList.toggle("hasdot", n > 0);
+  }
+  if ($("passClaim")) $("passClaim").addEventListener("click", passClaimAll);
+
+  // ---- Wochen-Raid: ein Boss pro Woche, dein Training ist der Schaden ----
+  const RAID_BOSSES = [
+    { n: "Frostwyrm", d: "Ein Drache aus Eis, der jede Woche größer wird." },
+    { n: "Eisgolem", d: "Langsam, schwer und nur mit Wiederholungen zu brechen." },
+    { n: "Gletscherhydra", d: "Für jeden Satz, den du auslässt, wächst ein Kopf nach." },
+    { n: "Schattenyeti", d: "Er wartet dort, wo du aufgibst." },
+    { n: "Nordwind-Titan", d: "Er bläst dich um, wenn du stehen bleibst." },
+    { n: "Schneekönigin", d: "Kalt, schön und gnadenlos geduldig." },
+    { n: "Kristallbehemoth", d: "Seine Panzerung bricht nur unter Volumen." },
+    { n: "Lawinenfürst", d: "Er kommt langsam und dann alles auf einmal." },
+    { n: "Frosthexe Ysra", d: "Sie lacht über jede ausgelassene Einheit." },
+    { n: "Polartyrann", d: "Der letzte Wächter vor dem Frühling." }
+  ];
+  function raidWeek(d) { const ws = startOfWeek(d || today()); return { ws, key: dateKey(ws) }; }
+  function dayDamage(dk) {
+    const l = state.logs[dk];
+    if (!l) return 0;
+    let dmg = 0;
+    Object.keys(l.exercises || {}).forEach((id) => {
+      const x = l.exercises[id];
+      if (!x || !x.done) return;
+      const parts = noteParts(x.note || "");
+      x.done.forEach((ok, i) => {
+        if (!ok) return;
+        let v = parts.reps[i] != null ? +parts.reps[i] : 8;
+        if (parts.secs) v = v / 2;
+        dmg += Math.max(1, Math.min(60, v || 8)) * (1 + Math.min(40, Math.max(0, parts.weight || 0)) / 40);
+      });
+    });
+    Object.keys(l.runs || {}).forEach((id) => { const r = l.runs[id]; if (r && r.km) dmg += +r.km * 15; });
+    return Math.round(dmg);
+  }
+  function raidHP(ws) {
+    let hp = 0;
+    for (let i = 0; i < 7; i++) {
+      const s = baseEffSession(addDays(ws, i));
+      if (!s) continue;
+      s.exercises.forEach((e) => {
+        if (isRun(e)) { hp += (parseFloat(String(e.reps || "").replace(",", ".")) || 5) * 15; return; }
+        const rg = parseRange(e.reps), v = rg ? (rg.secs ? rg.low / 2 : rg.low) : 8;
+        hp += setCount(e) * Math.max(1, v);
+      });
+    }
+    return Math.max(150, Math.round(hp * 0.9));
+  }
+  function raidState() {
+    const { ws, key } = raidWeek();
+    const m = rankMeta();
+    m.raids = m.raids || {};
+    const idx = (Math.max(1, arcWeek(ws) || 1) - 1) % RAID_BOSSES.length;
+    const boss = RAID_BOSSES[idx];
+    let dmg = 0, todayD = 0;
+    for (let i = 0; i < 7; i++) { const dk = dateKey(addDays(ws, i)); const d = dayDamage(dk); dmg += d; if (dk === todayKey()) todayD = d; }
+    const hp = (m.raids[key] && m.raids[key].hp) || raidHP(ws);
+    return { key, ws, boss, hp, dmg, todayD, won: !!(m.raids[key] && m.raids[key].won), left: 7 - daysBetween(ws, startOfDay(today())) };
+  }
+  function renderRaid() {
+    const card = $("raidCard");
+    if (!card || !window.__waGame) return;
+    let r;
+    try { r = raidState(); } catch (e) { card.hidden = true; return; }
+    const m = rankMeta();
+    if (!m.raids[r.key]) { m.raids[r.key] = { hp: r.hp, n: r.boss.n }; saveLocal(); }
+    card.hidden = false;
+    const pct = Math.max(0, Math.min(100, 100 - (r.dmg / r.hp) * 100));
+    card.classList.toggle("won", r.won || r.dmg >= r.hp);
+    $("raidName").textContent = r.boss.n;
+    $("raidDesc").textContent = r.won ? "Besiegt. Nächsten Montag erscheint ein neuer Raid-Boss." : r.boss.d;
+    $("raidBar").style.setProperty("--hp", pct.toFixed(1) + "%");
+    $("raidNums").textContent = r.won || r.dmg >= r.hp ? "0 von " + fmtG(r.hp) + " HP · besiegt" : fmtG(Math.max(0, r.hp - r.dmg)) + " von " + fmtG(r.hp) + " HP · " + r.left + (r.left === 1 ? " Tag" : " Tage") + " übrig";
+    $("raidToday").textContent = r.todayD ? "Heute: " + fmtG(r.todayD) + " Schaden" : "Heute noch kein Schaden";
+    if (!r.won && r.dmg >= r.hp) {
+      m.raids[r.key].won = todayKey();
+      const loot = ["elixir", "rune", "key"][hashStr("raid" + r.key) % 3];
+      const G = gMeta(); G.inv[loot] = (G.inv[loot] || 0) + 1;
+      goldAdd(120, "Raid-Boss " + r.boss.n, true);
+      saveLocal(); hap("pr");
+      sysShow("Raid-Boss besiegt", [{ t: r.boss.n, v: "0 % HP" }, { t: "Schaden", v: fmtG(r.dmg) }, { t: "Belohnung", v: "+150 XP" }, { t: "Gold", v: "+120" }, { t: "Beute", v: ITEMS[loot].n }], null, "Der Wochen-Raid ist geschafft. Montag kommt der nächste.");
+      renderInv(); checkRanks();
+    }
+  }
+
   const deepHandled = handleDeepLink();
   initCollapsibles();
   initInfos();
@@ -11792,6 +12189,7 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
   try { savedTab = localStorage.getItem("winterarc.tab") || "today"; } catch (e) { /* ignore */ }
   if (deepHandled) savedTab = "tools";
   restReady = true;
+  try { eco(); } catch (e) { /* ignore */ }
   renderAll();
   showTab(savedTab);
   setSync();
