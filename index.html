@@ -1648,6 +1648,9 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
 .dl .dlb { grid-area: b; position: relative; height: 10px; border-radius: 999px; overflow: hidden; background: linear-gradient(90deg, transparent var(--p, 50%), rgba(139, 108, 255, .55) var(--p, 50%)); border: 1px solid var(--line-2); }
 .dl .dlb i { position: absolute; left: 0; top: 0; bottom: 0; width: var(--p, 50%); background: linear-gradient(90deg, var(--ice-2), var(--ice)); box-shadow: 0 0 8px rgba(var(--acc-rgb), .5); }
 .dl .dlb::after { content: ""; position: absolute; left: 50%; top: -2px; bottom: -2px; width: 1px; background: rgba(255, 255, 255, .35); }
+/* v21: System-Fenster scrollt, wenn es höher als der Bildschirm ist */
+.sysov { display: flex; flex-direction: column; overflow-y: auto; overscroll-behavior: contain; padding-top: calc(24px + env(safe-area-inset-top, 0px)); padding-bottom: calc(24px + env(safe-area-inset-bottom, 0px)); }
+.sysov > .sysbox { margin: auto; flex: none; }
 </style>
 </head>
 <body>
@@ -1983,7 +1986,7 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
           </details>
         </div>
         <div class="block" id="passBlock">
-          <h2 class="bh">Saison-Pass <span class="achcount">Winter Arc</span></h2>
+          <h2 class="bh">Saison-Pass <span class="achcount" id="passSeason">Winter Arc</span></h2>
           <div class="passhead" id="passHead"></div>
           <div class="passbar" id="passBar"><i></i></div>
           <p class="passnext" id="passNext"></p>
@@ -2412,6 +2415,10 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
               <div class="field">
                 <label for="setLen">Dauer in Tagen</label>
                 <input type="number" inputmode="numeric" min="7" max="730" id="setLen">
+              </div>
+              <div class="field" id="seasonField" hidden>
+                <button class="btn small" id="seasonBtn">Neue Saison starten</button>
+                <p class="fhint" id="seasonHint">Dein Arc ist geschafft. Eine neue Saison startet heute mit frischem Saison-Pass, neuen Raid-Bossen und Deload-Wochen. Rang, Level, Gold, Erfolge und alle Daten bleiben.</p>
               </div>
               </div>
               <div class="toggle"><span>Laufplan automatisch steigern<small>Passt die Kilometer jede Woche an den 90-Tage-Plan an, ab Woche 5 mit lockerem Sonntagslauf.</small></span><button class="switch" role="switch" aria-checked="true" id="swRun" aria-label="Laufplan automatisch steigern"></button></div>
@@ -3798,6 +3805,7 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
     renderTodayExtras(dk);
     try { renderRaid(); passDot(); renderChest(); bountyDot(); } catch (e) { /* ignore */ }
     try { renderAdvent(); } catch (e) { /* ignore */ }
+    try { arcEndCheck(); } catch (e) { /* ignore */ }
   }
 
   function placeholderFor(e) {
@@ -9714,6 +9722,12 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
     hap(op.hap || "pr");
     if (window.__waGame) sysVoice(it.title, op.voice);
   }
+  // Fenster direkt nach dem aktuellen zeigen (z. B. eine Rückfrage), statt hinten anzustellen
+  function sysShowNext(title, lines, badgeIdx, note, opts) {
+    const it = { title, lines, badgeIdx, note, opts: opts || {} };
+    if (sysQueue.length && !$("sysWin").hidden) { sysQueue.splice(1, 0, it); sysClose(); }
+    else { sysQueue.unshift(it); sysNext(); }
+  }
   function sysClose() {
     $("sysWin").hidden = true;
     sysQueue.shift();
@@ -12500,8 +12514,9 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
     if (r.g) goldAdd(r.g, why, true);
     if (r.it) { const G = gMeta(); G.inv[r.it] = (G.inv[r.it] || 0) + (r.n || 1); }
     const E = eco();
-    if (r.acc) E.acc[r.acc] = todayKey();
-    if (r.t) E.titles[r.t] = "pass";
+    // Schon vorhandene Farben und Titel (z. B. in einer neuen Saison) werden zu Gold
+    if (r.acc) { if (E.acc[r.acc]) goldAdd(100, why + " (Farbe schon deins)", true); else E.acc[r.acc] = todayKey(); }
+    if (r.t) { if (E.titles[r.t]) goldAdd(50, why + " (Titel schon deins)", true); else E.titles[r.t] = "pass"; }
   }
   function passClaimAll() {
     const st = passState(), P = st.P, got = [];
@@ -12516,6 +12531,7 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
   function renderPass() {
     const el = $("passTrack");
     if (!el) return;
+    if ($("passSeason")) $("passSeason").textContent = (S().season || 1) > 1 ? "Saison " + S().season : "Winter Arc";
     const st = passState(), P = st.P, len = S().arcLength || 90, left = Math.max(0, len - arcDay() + 1);
     $("passHead").innerHTML = "<b>Stufe " + st.lvl + (st.tier > 30 ? " + " + (st.tier - 30) + " Bonus" : "") + "</b><span>von 30 · " + (left > 0 ? "noch " + left + (left === 1 ? " Tag" : " Tage") : "Saison beendet") + "</span>";
     $("passBar").style.setProperty("--p", Math.round(Math.min(1, st.frac) * 100) + "%");
@@ -13150,6 +13166,59 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
     const wd = ["Montag", "Dienstag", "Mittwoch", "Donnerstag", "Freitag", "Samstag", "Sonntag"][n - 1] || "";
     $("duelNote").textContent = (me > sh ? "Du führst gegen dein Ich von letzter Woche." : sh > me ? "Dein Ich von letzter Woche liegt vorne. Hol es dir zurück." : "Gleichstand mit deinem Ich von letzter Woche.") + " Links du, rechts du vor einer Woche" + (n < 7 ? ", jeweils Montag bis " + wd + "." : ".");
   }
+
+
+  // ================= v21: Arc-Abschluss und neue Saison =================
+  function arcSummary() {
+    const start = arcStartDate(), last = arcLastDate(), m = rankMeta(), G = gMeta();
+    const a = dateKey(start), b = dateKey(last);
+    let sets = 0, km = 0, days = 0, quests = 0, photos = 0;
+    for (let d = start, g = 0; d <= last && g < 800; d = addDays(d, 1), g++) {
+      const dk = dateKey(d), l = state.logs[dk] || {};
+      let did = false;
+      Object.keys(l.exercises || {}).forEach((id) => { const n = (((l.exercises[id] || {}).done) || []).filter(Boolean).length; sets += n; if (n) did = true; });
+      Object.keys(l.runs || {}).forEach((id) => { const k = +((l.runs[id] || {}).km) || 0; km += k; if (k) did = true; });
+      if (did) days++;
+      if ((m.quests || {})[dk]) quests++;
+    }
+    const raids = Object.keys(m.raids || {}).filter((k) => k >= dateKey(startOfWeek(start)) && k <= b && m.raids[k].won).length;
+    const gates = (G.log || []).filter((g) => g.res === "won" && g.d >= a && g.d <= b).length;
+    void photos;
+    return { sets, km: Math.round(km * 10) / 10, days, quests, raids, gates, lv: computeXP().lv, rank: playerRank(), ach: Object.keys(m.ach || {}).length, len: S().arcLength || 90 };
+  }
+  function arcEndCheck() {
+    if (!window.__waGame) return;
+    const len = S().arcLength || 90, over = arcDay() > len;
+    if ($("seasonField")) $("seasonField").hidden = !over;
+    if (!over) return;
+    const m = rankMeta(), key = S().arcStart || DEFAULT_SETTINGS.arcStart;
+    m.arcEnd = m.arcEnd || {};
+    if (m.arcEnd[key]) return;
+    m.arcEnd[key] = todayKey(); saveLocal();
+    const x = arcSummary();
+    sysShow((S().season || 1) > 1 ? "Saison " + S().season + " abgeschlossen" : "Winter Arc abgeschlossen", [
+      { t: "Tage mit Training", v: x.days + " von " + x.len }, { t: "Sätze", v: fmtG(x.sets) }, { t: "Kilometer", v: fmtN(x.km) },
+      { t: "Daily Quests", v: String(x.quests) }, { t: "Raids und Gates", v: x.raids + " · " + x.gates }, { t: "Level", v: String(x.lv) }
+    ], x.rank, "Du hast es durchgezogen. Wenn du bereit bist, startet eine neue Saison mit frischem Saison-Pass. Alles, was du dir aufgebaut hast, bleibt.", { okLabel: "Später", action: { label: "Neue Saison starten", fn: () => seasonConfirm(true) }, hap: "rankUp" });
+  }
+  function seasonConfirm(chained) {
+    const n = (S().season || 1) + 1, len = S().arcLength || 90;
+    (chained ? sysShowNext : sysShow)("Saison " + n + " starten?", [{ t: "Start", v: "heute" }, { t: "Dauer", v: len + " Tage" }, { t: "Saison-Pass", v: "neu ab Stufe 0" }, { t: "Bleibt", v: "Rang, Level, Gold, Titel, Erfolge" }], null, "Start und Dauer kannst du danach im Plan ändern.", { okLabel: "Abbrechen", action: { label: "Ja, Saison " + n + " beginnt", fn: () => { sysClose(); startSeason(); } } });
+  }
+  function startSeason() {
+    const E = eco(), n = (S().season || 1) + 1;
+    let lvl = 0;
+    try { lvl = passState().lvl; } catch (e) { lvl = 0; }
+    E.passHist = (E.passHist || []).concat([{ s: n - 1, lvl, start: S().arcStart || DEFAULT_SETTINGS.arcStart, end: todayKey() }]);
+    E.pass = null;
+    S().season = n; S().arcStart = todayKey();
+    saveSettings(); saveLocal();
+    try { renderPass.scrolled = false; renderBestiary.scrolled = false; } catch (e) { /* ignore */ }
+    renderAll();
+    hap("rankUp"); buzz([30, 50, 30, 50, 80]);
+    sysShowNext("Saison " + n + " beginnt", [{ t: "Tag", v: "1 von " + (S().arcLength || 90) }, { t: "Saison-Pass", v: "Stufe 0" }, { t: "Erster Raid-Boss", v: RAID_BOSSES[0].n }], playerRank(), "Neue Saison, gleicher Jäger. Zeig, was du im letzten Arc gelernt hast.");
+  }
+  if ($("seasonBtn")) $("seasonBtn").addEventListener("click", () => { hap("tap"); seasonConfirm(); });
 
 
   // ================= v20: Kopfgelder der Woche (3 Aufgaben, Gold beim Abholen) =================
