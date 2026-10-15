@@ -1136,6 +1136,38 @@ main > section:not([hidden]) { animation: viewIn 220ms cubic-bezier(.2, .8, .2, 
 .exhint { display: flex; gap: 8px; align-items: flex-start; margin: 4px 0 2px; color: var(--mute); font-size: 13px; }
 .exhint svg { width: 14px; height: 14px; flex: none; margin-top: 3px; color: var(--ice); }
 .skill .btn[data-act="up"] { border-color: var(--ice-deep); color: var(--ice); }
+body.noscroll { overflow: hidden; }
+.sktreebtn { width: 100%; justify-content: center; margin: 4px 0 6px; border-color: rgba(var(--acc-rgb), .5); color: var(--ice); }
+.sktreebtn svg { width: 18px; height: 18px; margin-right: 6px; vertical-align: -3px; }
+.sktreeov { position: fixed; inset: 0; z-index: 88; display: grid; grid-template-rows: auto minmax(0, 1fr) auto; background: radial-gradient(120% 70% at 50% 100%, rgba(var(--acc-rgb), .14), rgba(2, 4, 7, 0) 70%), #020407; padding: calc(12px + env(safe-area-inset-top, 0px)) 0 calc(12px + env(safe-area-inset-bottom, 0px)); }
+.stohead { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 0 16px 8px; }
+.stoscroll { overflow: auto; padding: 0 16px; overscroll-behavior: contain; }
+.sttree { display: block; }
+.st-trunk, .st-link { stroke: rgba(255, 255, 255, .12); stroke-width: 3; fill: none; stroke-linecap: round; }
+.st-link.on, .st-trunk { stroke: rgba(var(--acc-rgb), .75); filter: drop-shadow(0 0 4px rgba(var(--acc-rgb), .7)); }
+.st-root { fill: var(--ice); filter: drop-shadow(0 0 8px rgba(var(--acc-rgb), .9)); }
+.st-node { cursor: pointer; outline: none; }
+.st-node path { fill: #0B1118; stroke: rgba(255, 255, 255, .16); stroke-width: 1.5; transition: transform .2s; }
+.st-node text { fill: var(--mute); font-family: var(--display); font-weight: 800; font-size: 15px; text-anchor: middle; pointer-events: none; }
+.st-node.done path { fill: url(#stOn); stroke: var(--hi); filter: drop-shadow(0 0 6px rgba(var(--acc-rgb), .75)); }
+.st-node.done text { fill: var(--ice-ink); }
+.st-node.mast path { fill: url(#stGold); stroke: #FFF6C4; filter: drop-shadow(0 0 7px rgba(255, 194, 61, .8)); }
+.st-node.mast text { fill: #2A1C06; }
+.st-node.cur path { fill: rgba(var(--acc-rgb), .14); stroke: var(--ice); stroke-width: 2; animation: stPulse 2s ease-in-out infinite; }
+.st-node.cur text { fill: var(--ice); }
+.st-node.sel path { stroke: #fff; stroke-width: 3; }
+@keyframes stPulse { 0%, 100% { filter: drop-shadow(0 0 2px rgba(var(--acc-rgb), .4)); } 50% { filter: drop-shadow(0 0 10px rgba(var(--acc-rgb), .95)); } }
+.st-name { fill: var(--ink); font-family: var(--display); font-weight: 800; font-size: 13px; text-anchor: middle; }
+.st-name.mast { fill: #FFD25C; }
+.st-sub { fill: var(--mute); font-size: 10.5px; text-anchor: middle; }
+.st-crown { fill: #FFC23D; filter: drop-shadow(0 0 6px rgba(255, 194, 61, .8)); }
+.stodet { margin: 8px 16px 0; padding: 12px 14px; border-radius: 16px; border: 1px solid var(--line-2); background: rgba(6, 10, 16, .94); min-height: 64px; }
+.stodet p { margin: 0; color: var(--ink-2); font-size: 14px; }
+.stodet h3 { margin: 4px 0 2px; font-family: var(--display); font-size: 22px; }
+.stodet .stdk { font-size: 12px; color: var(--mute); text-transform: uppercase; letter-spacing: .08em; }
+.stodet .btn { margin-top: 10px; width: 100%; }
+.stst.on { color: var(--ice); } .stst.cur { color: #FFD25C; }
+@media (prefers-reduced-motion: reduce) { .st-node.cur path { animation: none; } }
 .is-done > .shead > span { color: var(--ice); }
 .is-done.is-collapsed > .shead h2 .collbtn { color: var(--ink-2); }
 
@@ -2432,6 +2464,11 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
 </div>
 
 <button class="aifab" id="aiFab" hidden aria-label="KI-Coach fragen"><svg aria-hidden="true"><use href="#i-mic"/></svg>Coach</button>
+<div class="sktreeov" id="skTreeOv" hidden role="dialog" aria-label="Skill-Baum">
+  <div class="stohead"><div><span class="systag sm"><span>!</span>Skill-Baum</span></div><button class="btn small" id="skTreeClose">Schließen</button></div>
+  <div class="stoscroll" id="skTreeScroll"></div>
+  <div class="stodet" id="skTreeDet"></div>
+</div>
 <div class="livetalk" id="liveTalk" hidden role="dialog" aria-label="Live-Gespräch">
   <div class="livetop"><b id="liveName"></b><button class="btn small" id="liveEnd">Beenden</button></div>
   <button class="liveorb" id="liveOrb" data-s="idle" aria-label="Antwort unterbrechen"><span></span></button>
@@ -2519,6 +2556,18 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
     { key: "planche", name: "Planche", opt: true, levels: [
       ["Planche Lean", "20 s halten"], ["Tuck Planche", "5 s halten"], ["Tuck Planche", "15 s halten"],
       ["Advanced Tuck Planche", "8 s halten"], ["Straddle Planche", "5 s halten"], ["Full Planche", "3 s halten"]] },
+    { key: "pushpath", name: "Liegestütz-Pfad", opt: true, levels: [
+      ["Knie-Liegestütze", "3 × 15"], ["Liegestütze", "3 × 15 sauber"], ["Diamond Push-ups", "3 × 10"], ["Archer Push-ups", "3 × 6 je Seite"],
+      ["Pseudo-Planche Push-ups", "3 × 8"], ["Einarmige Liegestütze, Hände erhöht", "3 je Seite"], ["Einarmige Liegestütze", "1 je Seite"]] },
+    { key: "pullpath", name: "Klimmzug-Pfad", opt: true, levels: [
+      ["Australian Rows", "3 × 12"], ["Negative Klimmzüge", "5 × 5 s"], ["Klimmzug", "1 sauber"], ["Klimmzüge", "5 am Stück"],
+      ["Klimmzüge", "10 am Stück"], ["Klimmzüge", "15 am Stück"], ["Archer Pull-ups", "3 je Seite"]] },
+    { key: "legpath", name: "Bein-Pfad", opt: true, levels: [
+      ["Kniebeugen", "3 × 25"], ["Bulgarian Split Squats", "3 × 10 je Bein"], ["Shrimp Squat, unterstützt", "3 × 5 je Bein"],
+      ["Pistol Squat an der Stange", "3 × 5 je Bein"], ["Pistol Squat", "1 je Bein"], ["Pistol Squats", "5 je Bein"]] },
+    { key: "dippath", name: "Dips-Pfad", opt: true, levels: [
+      ["Bank-Dips", "3 × 15"], ["Negative Dips", "5 × 5 s"], ["Dips", "5 am Stück"], ["Dips", "15 am Stück"],
+      ["Dips mit +10 kg", "5 Wdh."], ["Ring- oder Korean Dips", "3 Wdh."]] },
     { key: "muscleup", name: "Muscle-Up", opt: true, levels: [
       ["Explosive Klimmzüge bis zur Brust", "5 Wdh."], ["Negative Muscle-Ups", "5 × 3 s"], ["Muscle-Up mit Band", "3 Wdh."],
       ["Muscle-Up", "1 Wdh."], ["Muscle-Ups", "3 Wdh."], ["Muscle-Ups", "5 Wdh. sauber"]] }
@@ -6103,7 +6152,7 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
         (lv > 0 ? '<button class="btn small" data-act="down">Eine Stufe zurück</button>' : "") + "</div></div>";
     }).join("");
     const mgr = '<details class="skmgr"><summary>Skills auswählen</summary><div class="skchips">' + SKILLS.map((sk) => '<button class="chip" data-tog="' + sk.key + '" aria-pressed="' + skillOn(sk) + '">' + esc(sk.name) + "</button>").join("") + '</div><small class="fhint">Nur ausgewählte Skills zählen für deinen Technik-Rang.</small></details>';
-    $("skills").innerHTML = (html || '<p class="lead">Wähle unten mindestens einen Skill aus.</p>') + mgr;
+    $("skills").innerHTML = '<button class="btn sktreebtn" data-act="tree"><svg aria-hidden="true"><use href="#i-prog"/></svg>Skill-Baum ansehen</button>' + (html || '<p class="lead">Wähle unten mindestens einen Skill aus.</p>') + mgr;
   }
   $("skills").addEventListener("click", (ev) => {
     const tg = ev.target.closest("[data-tog]");
@@ -6122,6 +6171,7 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
     }
     const b = ev.target.closest("[data-act]");
     if (!b) return;
+    if (b.dataset.act === "tree") { hap("tap"); openSkillTree(); return; }
     const key = b.closest(".skill").dataset.k;
     const sk = SKILLS.find((s) => s.key === key);
     if (b.dataset.act === "open") { skillOpen[key] = !skillOpen[key]; hap("tick"); renderSkills(); return; }
@@ -12180,6 +12230,82 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
       sysShow("Raid-Boss besiegt", [{ t: r.boss.n, v: "0 % HP" }, { t: "Schaden", v: fmtG(r.dmg) }, { t: "Belohnung", v: "+150 XP" }, { t: "Gold", v: "+120" }, { t: "Beute", v: ITEMS[loot].n }], null, "Der Wochen-Raid ist geschafft. Montag kommt der nächste.");
       renderInv(); checkRanks();
     }
+  }
+
+
+  // ================= v20: Skill-Baum (große Ansicht aller aktiven Skills) =================
+  let treeSel = null;
+  function hexPath(cx, cy, r) {
+    const p = [];
+    for (let i = 0; i < 6; i++) { const a = -Math.PI / 2 + i * Math.PI / 3; p.push((cx + Math.cos(a) * r).toFixed(1) + "," + (cy + Math.sin(a) * r * 1.08).toFixed(1)); }
+    return "M" + p.join("L") + "Z";
+  }
+  function renderSkillTree() {
+    const box = $("skTreeScroll");
+    if (!box) return;
+    const act = activeSkills(), n = act.length, laneW = 86, gap = 66;
+    const maxL = Math.max.apply(null, act.map((sk) => sk.levels.length).concat([3]));
+    const W = Math.max((box.clientWidth || 360), n * laneW + 24), H = maxL * gap + 150, base = H - 78;
+    let g = '<defs><linearGradient id="stOn" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="var(--hi)"/><stop offset=".5" stop-color="var(--ice)"/><stop offset="1" stop-color="var(--ice-2)"/></linearGradient>' +
+      '<linearGradient id="stGold" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFF6C4"/><stop offset=".45" stop-color="#FFC23D"/><stop offset="1" stop-color="#9A5208"/></linearGradient></defs>';
+    const x0 = 12 + laneW / 2, x1 = 12 + laneW * (n - 1) + laneW / 2, rootY = H - 30;
+    g += '<path class="st-trunk" d="M' + x0 + " " + rootY + "H" + x1 + '"/>';
+    act.forEach((sk, i) => {
+      const x = 12 + laneW * i + laneW / 2, st = state.skills[sk.key] || { level: 0 }, lv = Math.max(0, Math.min(sk.levels.length, st.level || 0)), L = sk.levels.length, mastered = lv >= L;
+      g += '<path class="st-link' + (lv > 0 ? " on" : "") + '" d="M' + x + " " + rootY + "V" + base + '"/>';
+      for (let j = 1; j < L; j++) g += '<path class="st-link' + (j < lv ? " on" : "") + '" d="M' + x + " " + (base - (j - 1) * gap) + "V" + (base - j * gap) + '"/>';
+      for (let j = 0; j < L; j++) {
+        const y = base - j * gap, done = j < lv, cur = j === lv, sel = treeSel && treeSel.k === sk.key && treeSel.i === j;
+        g += '<g class="st-node' + (done ? " done" : cur ? " cur" : "") + (sel ? " sel" : "") + (mastered ? " mast" : "") + '" data-k="' + sk.key + '" data-i="' + j + '" tabindex="0" role="button" aria-label="' + esc(sk.name + " Stufe " + (j + 1) + ": " + sk.levels[j][0]) + '">' +
+          '<path d="' + hexPath(x, y, 21) + '"/><text x="' + x + '" y="' + (y + 5) + '">' + (done ? "✓" : j + 1) + "</text></g>";
+      }
+      const ty = base - (L - 1) * gap - 40;
+      if (mastered) g += '<path class="st-crown" d="M' + (x - 12) + " " + (ty - 18) + "l4 -10 4 6 4 -9 4 9 4 -6 4 10z" + '"/>';
+      g += '<text class="st-name' + (mastered ? " mast" : "") + '" x="' + x + '" y="' + ty + '">' + esc(sk.name.length > 13 ? sk.name.replace("-Pfad", "") : sk.name) + "</text>";
+      g += '<text class="st-sub" x="' + x + '" y="' + (ty + 14) + '">' + (mastered ? "gemeistert" : lv + "/" + L) + "</text>";
+    });
+    g += '<path class="st-root" d="' + hexPath((x0 + x1) / 2, rootY, 15) + '"/>';
+    box.innerHTML = '<svg class="sttree" viewBox="0 0 ' + W + " " + H + '" width="' + W + '" height="' + H + '">' + g + "</svg>";
+    renderTreeDetail();
+  }
+  function renderTreeDetail() {
+    const d = $("skTreeDet");
+    if (!d) return;
+    const tot = activeSkills().reduce((a, sk) => a + Math.min(sk.levels.length, ((state.skills[sk.key] || {}).level || 0)), 0), all = activeSkills().reduce((a, sk) => a + sk.levels.length, 0);
+    if (!treeSel) { d.innerHTML = "<p><b>" + tot + " von " + all + " Knoten</b> freigeschaltet. Tipp auf einen Knoten. Jede Stufe bringt 30 XP und 25 Gold, eine Meisterschaft 100 Gold.</p>"; return; }
+    const sk = SKILLS.find((x) => x.key === treeSel.k);
+    if (!sk) { treeSel = null; renderTreeDetail(); return; }
+    const lv = (state.skills[sk.key] || {}).level || 0, j = treeSel.i, l = sk.levels[j];
+    const stt = j < lv ? "Geschafft" : j === lv ? "Aktuelles Ziel" : "Gesperrt, erst Stufe " + (j) + " schaffen";
+    d.innerHTML = '<p class="stdk">' + esc(sk.name) + " · Stufe " + (j + 1) + " von " + sk.levels.length + "</p><h3>" + esc(l[0]) + "</h3><p>" + esc(l[1]) + ' · <span class="stst' + (j < lv ? " on" : j === lv ? " cur" : "") + '">' + stt + "</span></p>" +
+      (j === lv ? '<button class="btn primary" data-treeup="' + sk.key + '">Stufe geschafft</button>' : "");
+  }
+  if ($("skTreeOv")) {
+    $("skTreeScroll").addEventListener("click", (ev) => {
+      const nd = ev.target.closest(".st-node");
+      if (!nd) return;
+      treeSel = { k: nd.dataset.k, i: +nd.dataset.i }; hap("tick");
+      renderSkillTree();
+    });
+    $("skTreeDet").addEventListener("click", (ev) => {
+      const b = ev.target.closest("[data-treeup]");
+      if (!b) return;
+      const k = b.dataset.treeup;
+      renderSkills();
+      const up = document.querySelector('#skills .skill[data-k="' + k + '"] [data-act="up"]');
+      if (up) up.click();
+      const sk = SKILLS.find((x) => x.key === k), lv = (state.skills[k] || {}).level || 0;
+      treeSel = sk && lv < sk.levels.length ? { k, i: lv } : null;
+      renderSkillTree();
+    });
+    $("skTreeClose").addEventListener("click", () => { $("skTreeOv").hidden = true; document.body.classList.remove("noscroll"); });
+  }
+  function openSkillTree() {
+    treeSel = null;
+    $("skTreeOv").hidden = false; document.body.classList.add("noscroll");
+    renderSkillTree();
+    const sc = $("skTreeScroll");
+    requestAnimationFrame(() => { sc.scrollTop = sc.scrollHeight; });
   }
 
   const deepHandled = handleDeepLink();
