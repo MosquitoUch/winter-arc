@@ -1368,6 +1368,21 @@ main[data-dir="l"] > section:not([hidden]) { animation: viewInL 260ms cubic-bezi
 @keyframes chestWiggle { 0%, 82%, 100% { transform: rotate(0); } 86% { transform: rotate(-6deg); } 90% { transform: rotate(5deg); } 94% { transform: rotate(-3deg); } }
 @media (max-width: 919px) { #chestCard { order: 2; } }
 @media (prefers-reduced-motion: reduce) { .chestcard .chest { animation: none !important; } }
+.bountybox { margin: 18px 0 26px; padding: 14px 16px; border-radius: 16px; border: 1px solid rgba(255, 210, 92, .35); background: linear-gradient(180deg, rgba(255, 194, 61, .05), rgba(0, 0, 0, .25)); }
+.bountybox .shead h2 { font-size: 22px; }
+.bountylist { list-style: none; margin: 10px 0 8px; padding: 0; display: grid; gap: 10px; }
+.bountylist li { display: grid; grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: "t r" "b b"; gap: 6px 10px; align-items: center; padding: 10px 12px; border-radius: 12px; border: 1px solid var(--line); background: rgba(255, 255, 255, .02); }
+.bountylist .bt { grid-area: t; display: grid; gap: 1px; min-width: 0; }
+.bountylist .bt b { font-size: 15px; }
+.bountylist .bt small { color: var(--mute); font-size: 12px; font-variant-numeric: tabular-nums; }
+.bountylist .bbar { grid-area: b; height: 6px; border-radius: 999px; background: rgba(255, 255, 255, .07); overflow: hidden; }
+.bountylist .bbar i { display: block; height: 100%; background: linear-gradient(90deg, #B26A0C, #FFC23D); border-radius: inherit; }
+.bountylist li > :last-child:not(.bbar) { grid-area: r; }
+.bountylist .brw, .bountylist .bgot { display: inline-flex; align-items: center; color: var(--mute); font-family: var(--display); font-size: 15px; white-space: nowrap; }
+.bountylist li.got { opacity: .7; }
+.bountylist li.got .bgot { color: #FFD25C; }
+.bountylist li.ready { border-color: rgba(255, 210, 92, .7); box-shadow: 0 0 14px rgba(255, 194, 61, .2); }
+.bountylist .btn { display: inline-flex; align-items: center; white-space: nowrap; border-color: rgba(255, 210, 92, .7); color: #FFE08A; }
 .raiddesc { margin: 0 0 10px; color: var(--mute); font-size: 13px; }
 .raidcard .qhead { flex-wrap: wrap; row-gap: 6px; }
 .raidcard .qstate { font-size: 14px; }
@@ -1766,6 +1781,11 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
     <section id="view-week" aria-label="Woche" hidden>
       <h1 class="pagetitle" id="weektitle">Diese Woche</h1>
       <div class="week-stats" id="weekstats"></div>
+      <div class="bountybox" id="bountyBox" hidden>
+        <div class="shead"><h2>Kopfgelder der Woche</h2><span id="bountyState"></span></div>
+        <ul class="bountylist" id="bountyList"></ul>
+        <p class="fhint" id="bountyNote"></p>
+      </div>
       <div class="scan" id="scanCard">
         <div class="shead"><h2>Körper-Scan</h2><div class="scanwk" id="scanWk" role="group" aria-label="Woche wählen"><button class="chip" data-w="0" aria-pressed="true">Diese Woche</button><button class="chip" data-w="1" aria-pressed="false">Letzte Woche</button></div></div>
         <div class="scanfig" id="scanFig"></div>
@@ -3602,7 +3622,7 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
     renderHabits(dk);
     renderProtein(dk);
     renderTodayExtras(dk);
-    try { renderRaid(); passDot(); renderChest(); } catch (e) { /* ignore */ }
+    try { renderRaid(); passDot(); renderChest(); bountyDot(); } catch (e) { /* ignore */ }
   }
 
   function placeholderFor(e) {
@@ -4304,6 +4324,7 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
   // ================= Week =================
   const openDays = {};
   function renderWeek() {
+    try { renderBounties(); } catch (e) { /* ignore */ }
     const now = today();
     const start = startOfWeek(now);
     const tk = dateKey(now);
@@ -12536,6 +12557,79 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
     $("chestOpen").hidden = true;
     setTimeout(() => { card.classList.add("gone"); }, 2600);
     setTimeout(() => { card.classList.remove("opening", "gone"); $("chestOpen").hidden = false; card.hidden = true; renderInv(); }, 3100);
+  });
+
+
+  // ================= v20: Kopfgelder der Woche (3 Aufgaben, Gold beim Abholen) =================
+  function weekDays(ws) { const out = []; for (let i = 0; i < 7; i++) out.push(dateKey(addDays(ws, i))); return out; }
+  function bountyPool(ws) {
+    const days = weekDays(ws), tk = todayKey(), m = rankMeta(), G = gMeta(), L = (dk) => state.logs[dk] || {};
+    let planSets = 0, planKm = 0;
+    for (let i = 0; i < 7; i++) { const s = baseEffSession(addDays(ws, i)); if (s) s.exercises.forEach((e) => { if (isRun(e)) planKm += parseFloat(String(e.reps || "").replace(",", ".")) || 0; else planSets += setCount(e); }); }
+    const pt = +S().proteinTarget || 120, habitsN = (S().habits || []).length;
+    const pool = [];
+    if (planSets >= 8) pool.push({ id: "sets", t: "Schaffe " + Math.max(10, Math.round(planSets * 0.8)) + " Sätze", goal: Math.max(10, Math.round(planSets * 0.8)), v: () => days.reduce((a, dk) => a + Object.keys(L(dk).exercises || {}).reduce((b, id) => b + ((L(dk).exercises[id] || {}).done || []).filter(Boolean).length, 0), 0) });
+    pool.push({ id: "prot", t: "Protein-Ziel an 4 Tagen", goal: 4, v: () => days.filter((dk) => proteinTotal(dk) >= pt).length });
+    pool.push({ id: "drink", t: "Trinkziel an 4 Tagen", goal: 4, v: () => days.filter((dk) => drinkTotal(dk) >= drinkCfg().target).length });
+    pool.push({ id: "sleep", t: "Schlaf an 5 Tagen eintragen", goal: 5, v: () => days.filter((dk) => { const sl = L(dk).sleep; return sl && (sl.min || sl.score); }).length });
+    pool.push({ id: "quest", t: "Daily Quest an 4 Tagen", goal: 4, v: () => days.filter((dk) => (m.quests || {})[dk]).length });
+    pool.push({ id: "checkin", t: "Check-in an 5 Tagen", goal: 5, v: () => days.filter((dk) => { const c = L(dk).checkin || {}; return c.energy || c.soreness; }).length });
+    pool.push({ id: "gates", t: "2 Gates räumen", goal: 2, v: () => (G.log || []).filter((g) => g.res === "won" && days.indexOf(g.d) >= 0).length });
+    if (habitsN >= 2) { const n = Math.max(6, Math.round(habitsN * 7 * 0.6)); pool.push({ id: "habits", t: n + " Gewohnheiten abhaken", goal: n, v: () => days.reduce((a, dk) => a + habitStats(dk).n, 0) }); }
+    if (planKm >= 3) { const n = Math.max(3, Math.round(planKm * 0.8)); pool.push({ id: "run", t: n + " km laufen", goal: n, v: () => Math.round(days.reduce((a, dk) => a + Object.keys(L(dk).runs || {}).reduce((b, id) => b + (+(L(dk).runs[id] || {}).km || 0), 0), 0) * 10) / 10 }); }
+    void tk;
+    return pool;
+  }
+  function bountyWeek() {
+    const ws = startOfWeek(today()), key = dateKey(ws), pool = bountyPool(ws), rnd = seeded(hashStr("bounty" + key));
+    const sorted = pool.slice().sort(() => rnd() - 0.5);
+    const pick = [];
+    const sets = pool.find((b) => b.id === "sets");
+    if (sets) pick.push(sets);
+    sorted.forEach((b) => { if (pick.length < 3 && pick.indexOf(b) < 0) pick.push(b); });
+    const E = eco(); E.bounty = E.bounty || {};
+    const got = E.bounty[key] || {};
+    return { key, list: pick.map((b) => { const v = b.v(); return Object.assign({}, b, { val: v, done: v >= b.goal, got: !!got[b.id] }); }), all: !!got._all };
+  }
+  function renderBounties() {
+    const box = $("bountyBox");
+    if (!box || !window.__waGame) return;
+    let W;
+    try { W = bountyWeek(); } catch (e) { box.hidden = true; return; }
+    box.hidden = false;
+    const nGot = W.list.filter((b) => b.got).length;
+    $("bountyState").textContent = nGot + " von " + W.list.length;
+    $("bountyList").innerHTML = W.list.map((b) => {
+      const pct = Math.max(0, Math.min(100, (b.val / b.goal) * 100));
+      return '<li class="' + (b.got ? "got" : b.done ? "ready" : "") + '"><div class="bt"><b>' + esc(b.t) + "</b><small>" + fmtN(Math.min(b.val, b.goal)) + " / " + fmtN(b.goal) + "</small></div>" +
+        '<div class="bbar"><i style="width:' + pct.toFixed(1) + '%"></i></div>' +
+        (b.got ? '<span class="bgot">✓ ' + COIN + "50</span>" : b.done ? '<button class="btn small" data-bounty="' + b.id + '">' + COIN + "50 abholen</button>" : '<span class="brw">' + COIN + "50</span>") + "</li>";
+    }).join("");
+    $("bountyNote").textContent = W.all ? "Alle drei geschafft. Der Bonus-Schlüssel liegt im Inventar. Montag gibt es neue Kopfgelder." : "Alle drei abgeholt: zusätzlich ein Gate-Schlüssel. Jeden Montag gibt es neue.";
+  }
+  function bountyDot() {
+    const b = document.querySelector('.tabs .tab[data-tab="week"]');
+    if (!b) return;
+    let n = 0;
+    try { n = bountyWeek().list.filter((x) => x.done && !x.got).length; } catch (e) { n = 0; }
+    b.classList.toggle("hasdot", n > 0);
+  }
+  if ($("bountyList")) $("bountyList").addEventListener("click", (ev) => {
+    const bt = ev.target.closest("[data-bounty]");
+    if (!bt) return;
+    const W = bountyWeek(), b = W.list.find((x) => x.id === bt.dataset.bounty);
+    if (!b || !b.done || b.got) return;
+    const E = eco(); E.bounty[W.key] = E.bounty[W.key] || {}; E.bounty[W.key][b.id] = todayKey();
+    goldAdd(50, "Kopfgeld: " + b.t, false);
+    hap("pr");
+    const W2 = bountyWeek();
+    if (!W2.all && W2.list.every((x) => x.got)) {
+      E.bounty[W.key]._all = todayKey();
+      const G = gMeta(); G.inv.key = (G.inv.key || 0) + 1;
+      saveLocal();
+      sysShow("Alle Kopfgelder erfüllt", [{ t: "Kopfgelder", v: "3 von 3" }, { t: "Bonus", v: ITEMS.key.n }], null, "Eine starke Woche. Montag hängen neue Steckbriefe aus.");
+    }
+    renderBounties(); bountyDot(); renderInv();
   });
 
   const deepHandled = handleDeepLink();
