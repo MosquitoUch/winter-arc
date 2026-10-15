@@ -1518,6 +1518,29 @@ main[data-dir="l"] > section:not([hidden]) { animation: viewInL 260ms cubic-bezi
 svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
 .sysbadge svg.clsic.big { width: 64px; height: 64px; }
 .sysbadge svg.clsic.big[viewBox="0 0 64 80"] { width: 70px; height: 88px; }
+/* v21: Events (Nacht der Schatten, Finale) */
+.raidsig { color: #FF4D5E; }
+.systag i { font-style: normal; }
+.raidcard.ev-halloween { border-color: rgba(255, 140, 40, .6); background: radial-gradient(120% 90% at 90% 0%, rgba(140, 50, 220, .16), transparent 60%), linear-gradient(180deg, rgba(255, 120, 20, .1), rgba(14, 2, 22, .45)); box-shadow: 0 0 26px rgba(255, 120, 20, .14); }
+.raidcard.ev-halloween .systag { border-color: rgba(255, 160, 70, .75); color: #FFB066; }
+.raidcard.ev-halloween .systag span { border-color: #FFB066; }
+.raidcard.ev-halloween .raidbar { border-color: rgba(255, 150, 60, .45); }
+.raidcard.ev-halloween .raidbar i { background: linear-gradient(90deg, #6A1FB0, #FF7A1A 65%, #FFC07A); box-shadow: 0 0 12px rgba(255, 122, 26, .6); }
+.raidcard.ev-halloween .raidsig { filter: drop-shadow(0 0 12px rgba(255, 122, 26, .75)); }
+.raidcard.ev-finale { border-color: rgba(190, 230, 255, .65); background: radial-gradient(120% 90% at 90% 0%, rgba(255, 214, 120, .12), transparent 60%), linear-gradient(180deg, rgba(160, 220, 255, .1), rgba(0, 8, 20, .45)); box-shadow: 0 0 30px rgba(160, 220, 255, .16); }
+.raidcard.ev-finale .systag { border-color: rgba(210, 240, 255, .75); color: #DDF4FF; }
+.raidcard.ev-finale .systag span { border-color: #DDF4FF; }
+.raidcard.ev-finale .raidbar { border-color: rgba(190, 230, 255, .45); }
+.raidcard.ev-finale .raidbar i { background: linear-gradient(90deg, #2D6FB8, #9FD8FF 60%, #FFE7A3); box-shadow: 0 0 14px rgba(159, 216, 255, .6); }
+.raidcard.ev-finale .raidsig { filter: drop-shadow(0 0 12px rgba(190, 230, 255, .75)); }
+.raidcard.won .raidsig { filter: grayscale(1) opacity(.4); }
+.raidnext { margin: 10px 0 0; padding-top: 9px; border-top: 1px dashed rgba(255, 255, 255, .12); font-size: 12.5px; color: var(--mute); }
+.raidnext b { color: #FFB066; font-weight: 700; }
+.raidnext.fin b { color: #BFE9FF; }
+.chestcard.spooky { border-color: rgba(255, 140, 40, .75); background: radial-gradient(100% 120% at 0% 50%, rgba(255, 122, 26, .16), transparent 65%), linear-gradient(180deg, rgba(120, 40, 200, .12), rgba(0, 0, 0, .35)); box-shadow: 0 0 22px rgba(255, 122, 26, .22); }
+.chestcard.spooky .btn { border-color: rgba(255, 160, 70, .8); color: #FFB066; }
+.chestcard.spooky #chestTitle { color: #FFB066; }
+.hidcard.spooky { border-color: rgba(255, 140, 40, .7); box-shadow: 0 0 20px rgba(255, 122, 26, .2); }
 </style>
 </head>
 <body>
@@ -1656,12 +1679,13 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
           </div>
 
           <div class="raidcard" id="raidCard" hidden>
-            <div class="qhead"><span class="systag sm"><span>!</span>Wochen-Raid</span><span class="qstate" id="raidToday"></span></div>
-            <svg class="raidsig" viewBox="0 0 64 64" aria-hidden="true"><path d="M8 6l10 12 4-8 10 6 10-6 4 8 10-12-2 22c0 14-10 26-22 32C20 54 10 42 10 28z" fill="rgba(255,60,80,.14)" stroke="#FF4D5E" stroke-width="2" stroke-linejoin="round"/><path d="M16 32c5-7 11-10 16-10s11 3 16 10c-5 7-11 10-16 10s-11-3-16-10z" fill="#1A0306" stroke="#FF8A95" stroke-width="1.6"/><path d="M32 24c2.4 3 2.4 13 0 16-2.4-3-2.4-13 0-16z" fill="#FF4D5E"/></svg>
+            <div class="qhead"><span class="systag sm"><span>!</span><i id="raidTag">Wochen-Raid</i></span><span class="qstate" id="raidToday"></span></div>
+            <svg class="raidsig" id="raidSig" viewBox="0 0 64 64" aria-hidden="true"><path d="M8 6l10 12 4-8 10 6 10-6 4 8 10-12-2 22c0 14-10 26-22 32C20 54 10 42 10 28z" fill="rgba(255,60,80,.14)" stroke="#FF4D5E" stroke-width="2" stroke-linejoin="round"/><path d="M16 32c5-7 11-10 16-10s11 3 16 10c-5 7-11 10-16 10s-11-3-16-10z" fill="#1A0306" stroke="#FF8A95" stroke-width="1.6"/><path d="M32 24c2.4 3 2.4 13 0 16-2.4-3-2.4-13 0-16z" fill="#FF4D5E"/></svg>
             <h3 id="raidName"></h3>
             <p class="raiddesc" id="raidDesc"></p>
             <div class="raidbar" id="raidBar" role="presentation"><i></i></div>
             <p class="raidnums" id="raidNums"></p>
+            <p class="raidnext" id="raidNext" hidden></p>
           </div>
 
           <div class="goalcard" id="goalCard" data-coll="goal">
@@ -8013,6 +8037,9 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
     { k: "prisma", n: "Prisma", a: "#FF9BE8", b: "#9FF7EA", lock: "pass", line: "Stufe 30. Mythos." },
     { k: "schatten", n: "Schattenmonarch", a: "#8B6CFF", b: "#E3DBFF", lock: "shop", line: "Die Armee folgt deiner Farbe." },
     { k: "blutgold", n: "Blutgold", a: "#D4213D", b: "#FFD27A", lock: "shop", line: "Bezahlt mit Schweiß." },
+    { k: "kuerbis", n: "Kürbis", a: "#FF7A1A", b: "#D9C2FF", lock: "event", how: "beim Event Nacht der Schatten um Halloween", line: "Die Laterne brennt nur für dich." },
+    { k: "tanne", n: "Tannenzauber", a: "#2FBF71", b: "#FFE7A3", lock: "event", how: "im Adventskalender am 24. Dezember", line: "Still, hell und voller Geduld." },
+    { k: "winterkrone", n: "Winterkrone", a: "#9FD8FF", b: "#FFE7A3", lock: "event", how: "beim Finale deines Arcs", line: "Der Winter hat einen neuen König." },
     { k: "eigen", n: "Eigene", custom: true }
   ];
   // ---- Farb-Generator: aus zwei Farben alle Töne berechnen ----
@@ -8094,7 +8121,7 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
       else if (a.a) sw = '<i style="background:linear-gradient(135deg,' + a.a + " 55%," + a.b + ' 55%)"></i>';
       else sw = '<i style="background:' + a.c + '"></i>';
       const lk = a.lock && !accOwned(a.k);
-      return '<button class="accent-btn' + (lk ? " locked" : "") + '" data-k="' + a.k + '" aria-pressed="' + (a.k === cur ? "true" : "false") + '">' + sw + a.n + (lk ? '<small>' + (a.lock === "pass" ? "Saison-Pass" : "Händler") + "</small>" : "") + "</button>";
+      return '<button class="accent-btn' + (lk ? " locked" : "") + '" data-k="' + a.k + '" aria-pressed="' + (a.k === cur ? "true" : "false") + '">' + sw + a.n + (lk ? '<small>' + (a.lock === "pass" ? "Saison-Pass" : a.lock === "event" ? "Event" : "Händler") + "</small>" : "") + "</button>";
     }).join("");
     const isC = cur === "eigen";
     $("accCustom").hidden = !isC;
@@ -8137,7 +8164,7 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
     const b = ev.target.closest(".accent-btn");
     if (!b) return;
     const lockA = ACCENTS.find((x) => x.k === b.dataset.k);
-    if (lockA && lockA.lock && !accOwned(lockA.k)) { toast(lockA.lock === "pass" ? "„" + lockA.n + "“ schaltest du im Saison-Pass frei (Fortschritt)." : "„" + lockA.n + "“ gibt es beim Händler (Fortschritt)."); return; }
+    if (lockA && lockA.lock && !accOwned(lockA.k)) { toast(lockA.lock === "pass" ? "„" + lockA.n + "“ schaltest du im Saison-Pass frei (Fortschritt)." : lockA.lock === "event" ? "„" + lockA.n + "“ gibt es nur " + lockA.how + "." : "„" + lockA.n + "“ gibt es beim Händler (Fortschritt)."); return; }
     S().accent = b.dataset.k;
     const picked = ACCENTS.find((x) => x.k === b.dataset.k);
     if (picked && picked.line) toast(picked.line);
@@ -9359,7 +9386,7 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
     xp += Object.keys(mm.bosses || {}).filter((k) => mm.bosses[k].won).length * 200;
     xp += Object.keys(mm.ach || {}).length * 25;
     xp += Object.keys((mm.hid && mm.hid.done) || {}).length * 30;
-    xp += Object.keys(mm.raids || {}).filter((k) => mm.raids[k] && mm.raids[k].won).length * 150;
+    Object.keys(mm.raids || {}).forEach((k) => { const rr = mm.raids[k]; if (rr && rr.won) xp += rr.ev === "finale" ? 400 : rr.ev ? 250 : 150; });
     ((mm.gates && mm.gates.log) || []).forEach((g) => { if (g.res === "won") xp += g.xp || 0; });
     xp += ((mm.shadows && mm.shadows.list) || []).length * (cl && cl.id === "necro" ? 30 : 15);
     SKILLS.forEach((sk) => { const l = Math.min(sk.levels.length, ((state.skills || {})[sk.key] || {}).level || 0); xp += l * 30 + (l >= sk.levels.length ? 70 : 0); });
@@ -11249,6 +11276,8 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
     if (!card) return;
     const H = hidMeta();
     card.hidden = !H.cur;
+    card.classList.toggle("spooky", !!(H.cur && H.cur.spooky));
+    if ($("hidTitle")) $("hidTitle").textContent = H.cur && H.cur.title ? H.cur.title : "Das System hat dir etwas zugeflüstert";
     if (H.cur) $("hidText").textContent = H.cur.t + ". Belohnung: " + ITEMS[H.cur.rw].n + " und 30 XP.";
   }
   if ($("hidCard")) {
@@ -12390,6 +12419,23 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
     { n: "Frosthexe Ysra", d: "Sie lacht über jede ausgelassene Einheit." },
     { n: "Polartyrann", d: "Der letzte Wächter vor dem Frühling." }
   ];
+  // ---- v21: Event-Bosse (Nacht der Schatten um Halloween, Finale am Ende des Arcs) ----
+  const EV_BOSS = {
+    halloween: { n: "Kürbisfürst Morgrul", d: "Er erscheint nur in der Nacht der Schatten. Seine Laterne brennt, solange du rastest.", ev: "halloween", evn: "Nacht der Schatten", mul: 1.15, gold: 200, xp: 250, t: "Kürbisjäger", acc: "kuerbis" },
+    finale: { n: "Der Winterkönig", d: "Der letzte Wächter deines Arcs. Alles, was du in diesem Winter aufgebaut hast, gegen ihn.", ev: "finale", evn: "Finale des Winter Arcs", mul: 1.2, gold: 300, xp: 400, t: "Bezwinger des Winters", acc: "winterkrone" }
+  };
+  const RAID_SIG = {
+    def: '<path d="M8 6l10 12 4-8 10 6 10-6 4 8 10-12-2 22c0 14-10 26-22 32C20 54 10 42 10 28z" fill="rgba(255,60,80,.14)" stroke="#FF4D5E" stroke-width="2" stroke-linejoin="round"/><path d="M16 32c5-7 11-10 16-10s11 3 16 10c-5 7-11 10-16 10s-11-3-16-10z" fill="#1A0306" stroke="#FF8A95" stroke-width="1.6"/><path d="M32 24c2.4 3 2.4 13 0 16-2.4-3-2.4-13 0-16z" fill="#FF4D5E"/>',
+    halloween: '<path d="M32 15c-1-5 1-9 5-11" fill="none" stroke="#86C25A" stroke-width="3" stroke-linecap="round"/><path d="M32 16c-6-4-17-3-22 6-5 9-3 24 6 31 5 4 11 4 16 2 5 2 11 2 16-2 9-7 11-22 6-31-5-9-16-10-22-6z" fill="rgba(255,122,26,.22)" stroke="#FF7A1A" stroke-width="2" stroke-linejoin="round"/><path d="M32 17c-5 8-5 29 0 38M32 17c5 8 5 29 0 38" fill="none" stroke="#FF7A1A" stroke-width="1.3" opacity=".55"/><path d="M17 31l8-5 1 9zM47 31l-8-5-1 9z" fill="#FFD27A"/><path d="M17 41c4 6 9 8 15 8s11-2 15-8l-4 1-3 3-3-3-5 3-5-3-3 3-3-3z" fill="#FFD27A"/>',
+    finale: '<path d="M10 44 8 18l12 10 12-18 12 18 12-10-2 26z" fill="rgba(170,225,255,.16)" stroke="#BFE9FF" stroke-width="2" stroke-linejoin="round"/><path d="M10 44h44v8H10z" fill="rgba(255,210,122,.22)" stroke="#FFD27A" stroke-width="1.6" stroke-linejoin="round"/><path d="M32 23v14M26 26.5l12 7M38 26.5l-12 7" stroke="#FFFFFF" stroke-width="1.8" stroke-linecap="round"/><circle cx="20" cy="48" r="2" fill="#BFE9FF"/><circle cx="32" cy="48" r="2.4" fill="#FFE7A3"/><circle cx="44" cy="48" r="2" fill="#BFE9FF"/>'
+  };
+  const finaleWeek = () => startOfWeek(addDays(arcLastDate(), -3));
+  function raidEvent(ws) {
+    const k = dateKey(ws);
+    if (k === dateKey(finaleWeek())) return EV_BOSS.finale;
+    if (k === dateKey(startOfWeek(new Date(ws.getFullYear(), 9, 31)))) return EV_BOSS.halloween;
+    return null;
+  }
   function raidWeek(d) { const ws = startOfWeek(d || today()); return { ws, key: dateKey(ws) }; }
   function dayDamage(dk) {
     const l = state.logs[dk];
@@ -12427,12 +12473,13 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
     const m = rankMeta();
     m.raids = m.raids || {};
     const idx = (Math.max(1, arcWeek(ws) || 1) - 1) % RAID_BOSSES.length;
-    const boss = RAID_BOSSES[idx];
+    const evb = raidEvent(ws);
+    const boss = evb || RAID_BOSSES[idx];
     let dmg = 0, todayD = 0;
     for (let i = 0; i < 7; i++) { const dk = dateKey(addDays(ws, i)); const d = dayDamage(dk); dmg += d; if (dk === todayKey()) todayD = d; }
     const stored = m.raids[key];
-    const hp = stored && stored.hp && (stored.won || dmg > 0) ? stored.hp : raidHP(ws);
-    return { key, ws, boss, hp, dmg, todayD, won: !!(m.raids[key] && m.raids[key].won), left: 7 - daysBetween(ws, startOfDay(today())) };
+    const hp = stored && stored.hp && (stored.won || dmg > 0) ? stored.hp : Math.round(raidHP(ws) * (boss.mul || 1));
+    return { key, ws, boss, ev: evb ? evb.ev : null, hp, dmg, todayD, won: !!(m.raids[key] && m.raids[key].won), left: 7 - daysBetween(ws, startOfDay(today())) };
   }
   function renderRaid() {
     const card = $("raidCard");
@@ -12440,8 +12487,28 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
     let r;
     try { r = raidState(); } catch (e) { card.hidden = true; return; }
     const m = rankMeta();
-    if (!m.raids[r.key] || m.raids[r.key].hp !== r.hp) { m.raids[r.key] = Object.assign(m.raids[r.key] || {}, { hp: r.hp, n: r.boss.n }); saveLocal(); }
+    if (!m.raids[r.key] || m.raids[r.key].hp !== r.hp) { m.raids[r.key] = Object.assign(m.raids[r.key] || {}, { hp: r.hp, n: r.boss.n }, r.ev ? { ev: r.ev } : {}); saveLocal(); }
     card.hidden = false;
+    card.classList.toggle("ev-halloween", r.ev === "halloween");
+    card.classList.toggle("ev-finale", r.ev === "finale");
+    const sig = $("raidSig"), sk = r.ev || "def";
+    if (sig && sig.dataset.k !== sk) { sig.innerHTML = RAID_SIG[sk]; sig.dataset.k = sk; }
+    if ($("raidTag")) $("raidTag").textContent = r.ev === "finale" ? "Finale" : r.ev ? "Event-Raid" : "Wochen-Raid";
+    // Vorschau: nächste Woche ein Event-Boss
+    const nx = r.ev ? null : raidEvent(addDays(r.ws, 7)), rn = $("raidNext");
+    if (rn) {
+      rn.hidden = !nx;
+      if (nx) { rn.className = "raidnext" + (nx.ev === "finale" ? " fin" : ""); rn.innerHTML = "Ab Montag: <b>" + esc(nx.evn) + "</b>. " + esc(nx.n) + " bringt eigene Beute: Titel „" + esc(nx.t) + "“ und eine Farbe, die es nur dort gibt."; }
+    }
+    // Einmaliges Fenster zum Start eines Events
+    if (r.ev && !r.won) {
+      m.evSeen = m.evSeen || {};
+      if (!m.evSeen[r.key]) {
+        m.evSeen[r.key] = todayKey(); saveLocal();
+        const acc = ACCENTS.find((a) => a.k === r.boss.acc);
+        sysShow(r.ev === "finale" ? "Das Finale beginnt" : "Event: " + r.boss.evn, [{ t: "Boss", v: r.boss.n }, { t: "Lebenspunkte", v: fmtG(r.hp) }, { t: "Beute", v: "Titel „" + r.boss.t + "“" }, { t: "Farbe", v: acc ? acc.n : r.boss.acc }, { t: "Gold", v: "+" + r.boss.gold }, { t: "Endet", v: "Sonntag, 23:59" }], null, r.ev === "finale" ? "Die letzte Woche deines Arcs. Zeig ihm, wer du nach diesem Winter bist." : "Nur diese Woche. Jeder Satz und jeder Kilometer ist Schaden.", { hap: "gate" });
+      }
+    }
     // Schadenszahl, wenn seit dem letzten Blick Schaden dazukam
     const pv = renderRaid.last;
     renderRaid.last = { key: r.key, dmg: r.dmg };
@@ -12464,10 +12531,17 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
       m.raids[r.key].won = todayKey();
       const loot = ["elixir", "rune", "key"][hashStr("raid" + r.key) % 3];
       const G = gMeta(); G.inv[loot] = (G.inv[loot] || 0) + 1;
-      goldAdd(120, "Raid-Boss " + r.boss.n, true);
+      const gold = r.boss.gold || 120, lines = [{ t: r.boss.n, v: "0 % HP" }, { t: "Schaden", v: fmtG(r.dmg) }, { t: "Belohnung", v: "+" + (r.boss.xp || 150) + " XP" }, { t: "Gold", v: "+" + gold }, { t: "Beute", v: ITEMS[loot].n }];
+      if (r.ev) {
+        const E = eco();
+        if (r.boss.t) { E.titles[r.boss.t] = E.titles[r.boss.t] || todayKey(); lines.push({ t: "Titel", v: "„" + r.boss.t + "“" }); }
+        if (r.boss.acc) { E.acc[r.boss.acc] = 1; const a = ACCENTS.find((x) => x.k === r.boss.acc); lines.push({ t: "Farbe", v: a ? a.n : r.boss.acc }); }
+        m.raids[r.key].ev = r.ev;
+      }
+      goldAdd(gold, "Raid-Boss " + r.boss.n, true);
       saveLocal(); hap("pr");
-      sysShow("Raid-Boss besiegt", [{ t: r.boss.n, v: "0 % HP" }, { t: "Schaden", v: fmtG(r.dmg) }, { t: "Belohnung", v: "+150 XP" }, { t: "Gold", v: "+120" }, { t: "Beute", v: ITEMS[loot].n }], null, "Der Wochen-Raid ist geschafft. Montag kommt der nächste.");
-      renderInv(); checkRanks();
+      sysShow(r.ev === "finale" ? "Der Winterkönig ist gefallen" : r.ev ? "Event-Boss besiegt" : "Raid-Boss besiegt", lines, null, r.ev === "finale" ? "Dein Arc hat seinen letzten Boss verloren. Den Titel trägst du ab jetzt, wann immer du willst." : r.ev ? "Titel und Farbe gehören dir. Du findest sie unter Fortschritt und im Plan." : "Der Wochen-Raid ist geschafft. Montag kommt der nächste.");
+      renderInv(); checkRanks(); try { renderTitleChips(); } catch (e) { /* ignore */ }
     }
   }
 
@@ -12614,7 +12688,8 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
     const streak = C.last === y ? (C.streak || 0) + 1 : 1;
     const gold = Math.min(30, 10 + (streak - 1) * 2) + (hashStr("chest" + tk) % 11);
     const item = streak % 7 === 0 ? ["elixir", "rune", "key"][(streak / 7 - 1) % 3] : null;
-    return { done: false, streak, gold: gold + (item ? 25 : 0), item };
+    const t = today(), spooky = t.getMonth() === 9 && t.getDate() === 31;
+    return { done: false, streak, gold: gold + (item ? 25 : 0), item, spooky };
   }
   function renderChest() {
     const card = $("chestCard");
@@ -12623,21 +12698,32 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
     const c = chestInfo();
     card.hidden = c.done;
     if (c.done) return;
-    $("chestTitle").textContent = c.streak % 7 === 0 ? "Große Truhe" : "Tägliche Truhe";
-    $("chestSub").textContent = "Login-Serie: " + c.streak + (c.streak === 1 ? " Tag" : " Tage") + (c.streak % 7 === 0 ? " · mit Item" : " · alle 7 Tage eine große Truhe");
-    card.classList.toggle("big", c.streak % 7 === 0);
+    $("chestTitle").textContent = c.spooky ? "Süßes oder Saures" : c.streak % 7 === 0 ? "Große Truhe" : "Tägliche Truhe";
+    $("chestSub").textContent = c.spooky ? "Nur heute. Öffnen auf eigene Gefahr. Login-Serie: " + c.streak : "Login-Serie: " + c.streak + (c.streak === 1 ? " Tag" : " Tage") + (c.streak % 7 === 0 ? " · mit Item" : " · alle 7 Tage eine große Truhe");
+    card.classList.toggle("big", c.streak % 7 === 0 && !c.spooky);
+    card.classList.toggle("spooky", !!c.spooky);
   }
   if ($("chestCard")) $("chestOpen").addEventListener("click", () => {
     const c = chestInfo(), card = $("chestCard");
     if (c.done) return;
-    const E = eco();
-    E.chest = { last: todayKey(), streak: c.streak };
+    const E = eco(), tk = todayKey();
+    E.chest = { last: tk, streak: c.streak };
     if (c.item) { const G = gMeta(); G.inv[c.item] = (G.inv[c.item] || 0) + 1; }
-    goldAdd(c.gold, "Tägliche Truhe (Serie " + c.streak + ")", false);
+    // Halloween: Süßes oder Saures
+    let trick = false, treat = false;
+    if (c.spooky) {
+      const H = hidMeta();
+      trick = hashStr("sos" + tk) % 2 === 1 && !H.cur && !H.done[tk];
+      treat = !trick;
+      if (treat) { c.gold *= 2; const G = gMeta(); G.inv.rune = (G.inv.rune || 0) + 1; }
+      else { H.cur = { d: tk, t: "31 Kniebeugen und 31 Sekunden Unterarmstütz, ohne abzusetzen", exp: endOfDay(Date.now()), rw: "key", title: "Saures!", spooky: 1 }; H.seen[tk] = 1; saveLocal(); }
+    }
+    goldAdd(c.gold, c.spooky ? "Süßes oder Saures" : "Tägliche Truhe (Serie " + c.streak + ")", false);
     hap("pr"); buzz([15, 30, 15, 30, 40]);
     card.classList.add("opening");
-    $("chestTitle").textContent = "+" + c.gold + " Gold" + (c.item ? " und " + ITEMS[c.item].n : "");
-    $("chestSub").textContent = "Morgen wartet die nächste Truhe.";
+    $("chestTitle").textContent = treat ? "Süßes! +" + c.gold + " Gold und " + ITEMS.rune.n : trick ? "Saures! +" + c.gold + " Gold und eine Aufgabe" : "+" + c.gold + " Gold" + (c.item ? " und " + ITEMS[c.item].n : "");
+    $("chestSub").textContent = trick ? "Schaffst du sie heute, gibt es einen Gate-Schlüssel." : "Morgen wartet die nächste Truhe.";
+    if (trick) setTimeout(() => { try { renderHid(); } catch (e) { /* ignore */ } }, 3200);
     $("chestOpen").hidden = true;
     setTimeout(() => { card.classList.add("gone"); }, 2600);
     setTimeout(() => { card.classList.remove("opening", "gone"); $("chestOpen").hidden = false; card.hidden = true; renderInv(); }, 3100);
