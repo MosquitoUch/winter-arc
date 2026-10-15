@@ -13398,7 +13398,7 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
 
 
   // ================= v20: Einmalig „Neu im Winter Arc“ nach dem Update =================
-  const APP_FEATURES_VER = "v20";
+  const APP_FEATURES_VER = "v21";
   function whatsNew() {
     let seen = "";
     try { seen = localStorage.getItem("winterarc.seenVer") || ""; } catch (e) { return; }
@@ -13406,11 +13406,11 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
     try { localStorage.setItem("winterarc.seenVer", APP_FEATURES_VER); } catch (e) { /* ignore */ }
     if (!Object.keys(state.logs || {}).length || !window.__waGame) return;
     sysShow("Neu im Winter Arc", [
-      { t: "Saison-Pass mit 30 Stufen", v: "Fortschritt" },
-      { t: "Gold und Händler", v: "Fortschritt" },
-      { t: "Wochen-Raid und Tägliche Truhe", v: "Heute" },
-      { t: "Kopfgelder der Woche", v: "Woche" },
-      { t: "Skill-Baum und neue Pfade", v: "Fortschritt" },
+      { t: "Saison-Pass, Gold und Händler", v: "Fortschritt" },
+      { t: "Raid, Truhe, Perfekter Tag", v: "Heute" },
+      { t: "Kopfgelder und Wochenduell", v: "Woche" },
+      { t: "Skill-Baum und Bestiarium", v: "Fortschritt" },
+      { t: "Halloween, Advent, Finale", v: "Events ab 26.10." },
       { t: "Heute anpassen", v: "unten auf Heute" },
       { t: "Plan und Einstellungen", v: "Zahnrad oben" }
     ], null, "Dein bisheriger Arc zählt mit: Startkapital in Gold und Saison-Stufen für die Tage, die schon hinter dir liegen. Hol dir deine Belohnungen ab.", { action: { label: "Zum Saison-Pass", fn: () => { sysClose(); showTab("progress"); setTimeout(() => { const b = $("passBlock"); if (b) b.scrollIntoView({ block: "start", behavior: "smooth" }); }, 200); } } });
