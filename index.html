@@ -1346,6 +1346,28 @@ main[data-dir="l"] > section:not([hidden]) { animation: viewInL 260ms cubic-bezi
 .arcstats div { display: grid; gap: 2px; padding: 10px 8px; border-radius: 12px; border: 1px solid var(--line); background: rgba(255, 255, 255, .02); text-align: center; }
 .arcstats b { font-family: var(--display); font-size: 24px; color: var(--ink); font-variant-numeric: tabular-nums; }
 .arcstats span { font-size: 11px; color: var(--mute); }
+.passmini { display: flex; align-items: center; gap: 10px; margin: 8px 0 0; padding: 6px 12px; min-height: 36px; border-radius: 999px; border: 1px solid var(--line-2); background: rgba(0, 0, 0, .3); color: var(--ink-2); font: inherit; font-size: 13px; font-weight: 600; max-width: 100%; }
+.passmini .pmt { white-space: nowrap; color: var(--ink); font-family: var(--display); font-size: 15px; letter-spacing: .02em; }
+.passmini i { flex: 1; min-width: 50px; width: 90px; height: 6px; border-radius: 999px; background: linear-gradient(90deg, var(--ice) var(--p), rgba(255, 255, 255, .1) var(--p)); }
+.passmini .pmg { display: inline-flex; align-items: center; color: #FFD25C; font-family: var(--display); font-size: 15px; white-space: nowrap; }
+.passmini .pmc { color: #FFD25C; white-space: nowrap; }
+.passmini.ready { border-color: rgba(255, 210, 92, .7); box-shadow: 0 0 14px rgba(255, 194, 61, .25); }
+.chestcard { display: grid; grid-template-columns: 64px minmax(0, 1fr) auto; align-items: center; gap: 12px; margin: 0 0 20px; padding: 12px 14px; border-radius: 16px; border: 1px solid rgba(255, 210, 92, .45); background: linear-gradient(180deg, rgba(255, 194, 61, .08), rgba(0, 0, 0, .3)); transition: opacity .45s, transform .45s; }
+.chestcard.big { border-color: rgba(255, 210, 92, .85); box-shadow: 0 0 22px rgba(255, 194, 61, .25); }
+.chestcard .chest { width: 64px; height: 56px; overflow: visible; }
+.chestcard .chlid { transform-origin: 8px 26px; transition: transform .5s cubic-bezier(.3, 1.6, .5, 1); }
+.chestcard .chburst { opacity: 0; transform-origin: 32px 26px; transform: scale(.4); transition: opacity .4s, transform .6s; }
+.chestcard:not(.opening) .chest { animation: chestWiggle 3.2s ease-in-out infinite; }
+.chestcard.opening .chlid { transform: rotate(-38deg) translate(-2px, -6px); }
+.chestcard.opening .chburst { opacity: 1; transform: scale(1.6); }
+.chestcard.gone { opacity: 0; transform: translateY(-8px) scale(.98); }
+.chtext { display: grid; gap: 2px; min-width: 0; }
+.chtext b { font-family: var(--display); font-size: 20px; color: #FFE08A; }
+.chtext small { color: var(--mute); font-size: 12.5px; }
+.chestcard .btn { border-color: rgba(255, 210, 92, .7); color: #FFE08A; }
+@keyframes chestWiggle { 0%, 82%, 100% { transform: rotate(0); } 86% { transform: rotate(-6deg); } 90% { transform: rotate(5deg); } 94% { transform: rotate(-3deg); } }
+@media (max-width: 919px) { #chestCard { order: 2; } }
+@media (prefers-reduced-motion: reduce) { .chestcard .chest { animation: none !important; } }
 .raiddesc { margin: 0 0 10px; color: var(--mute); font-size: 13px; }
 .raidcard .qhead { flex-wrap: wrap; row-gap: 6px; }
 .raidcard .qstate { font-size: 14px; }
@@ -1533,6 +1555,7 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
             <h1 class="dayname" id="dayname"></h1>
             <p class="datestr" id="datestr"></p>
             <button class="rankchip" id="rankChip" hidden aria-label="Zu deinem Rang"></button>
+            <button class="passmini" id="passMini" hidden aria-label="Zum Saison-Pass"></button>
             <p class="sessname" id="sessname"></p>
             <p class="when" id="when"></p>
             <p class="deload" id="deload" hidden><b>Deload-Woche.</b> Halbe Sätze, gleiche Technik, nicht ans Limit. Jetzt holt dein Körper auf.</p>
@@ -1580,6 +1603,18 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
             <ul id="dlWhy"></ul>
             <p>Eine Woche mit halben Sätzen und ohne Limit. Danach bist du stärker als vorher.</p>
             <div class="row"><button class="btn small primary" id="dlYes">Deload diese Woche</button><button class="btn small" id="dlNo">Weiter wie geplant</button></div>
+          </div>
+
+          <div class="chestcard" id="chestCard" hidden>
+            <svg class="chest" viewBox="0 0 64 56" aria-hidden="true">
+              <defs><linearGradient id="chW" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8A5A2B"/><stop offset="1" stop-color="#4A2B10"/></linearGradient><linearGradient id="chG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFF0B0"/><stop offset=".5" stop-color="#FFC23D"/><stop offset="1" stop-color="#B26A0C"/></linearGradient></defs>
+              <g class="chburst"><circle cx="32" cy="26" r="20" fill="rgba(255,210,92,.35)"/></g>
+              <rect x="8" y="26" width="48" height="26" rx="4" fill="url(#chW)"/>
+              <rect x="8" y="34" width="48" height="4" fill="url(#chG)"/><rect x="14" y="26" width="5" height="26" fill="url(#chG)"/><rect x="45" y="26" width="5" height="26" fill="url(#chG)"/>
+              <g class="chlid"><path d="M8 26c0-11 8-17 24-17s24 6 24 17z" fill="url(#chW)"/><path d="M14 26c0-9 5-14 5-14h-.5M45 12s5 5 5 14" stroke="#FFC23D" stroke-width="5" fill="none"/><rect x="27" y="20" width="10" height="11" rx="2" fill="url(#chG)"/><circle cx="32" cy="25" r="1.8" fill="#4A2B10"/></g>
+            </svg>
+            <div class="chtext"><b id="chestTitle">Tägliche Truhe</b><small id="chestSub"></small></div>
+            <button class="btn small" id="chestOpen">Öffnen</button>
           </div>
 
           <div class="questcard" id="questCard">
@@ -3567,7 +3602,7 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
     renderHabits(dk);
     renderProtein(dk);
     renderTodayExtras(dk);
-    try { renderRaid(); passDot(); } catch (e) { /* ignore */ }
+    try { renderRaid(); passDot(); renderChest(); } catch (e) { /* ignore */ }
   }
 
   function placeholderFor(e) {
@@ -9636,7 +9671,14 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
     { id: "brk1", n: "Ausbruch gestoppt", d: "Einen Dungeon Break geräumt", title: "Der Ausbruchsstopper" },
     { id: "hid5", n: "Auserwählt", d: "5 verborgene Quests erfüllt", title: "Der Auserwählte" },
     { id: "skill1", n: "Erste Technik", d: "Eine Skill-Stufe geschafft" },
-    { id: "master1", n: "Meister einer Kunst", d: "Einen Skill komplett gemeistert", title: "Der Meister" }
+    { id: "master1", n: "Meister einer Kunst", d: "Einen Skill komplett gemeistert", title: "Der Meister" },
+    { id: "raid1", n: "Raid-Bezwinger", d: "Ersten Wochen-Raid besiegt" },
+    { id: "raid4", n: "Vier Wochen Krieg", d: "4 Wochen-Raids besiegt", title: "Der Raid-Herrscher" },
+    { id: "pass10", n: "Saison-Veteran", d: "Saison-Pass Stufe 10 erreicht" },
+    { id: "pass30", n: "Bis zum Ende", d: "Saison-Pass Stufe 30 erreicht", title: "Legende des Winters" },
+    { id: "shop1", n: "Kundschaft", d: "Erster Einkauf beim Händler" },
+    { id: "gold1k", n: "Goldschatz", d: "Insgesamt 1.000 Gold verdient", title: "Der Goldene" },
+    { id: "tree20", n: "Tiefe Wurzeln", d: "20 Knoten im Skill-Baum freigeschaltet", title: "Der Vielseitige" }
   ];
   function achStats(R, X) {
     let sets = 0, km = 0, wMax = 0;
@@ -9658,7 +9700,10 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
       gWon: ((m.gates && m.gates.log) || []).filter((g) => g.res === "won"),
       shadows: ((m.shadows && m.shadows.list) || []).length, cls: !!(m.cls && m.cls.id), rival: rivalWinsTotal(),
       hid: Object.keys((m.hid && m.hid.done) || {}).length,
-      skLv: SKILLS.reduce((a, sk) => a + (((state.skills || {})[sk.key] || {}).level || 0), 0), skMax: SKILLS.some((sk) => (((state.skills || {})[sk.key] || {}).level || 0) >= sk.levels.length)
+      skLv: SKILLS.reduce((a, sk) => a + (((state.skills || {})[sk.key] || {}).level || 0), 0), skMax: SKILLS.some((sk) => (((state.skills || {})[sk.key] || {}).level || 0) >= sk.levels.length),
+      raids: Object.keys(m.raids || {}).filter((k) => m.raids[k] && m.raids[k].won).length,
+      passLv: (() => { try { return passState().lvl; } catch (e) { return 0; } })(),
+      buys: ((m.eco || {}).buys) || 0, earned: ((m.eco || {}).earned) || 0
     };
   }
   const ACH_TEST = {
@@ -9671,7 +9716,9 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
     gate1: (s) => s.gWon.length >= 1, gate10: (s) => s.gWon.length >= 10, gateS: (s) => s.gWon.some((g) => g.rank >= 5), gateRed: (s) => s.gWon.some((g) => g.red),
     arise1: (s) => s.shadows >= 1, army10: (s) => s.shadows >= 10, job: (s) => s.cls, rival50: (s) => s.rival >= 50,
     brk1: (s) => s.gWon.some((g) => g.brk), hid5: (s) => s.hid >= 5,
-    skill1: (s) => s.skLv >= 1, master1: (s) => s.skMax
+    skill1: (s) => s.skLv >= 1, master1: (s) => s.skMax,
+    raid1: (s) => s.raids >= 1, raid4: (s) => s.raids >= 4, pass10: (s) => s.passLv >= 10, pass30: (s) => s.passLv >= 30,
+    shop1: (s) => s.buys >= 1, gold1k: (s) => s.earned >= 1000, tree20: (s) => s.skLv >= 20
   };
   function checkAch(R, X) {
     const m = rankMeta();
@@ -12016,7 +12063,7 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
       g0 += Object.keys(m.bosses || {}).filter((k) => m.bosses[k].won).length * 150 + Object.keys((m.hid && m.hid.done) || {}).length * 25;
       SKILLS.forEach((sk) => { g0 += (((state.skills || {})[sk.key] || {}).level || 0) * 25; });
       g0 = Math.round(g0);
-      E.gold = (E.gold || 0) + g0; E.init = todayKey();
+      E.gold = (E.gold || 0) + g0; E.earned = (E.earned || 0) + g0; E.init = todayKey();
       if (g0) E.log.unshift({ d: todayKey(), n: g0, w: "Startkapital aus deinem bisherigen Arc" });
       saveLocal();
     }
@@ -12030,15 +12077,31 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
       setTimeout(() => el.remove(), 1700);
     } catch (e) { /* ignore */ }
   }
+  function coinSound(big) {
+    try {
+      if (!soundOn()) return;
+      primeAudio();
+      if (!audioCtx) return;
+      const t0 = audioCtx.currentTime + 0.01, V = 0.18;
+      (big ? [1318.5, 1568, 1975.5, 2637] : [1568, 2093]).forEach((f, i) => {
+        const o = audioCtx.createOscillator(), g = audioCtx.createGain();
+        o.type = "triangle"; o.frequency.value = f;
+        const st = t0 + i * 0.07;
+        g.gain.setValueAtTime(0.0001, st); g.gain.exponentialRampToValueAtTime(V, st + 0.01); g.gain.exponentialRampToValueAtTime(0.0001, st + 0.22);
+        o.connect(g); g.connect(audioCtx.destination); o.start(st); o.stop(st + 0.25);
+      });
+    } catch (e) { /* ignore */ }
+  }
   function goldAdd(n, why, quiet) {
     n = Math.round(+n || 0);
     if (!n) return;
     const E = eco();
     E.gold = Math.max(0, (E.gold || 0) + n);
+    if (n > 0) E.earned = (E.earned || 0) + n;
     E.log.unshift({ d: todayKey(), n, w: why || "" });
     if (E.log.length > 40) E.log.length = 40;
     saveLocal();
-    if (!quiet) coinPop(n);
+    if (!quiet) { coinPop(n); if (n > 0) coinSound(n >= 50); }
     renderGoldBits();
   }
   function renderGoldBits() {
@@ -12183,7 +12246,7 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
     const extra = Math.max(0, st.tier - 30 - (P.bonus || 0));
     if (extra) { P.bonus = (P.bonus || 0) + extra; goldAdd(extra * 60, "Saison-Pass Bonusstufen", true); got.push({ t: extra + " Bonusstufe" + (extra > 1 ? "n" : ""), v: extra * 60 + " Gold" }); }
     if (!got.length) return;
-    saveLocal(); hap("pr"); buzz([20, 40, 20]);
+    saveLocal(); hap("pr"); buzz([20, 40, 20]); coinSound(true);
     sysShow(got.length > 1 ? "Belohnungen abgeholt" : "Belohnung abgeholt", got.slice(0, 7).concat(got.length > 7 ? [{ t: "und " + (got.length - 7) + " weitere", v: "" }] : []), null, "Der Saison-Pass läuft weiter. Jede Stufe kommt aus deinem Training.");
     renderPass(); renderInv(); renderShop(); renderTitleChips(); passDot();
   }
@@ -12206,10 +12269,19 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
   function passDot() {
     const b = document.querySelector('.tabs .tab[data-tab="progress"]');
     if (!b) return;
-    let n = 0;
-    try { n = passState().claimable; } catch (e) { n = 0; }
+    let st = null;
+    try { st = passState(); } catch (e) { st = null; }
+    const n = st ? st.claimable : 0;
     b.classList.toggle("hasdot", n > 0);
+    const pm = $("passMini");
+    if (pm && st && window.__waGame) {
+      pm.hidden = false;
+      pm.classList.toggle("ready", n > 0);
+      pm.innerHTML = '<span class="pmt">Saison ' + st.lvl + (st.tier > 30 ? "+" : "") + "</span><i style=\"--p:" + Math.round(Math.min(1, st.frac) * 100) + '%"></i>' + (n > 0 ? '<span class="pmc">' + n + (n === 1 ? " Belohnung" : " Belohnungen") + "</span>" : '<span class="pmg" data-gold></span>');
+      renderGoldBits();
+    }
   }
+  if ($("passMini")) $("passMini").addEventListener("click", () => { hap("tab"); showTab("progress"); setTimeout(() => { const b = $("passBlock"); if (b) b.scrollIntoView({ block: "start", behavior: "smooth" }); }, 120); });
   if ($("passClaim")) $("passClaim").addEventListener("click", passClaimAll);
 
   // ---- Wochen-Raid: ein Boss pro Woche, dein Training ist der Schaden ----
@@ -12374,6 +12446,7 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
   // ================= v20: Heute anpassen (Reihenfolge und Sichtbarkeit der Karten) =================
   const TL_ITEMS = [
     { k: "ampel", n: "Bereitschafts-Ampel", sel: ["#ampelCard"] },
+    { k: "chest", n: "Tägliche Truhe", sel: ["#chestCard"] },
     { k: "quest", n: "Daily Quest", sel: ["#questCard"] },
     { k: "raid", n: "Wochen-Raid", sel: ["#raidCard"] },
     { k: "training", n: "Training", sel: ["#today-empty", "#today-list-wrap", "#today-rest"], fixed: true },
@@ -12388,7 +12461,7 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
   function tlCfg() {
     const c = S().todayLayout || {};
     const order = (c.order || []).filter((k) => TL_ITEMS.some((i) => i.k === k));
-    TL_ITEMS.forEach((i) => { if (order.indexOf(i.k) < 0) order.push(i.k); });
+    TL_ITEMS.forEach((it, idx) => { if (order.indexOf(it.k) < 0) order.splice(Math.min(idx, order.length), 0, it.k); });
     return { order, hide: c.hide || {} };
   }
   function applyTodayLayout() {
@@ -12427,6 +12500,43 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
     });
   }
   applyTodayLayout();
+
+
+  // ================= v20: Tägliche Truhe (Login-Serie) =================
+  function chestInfo() {
+    const E = eco(), C = E.chest || {}, tk = todayKey(), y = dateKey(addDays(today(), -1));
+    if (C.last === tk) return { done: true, streak: C.streak || 1 };
+    const streak = C.last === y ? (C.streak || 0) + 1 : 1;
+    const gold = Math.min(30, 10 + (streak - 1) * 2) + (hashStr("chest" + tk) % 11);
+    const item = streak % 7 === 0 ? ["elixir", "rune", "key"][(streak / 7 - 1) % 3] : null;
+    return { done: false, streak, gold: gold + (item ? 25 : 0), item };
+  }
+  function renderChest() {
+    const card = $("chestCard");
+    if (!card || !window.__waGame) return;
+    if (card.classList.contains("opening")) return;
+    const c = chestInfo();
+    card.hidden = c.done;
+    if (c.done) return;
+    $("chestTitle").textContent = c.streak % 7 === 0 ? "Große Truhe" : "Tägliche Truhe";
+    $("chestSub").textContent = "Login-Serie: " + c.streak + (c.streak === 1 ? " Tag" : " Tage") + (c.streak % 7 === 0 ? " · mit Item" : " · alle 7 Tage eine große Truhe");
+    card.classList.toggle("big", c.streak % 7 === 0);
+  }
+  if ($("chestCard")) $("chestOpen").addEventListener("click", () => {
+    const c = chestInfo(), card = $("chestCard");
+    if (c.done) return;
+    const E = eco();
+    E.chest = { last: todayKey(), streak: c.streak };
+    if (c.item) { const G = gMeta(); G.inv[c.item] = (G.inv[c.item] || 0) + 1; }
+    goldAdd(c.gold, "Tägliche Truhe (Serie " + c.streak + ")", false);
+    hap("pr"); buzz([15, 30, 15, 30, 40]);
+    card.classList.add("opening");
+    $("chestTitle").textContent = "+" + c.gold + " Gold" + (c.item ? " und " + ITEMS[c.item].n : "");
+    $("chestSub").textContent = "Morgen wartet die nächste Truhe.";
+    $("chestOpen").hidden = true;
+    setTimeout(() => { card.classList.add("gone"); }, 2600);
+    setTimeout(() => { card.classList.remove("opening", "gone"); $("chestOpen").hidden = false; card.hidden = true; renderInv(); }, 3100);
+  });
 
   const deepHandled = handleDeepLink();
   initCollapsibles();
