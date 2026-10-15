@@ -1322,6 +1322,26 @@ main[data-dir="l"] > section:not([hidden]) { animation: viewInL 260ms cubic-bezi
 .raidcard .systag { border-color: rgba(255, 110, 110, .6); color: #FF9A9A; }
 .raidcard .systag span { border-color: #FF9A9A; }
 .raidcard h3 { margin: 8px 0 2px; font-family: var(--display); font-size: 24px; letter-spacing: .02em; }
+[data-tlhide] { display: none !important; }
+.tlwrap { margin-top: 30px; display: flex; justify-content: center; }
+.tlwrap .btn { color: var(--mute); }
+.tlwrap svg { width: 16px; height: 16px; margin-right: 6px; vertical-align: -3px; }
+@media (max-width: 919px) { .tlwrap { order: 99; } .tlcustom.habits, .tlcustom.protein { margin-top: 26px; } }
+.tlsheet { position: fixed; inset: 0; z-index: 86; display: flex; align-items: flex-end; justify-content: center; background: rgba(0, 0, 0, .62); }
+.tlbox { width: min(520px, 100%); max-height: 88vh; overflow-y: auto; padding: 18px 16px calc(16px + env(safe-area-inset-bottom, 0px)); border-radius: 24px 24px 0 0; border: 1px solid var(--line-2); border-bottom: 0; background: var(--surface, #0B0F14); animation: padIn .24s cubic-bezier(.2, .9, .2, 1); }
+.tlhead { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+.tlhead h3 { margin: 0; font-family: var(--display); font-size: 24px; }
+.tllist { list-style: none; margin: 12px 0 14px; padding: 0; display: grid; gap: 6px; }
+.tllist li { display: grid; grid-template-columns: minmax(0, 1fr) 40px 40px 52px; align-items: center; gap: 6px; padding: 6px 6px 6px 12px; border-radius: 12px; border: 1px solid var(--line); background: rgba(255, 255, 255, .02); }
+.tllist li.off .tln { color: var(--mute); text-decoration: line-through; }
+.tln { font-weight: 600; font-size: 15px; min-width: 0; }
+.tln small { display: block; font-weight: 400; font-size: 11px; color: var(--mute); }
+.tlb { height: 38px; border-radius: 10px; border: 1px solid var(--line-2); background: transparent; color: var(--ink-2); font-size: 18px; }
+.tlb:disabled { opacity: .25; }
+.tlsw { position: relative; width: 48px; height: 28px; border-radius: 999px; border: 1px solid var(--line-2); background: rgba(255, 255, 255, .06); padding: 0; }
+.tlsw i { position: absolute; top: 3px; left: 3px; width: 20px; height: 20px; border-radius: 50%; background: var(--mute); transition: transform .2s, background .2s; }
+.tlsw[aria-checked="true"] { background: rgba(var(--acc-rgb), .25); border-color: rgba(var(--acc-rgb), .6); }
+.tlsw[aria-checked="true"] i { transform: translateX(20px); background: var(--ice); }
 .raiddesc { margin: 0 0 10px; color: var(--mute); font-size: 13px; }
 .raidcard .qhead { flex-wrap: wrap; row-gap: 6px; }
 .raidcard .qstate { font-size: 14px; }
@@ -1698,6 +1718,7 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
             </div>
             <p class="plog" id="plog"></p>
           </div>
+          <div class="tlwrap"><button class="btn small" id="tlOpen"><svg aria-hidden="true"><use href="#i-gear"/></svg>Heute anpassen</button></div>
         </div>
       </div>
     </section>
@@ -2477,6 +2498,14 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
 </div>
 
 <button class="aifab" id="aiFab" hidden aria-label="KI-Coach fragen"><svg aria-hidden="true"><use href="#i-mic"/></svg>Coach</button>
+<div class="tlsheet" id="tlSheet" hidden role="dialog" aria-label="Heute anpassen">
+  <div class="tlbox">
+    <div class="tlhead"><h3>Heute anpassen</h3><button class="btn small" id="tlDone">Fertig</button></div>
+    <p class="fhint">Blende aus, was du nicht brauchst, und schieb mit den Pfeilen nach oben, was dir wichtig ist. Gilt für das Handy.</p>
+    <ul class="tllist" id="tlList"></ul>
+    <button class="btn small" id="tlReset">Standard wiederherstellen</button>
+  </div>
+</div>
 <div class="sktreeov" id="skTreeOv" hidden role="dialog" aria-label="Skill-Baum">
   <div class="stohead"><div><span class="systag sm"><span>!</span>Skill-Baum</span></div><button class="btn small" id="skTreeClose">Schließen</button></div>
   <div class="stoscroll" id="skTreeScroll"></div>
@@ -12326,6 +12355,64 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
     const sc = $("skTreeScroll");
     requestAnimationFrame(() => { sc.scrollTop = sc.scrollHeight; });
   }
+
+
+  // ================= v20: Heute anpassen (Reihenfolge und Sichtbarkeit der Karten) =================
+  const TL_ITEMS = [
+    { k: "ampel", n: "Bereitschafts-Ampel", sel: ["#ampelCard"] },
+    { k: "quest", n: "Daily Quest", sel: ["#questCard"] },
+    { k: "raid", n: "Wochen-Raid", sel: ["#raidCard"] },
+    { k: "training", n: "Training", sel: ["#today-empty", "#today-list-wrap", "#today-rest"], fixed: true },
+    { k: "goal", n: "Wochenziel", sel: ["#goalCard"] },
+    { k: "habits", n: "Jeden Tag", sel: ["#view-today .habits"] },
+    { k: "protein", n: "Protein und Essen", sel: ["#view-today .protein"] },
+    { k: "steps", n: "Schritte", sel: ["#stepsCard"] },
+    { k: "drink", n: "Trinken", sel: ["#drinkCard"] },
+    { k: "checkin", n: "Check-in", sel: ["#checkinCard"] },
+    { k: "body", n: "Körper", sel: ["#bodyCard"] }
+  ];
+  function tlCfg() {
+    const c = S().todayLayout || {};
+    const order = (c.order || []).filter((k) => TL_ITEMS.some((i) => i.k === k));
+    TL_ITEMS.forEach((i) => { if (order.indexOf(i.k) < 0) order.push(i.k); });
+    return { order, hide: c.hide || {} };
+  }
+  function applyTodayLayout() {
+    const c = tlCfg(), custom = !!S().todayLayout;
+    c.order.forEach((k, idx) => {
+      const it = TL_ITEMS.find((i) => i.k === k);
+      it.sel.forEach((sel) => document.querySelectorAll(sel).forEach((el) => {
+        el.style.order = custom ? String(2 + idx) : "";
+        if (c.hide[k] && !it.fixed) el.setAttribute("data-tlhide", ""); else el.removeAttribute("data-tlhide");
+        el.classList.toggle("tlcustom", custom);
+      }));
+    });
+  }
+  function renderTl() {
+    const c = tlCfg();
+    $("tlList").innerHTML = c.order.map((k, i) => {
+      const it = TL_ITEMS.find((x) => x.k === k), off = !!c.hide[k] && !it.fixed;
+      return '<li class="' + (off ? "off" : "") + '" data-k="' + k + '"><span class="tln">' + esc(it.n) + (it.fixed ? "<small>immer sichtbar</small>" : "") + "</span>" +
+        '<button class="tlb" data-mv="-1" aria-label="nach oben"' + (i ? "" : " disabled") + '>↑</button><button class="tlb" data-mv="1" aria-label="nach unten"' + (i < c.order.length - 1 ? "" : " disabled") + ">↓</button>" +
+        (it.fixed ? '<span class="tlsw-ph"></span>' : '<button class="tlsw" role="switch" aria-checked="' + !off + '" aria-label="' + esc(it.n) + ' anzeigen"><i></i></button>') + "</li>";
+    }).join("");
+  }
+  function tlSave(c) { S().todayLayout = { order: c.order, hide: c.hide }; saveSettings(); applyTodayLayout(); renderTl(); }
+  if ($("tlSheet")) {
+    $("tlOpen").addEventListener("click", () => { hap("tap"); renderTl(); $("tlSheet").hidden = false; });
+    $("tlDone").addEventListener("click", () => { $("tlSheet").hidden = true; });
+    $("tlSheet").addEventListener("click", (ev) => { if (ev.target === $("tlSheet")) $("tlSheet").hidden = true; });
+    $("tlReset").addEventListener("click", () => { delete S().todayLayout; saveSettings(); applyTodayLayout(); renderTl(); toast("Heute ist wieder im Standard"); });
+    $("tlList").addEventListener("click", (ev) => {
+      const li = ev.target.closest("li[data-k]");
+      if (!li) return;
+      const c = tlCfg(), k = li.dataset.k, i = c.order.indexOf(k);
+      const mv = ev.target.closest("[data-mv]");
+      if (mv && !mv.disabled) { const j = i + +mv.dataset.mv; c.order.splice(i, 1); c.order.splice(j, 0, k); hap("tick"); tlSave(c); return; }
+      if (ev.target.closest(".tlsw")) { c.hide = Object.assign({}, c.hide); if (c.hide[k]) delete c.hide[k]; else c.hide[k] = 1; hap("tick"); tlSave(c); }
+    });
+  }
+  applyTodayLayout();
 
   const deepHandled = handleDeepLink();
   initCollapsibles();
