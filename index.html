@@ -1630,6 +1630,24 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
 .bestdet p:last-child { margin: 0; }
 .bestbar { height: 8px; border-radius: 4px; background: rgba(255, 255, 255, .06); overflow: hidden; margin: 8px 0 6px; }
 .bestbar i { display: block; height: 100%; width: var(--p, 0%); background: linear-gradient(90deg, #B3122B, #FF4D5E 70%, #FF9A9A); }
+/* v21: Wochenduell */
+.duel { margin: 0 0 26px; padding: 14px 16px; border-radius: 16px; border: 1px solid rgba(var(--acc-rgb), .3); background: linear-gradient(90deg, rgba(var(--acc-rgb), .07), rgba(139, 108, 255, .07)); }
+.duel .shead h2 { font-size: 22px; }
+.duel #duelState { font-family: var(--display); font-size: 17px; font-variant-numeric: tabular-nums; }
+.duel.lead #duelState { color: var(--ice); }
+.duel.behind #duelState { color: #B9A6FF; }
+.duel .fhint { margin: 4px 0 10px; }
+.duellist { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+.dl { display: grid; grid-template-columns: 4.4em minmax(0, 1fr) 4.4em; grid-template-areas: "n n n" "y b s"; align-items: center; column-gap: 10px; row-gap: 3px; }
+.dl .dln { grid-area: n; font-size: 13px; color: var(--ink-2); }
+.dl .dly, .dl .dls { font-family: var(--display); font-size: 15px; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.dl .dly { grid-area: y; color: var(--ink-2); }
+.dl .dls { grid-area: s; text-align: right; color: var(--mute); }
+.dl.win .dly { color: var(--ice); }
+.dl.lose .dls { color: #B9A6FF; }
+.dl .dlb { grid-area: b; position: relative; height: 10px; border-radius: 999px; overflow: hidden; background: linear-gradient(90deg, transparent var(--p, 50%), rgba(139, 108, 255, .55) var(--p, 50%)); border: 1px solid var(--line-2); }
+.dl .dlb i { position: absolute; left: 0; top: 0; bottom: 0; width: var(--p, 50%); background: linear-gradient(90deg, var(--ice-2), var(--ice)); box-shadow: 0 0 8px rgba(var(--acc-rgb), .5); }
+.dl .dlb::after { content: ""; position: absolute; left: 50%; top: -2px; bottom: -2px; width: 1px; background: rgba(255, 255, 255, .35); }
 </style>
 </head>
 <body>
@@ -1922,6 +1940,11 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
         <div class="shead"><h2>Kopfgelder der Woche</h2><span id="bountyState"></span></div>
         <ul class="bountylist" id="bountyList"></ul>
         <p class="fhint" id="bountyNote"></p>
+      </div>
+      <div class="duel" id="duelBox" hidden>
+        <div class="shead"><h2>Wochenduell</h2><span id="duelState"></span></div>
+        <p class="fhint" id="duelNote"></p>
+        <ul class="duellist" id="duelList"></ul>
       </div>
       <div class="scan" id="scanCard">
         <div class="shead"><h2>Körper-Scan</h2><div class="scanwk" id="scanWk" role="group" aria-label="Woche wählen"><button class="chip" data-w="0" aria-pressed="true">Diese Woche</button><button class="chip" data-w="1" aria-pressed="false">Letzte Woche</button></div></div>
@@ -4477,6 +4500,7 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
   const openDays = {};
   function renderWeek() {
     try { renderBounties(); } catch (e) { /* ignore */ }
+    try { renderDuel(); } catch (e) { /* ignore */ }
     const now = today();
     const start = startOfWeek(now);
     const tk = dateKey(now);
@@ -13078,6 +13102,53 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
       if (advArm !== n) { advArm = n; hap("tick"); renderAdvDet(); return; }
       advOpen(n, true);
     });
+  }
+
+
+  // ================= v21: Wochenduell (diese Woche gegen die letzte, bis zum gleichen Wochentag) =================
+  function duelStats(ws, n) {
+    const days = []; for (let i = 0; i < n; i++) days.push(dateKey(addDays(ws, i)));
+    const L = (dk) => state.logs[dk] || {}, pt = +S().proteinTarget || 120, dt = drinkCfg().target;
+    let sets = 0, km = 0, steps = 0, habits = 0, prot = 0, drink = 0, slp = [], quests = 0;
+    const m = rankMeta();
+    days.forEach((dk) => {
+      const l = L(dk);
+      Object.keys(l.exercises || {}).forEach((id) => { sets += (((l.exercises[id] || {}).done) || []).filter(Boolean).length; });
+      Object.keys(l.runs || {}).forEach((id) => { km += +((l.runs[id] || {}).km) || 0; });
+      steps += stepsTotal(dk); habits += habitStats(dk).n;
+      if (proteinTotal(dk) >= pt) prot++;
+      if (drinkTotal(dk) >= dt) drink++;
+      if (l.sleep && l.sleep.min) slp.push(+l.sleep.min);
+      if ((m.quests || {})[dk]) quests++;
+    });
+    return { sets, km: Math.round(km * 10) / 10, steps, habits, prot, drink, quests, sleep: slp.length ? slp.reduce((a, b) => a + b, 0) / slp.length : 0, sleepN: slp.length };
+  }
+  function renderDuel() {
+    const box = $("duelBox");
+    if (!box) return;
+    const ws = startOfWeek(today()), n = daysBetween(ws, today()) + 1, pws = addDays(ws, -7);
+    if (dateKey(pws) < dateKey(startOfWeek(arcStartDate()))) { box.hidden = true; return; }
+    const A = duelStats(ws, n), B = duelStats(pws, n);
+    const rows = [
+      { k: "sets", t: "Sätze" }, { k: "km", t: "Kilometer gelaufen", f: (v) => fmtN(v) },
+      { k: "steps", t: "Schritte", f: (v) => fmtG(v) }, { k: "quests", t: "Daily Quests" },
+      { k: "prot", t: "Tage mit Protein-Ziel" }, { k: "drink", t: "Tage mit Trinkziel" },
+      { k: "habits", t: "Gewohnheiten abgehakt" },
+      { k: "sleep", t: "Schlaf im Schnitt", f: (v) => v ? Math.floor(v / 60) + ":" + pad(Math.round(v % 60)) + " h" : "–", need: () => A.sleepN && B.sleepN }
+    ].filter((r) => (r.need ? r.need() : A[r.k] || B[r.k]));
+    if (!rows.length) { box.hidden = true; return; }
+    box.hidden = false;
+    let me = 0, sh = 0;
+    $("duelList").innerHTML = rows.map((r) => {
+      const a = A[r.k], b = B[r.k], f = r.f || ((v) => String(v)), p = a + b > 0 ? Math.round((a / (a + b)) * 100) : 50;
+      const cls = a > b ? "win" : a < b ? "lose" : "tie";
+      if (a > b) me++; else if (a < b) sh++;
+      return '<li class="dl ' + cls + '"><span class="dln">' + r.t + '</span><b class="dly">' + f(a) + '</b><span class="dlb" style="--p:' + p + '%"><i></i></span><b class="dls">' + f(b) + "</b></li>";
+    }).join("");
+    box.classList.toggle("lead", me > sh); box.classList.toggle("behind", sh > me);
+    $("duelState").textContent = me + " : " + sh;
+    const wd = ["Montag", "Dienstag", "Mittwoch", "Donnerstag", "Freitag", "Samstag", "Sonntag"][n - 1] || "";
+    $("duelNote").textContent = (me > sh ? "Du führst gegen dein Ich von letzter Woche." : sh > me ? "Dein Ich von letzter Woche liegt vorne. Hol es dir zurück." : "Gleichstand mit deinem Ich von letzter Woche.") + " Links du, rechts du vor einer Woche" + (n < 7 ? ", jeweils Montag bis " + wd + "." : ".");
   }
 
 
