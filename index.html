@@ -1342,6 +1342,10 @@ main[data-dir="l"] > section:not([hidden]) { animation: viewInL 260ms cubic-bezi
 .tlsw i { position: absolute; top: 3px; left: 3px; width: 20px; height: 20px; border-radius: 50%; background: var(--mute); transition: transform .2s, background .2s; }
 .tlsw[aria-checked="true"] { background: rgba(var(--acc-rgb), .25); border-color: rgba(var(--acc-rgb), .6); }
 .tlsw[aria-checked="true"] i { transform: translateX(20px); background: var(--ice); }
+.arcstats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; margin: 12px 0 14px; }
+.arcstats div { display: grid; gap: 2px; padding: 10px 8px; border-radius: 12px; border: 1px solid var(--line); background: rgba(255, 255, 255, .02); text-align: center; }
+.arcstats b { font-family: var(--display); font-size: 24px; color: var(--ink); font-variant-numeric: tabular-nums; }
+.arcstats span { font-size: 11px; color: var(--mute); }
 .raiddesc { margin: 0 0 10px; color: var(--mute); font-size: 13px; }
 .raidcard .qhead { flex-wrap: wrap; row-gap: 6px; }
 .raidcard .qstate { font-size: 14px; }
@@ -1804,6 +1808,7 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
         <div class="block">
           <h2 class="bh">Dein Winter Arc</h2>
           <p class="lead">Jeder Kristall ist ein Tag. Je heller, desto mehr hast du an dem Tag geschafft. Türkis markierte Wochen sind Deload-Wochen.</p>
+          <div class="arcstats" id="arcStats"></div>
           <div class="arcgrid" id="arcgrid"></div>
           <div class="legend"><span>wenig</span><i style="background:var(--cell-0)"></i><i style="background:rgba(var(--acc-rgb),.35)"></i><i style="background:rgba(var(--acc-rgb),.65)"></i><i style="background:var(--ice)"></i><span>alles</span></div>
           <p class="celldetail" id="celldetail">Tipp auf einen Tag für Details.</p>
@@ -5993,6 +5998,15 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
     }
     $("arcgrid").innerHTML = html;
     if (selCell) showCellDetail(selCell);
+    // Kennzahlen über dem Raster: aktive Tage, aktuelle und beste Serie, Schnitt
+    try {
+      let act = 0, best = 0, run = 0, sum = 0, n = 0;
+      for (let d = new Date(start); dateKey(d) <= tk && d <= last; d = addDays(d, 1)) {
+        const sc = dayScore(d); n++; sum += sc;
+        if (sc > 0) { act++; run++; if (run > best) best = run; } else if (dateKey(d) !== tk) run = 0;
+      }
+      $("arcStats").innerHTML = '<div><b>' + act + '</b><span>aktive Tage</span></div><div><b>' + run + '</b><span>Serie jetzt</span></div><div><b>' + best + '</b><span>beste Serie</span></div><div><b>' + (n ? Math.round((sum / n) * 100) : 0) + ' %</b><span>Schnitt</span></div>';
+    } catch (e) { /* ignore */ }
   }
   function showCellDetail(dk) {
     const d = parseKey(dk);
