@@ -2367,6 +2367,7 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
               </div>
               <small class="fhint">Der Hintergrund bleibt echtes Schwarz, ideal für dein OLED-Display. Unter „Eigene" wählst du zwei Farben, daraus berechnet die App alle Töne selbst.</small></div>
               <div class="toggle"><span>Töne<small>Piepen im EMOM und bei der Mobility, Klang bei Pausenende und Flamme.</small></span><button class="switch" role="switch" aria-checked="true" id="swSound" aria-label="Töne"></button></div>
+              <div class="toggle"><span>Weniger Fenster<small>Kleine Meldungen wie Quest geschafft, Erfolge, Perfekter Tag und abgeholte Belohnungen kommen als kurzer Hinweis unten statt als System-Fenster. Ränge, Bosse, Gates und Events bleiben groß.</small></span><button class="switch" role="switch" aria-checked="false" id="swQuiet" aria-label="Weniger Fenster"></button></div>
               <details class="mini"><summary>Töne pro Ereignis</summary>
                 <div id="sndRows"></div>
                 <div class="field"><label for="sndVol">Lautstärke der eigenen Töne</label><input type="range" id="sndVol" min="20" max="100" step="5"></div>
@@ -9171,6 +9172,10 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
     const sw = $("swGlow");
     if (sw) sw.setAttribute("aria-checked", S().glow !== false ? "true" : "false");
   }
+  if ($("swQuiet")) {
+    $("swQuiet").setAttribute("aria-checked", S().quietPops ? "true" : "false");
+    $("swQuiet").addEventListener("click", () => { S().quietPops = !S().quietPops; saveSettings(); $("swQuiet").setAttribute("aria-checked", S().quietPops ? "true" : "false"); toast(S().quietPops ? "Kleine Meldungen kommen jetzt als Hinweis" : "Alle Meldungen wieder als System-Fenster"); });
+  }
   if ($("swGlow")) $("swGlow").addEventListener("click", () => { S().glow = S().glow === false; saveSettings(); applyGlow(); toast(S().glow !== false ? "Glow an" : "Glow aus"); });
   let sndSig = "";
   function mediaRefresh() {
@@ -9725,7 +9730,26 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
       });
     } catch (e) { /* ignore */ }
   }
+  const quietQ = [];
+  function quietToast(msg, hp) {
+    quietQ.push({ msg, hp });
+    if (quietQ.length > 1) return;
+    const run = () => {
+      const it = quietQ[0];
+      if (!it) return;
+      toast(it.msg);
+      try { hap(it.hp); } catch (e) { /* ignore */ }
+      setTimeout(() => { quietQ.shift(); run(); }, 2500);
+    };
+    run();
+  }
+  const SYS_MINOR = /^(Quest abgeschlossen|Erfolge? freigeschaltet|Verborgene Quest erfüllt|Rune aktiviert|Belohnungen? abgeholt|Perfekter Tag|Alle Kopfgelder erfüllt|Der Boss lebt noch)$/;
   function sysShow(title, lines, badgeIdx, note, opts) {
+    if (S().quietPops && SYS_MINOR.test(title) && !(opts && opts.action)) {
+      const bits = (lines || []).filter((l) => l.v !== "✓").slice(0, 4).map((l) => /^(Gold|Belohnung|XP)$/.test(l.t) ? l.v + (l.t === "Gold" ? " Gold" : l.t === "XP" ? " XP" : "") : l.t);
+      quietToast(title + (bits.length ? ": " + bits.join(", ") : ""), (opts && opts.hap) || "pr");
+      return;
+    }
     sysQueue.push({ title, lines, badgeIdx, note, opts: opts || {} });
     if (sysQueue.length === 1) sysNext();
   }
