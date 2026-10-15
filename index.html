@@ -862,6 +862,9 @@ button.qbox { cursor: pointer; }
 .qt { min-width: 0; display: grid; gap: 1px; }
 .qlist li.ok .qt { color: var(--ink-2); text-decoration: line-through; text-decoration-color: rgba(var(--acc-rgb), .7); }
 .qt small { color: var(--mute); font-size: 12px; }
+.qlist li:has(.qswap) { grid-template-columns: 34px minmax(0, 1fr) auto; }
+.qswap { min-width: 36px; height: 32px; padding: 0 8px; border-radius: 8px; border: 1px solid var(--line-2); background: transparent; color: var(--mute); font-size: 16px; }
+.qswap.arm { border-color: #FFD25C; color: #FFD25C; font-family: var(--display); font-size: 14px; }
 .qlist li.pen .qbox { border-color: #FF8A7A; }
 .qlist li.pen .qt b { color: #FF8A7A; }
 .qnote { margin: 10px 0 0; color: var(--mute); font-size: 13px; }
@@ -1383,6 +1386,15 @@ main[data-dir="l"] > section:not([hidden]) { animation: viewInL 260ms cubic-bezi
 .bountylist li.got .bgot { color: #FFD25C; }
 .bountylist li.ready { border-color: rgba(255, 210, 92, .7); box-shadow: 0 0 14px rgba(255, 194, 61, .2); }
 .bountylist .btn { display: inline-flex; align-items: center; white-space: nowrap; border-color: rgba(255, 210, 92, .7); color: #FFE08A; }
+.dmgpop { position: fixed; left: 50%; top: calc(118px + env(safe-area-inset-top, 0px)); z-index: 94; transform: translateX(-50%); padding: 6px 14px; border-radius: 999px; background: rgba(40, 4, 8, .92); border: 1px solid rgba(255, 77, 94, .7); color: #FF8A95; font-family: var(--display); font-weight: 800; font-size: 18px; pointer-events: none; animation: coinUp 1.4s cubic-bezier(.2, .9, .2, 1) forwards; }
+.raidcard.hit { animation: raidHit .4s ease; }
+@keyframes raidHit { 0%, 100% { transform: none; } 25% { transform: translateX(-4px); } 50% { transform: translateX(4px); } 75% { transform: translateX(-2px); } }
+@media (prefers-reduced-motion: reduce) { .dmgpop, .raidcard.hit { animation: none; } }
+.achp { display: block; height: 5px; margin-top: 6px; border-radius: 999px; background: rgba(255, 255, 255, .08); overflow: hidden; }
+.achp i { display: block; height: 100%; background: linear-gradient(90deg, var(--ice-2), var(--ice)); border-radius: inherit; }
+.ach > :not(.achic) { grid-column: 2; }
+.ach .achic { grid-row: 1 / span 6; }
+.achpn { font-variant-numeric: tabular-nums; font-size: 12px; color: var(--ink-2); }
 .raiddesc { margin: 0 0 10px; color: var(--mute); font-size: 13px; }
 .raidcard .qhead { flex-wrap: wrap; row-gap: 6px; }
 .raidcard .qstate { font-size: 14px; }
@@ -9613,6 +9625,9 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
     const pool = QUEST_MANUAL.filter((q) => training ? !q.rest : true);
     const man = [];
     for (let j = 0; man.length < 3 - autos.length && j < pool.length * 2; j++) { const q = pool[(h + j * 3) % pool.length]; if (man.indexOf(q) < 0) man.push(q); }
+    // Getauschte Aufgaben (Händler-Dienst): gespeichert am Tag, damit die Quest stabil bleibt
+    const sw = (state.logs[dk] && state.logs[dk].qswap) || {};
+    Object.keys(sw).forEach((from) => { const i = man.findIndex((q) => q.id === from), to = QUEST_MANUAL.find((q) => q.id === sw[from]); if (i >= 0 && to && man.indexOf(to) < 0) man[i] = to; });
     const items = autos.map((a) => ({ id: "a_" + a, t: QUEST_AUTO[a].t, auto: a })).concat(man.map((q) => ({ id: q.id, t: q.t })));
     const cq = window.__waGame ? classQuest(dk) : null;
     if (cq) { if (man.length) items.pop(); items.push(cq); }
@@ -9639,11 +9654,13 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
     if (y >= m.questFrom && !(m.quests || {})[y] && questState(y).all) { m.quests = m.quests || {}; m.quests[y] = 1; saveLocal(); try { goldAdd(15, "Daily Quest von gestern", true); } catch (e) { /* ignore */ } }
     const q = questState(dk);
     const won = !!(m.quests || {})[dk];
+    const canSwap = !!window.__waGame && !won && !Object.keys((state.logs[dk] && state.logs[dk].qswap) || {}).length;
     $("questState").textContent = won ? "Abgeschlossen · +50 XP" : q.done + " von " + q.items.length;
     card.classList.toggle("done", won);
     $("questList").innerHTML = q.items.map((it) => '<li class="' + (it.done ? "ok" : "") + (it.pen ? " pen" : "") + '">' +
       (it.auto ? '<span class="qbox" aria-hidden="true">' + (it.done ? "✓" : "") + "</span>" : '<button class="qbox" data-q="' + it.id + '" aria-pressed="' + (it.done ? "true" : "false") + '" aria-label="' + esc(it.t) + '">' + (it.done ? "✓" : "") + "</button>") +
-      '<span class="qt">' + (it.pen ? "<b>Strafquest:</b> " : it.cls ? "<b>Klasse:</b> " : "") + esc(it.t) + (it.auto ? '<small>wird automatisch erkannt</small>' : "") + "</span></li>").join("");
+      '<span class="qt">' + (it.pen ? "<b>Strafquest:</b> " : it.cls ? "<b>Klasse:</b> " : "") + esc(it.t) + (it.auto ? '<small>wird automatisch erkannt</small>' : "") + "</span>" +
+      (canSwap && !it.auto && !it.pen && !it.cls && !it.done ? '<button class="qswap' + (qSwapArm === it.id ? " arm" : "") + '" data-qs="' + it.id + '" aria-label="Aufgabe für 30 Gold tauschen">' + (qSwapArm === it.id ? "30?" : "↻") + "</button>" : "") + "</li>").join("");
     const setNote = (w) => { $("questNote").textContent = q.items.some((i) => i.pen) && !w ? "Eine Strafquest ist offen. Erledige sie heute dazu." : w ? "Morgen wartet die nächste Quest." : "Belohnung: 50 XP."; };
     $("questNote").textContent = q.items.some((i) => i.pen) && !won ? "Eine Strafquest ist offen. Erledige sie heute dazu." : won ? "Morgen wartet die nächste Quest." : "Belohnung: 50 XP.";
     const elx = (m.gates && m.gates.inv && m.gates.inv.elixir) || 0;
@@ -9658,7 +9675,25 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
       checkRanks();
     }
   }
+  var qSwapArm = "";
   if ($("questList")) $("questList").addEventListener("click", (ev) => {
+    const sb = ev.target.closest("button[data-qs]");
+    if (sb) {
+      const id = sb.dataset.qs, dk = todayKey();
+      if (qSwapArm !== id) { qSwapArm = id; hap("tap"); renderQuest(dk); setTimeout(() => { if (qSwapArm === id) { qSwapArm = ""; renderQuest(todayKey()); } }, 5000); return; }
+      qSwapArm = "";
+      if (eco().gold < 30) { toast("Tauschen kostet 30 Gold. Dir fehlen noch " + (30 - eco().gold) + "."); renderQuest(dk); return; }
+      const cur = questDef(dk).map((x) => x.id), s0 = effSession(parseKey(dk)), training = !!(s0 && !s0.free);
+      const cand = QUEST_MANUAL.filter((q) => cur.indexOf(q.id) < 0 && (training ? !q.rest : true));
+      if (!cand.length) { toast("Gerade gibt es keine andere Aufgabe."); return; }
+      const to = cand[hashStr("swap" + dk + id) % cand.length];
+      const l = ensureLog(dk); l.qswap = {}; l.qswap[id] = to.id;
+      saveLog(dk);
+      goldAdd(-30, "Quest-Aufgabe getauscht", false);
+      toast("Neue Aufgabe: " + to.t);
+      renderQuest(dk);
+      return;
+    }
     const b = ev.target.closest("button[data-q]");
     if (!b) return;
     const dk = todayKey(), l = ensureLog(dk);
@@ -9767,16 +9802,25 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
     sysShow(fresh.length > 1 ? "Erfolge freigeschaltet" : "Erfolg freigeschaltet", lines, null, titles.length ? "Neuer Titel: " + titles.join(", ") + ". Wähle ihn unter Erfolge." : fresh[0].d + ".");
     if ($("achGrid") && currentTab === "progress") renderAch();
   }
+  const ACH_PROG = {
+    sets100: (s) => [s.sets, 100], sets1000: (s) => [s.sets, 1000], pull10: (s) => [s.pull, 10], pull20: (s) => [s.pull, 20], push50: (s) => [s.push, 50], dips30: (s) => [s.dips, 30],
+    km50: (s) => [s.km, 50], km100: (s) => [s.km, 100], streak7: (s) => [s.st, 7], streak30: (s) => [s.st, 30], quest30: (s) => [s.quests, 30], boss3: (s) => [s.bosses, 3],
+    lv10: (s) => [s.lv, 10], lv30: (s) => [s.lv, 30], gate10: (s) => [s.gWon.length, 10], army10: (s) => [s.shadows, 10], rival50: (s) => [s.rival, 50], hid5: (s) => [s.hid, 5],
+    raid4: (s) => [s.raids, 4], pass10: (s) => [s.passLv, 10], pass30: (s) => [s.passLv, 30], gold1k: (s) => [s.earned, 1000], tree20: (s) => [s.skLv, 20]
+  };
   function renderAch() {
     const g = $("achGrid");
     if (!g) return;
     const m = rankMeta(), got = m.ach || {};
+    let ast = null;
+    try { ast = achStats(computeRanks(), computeXP()); } catch (e) { ast = null; }
     const n = ACH.filter((a) => got[a.id]).length;
     $("achCount").textContent = n + " von " + ACH.length;
     g.innerHTML = ACH.map((a) => {
       const on = !!got[a.id], worn = on && a.title && m.title === a.title;
       return '<button class="ach' + (on ? " on" : "") + (worn ? " worn" : "") + '" data-a="' + a.id + '"' + (on && a.title ? "" : " disabled") + ">" +
         '<span class="achic" aria-hidden="true">' + (on ? "★" : "?") + "</span><b>" + esc(on ? a.n : "???") + "</b><small>" + esc(a.d) + "</small>" +
+        (!on && ast && ACH_PROG[a.id] ? (() => { const pr = ACH_PROG[a.id](ast), v = Math.max(0, Math.min(pr[1], Math.floor(+pr[0] || 0))); return '<span class="achp"><i style="width:' + Math.round((v / pr[1]) * 100) + '%"></i></span><small class="achpn">' + fmtG(v) + " / " + fmtG(pr[1]) + "</small>"; })() : "") +
         (a.title ? '<em>' + (on ? (worn ? "Getragen: " : "Titel: ") + esc(a.title) : "Schaltet einen Titel frei") + "</em>" : "") + "</button>";
     }).join("");
     try { renderTitleChips(); } catch (e) { /* ignore */ }
@@ -12371,7 +12415,8 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
     const boss = RAID_BOSSES[idx];
     let dmg = 0, todayD = 0;
     for (let i = 0; i < 7; i++) { const dk = dateKey(addDays(ws, i)); const d = dayDamage(dk); dmg += d; if (dk === todayKey()) todayD = d; }
-    const hp = (m.raids[key] && m.raids[key].hp) || raidHP(ws);
+    const stored = m.raids[key];
+    const hp = stored && stored.hp && (stored.won || dmg > 0) ? stored.hp : raidHP(ws);
     return { key, ws, boss, hp, dmg, todayD, won: !!(m.raids[key] && m.raids[key].won), left: 7 - daysBetween(ws, startOfDay(today())) };
   }
   function renderRaid() {
@@ -12380,8 +12425,19 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
     let r;
     try { r = raidState(); } catch (e) { card.hidden = true; return; }
     const m = rankMeta();
-    if (!m.raids[r.key]) { m.raids[r.key] = { hp: r.hp, n: r.boss.n }; saveLocal(); }
+    if (!m.raids[r.key] || m.raids[r.key].hp !== r.hp) { m.raids[r.key] = Object.assign(m.raids[r.key] || {}, { hp: r.hp, n: r.boss.n }); saveLocal(); }
     card.hidden = false;
+    // Schadenszahl, wenn seit dem letzten Blick Schaden dazukam
+    const pv = renderRaid.last;
+    renderRaid.last = { key: r.key, dmg: r.dmg };
+    if (pv && pv.key === r.key && r.dmg > pv.dmg && currentTab === "today" && !r.won) {
+      try {
+        const el = document.createElement("div");
+        el.className = "dmgpop"; el.textContent = "−" + fmtG(r.dmg - pv.dmg) + " HP";
+        document.body.appendChild(el); setTimeout(() => el.remove(), 1500);
+        card.classList.remove("hit"); void card.offsetWidth; card.classList.add("hit");
+      } catch (e) { /* ignore */ }
+    }
     const pct = Math.max(0, Math.min(100, 100 - (r.dmg / r.hp) * 100));
     card.classList.toggle("won", r.won || r.dmg >= r.hp);
     $("raidName").textContent = r.boss.n;
