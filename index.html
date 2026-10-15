@@ -1600,6 +1600,36 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
 .advdet .btn.primary { background: #FFE7A3; color: #1A1204; }
 .advdet .btn.arm { background: rgba(255, 231, 163, .16); }
 @media (prefers-reduced-motion: reduce) { .adv .leaf, .adv.just .leaf, .adv.ready .leaf, .advcard.ready .advmini, .adv.just .ains { animation: none; transition: none; } }
+/* v21: Bestiarium */
+.besttrack { list-style: none; margin: 12px -20px 8px; padding: 6px 20px 10px; display: flex; gap: 8px; overflow-x: auto; scroll-snap-type: x proximity; scrollbar-width: none; overscroll-behavior-x: contain; }
+.besttrack::-webkit-scrollbar { display: none; }
+.best { flex: 0 0 104px; scroll-snap-align: center; display: grid; justify-items: center; align-content: start; gap: 4px; padding: 10px 6px 9px; border-radius: 14px; border: 1px solid var(--line-2); background: rgba(255, 255, 255, .02); text-align: center; cursor: pointer; }
+.best svg { width: 46px; height: 46px; filter: hue-rotate(var(--h, 0deg)); }
+.best b { font-family: var(--display); font-size: 13px; line-height: 1.15; min-height: 2.3em; display: grid; place-items: center; }
+.best small { font-size: 11px; color: var(--mute); font-variant-numeric: tabular-nums; }
+.best.won { border-color: rgba(255, 92, 92, .5); background: linear-gradient(180deg, rgba(255, 70, 70, .08), transparent); }
+.best.won svg { filter: hue-rotate(var(--h, 0deg)) drop-shadow(0 0 8px rgba(255, 77, 94, .5)); }
+.best.won small { color: #FF9A9A; }
+.best.lost svg { filter: grayscale(1) opacity(.45); }
+.best.lost b { color: var(--ink-2); }
+.best.cur { border-color: rgba(var(--acc-rgb), .7); box-shadow: 0 0 14px rgba(var(--acc-rgb), .18); }
+.best.cur small { color: var(--ice); }
+.best.future svg, .best.pre svg { filter: brightness(0) drop-shadow(0 0 1px rgba(255, 255, 255, .5)); opacity: .55; }
+.best.future b, .best.pre b { color: var(--mute); }
+.best.ev.won, .best.ev.cur { border-color: rgba(255, 160, 70, .7); background: linear-gradient(180deg, rgba(255, 122, 26, .1), transparent); }
+.best.ev.won small { color: #FFB066; }
+.best.ev-finale.won, .best.ev-finale.cur { border-color: rgba(190, 230, 255, .7); background: linear-gradient(180deg, rgba(160, 220, 255, .1), transparent); }
+.best.ev-finale.won small { color: #BFE9FF; }
+.best.ev.future svg { filter: brightness(.5) saturate(.6); opacity: .8; }
+.best.ev.future b { color: var(--ink-2); }
+.best.sel { outline: 2px solid var(--ice); outline-offset: 1px; }
+.bestdet { padding: 12px 14px; border-radius: 14px; border: 1px solid var(--line-2); background: var(--surface); }
+.bestdet .stdk { margin: 0; font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: var(--mute); }
+.bestdet h4 { margin: 3px 0 4px; font-family: var(--display); font-size: 19px; }
+.bestdet p { margin: 0 0 6px; color: var(--ink-2); font-size: 13.5px; }
+.bestdet p:last-child { margin: 0; }
+.bestbar { height: 8px; border-radius: 4px; background: rgba(255, 255, 255, .06); overflow: hidden; margin: 8px 0 6px; }
+.bestbar i { display: block; height: 100%; width: var(--p, 0%); background: linear-gradient(90deg, #B3122B, #FF4D5E 70%, #FF9A9A); }
 </style>
 </head>
 <body>
@@ -1947,6 +1977,12 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
           <p class="lead">Besiegte Bosse und Gate-Wächter ab C-Rang kannst du als Schatten extrahieren. Du hast drei Versuche, danach zerfällt der Schatten. Ein Schatten wartet zwei Tage.</p>
           <div id="armyPend"></div>
           <div class="armygrid" id="armyGrid"></div>
+        </div>
+        <div class="block" id="bestBlock" hidden>
+          <h2 class="bh">Bestiarium <span class="achcount" id="bestCount"></span></h2>
+          <p class="lead">Jede Woche ein Raid-Boss. Hier steht, wen du erlegt hast und wer dir entkommen ist.</p>
+          <ol class="besttrack" id="bestTrack" aria-label="Raid-Bosse deines Arcs"></ol>
+          <div class="bestdet" id="bestDet" aria-live="polite"></div>
         </div>
         <div class="block" id="invBlock">
           <h2 class="bh">Inventar</h2>
@@ -6550,6 +6586,7 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
   function renderProgress() {
     renderRanks();
     if (window.__waGame) { renderAch(); renderClsBlock(); renderArmy(); try { renderPass(); renderShop(); renderTitleChips(); renderInv(); } catch (e) { /* ignore */ } }
+    try { renderBestiary(); } catch (e) { /* ignore */ }
     renderArcGrid();
     renderProgressChart();
     renderSkills();
@@ -12623,6 +12660,73 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
       sysShow(r.ev === "finale" ? "Der Winterkönig ist gefallen" : r.ev ? "Event-Boss besiegt" : "Raid-Boss besiegt", lines, null, r.ev === "finale" ? "Dein Arc hat seinen letzten Boss verloren. Den Titel trägst du ab jetzt, wann immer du willst." : r.ev ? "Titel und Farbe gehören dir. Du findest sie unter Fortschritt und im Plan." : "Der Wochen-Raid ist geschafft. Montag kommt der nächste.");
       renderInv(); checkRanks(); try { renderTitleChips(); } catch (e) { /* ignore */ }
     }
+  }
+
+
+  // ================= v21: Bestiarium (alle Raid-Bosse des Arcs) =================
+  let bestSel = "";
+  function bestiary() {
+    const m = rankMeta(), R = m.raids || {}, keys = Object.keys(R).sort();
+    const cur = dateKey(startOfWeek(today())), first = keys[0] || cur, out = [];
+    const last = startOfWeek(arcLastDate());
+    for (let ws = startOfWeek(arcStartDate()), guard = 0; ws <= last && guard < 120; ws = addDays(ws, 7), guard++) {
+      const key = dateKey(ws), evb = raidEvent(ws), idx = (Math.max(1, arcWeek(ws) || 1) - 1) % RAID_BOSSES.length, boss = evb || RAID_BOSSES[idx], rec = R[key] || {};
+      const st = key > cur ? "future" : rec.won ? "won" : key < first ? "pre" : key === cur ? "cur" : "lost";
+      let dmg = 0;
+      if (st !== "future" && st !== "pre") for (let i = 0; i < 7; i++) dmg += dayDamage(dateKey(addDays(ws, i)));
+      const hp = rec.hp || (st === "future" || st === "pre" ? 0 : Math.round(raidHP(ws) * (boss.mul || 1)));
+      out.push({ key, ws, ev: evb ? evb.ev : null, boss, idx, st, dmg, hp, won: rec.won || "", wk: arcWeek(ws) });
+    }
+    return out;
+  }
+  function bestLabel(b) {
+    const pct = b.hp ? Math.min(100, Math.round((b.dmg / b.hp) * 100)) : 0;
+    return b.st === "won" ? "Besiegt" : b.st === "lost" ? "Entkommen · " + pct + " %" : b.st === "cur" ? "Läuft · " + Math.max(0, 100 - pct) + " % HP" : b.st === "pre" ? "Vor den Raids" : b.ev ? "Event · Woche " + b.wk : "Woche " + b.wk;
+  }
+  function renderBestiary() {
+    const blk = $("bestBlock"), el = $("bestTrack");
+    if (!blk || !el) return;
+    blk.hidden = !window.__waGame;
+    if (blk.hidden) return;
+    const list = bestiary(), won = list.filter((b) => b.st === "won").length, evw = list.filter((b) => b.st === "won" && b.ev).length;
+    $("bestCount").textContent = won + " von " + list.length + (evw ? " · " + evw + " Event" : "");
+    if (!bestSel || !list.some((b) => b.key === bestSel)) bestSel = (list.find((b) => b.st === "cur") || list[0] || {}).key || "";
+    el.innerHTML = list.map((b) => {
+      const known = b.st !== "future" || !!b.ev;
+      return '<li class="best ' + b.st + (b.ev ? " ev ev-" + b.ev : "") + (bestSel === b.key ? " sel" : "") + '" data-k="' + b.key + '" role="button" tabindex="0"><svg viewBox="0 0 64 64" aria-hidden="true" style="--h:' + (b.ev ? 0 : (b.idx * 36) % 360) + 'deg">' + RAID_SIG[b.ev || "def"] + "</svg><b>" + (known ? esc(b.boss.n) : "???") + "</b><small>" + esc(bestLabel(b)) + "</small></li>";
+    }).join("");
+    renderBestDet(list);
+    if (!renderBestiary.scrolled) {
+      renderBestiary.scrolled = true;
+      requestAnimationFrame(() => { const c = el.querySelector(".best.sel"); if (c) el.scrollLeft = Math.max(0, c.offsetLeft - el.clientWidth / 2 + c.offsetWidth / 2); });
+    }
+  }
+  function renderBestDet(list) {
+    const d = $("bestDet"), b = (list || bestiary()).find((x) => x.key === bestSel);
+    if (!d || !b) return;
+    const end = addDays(b.ws, 6), range = fmtShort(b.key) + " bis " + fmtShort(dateKey(end));
+    const known = b.st !== "future" || !!b.ev, pct = b.st === "won" ? 100 : b.hp ? Math.min(100, Math.round((b.dmg / b.hp) * 100)) : 0;
+    let h = '<p class="stdk">Woche ' + b.wk + " · " + range + (b.ev ? " · " + esc(b.boss.evn) : "") + "</p><h4>" + (known ? esc(b.boss.n) : "Unbekannt") + "</h4>";
+    if (b.st === "future") h += "<p>" + (b.ev ? esc(b.boss.d) + " Beute: Titel „" + esc(b.boss.t) + "“, eine eigene Farbe und " + b.boss.gold + " Gold." : "Er wartet noch im Schnee. Sein Name zeigt sich erst in seiner Woche.") + "</p>";
+    else if (b.st === "pre") h += "<p>Diese Woche lag vor dem Raid-System. Sie zählt trotzdem zu deinem Arc.</p>";
+    else {
+      h += "<p>" + esc(b.boss.d) + '</p><div class="bestbar"><i style="--p:' + pct + '%"></i></div>';
+      h += "<p>" + fmtG(b.st === "won" ? Math.max(b.dmg, b.hp) : b.dmg) + " Schaden von " + fmtG(b.hp) + " HP · " + (b.st === "won" ? "besiegt am " + fmtShort(b.won) : b.st === "cur" ? "noch " + fmtG(Math.max(0, b.hp - b.dmg)) + " HP" : "entkommen") + "</p>";
+    }
+    d.innerHTML = h;
+  }
+  if ($("bestTrack")) {
+    const pick = (ev) => {
+      const li = ev.target.closest(".best");
+      if (!li) return;
+      if (ev.type === "keydown" && ev.key !== "Enter" && ev.key !== " ") return;
+      bestSel = li.dataset.k; hap("tick");
+      document.querySelectorAll("#bestTrack .best.sel").forEach((x) => x.classList.remove("sel"));
+      li.classList.add("sel");
+      renderBestDet();
+    };
+    $("bestTrack").addEventListener("click", pick);
+    $("bestTrack").addEventListener("keydown", pick);
   }
 
 
