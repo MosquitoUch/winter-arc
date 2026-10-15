@@ -1369,7 +1369,7 @@ main[data-dir="l"] > section:not([hidden]) { animation: viewInL 260ms cubic-bezi
 .chtext small { color: var(--mute); font-size: 12.5px; }
 .chestcard .btn { border-color: rgba(255, 210, 92, .7); color: #FFE08A; }
 @keyframes chestWiggle { 0%, 82%, 100% { transform: rotate(0); } 86% { transform: rotate(-6deg); } 90% { transform: rotate(5deg); } 94% { transform: rotate(-3deg); } }
-@media (max-width: 919px) { #chestCard { order: 2; } }
+@media (max-width: 919px) { #chestCard, #advCard { order: 2; } }
 @media (prefers-reduced-motion: reduce) { .chestcard .chest { animation: none !important; } }
 .bountybox { margin: 18px 0 26px; padding: 14px 16px; border-radius: 16px; border: 1px solid rgba(255, 210, 92, .35); background: linear-gradient(180deg, rgba(255, 194, 61, .05), rgba(0, 0, 0, .25)); }
 .bountybox .shead h2 { font-size: 22px; }
@@ -1541,6 +1541,65 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
 .chestcard.spooky .btn { border-color: rgba(255, 160, 70, .8); color: #FFB066; }
 .chestcard.spooky #chestTitle { color: #FFB066; }
 .hidcard.spooky { border-color: rgba(255, 140, 40, .7); box-shadow: 0 0 20px rgba(255, 122, 26, .2); }
+/* v21: Adventskalender */
+.advcard { display: grid; grid-template-columns: 58px minmax(0, 1fr) auto; align-items: center; gap: 12px; margin: 0 0 20px; padding: 12px 14px; border-radius: 16px; border: 1px solid rgba(255, 231, 163, .45); background: radial-gradient(120% 120% at 0% 0%, rgba(47, 191, 113, .16), transparent 60%), linear-gradient(180deg, rgba(214, 38, 62, .08), rgba(0, 0, 0, .32)); }
+.advcard.ready { border-color: rgba(255, 231, 163, .9); box-shadow: 0 0 22px rgba(255, 231, 163, .22); }
+.advmini { position: relative; width: 58px; height: 58px; border-radius: 10px; display: grid; place-items: center; border: 2px solid rgba(255, 231, 163, .75); background: linear-gradient(160deg, #22774C, #0C2E1E); color: #FFE7A3; font-family: var(--display); font-size: 26px; font-weight: 800; box-shadow: inset 0 0 0 3px rgba(0, 0, 0, .25); }
+.advmini::after { content: ""; position: absolute; right: 5px; top: calc(50% - 6px); width: 3px; height: 12px; border-radius: 2px; background: #FFE7A3; opacity: .75; }
+.advcard.ready .advmini { animation: advGlow 1.8s ease-in-out infinite; }
+.advcard.isopen .advmini { background: radial-gradient(circle at 50% 45%, rgba(255, 231, 163, .3), transparent 70%), #120C04; border-style: dashed; }
+.advcard.isopen .advmini::after { display: none; }
+@keyframes advGlow { 50% { box-shadow: 0 0 20px rgba(255, 231, 163, .65), inset 0 0 0 3px rgba(0, 0, 0, .25); } }
+.advtext { display: grid; gap: 2px; min-width: 0; }
+.advtext b { font-family: var(--display); font-size: 19px; line-height: 1.15; color: #FFE7A3; }
+.advtext small { color: var(--mute); font-size: 12.5px; }
+.advcard .btn { border-color: rgba(255, 231, 163, .7); color: #FFE7A3; white-space: nowrap; }
+.advcard.ready .btn { background: #FFE7A3; color: #1A1204; border-color: #FFE7A3; }
+.advsheet { position: fixed; inset: 0; z-index: 86; display: flex; align-items: flex-end; justify-content: center; background: rgba(0, 0, 0, .66); }
+.advbox { width: min(520px, 100%); max-height: 92vh; overflow-y: auto; padding: 18px 16px calc(16px + env(safe-area-inset-bottom, 0px)); border-radius: 24px 24px 0 0; border: 1px solid rgba(255, 231, 163, .3); border-bottom: 0; background: radial-gradient(120% 50% at 50% 0%, rgba(47, 191, 113, .14), transparent 70%), #07100C; animation: padIn .24s cubic-bezier(.2, .9, .2, 1); }
+.advbox h3 { color: #FFE7A3; }
+.advgrid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); grid-auto-flow: dense; gap: 8px; margin: 12px 0; }
+.adv { position: relative; aspect-ratio: 1; padding: 0; border: 0; border-radius: 10px; background: transparent; color: #FFE7A3; cursor: pointer; perspective: 520px; -webkit-tap-highlight-color: transparent; }
+.adv.wide { grid-column: span 2; aspect-ratio: auto; }
+.adv.xl { grid-column: span 2; grid-row: span 2; aspect-ratio: auto; }
+.adv .leaf { position: absolute; inset: 0; display: grid; place-items: center; border-radius: inherit; border: 1.5px solid rgba(255, 231, 163, .55); background: linear-gradient(160deg, rgba(255, 255, 255, .12), rgba(0, 0, 0, .38)), var(--c); box-shadow: inset 0 0 0 3px rgba(0, 0, 0, .22); transform-origin: left center; backface-visibility: hidden; -webkit-backface-visibility: hidden; transition: transform .8s cubic-bezier(.3, 1.2, .5, 1); }
+.adv .leaf b { font-family: var(--display); font-size: 22px; font-weight: 800; text-shadow: 0 1px 0 rgba(0, 0, 0, .45); }
+.adv.wide .leaf b { font-size: 28px; }
+.adv.xl .leaf b { font-size: 50px; }
+.adv .leaf::after { content: ""; position: absolute; right: 5px; top: calc(50% - 6px); width: 3px; height: 12px; border-radius: 2px; background: #FFE7A3; opacity: .6; }
+.adv.xl .leaf::before { content: ""; position: absolute; inset: 0; border-radius: inherit; background: linear-gradient(90deg, transparent 46%, rgba(214, 38, 62, .85) 46%, rgba(214, 38, 62, .85) 54%, transparent 54%), linear-gradient(0deg, transparent 46%, rgba(214, 38, 62, .85) 46%, rgba(214, 38, 62, .85) 54%, transparent 54%); opacity: .8; }
+.adv.xl .leaf b { position: relative; }
+.adv .ains { position: absolute; inset: 0; display: grid; place-content: center; justify-items: center; gap: 3px; padding: 4px; border-radius: inherit; border: 1.5px dashed rgba(255, 231, 163, .28); background: radial-gradient(circle at 50% 40%, rgba(255, 231, 163, .14), transparent 70%), #0A0F0C; font-size: 10.5px; line-height: 1.15; color: var(--ink-2); text-align: center; }
+.adv .ains .pic { font-size: 20px; color: #FFE7A3; line-height: 1; }
+.adv .ains .coin { width: 20px; height: 20px; margin: 0; }
+.adv .ains .pswatch { width: 22px; height: 22px; clip-path: polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%); }
+.adv.xl .ains { font-size: 13px; gap: 6px; }
+.adv .anum { position: absolute; left: 6px; top: 4px; font-style: normal; font-size: 10px; font-weight: 700; color: rgba(255, 231, 163, .55); }
+.adv.xl .ains .pswatch { width: 40px; height: 40px; }
+.adv:not(.open) .ains { visibility: hidden; }
+.adv.open .leaf { transform: rotateY(-108deg); }
+.adv.just { z-index: 2; }
+.adv.just .ains { visibility: visible; animation: advShine 1.4s ease-out both; }
+.adv.just .leaf { animation: advSwing 1s cubic-bezier(.3, 1.2, .5, 1) both; }
+@keyframes advSwing { from { transform: rotateY(0); } to { transform: rotateY(-108deg); } }
+@keyframes advShine { 0% { box-shadow: 0 0 0 rgba(255, 231, 163, 0); } 40% { box-shadow: 0 0 26px rgba(255, 231, 163, .8); } 100% { box-shadow: 0 0 0 rgba(255, 231, 163, 0); } }
+.adv.ready .leaf { animation: advGlowL 1.6s ease-in-out infinite; border-color: #FFE7A3; }
+@keyframes advGlowL { 50% { box-shadow: 0 0 18px rgba(255, 231, 163, .7), inset 0 0 0 3px rgba(0, 0, 0, .22); } }
+.adv.today .leaf { border-color: rgba(255, 231, 163, .95); }
+.adv.future .leaf { filter: saturate(.6) brightness(.72); }
+.adv.missed .leaf { filter: grayscale(.65) brightness(.62); border-style: dashed; }
+.adv .alate { position: absolute; bottom: 4px; left: 0; right: 0; display: flex; justify-content: center; align-items: center; font-style: normal; font-size: 10px; font-weight: 700; color: #FFE08A; }
+.adv .alate .coin { width: 10px; height: 10px; margin-right: 2px; }
+.adv.sel { outline: 2px solid #FFE7A3; outline-offset: 2px; }
+.advdet { min-height: 96px; padding: 12px 14px; border-radius: 14px; border: 1px solid rgba(255, 231, 163, .2); background: rgba(255, 231, 163, .04); }
+.advdet h4 { margin: 2px 0 4px; font-family: var(--display); font-size: 19px; color: #FFE7A3; }
+.advdet p { margin: 0 0 8px; color: var(--ink-2); font-size: 13.5px; }
+.advdet p:last-child { margin-bottom: 0; }
+.advdet .stdk { margin: 0; font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: var(--mute); }
+.advdet .btn { border-color: rgba(255, 231, 163, .7); color: #FFE7A3; }
+.advdet .btn.primary { background: #FFE7A3; color: #1A1204; }
+.advdet .btn.arm { background: rgba(255, 231, 163, .16); }
+@media (prefers-reduced-motion: reduce) { .adv .leaf, .adv.just .leaf, .adv.ready .leaf, .advcard.ready .advmini, .adv.just .ains { animation: none; transition: none; } }
 </style>
 </head>
 <body>
@@ -1670,6 +1729,12 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
             </svg>
             <div class="chtext"><b id="chestTitle">Tägliche Truhe</b><small id="chestSub"></small></div>
             <button class="btn small" id="chestOpen">Öffnen</button>
+          </div>
+
+          <div class="advcard" id="advCard" hidden>
+            <div class="advmini" id="advMini" aria-hidden="true">1</div>
+            <div class="advtext"><b id="advTitle">Adventskalender</b><small id="advSub"></small></div>
+            <button class="btn small" id="advBtn">Kalender</button>
           </div>
 
           <div class="questcard" id="questCard">
@@ -2606,6 +2671,14 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
     <p class="fhint">Blende aus, was du nicht brauchst, und schieb mit den Pfeilen nach oben, was dir wichtig ist. Gilt für das Handy.</p>
     <ul class="tllist" id="tlList"></ul>
     <button class="btn small" id="tlReset">Standard wiederherstellen</button>
+  </div>
+</div>
+<div class="advsheet" id="advSheet" hidden role="dialog" aria-label="Adventskalender">
+  <div class="advbox">
+    <div class="tlhead"><h3>Adventskalender</h3><button class="btn small" id="advClose">Schließen</button></div>
+    <p class="fhint" id="advHint"></p>
+    <div class="advgrid" id="advGrid"></div>
+    <div class="advdet" id="advDet" aria-live="polite"></div>
   </div>
 </div>
 <div class="sktreeov" id="skTreeOv" hidden role="dialog" aria-label="Skill-Baum">
@@ -3665,6 +3738,7 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
     renderProtein(dk);
     renderTodayExtras(dk);
     try { renderRaid(); passDot(); renderChest(); bountyDot(); } catch (e) { /* ignore */ }
+    try { renderAdvent(); } catch (e) { /* ignore */ }
   }
 
   function placeholderFor(e) {
@@ -9706,6 +9780,7 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
       try { goldAdd(15, "Daily Quest", true); } catch (e) { /* ignore */ }
       sysShow("Quest abgeschlossen", [{ t: "Daily Quest", v: "erledigt" }, { t: "Belohnung", v: "+50 XP" }, { t: "Gold", v: "+15" }].concat(q.items.some((i) => i.pen) ? [{ t: "Strafquest", v: "abgearbeitet" }] : []), null, "Morgen wartet die nächste.");
       checkRanks();
+      try { renderAdvent(); } catch (e) { /* ignore */ }
     }
   }
   var qSwapArm = "";
@@ -9779,7 +9854,9 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
     { id: "pass30", n: "Bis zum Ende", d: "Saison-Pass Stufe 30 erreicht", title: "Legende des Winters" },
     { id: "shop1", n: "Kundschaft", d: "Erster Einkauf beim Händler" },
     { id: "gold1k", n: "Goldschatz", d: "Insgesamt 1.000 Gold verdient", title: "Der Goldene" },
-    { id: "tree20", n: "Tiefe Wurzeln", d: "20 Knoten im Skill-Baum freigeschaltet", title: "Der Vielseitige" }
+    { id: "tree20", n: "Tiefe Wurzeln", d: "20 Knoten im Skill-Baum freigeschaltet", title: "Der Vielseitige" },
+    { id: "adv24", n: "Adventskind", d: "Alle 24 Türchen im Adventskalender geöffnet" },
+    { id: "ev1", n: "Saisongast", d: "Einen Event-Boss besiegt" }
   ];
   function achStats(R, X) {
     let sets = 0, km = 0, wMax = 0;
@@ -9804,7 +9881,9 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
       skLv: SKILLS.reduce((a, sk) => a + (((state.skills || {})[sk.key] || {}).level || 0), 0), skMax: SKILLS.some((sk) => (((state.skills || {})[sk.key] || {}).level || 0) >= sk.levels.length),
       raids: Object.keys(m.raids || {}).filter((k) => m.raids[k] && m.raids[k].won).length,
       passLv: (() => { try { return passState().lvl; } catch (e) { return 0; } })(),
-      buys: ((m.eco || {}).buys) || 0, earned: ((m.eco || {}).earned) || 0
+      buys: ((m.eco || {}).buys) || 0, earned: ((m.eco || {}).earned) || 0,
+      adv: Object.keys((m.eco && m.eco.adv) || {}).reduce((a, y) => Math.max(a, Object.keys(m.eco.adv[y] || {}).length), 0),
+      evWon: Object.keys(m.raids || {}).filter((k) => m.raids[k] && m.raids[k].won && m.raids[k].ev).length
     };
   }
   const ACH_TEST = {
@@ -9819,7 +9898,8 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
     brk1: (s) => s.gWon.some((g) => g.brk), hid5: (s) => s.hid >= 5,
     skill1: (s) => s.skLv >= 1, master1: (s) => s.skMax,
     raid1: (s) => s.raids >= 1, raid4: (s) => s.raids >= 4, pass10: (s) => s.passLv >= 10, pass30: (s) => s.passLv >= 30,
-    shop1: (s) => s.buys >= 1, gold1k: (s) => s.earned >= 1000, tree20: (s) => s.skLv >= 20
+    shop1: (s) => s.buys >= 1, gold1k: (s) => s.earned >= 1000, tree20: (s) => s.skLv >= 20,
+    adv24: (s) => s.adv >= 24, ev1: (s) => s.evWon >= 1
   };
   function checkAch(R, X) {
     const m = rankMeta();
@@ -9839,7 +9919,7 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
     sets100: (s) => [s.sets, 100], sets1000: (s) => [s.sets, 1000], pull10: (s) => [s.pull, 10], pull20: (s) => [s.pull, 20], push50: (s) => [s.push, 50], dips30: (s) => [s.dips, 30],
     km50: (s) => [s.km, 50], km100: (s) => [s.km, 100], streak7: (s) => [s.st, 7], streak30: (s) => [s.st, 30], quest30: (s) => [s.quests, 30], boss3: (s) => [s.bosses, 3],
     lv10: (s) => [s.lv, 10], lv30: (s) => [s.lv, 30], gate10: (s) => [s.gWon.length, 10], army10: (s) => [s.shadows, 10], rival50: (s) => [s.rival, 50], hid5: (s) => [s.hid, 5],
-    raid4: (s) => [s.raids, 4], pass10: (s) => [s.passLv, 10], pass30: (s) => [s.passLv, 30], gold1k: (s) => [s.earned, 1000], tree20: (s) => [s.skLv, 20]
+    raid4: (s) => [s.raids, 4], pass10: (s) => [s.passLv, 10], pass30: (s) => [s.passLv, 30], gold1k: (s) => [s.earned, 1000], tree20: (s) => [s.skLv, 20], adv24: (s) => [s.adv, 24]
   };
   function renderAch() {
     const g = $("achGrid");
@@ -12626,6 +12706,7 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
   const TL_ITEMS = [
     { k: "ampel", n: "Bereitschafts-Ampel", sel: ["#ampelCard"] },
     { k: "chest", n: "Tägliche Truhe", sel: ["#chestCard"] },
+    { k: "advent", n: "Adventskalender (Dezember)", sel: ["#advCard"] },
     { k: "quest", n: "Daily Quest", sel: ["#questCard"] },
     { k: "raid", n: "Wochen-Raid", sel: ["#raidCard"] },
     { k: "training", n: "Training", sel: ["#today-empty", "#today-list-wrap", "#today-rest"], fixed: true },
@@ -12728,6 +12809,172 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
     setTimeout(() => { card.classList.add("gone"); }, 2600);
     setTimeout(() => { card.classList.remove("opening", "gone"); $("chestOpen").hidden = false; card.hidden = true; renderInv(); }, 3100);
   });
+
+
+  // ================= v21: Adventskalender (1. bis 24. Dezember) =================
+  const ADV = [
+    { g: 30 }, { it: "elixir" }, { g: 40 }, { it: "rune" }, { g: 50 },
+    { g: 100, it: "key", sp: "Nikolaus" }, { it: "elixir" }, { g: 40 }, { it: "rune" }, { g: 60 },
+    { it: "key" }, { g: 50 }, { g: 30, t: "Lichtträger", sp: "Lucia" }, { it: "rune" }, { g: 60 },
+    { it: "elixir" }, { g: 70 }, { it: "key" }, { g: 60 }, { it: "rune", n: 2 },
+    { g: 80, t: "Kind der längsten Nacht", sp: "Wintersonnenwende" }, { g: 70 }, { it: "key" }, { g: 150, t: "Wächter der Weihnacht", acc: "tanne", sp: "Heiligabend" }
+  ];
+  const ADV_TIP = [
+    "Kälte ist kein Grund. Wärm dich drinnen fünf Minuten auf, bevor du rausgehst.",
+    "Trink auch im Winter genug. Du schwitzt weniger sichtbar, verlierst aber trotzdem Wasser.",
+    "Tageslicht am Morgen hilft deinem Schlaf am Abend. Zehn Minuten draußen reichen.",
+    "Steigern heißt nicht jedes Mal mehr Gewicht. Eine saubere Wiederholung mehr zählt auch.",
+    "Schlaf ist das stärkste legale Mittel für Fortschritt, das es gibt.",
+    "Nikolaus. Stiefel geputzt? Dann gönn deinen Waden heute ein paar Sätze Wadenheben.",
+    "Protein über den Tag verteilt wirkt besser als alles auf einmal am Abend.",
+    "Ein Deload ist kein Rückschritt. Er ist der Anlauf für den nächsten Sprung.",
+    "Mobility vor dem Training, ruhiges Dehnen danach.",
+    "Atme beim Drücken aus und beim Absenken ein.",
+    "Bei Klimmzügen zählt die volle Streckung unten. Halbe Wiederholungen bauen halbe Kraft.",
+    "Halbzeit im Advent. Schau dir deine Fotos vom Anfang des Arcs an.",
+    "Lucia, das Lichtfest. Wer im Dunkeln trainiert, leuchtet im Frühling.",
+    "Plätzchen sind erlaubt. Dein Wochenschnitt zählt, nicht ein einzelner Tag.",
+    "Eine kurze Einheit schlägt eine ausgefallene Einheit.",
+    "Schultern warm machen: zwanzig Armkreise in jede Richtung, dann geht es los.",
+    "Gewohnheiten schlagen Motivation. Motivation kommt und geht, Gewohnheiten bleiben.",
+    "Eine Woche ohne sichtbaren Fortschritt ist kein Stillstand. Kraft wächst in Stufen.",
+    "Bewegung an freien Tagen: spazieren statt liegen. Dein Körper erholt sich dabei schneller.",
+    "Handgelenke vor Liegestützen kurz kreisen und dehnen.",
+    "Die längste Nacht des Jahres. Ab morgen werden die Tage länger, genau wie deine Serien.",
+    "Ferien heißen nicht Pause. Plan deine Einheiten wie feste Termine.",
+    "Morgen ist Heiligabend. Ein kurzes Training heute macht den Kopf frei.",
+    "Frohe Weihnachten. Du hast den Advent durchgezogen, jeden Tag ein Stück."
+  ];
+  const ADV_LATE = 40, ADV_COL = ["#1E6B45", "#8E1B2C", "#14365C", "#5B2A86", "#1F5C5A", "#7A4A12"];
+  let advSel = 0, advJust = 0, advArm = 0;
+  const advYear = () => today().getFullYear();
+  function advDay() { const t = today(); return t.getMonth() === 11 ? t.getDate() : 0; }
+  function advMeta() { const E = eco(); E.adv = E.adv || {}; const y = String(advYear()); E.adv[y] = E.adv[y] || {}; return E.adv[y]; }
+  function advEarned(dk) {
+    const l = state.logs[dk] || {};
+    if ((rankMeta().quests || {})[dk]) return true;
+    let did = false;
+    Object.keys(l.exercises || {}).forEach((id) => { const x = l.exercises[id]; if (x && x.done && x.done.some(Boolean)) did = true; });
+    Object.keys(l.runs || {}).forEach((id) => { const r = l.runs[id]; if (r && +r.km) did = true; });
+    return did;
+  }
+  function advState(n) {
+    const A = advMeta(), d = advDay();
+    if (A[n]) return "open";
+    if (!d || n > d) return "future";
+    if (n < d) return "missed";
+    return advEarned(todayKey()) ? "ready" : "today";
+  }
+  function advMissed() { let k = 0; for (let n = 1; n <= 24; n++) if (advState(n) === "missed") k++; return k; }
+  function advTeaser() { const t = today(); return t.getMonth() === 10 && t.getDate() >= 26; }
+  function renderAdvent() {
+    const card = $("advCard");
+    if (!card) return;
+    const d = advDay(), tease = advTeaser();
+    const show = !!window.__waGame && (tease || (d >= 1 && d <= 24) || (d > 24 && advMissed() > 0));
+    card.hidden = !show;
+    if (!show) return;
+    if (d >= 1 && !(rankMeta().evSeen || {})["adv" + advYear()]) {
+      const m = rankMeta(); m.evSeen = m.evSeen || {}; m.evSeen["adv" + advYear()] = todayKey(); saveLocal();
+      sysShow("Der Adventskalender ist offen", [{ t: "Türchen", v: "24" }, { t: "Öffnet sich", v: "nach Training oder Daily Quest" }, { t: "Verpasst?", v: ADV_LATE + " Gold zum Nachholen" }, { t: "24. Dezember", v: "Titel und Farbe Tannenzauber" }], null, "Jeden Tag ein Türchen. Du findest den Kalender unter Heute.");
+    }
+    const st = d >= 1 && d <= 24 ? advState(d) : "", n = Math.min(24, d);
+    card.classList.toggle("ready", st === "ready");
+    card.classList.toggle("isopen", st === "open");
+    $("advMini").textContent = tease ? "1" : st === "open" ? "✓" : n;
+    let title, sub, btn = "Kalender";
+    if (tease) { title = "Adventskalender"; sub = "Ab 1. Dezember öffnet sich jeden Tag ein Türchen."; btn = "Vorschau"; }
+    else if (d > 24) { const k = advMissed(); title = k + (k === 1 ? " Türchen verpasst" : " Türchen verpasst"); sub = "Bis Silvester für je " + ADV_LATE + " Gold nachholen."; }
+    else if (st === "ready") { title = "Türchen " + n + " ist bereit"; sub = "Du hast heute geliefert. Mach es auf."; btn = "Öffnen"; }
+    else if (st === "today") { title = "Adventskalender · Türchen " + n; sub = "Öffnet sich, sobald du heute trainierst oder die Daily Quest schaffst."; }
+    else { title = "Türchen " + n + " ist offen"; sub = n < 24 ? "Morgen wartet Türchen " + (n + 1) + "." + (advMissed() ? " " + advMissed() + " verpasst, nachholbar." : "") : "Frohe Weihnachten."; }
+    $("advTitle").textContent = title; $("advSub").textContent = sub; $("advBtn").textContent = btn;
+  }
+  function advOrder() {
+    const rnd = seeded(hashStr("advent" + advYear())), a = [];
+    for (let i = 1; i <= 24; i++) a.push(i);
+    for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(rnd() * (i + 1)); const t = a[i]; a[i] = a[j]; a[j] = t; }
+    return a;
+  }
+  function advLabel(r) { return r.acc ? "Titel und Farbe" : r.t ? "Titel" : r.it ? (r.g ? r.g + " Gold + " : "") + ITEMS[r.it].n.split(/[ -]/).pop().replace("Erholung", "Elixier").replace("Stärke", "Rune") + (r.n > 1 ? " ×" + r.n : "") : r.g + " Gold"; }
+  function renderAdventGrid() {
+    const g = $("advGrid");
+    if (!g) return;
+    const A = advMeta(), open = Object.keys(A).length;
+    $("advHint").textContent = advTeaser() ? "Ab 1. Dezember öffnet sich jeden Tag ein Türchen, sobald du trainierst oder deine Daily Quest schaffst." : open + " von 24 Türchen offen. Jeden Tag öffnet sich eins, sobald du trainierst oder deine Daily Quest schaffst. Verpasste holst du für " + ADV_LATE + " Gold nach.";
+    g.innerHTML = advOrder().map((n) => {
+      const st = advState(n), r = ADV[n - 1], col = ADV_COL[hashStr("ac" + n) % ADV_COL.length];
+      return '<button class="adv ' + st + (n === 24 ? " xl" : n === 6 ? " wide" : "") + (advSel === n ? " sel" : "") + (advJust === n ? " just" : "") + '" data-n="' + n + '" style="--c:' + col + '" aria-label="Türchen ' + n + (st === "open" ? ", offen: " + esc(passRwText(r)) : st === "missed" ? ", verpasst" : st === "ready" ? ", bereit" : "") + '">' +
+        '<span class="ains">' + (st === "open" ? '<i class="anum">' + n + "</i>" + passIcon(r) + "<span>" + esc(advLabel(r)) + "</span>" : "") + "</span>" +
+        '<span class="leaf"><b>' + n + "</b>" + (st === "missed" ? '<i class="alate">' + COIN + ADV_LATE + "</i>" : "") + "</span></button>";
+    }).join("");
+    advJust = 0;
+    renderAdvDet();
+  }
+  function renderAdvDet() {
+    const el = $("advDet");
+    if (!el) return;
+    const n = advSel;
+    if (!n) { el.innerHTML = "<p>Tipp auf ein Türchen.</p>"; return; }
+    const st = advState(n), r = ADV[n - 1];
+    let h = '<p class="stdk">Türchen ' + n + (r.sp ? " · " + esc(r.sp) : "") + "</p>";
+    if (st === "open") h += "<h4>" + esc(passRwText(r)) + "</h4><p>" + esc(ADV_TIP[n - 1]) + "</p>";
+    else if (st === "ready") h += '<h4>Bereit</h4><p>Du hast heute geliefert. Das Türchen gehört dir.</p><button class="btn primary" data-advopen="' + n + '">Türchen öffnen</button>';
+    else if (st === "today") h += "<h4>Heute noch zu</h4><p>Es öffnet sich, sobald du heute trainierst oder deine Daily Quest schaffst.</p>";
+    else if (st === "missed") h += '<h4>Verpasst</h4><p>Du kannst es bis Silvester nachholen. Du hast ' + fmtG(eco().gold || 0) + ' Gold.</p><button class="btn' + (advArm === n ? " arm" : "") + '" data-advlate="' + n + '">' + (advArm === n ? "Sicher? Tipp nochmal für " + ADV_LATE + " Gold" : "Für " + ADV_LATE + " Gold nachholen") + "</button>";
+    else { const left = daysBetween(startOfDay(today()), new Date(advYear(), 11, n)); h += "<h4>Noch " + left + (left === 1 ? " Tag" : " Tage") + "</h4><p>" + (r.sp ? esc(r.sp) + ". " : "") + "Was drin ist, bleibt bis dahin geheim.</p>"; }
+    el.innerHTML = h;
+  }
+  function advOpen(n, late) {
+    const A = advMeta(), r = ADV[n - 1];
+    if (!r || A[n]) return;
+    if (late) {
+      if ((eco().gold || 0) < ADV_LATE) { toast("Dafür brauchst du " + ADV_LATE + " Gold."); return; }
+      goldAdd(-ADV_LATE, "Türchen " + n + " nachgeholt", true);
+    }
+    A[n] = (late ? "spät " : "") + todayKey();
+    passGrant(r, "Adventskalender, Türchen " + n);
+    saveLocal(); hap("pr"); buzz([15, 30, 15, 30, 40]);
+    try { coinSound(true); } catch (e) { /* ignore */ }
+    advSel = n; advJust = n; advArm = 0;
+    renderAdventGrid(); renderAdvent();
+    try { renderInv(); renderShop(); renderTitleChips(); checkRanks(); } catch (e) { /* ignore */ }
+    if (r.t || r.acc) setTimeout(() => sysShow("Türchen " + n + ": " + (r.sp || "Überraschung"), [{ t: "Inhalt", v: passRwText(r) }], null, ADV_TIP[n - 1] + (r.acc ? " Die Farbe wählst du im Plan unter Akzentfarbe." : "")), 900);
+  }
+  function openAdvent(autoOpen) {
+    const d = advDay();
+    advSel = d >= 1 && d <= 24 ? d : 0; advArm = 0;
+    $("advSheet").hidden = false;
+    renderAdventGrid();
+    if (autoOpen && d >= 1 && d <= 24 && advState(d) === "ready") setTimeout(() => advOpen(d, false), 350);
+  }
+  if ($("advSheet")) {
+    $("advBtn").addEventListener("click", () => { hap("tap"); openAdvent($("advCard").classList.contains("ready")); });
+    $("advMini").addEventListener("click", () => { hap("tap"); openAdvent($("advCard").classList.contains("ready")); });
+    $("advClose").addEventListener("click", () => { $("advSheet").hidden = true; renderAdvent(); });
+    $("advSheet").addEventListener("click", (ev) => { if (ev.target === $("advSheet")) { $("advSheet").hidden = true; renderAdvent(); } });
+    $("advGrid").addEventListener("click", (ev) => {
+      const b = ev.target.closest(".adv");
+      if (!b) return;
+      const n = +b.dataset.n;
+      hap("tick");
+      if (advState(n) === "ready") { advOpen(n, false); return; }
+      if (advSel !== n) advArm = 0;
+      advSel = n;
+      document.querySelectorAll("#advGrid .adv.sel").forEach((x) => x.classList.remove("sel"));
+      b.classList.add("sel");
+      renderAdvDet();
+    });
+    $("advDet").addEventListener("click", (ev) => {
+      const o = ev.target.closest("[data-advopen]");
+      if (o) { advOpen(+o.dataset.advopen, false); return; }
+      const l = ev.target.closest("[data-advlate]");
+      if (!l) return;
+      const n = +l.dataset.advlate;
+      if (advArm !== n) { advArm = n; hap("tick"); renderAdvDet(); return; }
+      advOpen(n, true);
+    });
+  }
 
 
   // ================= v20: Kopfgelder der Woche (3 Aufgaben, Gold beim Abholen) =================
