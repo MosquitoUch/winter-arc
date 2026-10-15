@@ -1651,6 +1651,22 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
 /* v21: System-Fenster scrollt, wenn es höher als der Bildschirm ist */
 .sysov { display: flex; flex-direction: column; overflow-y: auto; overscroll-behavior: contain; padding-top: calc(24px + env(safe-area-inset-top, 0px)); padding-bottom: calc(24px + env(safe-area-inset-bottom, 0px)); }
 .sysov > .sysbox { margin: auto; flex: none; }
+/* v21: Perfekter Tag */
+@media (max-width: 919px) { #pdCard { order: 2; } }
+.pdcard { margin: 0 0 20px; padding: 12px 14px; border-radius: 16px; border: 1px solid var(--line-2); background: rgba(255, 255, 255, .02); }
+.pdcard.all { border-color: rgba(255, 210, 92, .75); background: linear-gradient(135deg, rgba(255, 194, 61, .12), rgba(0, 0, 0, .3)); box-shadow: 0 0 22px rgba(255, 194, 61, .18); }
+.pdhead { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; margin-bottom: 9px; }
+.pdhead b { font-family: var(--display); font-size: 18px; }
+.pdcard.all .pdhead b { color: #FFE08A; }
+.pdhead span { font-size: 13px; color: var(--mute); font-variant-numeric: tabular-nums; }
+.pdcard.all .pdhead span { color: #FFD25C; }
+.pdchips { display: flex; flex-wrap: wrap; gap: 6px; }
+.pdc { display: inline-flex; align-items: center; gap: 6px; min-height: 34px; padding: 4px 11px 4px 6px; border-radius: 999px; border: 1px solid var(--line-2); background: transparent; color: var(--ink-2); font-size: 13px; }
+.pdc i { width: 20px; height: 20px; border-radius: 50%; display: grid; place-items: center; border: 1.5px solid var(--line-2); font-style: normal; font-size: 12px; font-weight: 800; }
+.pdc.ok { border-color: rgba(var(--acc-rgb), .55); color: var(--ink); }
+.pdc.ok i { background: var(--ice); border-color: var(--ice); color: var(--ice-ink, #04121F); }
+.pdcard.all .pdc.ok { border-color: rgba(255, 210, 92, .6); }
+.pdcard.all .pdc.ok i { background: #FFC23D; border-color: #FFC23D; color: #1A1204; }
 </style>
 </head>
 <body>
@@ -1802,6 +1818,11 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
             <div class="raidbar" id="raidBar" role="presentation"><i></i></div>
             <p class="raidnums" id="raidNums"></p>
             <p class="raidnext" id="raidNext" hidden></p>
+          </div>
+
+          <div class="pdcard" id="pdCard" hidden>
+            <div class="pdhead"><b id="pdTitle">Perfekter Tag</b><span id="pdState"></span></div>
+            <div class="pdchips" id="pdChips"></div>
           </div>
 
           <div class="goalcard" id="goalCard" data-coll="goal">
@@ -3360,7 +3381,12 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
   const saveSettings = () => writeDoc("settings", { settings: state.settings, updatedAt: stamp() });
   const saveSkills = () => writeDoc("skills", { skills: state.skills, updatedAt: stamp() });
   const saveTests = () => writeDoc("tests", { entries: state.tests.entries, updatedAt: stamp() });
-  function saveLog(date) { const l = state.logs[date]; if (l) { l.updatedAt = stamp(); writeDoc("log_" + date, clone(l)); } }
+  let pdTimer = 0;
+  function saveLog(date) {
+    const l = state.logs[date];
+    if (l) { l.updatedAt = stamp(); writeDoc("log_" + date, clone(l)); }
+    if (date === todayKey()) { clearTimeout(pdTimer); pdTimer = setTimeout(() => { try { renderPerfect(); } catch (e) { /* ignore */ } }, 350); }
+  }
 
   function initCloud() {
     if (!window.claude || typeof window.claude.use !== "function") { setSync(); return; }
@@ -3806,6 +3832,7 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
     try { renderRaid(); passDot(); renderChest(); bountyDot(); } catch (e) { /* ignore */ }
     try { renderAdvent(); } catch (e) { /* ignore */ }
     try { arcEndCheck(); } catch (e) { /* ignore */ }
+    try { renderPerfect(); } catch (e) { /* ignore */ }
   }
 
   function placeholderFor(e) {
@@ -9529,6 +9556,7 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
     xp += Object.keys(mm.bosses || {}).filter((k) => mm.bosses[k].won).length * 200;
     xp += Object.keys(mm.ach || {}).length * 25;
     xp += Object.keys((mm.hid && mm.hid.done) || {}).length * 30;
+    xp += Object.keys(mm.perfect || {}).length * 20;
     Object.keys(mm.raids || {}).forEach((k) => { const rr = mm.raids[k]; if (rr && rr.won) xp += rr.ev === "finale" ? 400 : rr.ev ? 250 : 150; });
     ((mm.gates && mm.gates.log) || []).forEach((g) => { if (g.res === "won") xp += g.xp || 0; });
     xp += ((mm.shadows && mm.shadows.list) || []).length * (cl && cl.id === "necro" ? 30 : 15);
@@ -9856,6 +9884,7 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
       sysShow("Quest abgeschlossen", [{ t: "Daily Quest", v: "erledigt" }, { t: "Belohnung", v: "+50 XP" }, { t: "Gold", v: "+15" }].concat(q.items.some((i) => i.pen) ? [{ t: "Strafquest", v: "abgearbeitet" }] : []), null, "Morgen wartet die nächste.");
       checkRanks();
       try { renderAdvent(); } catch (e) { /* ignore */ }
+      try { renderPerfect(); } catch (e) { /* ignore */ }
     }
   }
   var qSwapArm = "";
@@ -9931,7 +9960,9 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
     { id: "gold1k", n: "Goldschatz", d: "Insgesamt 1.000 Gold verdient", title: "Der Goldene" },
     { id: "tree20", n: "Tiefe Wurzeln", d: "20 Knoten im Skill-Baum freigeschaltet", title: "Der Vielseitige" },
     { id: "adv24", n: "Adventskind", d: "Alle 24 Türchen im Adventskalender geöffnet" },
-    { id: "ev1", n: "Saisongast", d: "Einen Event-Boss besiegt" }
+    { id: "ev1", n: "Saisongast", d: "Einen Event-Boss besiegt" },
+    { id: "perf1", n: "Makellos", d: "Einen perfekten Tag geschafft" },
+    { id: "perf7", n: "Sieben Mal makellos", d: "7 perfekte Tage geschafft", title: "Der Makellose" }
   ];
   function achStats(R, X) {
     let sets = 0, km = 0, wMax = 0;
@@ -9958,7 +9989,8 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
       passLv: (() => { try { return passState().lvl; } catch (e) { return 0; } })(),
       buys: ((m.eco || {}).buys) || 0, earned: ((m.eco || {}).earned) || 0,
       adv: Object.keys((m.eco && m.eco.adv) || {}).reduce((a, y) => Math.max(a, Object.keys(m.eco.adv[y] || {}).length), 0),
-      evWon: Object.keys(m.raids || {}).filter((k) => m.raids[k] && m.raids[k].won && m.raids[k].ev).length
+      evWon: Object.keys(m.raids || {}).filter((k) => m.raids[k] && m.raids[k].won && m.raids[k].ev).length,
+      perf: Object.keys(m.perfect || {}).length
     };
   }
   const ACH_TEST = {
@@ -9974,7 +10006,7 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
     skill1: (s) => s.skLv >= 1, master1: (s) => s.skMax,
     raid1: (s) => s.raids >= 1, raid4: (s) => s.raids >= 4, pass10: (s) => s.passLv >= 10, pass30: (s) => s.passLv >= 30,
     shop1: (s) => s.buys >= 1, gold1k: (s) => s.earned >= 1000, tree20: (s) => s.skLv >= 20,
-    adv24: (s) => s.adv >= 24, ev1: (s) => s.evWon >= 1
+    adv24: (s) => s.adv >= 24, ev1: (s) => s.evWon >= 1, perf1: (s) => s.perf >= 1, perf7: (s) => s.perf >= 7
   };
   function checkAch(R, X) {
     const m = rankMeta();
@@ -9994,7 +10026,7 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
     sets100: (s) => [s.sets, 100], sets1000: (s) => [s.sets, 1000], pull10: (s) => [s.pull, 10], pull20: (s) => [s.pull, 20], push50: (s) => [s.push, 50], dips30: (s) => [s.dips, 30],
     km50: (s) => [s.km, 50], km100: (s) => [s.km, 100], streak7: (s) => [s.st, 7], streak30: (s) => [s.st, 30], quest30: (s) => [s.quests, 30], boss3: (s) => [s.bosses, 3],
     lv10: (s) => [s.lv, 10], lv30: (s) => [s.lv, 30], gate10: (s) => [s.gWon.length, 10], army10: (s) => [s.shadows, 10], rival50: (s) => [s.rival, 50], hid5: (s) => [s.hid, 5],
-    raid4: (s) => [s.raids, 4], pass10: (s) => [s.passLv, 10], pass30: (s) => [s.passLv, 30], gold1k: (s) => [s.earned, 1000], tree20: (s) => [s.skLv, 20], adv24: (s) => [s.adv, 24]
+    raid4: (s) => [s.raids, 4], pass10: (s) => [s.passLv, 10], pass30: (s) => [s.passLv, 30], gold1k: (s) => [s.earned, 1000], tree20: (s) => [s.skLv, 20], adv24: (s) => [s.adv, 24], perf7: (s) => [s.perf, 7]
   };
   function renderAch() {
     const g = $("achGrid");
@@ -12853,6 +12885,7 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
     { k: "advent", n: "Adventskalender (Dezember)", sel: ["#advCard"] },
     { k: "quest", n: "Daily Quest", sel: ["#questCard"] },
     { k: "raid", n: "Wochen-Raid", sel: ["#raidCard"] },
+    { k: "perfect", n: "Perfekter Tag", sel: ["#pdCard"] },
     { k: "training", n: "Training", sel: ["#today-empty", "#today-list-wrap", "#today-rest"], fixed: true },
     { k: "goal", n: "Wochenziel", sel: ["#goalCard"] },
     { k: "habits", n: "Jeden Tag", sel: ["#view-today .habits"] },
@@ -13219,6 +13252,52 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
     sysShowNext("Saison " + n + " beginnt", [{ t: "Tag", v: "1 von " + (S().arcLength || 90) }, { t: "Saison-Pass", v: "Stufe 0" }, { t: "Erster Raid-Boss", v: RAID_BOSSES[0].n }], playerRank(), "Neue Saison, gleicher Jäger. Zeig, was du im letzten Arc gelernt hast.");
   }
   if ($("seasonBtn")) $("seasonBtn").addEventListener("click", () => { hap("tap"); seasonConfirm(); });
+
+
+  // ================= v21: Perfekter Tag (alle Tagesziele geschafft) =================
+  function perfectInfo(dk) {
+    const s = effSession(parseKey(dk)), m = rankMeta(), items = [];
+    if (s && !s.free) { const pr = sessionProgress(dk, s); items.push({ k: "train", t: "Training", ok: pr.total > 0 && pr.done === pr.total, go: "#today-list-wrap" }); }
+    items.push({ k: "quest", t: "Quest", ok: !!(m.quests || {})[dk], go: "#questCard" });
+    items.push({ k: "prot", t: "Protein", ok: proteinTotal(dk) >= (+S().proteinTarget || 120), go: "#view-today .protein" });
+    items.push({ k: "drink", t: "Trinken", ok: drinkTotal(dk) >= drinkCfg().target, go: "#drinkCard" });
+    if ((S().habits || []).length) items.push({ k: "habits", t: "Gewohnheiten", ok: habitsDone(dk), go: "#view-today .habits" });
+    return { items, n: items.filter((i) => i.ok).length, all: items.length > 0 && items.every((i) => i.ok) };
+  }
+  function perfectStreak() {
+    const P = rankMeta().perfect || {};
+    let d = today(), n = 0;
+    if (!P[dateKey(d)]) d = addDays(d, -1);
+    for (let i = 0; i < 400 && P[dateKey(d)]; i++) { n++; d = addDays(d, -1); }
+    return n;
+  }
+  function renderPerfect() {
+    const card = $("pdCard");
+    if (!card) return;
+    card.hidden = !window.__waGame;
+    if (card.hidden) return;
+    const dk = todayKey(), info = perfectInfo(dk), m = rankMeta();
+    m.perfect = m.perfect || {};
+    if (info.all && !m.perfect[dk]) {
+      m.perfect[dk] = 1; saveLocal();
+      const st = perfectStreak(), bonus = 40 + Math.min(60, (st - 1) * 10);
+      goldAdd(bonus, "Perfekter Tag" + (st > 1 ? " (Serie " + st + ")" : ""), true);
+      hap("pr"); buzz([20, 40, 20, 40, 60]);
+      sysShow("Perfekter Tag", info.items.map((i) => ({ t: i.t, v: "✓" })).concat([{ t: "Belohnung", v: "+20 XP" }, { t: "Gold", v: "+" + bonus }]), null, st > 1 ? st + " perfekte Tage in Folge. Morgen gibt es noch mehr Gold." : "Alles erledigt, was heute zählt. Schaffst du es morgen wieder, gibt es mehr Gold.");
+      try { checkRanks(); } catch (e) { /* ignore */ }
+    }
+    const done = !!m.perfect[dk], st = perfectStreak();
+    card.classList.toggle("all", done);
+    $("pdTitle").textContent = done ? "Perfekter Tag geschafft" : "Perfekter Tag";
+    $("pdState").textContent = done ? (st > 1 ? "Serie: " + st + " Tage" : "heute") : info.n + " von " + info.items.length + (st ? " · Serie " + st : "");
+    $("pdChips").innerHTML = info.items.map((i) => '<button class="pdc' + (i.ok ? " ok" : "") + '" data-go="' + esc(i.go) + '"><i aria-hidden="true">' + (i.ok ? "✓" : "") + "</i>" + esc(i.t) + "</button>").join("");
+  }
+  if ($("pdChips")) $("pdChips").addEventListener("click", (ev) => {
+    const b = ev.target.closest("[data-go]");
+    if (!b) return;
+    const el = document.querySelector(b.dataset.go);
+    if (el && !el.hidden) { hap("tap"); el.scrollIntoView({ block: "start", behavior: "smooth" }); }
+  });
 
 
   // ================= v20: Kopfgelder der Woche (3 Aufgaben, Gold beim Abholen) =================
