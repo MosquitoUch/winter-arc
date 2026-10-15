@@ -706,6 +706,10 @@ pre.prompt { white-space: pre-wrap; margin: 0 0 12px; padding: 14px; border-radi
 .restlist li.ok .rk { background: var(--ice); border-color: var(--ice); }
 .restlist li.ok button { border-color: var(--ice-deep); color: var(--ink); }
 .restlist .rn { font-weight: 600; color: var(--ink); }
+.snaplist { list-style: none; margin: 8px 0 0; padding: 0; display: grid; gap: 8px; }
+.snaplist li { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 10px 12px; border: 1px solid var(--line); border-radius: 14px; background: rgba(255, 255, 255, .02); }
+.snaplist li span { min-width: 0; }
+.snaplist small { display: block; color: var(--mute); font-size: 12px; }
 .restlist .rt { font-size: 13px; color: var(--mute); text-align: right; }
 .rbadge { position: relative; display: inline-grid; place-items: center; width: 34px; height: 38px; flex: none; font-family: var(--display); font-weight: 900; font-size: 16px; line-height: 1; --rl: #D0D4DA; --rg: rgba(0, 0, 0, 0); --ly: 6%; color: var(--rl); }
 .rbadge .remb { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; }
@@ -2113,6 +2117,9 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
             <label class="btn" for="backupFile"><svg aria-hidden="true"><use href="#i-file"/></svg>Backup laden</label>
           </div>
           <p class="lead" id="backupInfo" style="margin-top:12px"></p>
+          <h4 class="vpsub">Automatische Sicherungen</h4>
+          <p class="fhint">Die App legt jeden Tag selbst eine Sicherung auf diesem Handy an und behält die letzten 7. Sie helfen, wenn etwas schiefgeht, ersetzen aber kein Backup in Google Drive: Löschst du die App-Daten oder verlierst das Handy, sind auch sie weg.</p>
+          <ul class="snaplist" id="snapList"></ul>
               </div>
               <div class="block sub">
                 <h3>Plan</h3>
@@ -2871,8 +2878,13 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
       }
     } catch (e) { /* storage unavailable */ }
   }
+  let saveWarned = false;
   function saveLocal() {
-    try { localStorage.setItem(LS_KEY, JSON.stringify(state)); } catch (e) { /* ignore */ }
+    try { localStorage.setItem(LS_KEY, JSON.stringify(state)); }
+    catch (e) {
+      // Speicher voll oder gesperrt: nicht still schlucken, sonst gehen Einträge verloren
+      if (!saveWarned) { saveWarned = true; setTimeout(() => { try { toast("Achtung: Speichern fehlgeschlagen, der Speicher ist voll. Mach jetzt ein Backup."); } catch (er) { /* ignore */ } }, 50); }
+    }
   }
 
   // ================= Sync =================
@@ -6263,7 +6275,7 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
 
   // ================= Backup =================
   function backupPayload() {
-    return { app: "winter-arc", version: 2, exportedAt: stamp(), data: { plan: state.plan, settings: state.settings, logs: state.logs, skills: state.skills, tests: state.tests, body: state.body } };
+    return { app: "winter-arc", version: 3, exportedAt: stamp(), data: { plan: state.plan, settings: state.settings, logs: state.logs, skills: state.skills, tests: state.tests, body: state.body, meta: state.meta } };
   }
   function markBackup() { state.meta = state.meta || {}; state.meta.lastBackup = stamp(); saveLocal(); renderBackupInfo(); }
   function blobToData(b) { return new Promise((res, rej) => { const r = new FileReader(); r.onload = () => res(String(r.result)); r.onerror = () => rej(r.error); r.readAsDataURL(b); }); }
@@ -6308,8 +6320,16 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
     r.onload = () => {
       let d;
       try { d = JSON.parse(String(r.result || "")); } catch (e) { toast("Die Datei ist kein gültiges Backup."); return; }
+      applyBackup(d, false);
+    };
+    r.onerror = () => toast("Die Datei konnte nicht gelesen werden.");
+    r.readAsText(file);
+  }
+  function applyBackup(d, snap) {
+    {
       const data = d && d.app === "winter-arc" && d.data ? d.data : null;
       if (!data || typeof data !== "object") { toast("Die Datei ist kein Winter-Arc-Backup."); return; }
+      try { snapTake(true); } catch (e) { /* ignore */ }
       state.plan = data.plan || state.plan;
       state.settings = Object.assign(clone(DEFAULT_SETTINGS), data.settings || {});
       const logs = data.logs || {};
@@ -6317,6 +6337,7 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
       state.skills = data.skills || state.skills;
       state.tests = data.tests && Array.isArray(data.tests.entries) ? data.tests : state.tests;
       if (data.body && Array.isArray(data.body.entries)) state.body = data.body;
+      if (data.meta && typeof data.meta === "object") { const lb = state.meta && state.meta.lastBackup; state.meta = data.meta; if (lb) state.meta.lastBackup = lb; }
       if (data.media && typeof mdb !== "undefined") {
         Object.keys(data.media).forEach((k) => {
           const m = data.media[k];
@@ -6331,11 +6352,48 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
       renderAll();
       renderBackupInfo();
       const nd = Object.keys(logs).length;
-      toast("Backup geladen: " + nd + (nd === 1 ? " Tag" : " Tage") + " übernommen");
-    };
-    r.onerror = () => toast("Die Datei konnte nicht gelesen werden.");
-    r.readAsText(file);
+      toast((snap ? "Sicherung wiederhergestellt: " : "Backup geladen: ") + nd + (nd === 1 ? " Tag" : " Tage") + (data.meta ? ", mit Spielstand" : ""));
+      renderSnaps();
+    }
   }
+  // ---- Automatische Sicherungen: täglich eine Kopie in IndexedDB, die letzten 7 bleiben ----
+  const SNAP_LS = "winterarc.snaps";
+  const snapIdx = () => { try { const a = JSON.parse(localStorage.getItem(SNAP_LS) || "[]"); return Array.isArray(a) ? a : []; } catch (e) { return []; } };
+  function snapTake(force) {
+    if (typeof mdb === "undefined" || !Object.keys(state.logs || {}).length) return Promise.resolve(false);
+    const dk = todayKey(), idx = snapIdx(), id = "snap:" + dk + (force ? "-" + Date.now().toString(36) : "");
+    if (!force && idx.some((x) => x.d === dk && !x.f)) return Promise.resolve(false);
+    const json = JSON.stringify(backupPayload());
+    return mdb.put(id, new Blob([json], { type: "application/json" }), dk).then(() => {
+      const next = idx.filter((x) => x.id !== id).concat([{ id, d: dk, t: Date.now(), n: Object.keys(state.logs || {}).length, f: !!force }]).sort((a, b) => a.t - b.t);
+      while (next.length > 8) { const old = next.shift(); mdb.del(old.id).catch(() => {}); }
+      try { localStorage.setItem(SNAP_LS, JSON.stringify(next)); } catch (e) { /* ignore */ }
+      renderSnaps();
+      return true;
+    }).catch(() => false);
+  }
+  let snapArm = "";
+  function renderSnaps() {
+    const ul = $("snapList");
+    if (!ul) return;
+    const idx = snapIdx().slice().reverse();
+    ul.innerHTML = idx.length ? idx.map((x) => '<li><span><b>' + esc(shortDate(parseKey(x.d))) + "</b>" + (x.f ? " · vor dem Laden" : "") + "<small>" + new Date(x.t).toTimeString().slice(0, 5) + " Uhr · " + x.n + " Tage mit Einträgen</small></span>" +
+      '<button class="btn small' + (snapArm === x.id ? " danger" : "") + '" data-snap="' + esc(x.id) + '">' + (snapArm === x.id ? "Wirklich zurücksetzen?" : "Wiederherstellen") + "</button></li>").join("")
+      : '<li class="none"><span><small>Noch keine. Die erste entsteht, sobald du etwas eingetragen hast.</small></span></li>';
+  }
+  if ($("snapList")) $("snapList").addEventListener("click", (ev) => {
+    const b = ev.target.closest("[data-snap]");
+    if (!b) return;
+    const id = b.dataset.snap;
+    if (snapArm !== id) { snapArm = id; renderSnaps(); setTimeout(() => { if (snapArm === id) { snapArm = ""; renderSnaps(); } }, 6000); return; }
+    snapArm = "";
+    mdb.get(id).then((rec) => rec && rec.blob ? rec.blob.text() : null).then((txt) => {
+      if (!txt) { toast("Diese Sicherung ist nicht mehr da."); renderSnaps(); return; }
+      applyBackup(JSON.parse(txt), true);
+    }).catch(() => toast("Die Sicherung konnte nicht gelesen werden."));
+  });
+  renderSnaps();
+  setTimeout(() => { snapTake(false); }, 4000);
   function renderBackupInfo() {
     const lb = state.meta && state.meta.lastBackup;
     const days = lb ? daysBetween(new Date(lb), today()) : null;
