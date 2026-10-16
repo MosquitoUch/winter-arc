@@ -666,6 +666,22 @@ pre.prompt { white-space: pre-wrap; margin: 0 0 12px; padding: 14px; border-radi
 .fclib .fi b { display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .fclib .fi span { color: var(--mute); font-size: 13px; }
 .emom-clock.sw-clock { font-size: clamp(52px, 17vw, 92px); }
+/* Trainingsuhr */
+.clockcard { margin-top: 22px; padding-top: 18px; border-top: 1px solid var(--line); }
+.clockbig { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; margin: 4px 0 6px; }
+.clockbig strong { font-family: var(--display); font-weight: 800; font-size: 46px; line-height: 1; color: var(--ice); font-variant-numeric: tabular-nums; }
+.clockbig span { color: var(--ink-2); font-size: 14px; }
+.clocklist { list-style: none; margin: 8px 0 0; padding: 0; }
+.clocklist li { padding: 10px 0; border-top: 1px solid var(--line); display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 2px 12px; }
+.clocklist li:first-child { border-top: 0; }
+.clocklist b { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.clocklist .ct { font-family: var(--display); font-weight: 700; font-size: 18px; font-variant-numeric: tabular-nums; }
+.clocklist .cs { grid-column: 1 / -1; color: var(--mute); font-size: 13px; font-variant-numeric: tabular-nums; }
+.sclock { position: fixed; z-index: 35; top: calc(env(safe-area-inset-top, 0px) + 70px); right: 14px; display: inline-flex; align-items: center; gap: 8px; padding: 6px 14px; border-radius: 999px; border: 1px solid var(--ice-deep); background: color-mix(in srgb, var(--surface-2) 92%, transparent); color: var(--ink); font-family: var(--display); font-weight: 700; font-size: 17px; font-variant-numeric: tabular-nums; backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
+.sclock[hidden] { display: none; }
+.sclock i { width: 8px; height: 8px; border-radius: 50%; background: #ff3b45; box-shadow: 0 0 8px #ff3b45; animation: sclockPulse 1.6s ease-in-out infinite; }
+@keyframes sclockPulse { 50% { opacity: 0.3; } }
+@media (prefers-reduced-motion: reduce) { .sclock i { animation: none; } }
 .sw-row { justify-content: center; }
 .sw-laps { list-style: none; margin: 14px 0 0; padding: 0; max-height: 220px; overflow-y: auto; }
 .sw-laps li { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; gap: 12px; align-items: baseline; padding: 8px 0; border-top: 1px solid var(--line); font-variant-numeric: tabular-nums; }
@@ -1831,7 +1847,7 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
             <ul class="restlist" id="restlist" hidden aria-label="Erholungsziele"></ul>
             <p class="rest-note" id="restnote" hidden>Heute wächst du. Geh spazieren, dehn dich und schlaf früh.</p>
             <div class="row" id="freeRow" hidden style="margin-top:14px"><button class="btn small" id="exAddFree">Trotzdem trainiert? Freies Training eintragen</button></div>
-            <div class="row" id="trainRow" hidden style="margin-top:14px"><button class="btn small" id="trainBtn" aria-pressed="false">Trainingsmodus starten</button><button class="btn small" id="voiceBtn" aria-pressed="false" hidden>Coach-Stimme aus</button><select class="vsel" id="voiceSel" aria-label="Wer coacht heute" hidden></select></div>
+            <div class="row" id="trainRow" hidden style="margin-top:14px"><button class="btn small" id="trainBtn" aria-pressed="false">Training starten</button><button class="btn small" id="voiceBtn" aria-pressed="false" hidden>Coach-Stimme aus</button><select class="vsel" id="voiceSel" aria-label="Wer coacht heute" hidden></select></div>
           </div>
 
           <div class="ampel idle" id="ampelCard" role="status">
@@ -1954,6 +1970,13 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
             <div class="row exbar"><button class="btn small" id="exAdd">+ Übung hinzufügen</button><button class="btn small" id="exSkipRest">Rest überspringen</button></div>
             <p class="exhint" id="exHint" hidden><svg aria-hidden="true"><use href="#i-up"/></svg><span>Trag nach den Sätzen ein, was du geschafft hast, zum Beispiel 8/8/7 mit +10 kg. Dann bekommst du bei jeder Übung Steigerungsvorschläge.</span></p>
             <ol class="exlist" id="exlist"></ol>
+            <div class="clockcard" id="clockCard" hidden>
+              <div class="shead"><h2>Trainingszeit</h2><span id="clockState"></span></div>
+              <div class="clockbig"><strong id="clockTotal">0:00</strong><span id="clockCmp"></span></div>
+              <ul class="clocklist" id="clockList"></ul>
+              <p class="fhint" id="clockHint">Satz = vom Ende der Pause bis zum Antippen. Tippst du den nächsten Satz an, während die Pause noch läuft, zählt die ganze Zeit als Pause.</p>
+              <div class="row"><button class="btn small" id="clockStop" hidden>Training beenden</button><button class="btn small" id="clockReset">Zeit zurücksetzen</button></div>
+            </div>
             <div class="sessnote">
               <label for="sessNote">Notiz zur Einheit</label>
               <textarea id="sessNote" rows="2" maxlength="400" placeholder="z. B. Schulter zwickt links, Pausen kürzer, fühlte sich stark an"></textarea>
@@ -2780,6 +2803,7 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
   </div>
 </div>
 
+<button class="sclock" id="sclock" hidden aria-label="Trainingszeit anzeigen"><i aria-hidden="true"></i><span id="sclockTime">0:00</span></button>
 <div class="timer" id="timer" hidden role="timer" aria-live="off">
   <div class="bar" id="timerbar"></div>
   <div class="tl"><span id="timerlabel">Pause</span><strong id="timertime">2:00</strong></div>
@@ -3651,7 +3675,9 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
   }
 
   // ================= Domain =================
-  const today = () => new Date();
+  // Der Trainingstag endet erst um 4 Uhr nachts: Sätze nach Mitternacht zählen noch zum Vortag
+  const DAY_SHIFT_H = 4;
+  const today = () => new Date(Date.now() - DAY_SHIFT_H * 3600e3);
   const todayKey = () => dateKey(today());
   const S = () => state.settings;
   const arcStartDate = () => parseKey(S().arcStart || DEFAULT_SETTINGS.arcStart);
@@ -3989,6 +4015,7 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
   }
 
   function renderToday() {
+    try { renderClock(); } catch (e) { /* ignore */ }
     const now = today();
     const dk = dateKey(now);
     const dow = dowOf(now);
@@ -4317,6 +4344,7 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
     x.done.length = n;
     const i = +btn.dataset.i;
     x.done[i] = !x.done[i];
+    clockSet(l, e.id, i, x.done[i]);
     saveLog(dk);
     renderToday();
     if (x.done[i]) {
@@ -4325,7 +4353,7 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
       xpFloat(li.querySelector('.set[data-i="' + i + '"]') || btn, "+10 XP");
       shards(li.querySelector('.set[data-i="' + i + '"]') || btn);
       const pr = sessionProgress(dk, session);
-      if (pr.done === pr.total) { stopTimer(); celebrate(dk); if (window.__waGame) coach("done", {}); }
+      if (pr.done === pr.total) { stopTimer(); clockStop(true); celebrate(dk); if (window.__waGame) coach("done", {}); }
       else if (n > 1) startTimer(S().rest || 120);
       checkGoals();
     }
@@ -4724,6 +4752,7 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
       if (!timer.finished) {
         timer.finished = true;
         if (window.__waGame && voiceOn()) { const ln = (timer.voice && timer.voice.over) || coachRestPrep().over; setTimeout(() => sayLine(ln), 350); }
+        clockRest(Math.min(Date.now(), timer.end));
         $("timer").classList.add("done");
         $("timerlabel").textContent = "Nächster Satz";
         $("timertime").textContent = "Los";
@@ -4744,7 +4773,7 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
     if (timer.end - Date.now() > timer.total) timer.total = timer.end - Date.now();
     tick();
   });
-  $("timerSkip").addEventListener("click", stopTimer);
+  $("timerSkip").addEventListener("click", () => { if (!timer.finished) clockRest(Date.now()); stopTimer(); });
 
   // ================= Week =================
   const openDays = {};
@@ -7737,11 +7766,135 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
     trainMode = !trainMode;
     document.body.classList.toggle("train-mode", trainMode);
     $("trainBtn").setAttribute("aria-pressed", trainMode ? "true" : "false");
-    $("trainBtn").textContent = trainMode ? "Trainingsmodus beenden" : "Trainingsmodus starten";
-    if (trainMode) { primeAudio(); wakeOn(); toast("Bildschirm bleibt an. Tipp auf einen Satz für die Zahlentasten."); if (window.__waGame && voiceOn()) coachStart(); }
-    else if (!wakeNeeded()) wakeOff();
+    $("trainBtn").textContent = trainMode ? "Training beenden" : "Training starten";
+    if (trainMode) { primeAudio(); wakeOn(); clockStart(false); toast("Die Uhr läuft. Bildschirm bleibt an, tipp auf einen Satz für die Zahlentasten."); if (window.__waGame && voiceOn()) coachStart(); }
+    else { clockStop(); if (!wakeNeeded()) wakeOff(); }
     if (window.__waGame) renderAiFab();
     window.scrollTo(0, 0);
+  });
+
+  // ---------- Trainingsuhr: misst Sätze, Pausen, Übungen und die ganze Einheit ----------
+  let clockIv = 0;
+  const clockLog = () => state.logs[todayKey()];
+  const clockRun = (c) => !!(c && c.t0 && !c.t1);
+  function clkFmt(ms) {
+    const s = Math.max(0, Math.round(ms / 1000)), h = Math.floor(s / 3600), m = Math.floor(s / 60) % 60;
+    return h ? h + ":" + pad(m) + ":" + pad(s % 60) : m + ":" + pad(s % 60);
+  }
+  const clockTotal = (c) => ((c.t1 || Date.now()) - c.t0 - (c.off || 0));
+  function clockStart(auto) {
+    const dk = todayKey(), l = ensureLog(dk);
+    const c = l.clock;
+    if (clockRun(c)) { renderClock(); return; }
+    if (c && c.t1) {
+      const s = effSession(today());
+      const pr = s ? sessionProgress(dk, s) : null;
+      if (pr && pr.total && pr.done >= pr.total) { renderClock(); return; }
+      c.off = (c.off || 0) + (Date.now() - c.t1); c.t1 = null;
+    } else if (!c) l.clock = { t0: Date.now(), t1: null, off: 0, ev: [], auto: !!auto };
+    saveLog(dk);
+    renderClock();
+  }
+  function clockStop(auto) {
+    const dk = todayKey(), l = state.logs[dk], c = l && l.clock;
+    if (!clockRun(c)) return;
+    c.t1 = Date.now();
+    saveLog(dk);
+    renderClock();
+    if (auto) toast("Training geschafft in " + clkFmt(clockTotal(c)) + ". Die Zeiten pro Satz stehen unter den Übungen.");
+  }
+  function clockSet(l, id, i, done) {
+    let c = l.clock;
+    if (done) {
+      if (!c) { c = l.clock = { t0: Date.now(), t1: null, off: 0, ev: [], auto: true }; }
+      else if (c.t1) { c.off = (c.off || 0) + (Date.now() - c.t1); c.t1 = null; }
+      c.ev.push(["s", Date.now() - c.t0, id, i]);
+    } else if (c) {
+      for (let k = c.ev.length - 1; k >= 0; k--) if (c.ev[k][0] === "s" && c.ev[k][2] === id && c.ev[k][3] === i) { c.ev.splice(k, 1); break; }
+    }
+  }
+  function clockRest(ts) {
+    const dk = todayKey(), l = state.logs[dk], c = l && l.clock;
+    if (!clockRun(c)) return;
+    c.ev.push(["r", ts - c.t0]);
+    saveLog(dk);
+  }
+  function clockStats(c) {
+    const ev = (c.ev || []).slice().sort((a, b) => a[1] - b[1]);
+    let anchor = 0, prev = null, restSeen = false;
+    const sets = [];
+    ev.forEach((x) => {
+      if (x[0] === "r") { if (prev != null && x[1] > prev) { anchor = x[1]; restSeen = true; } return; }
+      const t = x[1];
+      let dur = null, rest = null;
+      if (prev == null) dur = c.auto ? null : t - anchor;
+      else if (restSeen) { dur = t - anchor; rest = anchor - prev; }
+      else rest = t - prev;
+      sets.push({ id: x[2], i: x[3], t, dur, rest });
+      prev = t; anchor = t; restSeen = false;
+    });
+    return sets;
+  }
+  function renderClock() {
+    const card = $("clockCard"), chip = $("sclock");
+    if (!card) return;
+    const dk = todayKey(), l = state.logs[dk], c = l && l.clock;
+    const run = clockRun(c);
+    chip.hidden = !run;
+    if (run && !clockIv) clockIv = setInterval(clockTick, 1000);
+    if (!run && clockIv) { clearInterval(clockIv); clockIv = 0; }
+    card.hidden = !c;
+    if (!c) return;
+    $("clockState").textContent = run ? "läuft" : "fertig";
+    $("clockStop").hidden = !run;
+    clockTick();
+    const s = effSession(parseKey(dk));
+    const sets = clockStats(c);
+    const order = s ? s.exercises.map((e) => e.id) : [];
+    sets.forEach((x) => { if (order.indexOf(x.id) < 0) order.push(x.id); });
+    const nameOf = (id) => { const e = s && s.exercises.find((x) => x.id === id); return e ? e.name : (l.exercises && l.exercises[id] && l.exercises[id].name) || "Übung"; };
+    $("clockList").innerHTML = order.map((id) => {
+      const ss = sets.filter((x) => x.id === id);
+      if (!ss.length) return "";
+      const first = ss[0], last = ss[ss.length - 1];
+      const span = last.t - (first.t - (first.dur || 0));
+      const durs = ss.map((x) => (x.dur == null ? "–" : clkFmt(x.dur)));
+      const rests = ss.slice(1).map((x) => x.rest).filter((v) => v != null);
+      const avgR = rests.length ? rests.reduce((a, b) => a + b, 0) / rests.length : null;
+      return "<li><b>" + esc(nameOf(id)) + '</b><span class="ct">' + clkFmt(span) + '</span><span class="cs">Sätze ' + durs.join(" · ") + (avgR != null ? " · Ø Pause " + clkFmt(avgR) : "") + "</span></li>";
+    }).join("") || '<li><span class="cs">Sobald du den ersten Satz abhakst, erscheinen hier die Zeiten.</span></li>';
+    let cmp = "";
+    for (let k = 1; k <= 60 && s; k++) {
+      const pk = dateKey(addDays(parseKey(dk), -k)), pl = state.logs[pk];
+      if (!pl || !pl.clock || !pl.clock.t1) continue;
+      const ps = effSession(parseKey(pk));
+      if (!ps || ps.name !== s.name) continue;
+      const pt = clockTotal(pl.clock);
+      cmp = "Letztes Mal (" + shortDate(parseKey(pk)) + "): " + clkFmt(pt);
+      if (!run) { const d = clockTotal(c) - pt; cmp += Math.abs(d) < 30000 ? ", gleich schnell" : ", " + clkFmt(Math.abs(d)) + (d < 0 ? " schneller" : " langsamer"); }
+      break;
+    }
+    $("clockCmp").textContent = cmp;
+  }
+  function clockTick() {
+    const l = clockLog(), c = l && l.clock;
+    if (!c) return;
+    const t = clkFmt(clockTotal(c));
+    $("clockTotal").textContent = t;
+    $("sclockTime").textContent = t;
+    if (!clockRun(c) && clockIv) { clearInterval(clockIv); clockIv = 0; $("sclock").hidden = true; }
+  }
+  $("sclock").addEventListener("click", () => {
+    if (currentTab !== "today") showTab("today");
+    setTimeout(() => { const el = $("clockCard"); if (el && !el.hidden) el.scrollIntoView({ block: "center", behavior: "smooth" }); }, 120);
+  });
+  $("clockStop").addEventListener("click", () => clockStop(false));
+  $("clockReset").addEventListener("click", function () {
+    if (this.dataset.armed !== "1") { this.dataset.armed = "1"; this.textContent = "Wirklich zurücksetzen?"; setTimeout(() => { this.dataset.armed = ""; this.textContent = "Zeit zurücksetzen"; }, 3000); return; }
+    this.dataset.armed = ""; this.textContent = "Zeit zurücksetzen";
+    const dk = todayKey(), l = state.logs[dk];
+    if (l) { delete l.clock; saveLog(dk); }
+    renderClock();
   });
 
   // ---------- Belastung und Erholungs-Ampel ----------
@@ -14404,7 +14557,10 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
     try { localStorage.setItem("winterarc.seenVer", APP_FEATURES_VER); } catch (e) { /* ignore */ }
     if (!Object.keys(state.logs || {}).length || !window.__waGame) return;
     sysShow("Neu im Winter Arc", [
+      { t: "Trainingszeit pro Satz, Pause, Übung", v: "Training starten" },
       { t: "Form-Kamera: zählt Wdh., prüft die Form", v: "bei jeder Übung" },
+      { t: "Pausen-Timer −30 s", v: "im Training" },
+      { t: "Training nach Mitternacht", v: "zählt bis 4 Uhr zum Vortag" },
       { t: "Alle Form-Videos", v: "Tools" },
       { t: "Stoppuhr mit Bestzeit-Vergleich", v: "Tools" },
       { t: "Timer", v: "Tools" }
@@ -15260,6 +15416,7 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
   });
   document.addEventListener("visibilitychange", () => { if (document.hidden && fc.recording) fcStopRec(false); });
 
+  try { renderClock(); } catch (e) { /* ignore */ }
   const deepHandled = handleDeepLink();
   initCollapsibles();
   initInfos();
