@@ -1668,6 +1668,17 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
 .pdc.ok i { background: var(--ice); border-color: var(--ice); color: var(--ice-ink, #04121F); }
 .pdcard.all .pdc.ok { border-color: rgba(255, 210, 92, .6); }
 .pdcard.all .pdc.ok i { background: #FFC23D; border-color: #FFC23D; color: #1A1204; }
+/* v22: System-Tab */
+.tabs { grid-template-columns: repeat(7, 1fr); }
+.tab { font-size: 9.5px; letter-spacing: -0.02em; }
+.tab svg { width: 21px; height: 21px; }
+.syshead { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px 14px; margin-bottom: 18px; }
+.syshead .pagetitle { margin: 0; }
+.syschips { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.syschips .rankchip, .syschips .passmini { margin: 0; }
+.sysview { display: flex; flex-direction: column; gap: 20px; }
+.sysview > * { order: 0 !important; margin: 0 !important; }
+.sysview > [hidden], .sysview > [data-tlhide] { display: none !important; }
 </style>
 </head>
 <body>
@@ -1694,6 +1705,7 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
     <symbol id="i-flake" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M12 2v20M3.3 7l17.4 10M3.3 17L20.7 7"/><path d="M9.5 3.8L12 6l2.5-2.2M9.5 20.2L12 18l2.5 2.2M4.4 10.3l3.1-1L6.8 6M19.6 13.7l-3.1 1 .7 3.3M4.4 13.7l3.1 1-.7 3.3M19.6 10.3l-3.1-1 .7-3.3"/></g></symbol>
     <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></symbol>
     <symbol id="i-today" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"><path d="M12 2.8l7.8 4.5v9L12 20.8l-7.8-4.5v-9z"/><circle cx="12" cy="11.8" r="2.6" fill="currentColor" stroke="none"/></g></symbol>
+    <symbol id="i-sys" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"><rect x="3.5" y="4.5" width="17" height="15" rx="2.5"/><path d="M12 8.2v5.2" stroke-linecap="round"/><circle cx="12" cy="16.3" r="1.1" fill="currentColor" stroke="none"/></g></symbol>
     <symbol id="i-week" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h10"/></g></symbol>
     <symbol id="i-prog" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19h16"/><path d="M5 15l4.5-4.5 3.5 3L19 7"/><path d="M15 7h4v4"/></g></symbol>
     <symbol id="i-tools" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="13.5" r="6.8"/><path d="M12 13.5V9.8M9.5 3.5h5M12 3.5v3.2M18.3 6.5l1.4 1.4"/></g></symbol>
@@ -1736,8 +1748,6 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
           <div class="hero" id="hero">
             <h1 class="dayname" id="dayname"></h1>
             <p class="datestr" id="datestr"></p>
-            <button class="rankchip" id="rankChip" hidden aria-label="Zu deinem Rang"></button>
-            <button class="passmini" id="passMini" hidden aria-label="Zum Saison-Pass"></button>
             <p class="sessname" id="sessname"></p>
             <p class="when" id="when"></p>
             <p class="deload" id="deload" hidden><b>Deload-Woche.</b> Halbe Sätze, gleiche Technik, nicht ans Limit. Jetzt holt dein Körper auf.</p>
@@ -1760,24 +1770,8 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
             <div><h3 id="ampelTitle">Noch keine Daten</h3><p id="ampelText"></p><p class="why" id="ampelWhy" hidden></p></div>
           </div>
 
-          <div class="gatecard" id="gateCard" hidden>
-            <div class="gportal" aria-hidden="true"><b id="gateRank">C</b></div>
-            <div><span class="systag sm"><span>!</span>Gate</span><h3 id="gateTitle"></h3><p id="gateMeta"></p><button class="btn small" id="gateEnter">Betreten</button></div>
-          </div>
 
-          <div class="hidcard" id="hidCard" hidden>
-            <span class="systag sm"><span>!</span>Verborgene Quest</span>
-            <h3 id="hidTitle">Das System hat dir etwas zugeflüstert</h3>
-            <p id="hidText"></p>
-            <div class="row"><button class="btn small" id="hidDone">Erledigt</button><button class="btn small" id="hidSkip">Nicht heute</button></div>
-          </div>
 
-          <div class="jobcard" id="jobCard" hidden>
-            <span class="systag sm"><span>!</span>Job-Wechsel</span>
-            <h3 id="jobTitle">Die Prüfung wartet</h3>
-            <p id="jobText"></p>
-            <button class="btn small" id="jobGo">Prüfung beginnen</button>
-          </div>
 
           <div class="dlcard" id="dlCard" hidden>
             <span class="systag sm"><span>!</span>System</span>
@@ -1787,44 +1781,10 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
             <div class="row"><button class="btn small primary" id="dlYes">Deload diese Woche</button><button class="btn small" id="dlNo">Weiter wie geplant</button></div>
           </div>
 
-          <div class="chestcard" id="chestCard" hidden>
-            <svg class="chest" viewBox="0 0 64 56" aria-hidden="true">
-              <defs><linearGradient id="chW" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8A5A2B"/><stop offset="1" stop-color="#4A2B10"/></linearGradient><linearGradient id="chG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFF0B0"/><stop offset=".5" stop-color="#FFC23D"/><stop offset="1" stop-color="#B26A0C"/></linearGradient></defs>
-              <g class="chburst"><circle cx="32" cy="26" r="20" fill="rgba(255,210,92,.35)"/></g>
-              <rect x="8" y="26" width="48" height="26" rx="4" fill="url(#chW)"/>
-              <rect x="8" y="34" width="48" height="4" fill="url(#chG)"/><rect x="14" y="26" width="5" height="26" fill="url(#chG)"/><rect x="45" y="26" width="5" height="26" fill="url(#chG)"/>
-              <g class="chlid"><path d="M8 26c0-11 8-17 24-17s24 6 24 17z" fill="url(#chW)"/><path d="M14 26c0-9 5-14 5-14h-.5M45 12s5 5 5 14" stroke="#FFC23D" stroke-width="5" fill="none"/><rect x="27" y="20" width="10" height="11" rx="2" fill="url(#chG)"/><circle cx="32" cy="25" r="1.8" fill="#4A2B10"/></g>
-            </svg>
-            <div class="chtext"><b id="chestTitle">Tägliche Truhe</b><small id="chestSub"></small></div>
-            <button class="btn small" id="chestOpen">Öffnen</button>
-          </div>
 
-          <div class="advcard" id="advCard" hidden>
-            <div class="advmini" id="advMini" aria-hidden="true">1</div>
-            <div class="advtext"><b id="advTitle">Adventskalender</b><small id="advSub"></small></div>
-            <button class="btn small" id="advBtn">Kalender</button>
-          </div>
 
-          <div class="questcard" id="questCard">
-            <div class="qhead"><span class="systag sm"><span>!</span>Daily Quest</span><span class="qstate" id="questState"></span></div>
-            <ul class="qlist" id="questList"></ul>
-            <p class="qnote" id="questNote"></p>
-          </div>
 
-          <div class="raidcard" id="raidCard" hidden>
-            <div class="qhead"><span class="systag sm"><span>!</span><i id="raidTag">Wochen-Raid</i></span><span class="qstate" id="raidToday"></span></div>
-            <svg class="raidsig" id="raidSig" viewBox="0 0 64 64" aria-hidden="true"><path d="M8 6l10 12 4-8 10 6 10-6 4 8 10-12-2 22c0 14-10 26-22 32C20 54 10 42 10 28z" fill="rgba(255,60,80,.14)" stroke="#FF4D5E" stroke-width="2" stroke-linejoin="round"/><path d="M16 32c5-7 11-10 16-10s11 3 16 10c-5 7-11 10-16 10s-11-3-16-10z" fill="#1A0306" stroke="#FF8A95" stroke-width="1.6"/><path d="M32 24c2.4 3 2.4 13 0 16-2.4-3-2.4-13 0-16z" fill="#FF4D5E"/></svg>
-            <h3 id="raidName"></h3>
-            <p class="raiddesc" id="raidDesc"></p>
-            <div class="raidbar" id="raidBar" role="presentation"><i></i></div>
-            <p class="raidnums" id="raidNums"></p>
-            <p class="raidnext" id="raidNext" hidden></p>
-          </div>
 
-          <div class="pdcard" id="pdCard" hidden>
-            <div class="pdhead"><b id="pdTitle">Perfekter Tag</b><span id="pdState"></span></div>
-            <div class="pdchips" id="pdChips"></div>
-          </div>
 
           <div class="goalcard" id="goalCard" data-coll="goal">
             <div class="shead"><h2>Wochenziel</h2><span id="goalState"></span></div>
@@ -1957,15 +1917,133 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
       </div>
     </section>
 
+    <!-- SYSTEM: alles aus dem Spiel an einem Ort -->
+    <section id="view-system" aria-label="System" hidden>
+      <div class="syshead">
+        <h1 class="pagetitle">System</h1>
+        <div class="syschips">
+          <button class="rankchip" id="rankChip" hidden aria-label="Zu deinem Rang"></button>
+          <button class="passmini" id="passMini" hidden aria-label="Zum Saison-Pass"></button>
+        </div>
+      </div>
+      <div class="sysview">
+        <div class="gatecard" id="gateCard" hidden>
+            <div class="gportal" aria-hidden="true"><b id="gateRank">C</b></div>
+            <div><span class="systag sm"><span>!</span>Gate</span><h3 id="gateTitle"></h3><p id="gateMeta"></p><button class="btn small" id="gateEnter">Betreten</button></div>
+          </div>
+        <div class="hidcard" id="hidCard" hidden>
+            <span class="systag sm"><span>!</span>Verborgene Quest</span>
+            <h3 id="hidTitle">Das System hat dir etwas zugeflüstert</h3>
+            <p id="hidText"></p>
+            <div class="row"><button class="btn small" id="hidDone">Erledigt</button><button class="btn small" id="hidSkip">Nicht heute</button></div>
+          </div>
+        <div class="jobcard" id="jobCard" hidden>
+            <span class="systag sm"><span>!</span>Job-Wechsel</span>
+            <h3 id="jobTitle">Die Prüfung wartet</h3>
+            <p id="jobText"></p>
+            <button class="btn small" id="jobGo">Prüfung beginnen</button>
+          </div>
+        <div class="chestcard" id="chestCard" hidden>
+            <svg class="chest" viewBox="0 0 64 56" aria-hidden="true">
+              <defs><linearGradient id="chW" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8A5A2B"/><stop offset="1" stop-color="#4A2B10"/></linearGradient><linearGradient id="chG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFF0B0"/><stop offset=".5" stop-color="#FFC23D"/><stop offset="1" stop-color="#B26A0C"/></linearGradient></defs>
+              <g class="chburst"><circle cx="32" cy="26" r="20" fill="rgba(255,210,92,.35)"/></g>
+              <rect x="8" y="26" width="48" height="26" rx="4" fill="url(#chW)"/>
+              <rect x="8" y="34" width="48" height="4" fill="url(#chG)"/><rect x="14" y="26" width="5" height="26" fill="url(#chG)"/><rect x="45" y="26" width="5" height="26" fill="url(#chG)"/>
+              <g class="chlid"><path d="M8 26c0-11 8-17 24-17s24 6 24 17z" fill="url(#chW)"/><path d="M14 26c0-9 5-14 5-14h-.5M45 12s5 5 5 14" stroke="#FFC23D" stroke-width="5" fill="none"/><rect x="27" y="20" width="10" height="11" rx="2" fill="url(#chG)"/><circle cx="32" cy="25" r="1.8" fill="#4A2B10"/></g>
+            </svg>
+            <div class="chtext"><b id="chestTitle">Tägliche Truhe</b><small id="chestSub"></small></div>
+            <button class="btn small" id="chestOpen">Öffnen</button>
+          </div>
+        <div class="advcard" id="advCard" hidden>
+            <div class="advmini" id="advMini" aria-hidden="true">1</div>
+            <div class="advtext"><b id="advTitle">Adventskalender</b><small id="advSub"></small></div>
+            <button class="btn small" id="advBtn">Kalender</button>
+          </div>
+        <div class="questcard" id="questCard">
+            <div class="qhead"><span class="systag sm"><span>!</span>Daily Quest</span><span class="qstate" id="questState"></span></div>
+            <ul class="qlist" id="questList"></ul>
+            <p class="qnote" id="questNote"></p>
+          </div>
+        <div class="raidcard" id="raidCard" hidden>
+            <div class="qhead"><span class="systag sm"><span>!</span><i id="raidTag">Wochen-Raid</i></span><span class="qstate" id="raidToday"></span></div>
+            <svg class="raidsig" id="raidSig" viewBox="0 0 64 64" aria-hidden="true"><path d="M8 6l10 12 4-8 10 6 10-6 4 8 10-12-2 22c0 14-10 26-22 32C20 54 10 42 10 28z" fill="rgba(255,60,80,.14)" stroke="#FF4D5E" stroke-width="2" stroke-linejoin="round"/><path d="M16 32c5-7 11-10 16-10s11 3 16 10c-5 7-11 10-16 10s-11-3-16-10z" fill="#1A0306" stroke="#FF8A95" stroke-width="1.6"/><path d="M32 24c2.4 3 2.4 13 0 16-2.4-3-2.4-13 0-16z" fill="#FF4D5E"/></svg>
+            <h3 id="raidName"></h3>
+            <p class="raiddesc" id="raidDesc"></p>
+            <div class="raidbar" id="raidBar" role="presentation"><i></i></div>
+            <p class="raidnums" id="raidNums"></p>
+            <p class="raidnext" id="raidNext" hidden></p>
+          </div>
+        <div class="pdcard" id="pdCard" hidden>
+            <div class="pdhead"><b id="pdTitle">Perfekter Tag</b><span id="pdState"></span></div>
+            <div class="pdchips" id="pdChips"></div>
+          </div>
+        <div class="bountybox" id="bountyBox" hidden>
+            <div class="shead"><h2>Kopfgelder der Woche</h2><span id="bountyState"></span></div>
+            <ul class="bountylist" id="bountyList"></ul>
+            <p class="fhint" id="bountyNote"></p>
+          </div>
+        <div class="block" id="rankBlock">
+            <h2 class="bh">Dein Rang</h2>
+            <div class="syscard" id="statusWin"></div>
+            <p class="lead">Jeder Bereich zahlt auf ein Attribut ein, die Attribute ergeben deinen Gesamtrang. Stimmt ein Wert nicht, tipp auf die Zeile und korrigiere ihn.</p>
+            <ul class="ranklist" id="rankList"></ul>
+            <details class="rankreq" id="rankReqD">
+              <summary>Was brauche ich für welchen Rang?</summary>
+              <div class="rrwrap"><table class="rrtab" id="rankReq"></table></div>
+              <p class="rrnote">Übungen: bester Satz am Stück, Zusatzgewicht wird in Wiederholungen umgerechnet. 5 km: beste Zeit, Läufe ab 4,8 km, längere werden umgerechnet. Ruhepuls: Schnitt aus 3 Messungen, weniger ist besser. Laufeffizienz: Meter pro Herzschlag bei Läufen ab 3 km. Maximalkraft: geschätztes Klimmzug-Maximum über Körpergewicht. Protein und Gewohnheiten: bester Zeitraum von 4 Wochen.</p>
+            </details>
+          </div>
+        <div class="block" id="passBlock">
+            <h2 class="bh">Saison-Pass <span class="achcount" id="passSeason">Winter Arc</span></h2>
+            <div class="passhead" id="passHead"></div>
+            <div class="passbar" id="passBar"><i></i></div>
+            <p class="passnext" id="passNext"></p>
+            <button class="btn primary passclaim" id="passClaim" hidden>Belohnungen abholen</button>
+            <ol class="passtrack" id="passTrack" aria-label="Stufen des Saison-Passes"></ol>
+            <p class="lead">Jede XP aus deinem Training bringt dich eine Stufe weiter. Stufe 10, 20 und 30 schalten exklusive Farben frei, dazu Titel, Items und Gold. Nach Stufe 30 gibt es Bonusstufen.</p>
+          </div>
+        <div class="block" id="clsBlock">
+            <h2 class="bh">Klasse</h2>
+            <div id="clsCur"></div>
+          </div>
+        <div class="block" id="armyBlock">
+            <h2 class="bh">Schatten-Armee <span class="achcount" id="armyCount"></span></h2>
+            <p class="lead">Besiegte Bosse und Gate-Wächter ab C-Rang kannst du als Schatten extrahieren. Du hast drei Versuche, danach zerfällt der Schatten. Ein Schatten wartet zwei Tage.</p>
+            <div id="armyPend"></div>
+            <div class="armygrid" id="armyGrid"></div>
+          </div>
+        <div class="block" id="bestBlock" hidden>
+            <h2 class="bh">Bestiarium <span class="achcount" id="bestCount"></span></h2>
+            <p class="lead">Jede Woche ein Raid-Boss. Hier steht, wen du erlegt hast und wer dir entkommen ist.</p>
+            <ol class="besttrack" id="bestTrack" aria-label="Raid-Bosse deines Arcs"></ol>
+            <div class="bestdet" id="bestDet" aria-live="polite"></div>
+          </div>
+        <div class="block" id="invBlock">
+            <h2 class="bh">Inventar</h2>
+            <p class="lead">Beute aus Gates. Gates öffnen sich zwischendurch von selbst, meistens tagsüber. Ein Red Gate erkennst du erst, wenn du drin bist.</p>
+            <div class="invgrid" id="invGrid"></div>
+            <p class="gatestats" id="gateStats"></p>
+            <ul class="gatelog" id="gateLog"></ul>
+          </div>
+        <div class="block" id="shopBlock">
+            <h2 class="bh">Händler <span class="goldbal" id="shopGold"></span></h2>
+            <p class="lead">Gold bekommst du für Gates, Daily Quests, Erfolge, Bosse, den Wochen-Raid und Skill-Stufen. Jeden Tag ist ein Angebot 30 % günstiger. Zum Kaufen zweimal tippen.</p>
+            <div class="invgrid" id="shopGrid"></div>
+            <ul class="goldlog" id="goldLog"></ul>
+          </div>
+        <div class="block" id="achBlock">
+            <h2 class="bh">Erfolge <span class="achcount" id="achCount"></span></h2>
+            <p class="lead">Besondere Momente deines Arcs. Manche schalten einen Titel frei, den du im Status-Fenster trägst. Tipp auf einen freigeschalteten Titel, um ihn anzulegen.</p>
+            <div class="achgrid" id="achGrid"></div>
+            <div class="titlechips" id="titleChips" hidden></div>
+          </div>
+      </div>
+    </section>
+
     <!-- WEEK -->
     <section id="view-week" aria-label="Woche" hidden>
       <h1 class="pagetitle" id="weektitle">Diese Woche</h1>
       <div class="week-stats" id="weekstats"></div>
-      <div class="bountybox" id="bountyBox" hidden>
-        <div class="shead"><h2>Kopfgelder der Woche</h2><span id="bountyState"></span></div>
-        <ul class="bountylist" id="bountyList"></ul>
-        <p class="fhint" id="bountyNote"></p>
-      </div>
       <div class="duel" id="duelBox" hidden>
         <div class="shead"><h2>Wochenduell</h2><span id="duelState"></span></div>
         <p class="fhint" id="duelNote"></p>
@@ -1996,61 +2074,6 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
     <section id="view-progress" aria-label="Fortschritt" hidden>
       <h1 class="pagetitle">Fortschritt</h1>
       <div class="progview">
-        <div class="block" id="rankBlock">
-          <h2 class="bh">Dein Rang</h2>
-          <div class="syscard" id="statusWin"></div>
-          <p class="lead">Jeder Bereich zahlt auf ein Attribut ein, die Attribute ergeben deinen Gesamtrang. Stimmt ein Wert nicht, tipp auf die Zeile und korrigiere ihn.</p>
-          <ul class="ranklist" id="rankList"></ul>
-          <details class="rankreq" id="rankReqD">
-            <summary>Was brauche ich für welchen Rang?</summary>
-            <div class="rrwrap"><table class="rrtab" id="rankReq"></table></div>
-            <p class="rrnote">Übungen: bester Satz am Stück, Zusatzgewicht wird in Wiederholungen umgerechnet. 5 km: beste Zeit, Läufe ab 4,8 km, längere werden umgerechnet. Ruhepuls: Schnitt aus 3 Messungen, weniger ist besser. Laufeffizienz: Meter pro Herzschlag bei Läufen ab 3 km. Maximalkraft: geschätztes Klimmzug-Maximum über Körpergewicht. Protein und Gewohnheiten: bester Zeitraum von 4 Wochen.</p>
-          </details>
-        </div>
-        <div class="block" id="passBlock">
-          <h2 class="bh">Saison-Pass <span class="achcount" id="passSeason">Winter Arc</span></h2>
-          <div class="passhead" id="passHead"></div>
-          <div class="passbar" id="passBar"><i></i></div>
-          <p class="passnext" id="passNext"></p>
-          <button class="btn primary passclaim" id="passClaim" hidden>Belohnungen abholen</button>
-          <ol class="passtrack" id="passTrack" aria-label="Stufen des Saison-Passes"></ol>
-          <p class="lead">Jede XP aus deinem Training bringt dich eine Stufe weiter. Stufe 10, 20 und 30 schalten exklusive Farben frei, dazu Titel, Items und Gold. Nach Stufe 30 gibt es Bonusstufen.</p>
-        </div>
-        <div class="block" id="clsBlock">
-          <h2 class="bh">Klasse</h2>
-          <div id="clsCur"></div>
-        </div>
-        <div class="block" id="armyBlock">
-          <h2 class="bh">Schatten-Armee <span class="achcount" id="armyCount"></span></h2>
-          <p class="lead">Besiegte Bosse und Gate-Wächter ab C-Rang kannst du als Schatten extrahieren. Du hast drei Versuche, danach zerfällt der Schatten. Ein Schatten wartet zwei Tage.</p>
-          <div id="armyPend"></div>
-          <div class="armygrid" id="armyGrid"></div>
-        </div>
-        <div class="block" id="bestBlock" hidden>
-          <h2 class="bh">Bestiarium <span class="achcount" id="bestCount"></span></h2>
-          <p class="lead">Jede Woche ein Raid-Boss. Hier steht, wen du erlegt hast und wer dir entkommen ist.</p>
-          <ol class="besttrack" id="bestTrack" aria-label="Raid-Bosse deines Arcs"></ol>
-          <div class="bestdet" id="bestDet" aria-live="polite"></div>
-        </div>
-        <div class="block" id="invBlock">
-          <h2 class="bh">Inventar</h2>
-          <p class="lead">Beute aus Gates. Gates öffnen sich zwischendurch von selbst, meistens tagsüber. Ein Red Gate erkennst du erst, wenn du drin bist.</p>
-          <div class="invgrid" id="invGrid"></div>
-          <p class="gatestats" id="gateStats"></p>
-          <ul class="gatelog" id="gateLog"></ul>
-        </div>
-        <div class="block" id="shopBlock">
-          <h2 class="bh">Händler <span class="goldbal" id="shopGold"></span></h2>
-          <p class="lead">Gold bekommst du für Gates, Daily Quests, Erfolge, Bosse, den Wochen-Raid und Skill-Stufen. Jeden Tag ist ein Angebot 30 % günstiger. Zum Kaufen zweimal tippen.</p>
-          <div class="invgrid" id="shopGrid"></div>
-          <ul class="goldlog" id="goldLog"></ul>
-        </div>
-        <div class="block" id="achBlock">
-          <h2 class="bh">Erfolge <span class="achcount" id="achCount"></span></h2>
-          <p class="lead">Besondere Momente deines Arcs. Manche schalten einen Titel frei, den du im Status-Fenster trägst. Tipp auf einen freigeschalteten Titel, um ihn anzulegen.</p>
-          <div class="achgrid" id="achGrid"></div>
-          <div class="titlechips" id="titleChips" hidden></div>
-        </div>
         <div class="block">
           <h2 class="bh">Dein Winter Arc</h2>
           <p class="lead">Jeder Kristall ist ein Tag. Je heller, desto mehr hast du an dem Tag geschafft. Türkis markierte Wochen sind Deload-Wochen.</p>
@@ -2517,7 +2540,8 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
               <div class="row"><button class="btn small" id="natTest">Test-Benachrichtigung</button></div>
               <div class="block sub">
                 <h3>Health Connect</h3>
-                <p class="lead" id="hcState">Holt Schritte, Schlaf und Ruhepuls automatisch, zum Beispiel von deiner Garmin-Uhr über Garmin Connect.</p>
+                <p class="lead" id="hcState">Holt Schritte, Schlaf, Ruhepuls und Läufe automatisch, zum Beispiel von deiner Garmin-Uhr über Garmin Connect.</p>
+                <p class="fhint">In der Garmin-Connect-App einmal unter Einstellungen bei Health Connect die Freigabe einschalten. Den Sleep Score gibt Garmin nicht weiter, dafür bleibt der Screenshot-Knopf im Check-in.</p>
                 <div class="row"><button class="btn small primary" id="hcConnect">Verbinden</button><button class="btn small" id="hcSync" hidden>Jetzt abgleichen</button><button class="btn small" id="hcOpen" hidden>Berechtigungen</button></div>
               </div>
               <div class="block sub">
@@ -2618,6 +2642,7 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
 <nav class="tabs" aria-label="Bereiche">
   <span class="tabglide" id="tabGlide" aria-hidden="true"></span>
   <button class="tab" data-tab="today" aria-current="page"><svg aria-hidden="true"><use href="#i-today"/></svg>Heute</button>
+  <button class="tab" data-tab="system"><svg aria-hidden="true"><use href="#i-sys"/></svg>System</button>
   <button class="tab" data-tab="week"><svg aria-hidden="true"><use href="#i-week"/></svg>Woche</button>
   <button class="tab" data-tab="progress"><svg aria-hidden="true"><use href="#i-prog"/></svg>Fortschritt</button>
   <button class="tab" data-tab="body"><svg aria-hidden="true"><use href="#i-body"/></svg>Körper</button>
@@ -7121,13 +7146,14 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
   });
 
   // ================= Tabs =================
-  const TABS = ["today", "week", "progress", "body", "tools", "coach"];
+  const TABS = ["today", "system", "week", "progress", "body", "tools", "coach"];
   const VIEWS = TABS.concat(["plan"]);
   let lastMainTab = "today";
   let currentTab = "today";
   function renderTabContent(name) {
     if (name === "week") renderWeek();
     if (name === "progress") renderProgress();
+    if (name === "system") renderSystem();
     if (name === "body") renderBody();
     if (name === "tools") renderTools();
     if (name === "plan") renderPlanView();
@@ -8104,7 +8130,7 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
       if (go) {
         handled = true;
         setTimeout(() => {
-          if (go === "rang") { showTab("progress"); setTimeout(() => { const b = $("rankBlock"); if (b) b.scrollIntoView({ block: "start" }); }, 150); }
+          if (go === "rang") { showTab("system"); setTimeout(() => { const b = $("rankBlock"); if (b) b.scrollIntoView({ block: "start" }); }, 150); }
           else if (go === "checkin") { showTab("today"); setTimeout(() => { const c = $("checkinCard"); if (c) c.scrollIntoView({ block: "center" }); }, 150); }
           else if (go === "train") { showTab("today"); if (!trainMode && $("trainBtn")) $("trainBtn").click(); }
         }, 350);
@@ -8362,7 +8388,7 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
     const b = ev.target.closest(".accent-btn");
     if (!b) return;
     const lockA = ACCENTS.find((x) => x.k === b.dataset.k);
-    if (lockA && lockA.lock && !accOwned(lockA.k)) { toast(lockA.lock === "pass" ? "„" + lockA.n + "“ schaltest du im Saison-Pass frei (Fortschritt)." : lockA.lock === "event" ? "„" + lockA.n + "“ gibt es nur " + lockA.how + "." : "„" + lockA.n + "“ gibt es beim Händler (Fortschritt)."); return; }
+    if (lockA && lockA.lock && !accOwned(lockA.k)) { toast(lockA.lock === "pass" ? "„" + lockA.n + "“ schaltest du im Saison-Pass frei (System)." : lockA.lock === "event" ? "„" + lockA.n + "“ gibt es nur " + lockA.how + "." : "„" + lockA.n + "“ gibt es beim Händler (System)."); return; }
     S().accent = b.dataset.k;
     const picked = ACCENTS.find((x) => x.k === b.dataset.k);
     if (picked && picked.line) toast(picked.line);
@@ -9854,7 +9880,7 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
   }
   if ($("statusWin")) $("statusWin").addEventListener("click", (ev) => { if (ev.target.closest("#licBtn")) { hap("tap"); shareLicense(); } });
   if ($("questNote")) $("questNote").addEventListener("click", (ev) => { if (ev.target.closest("#questElix")) { hap("tap"); useItem("elixir"); } });
-  if ($("rankChip")) $("rankChip").addEventListener("click", () => { showTab("progress"); setTimeout(() => { const b = $("rankBlock"); if (b) b.scrollIntoView({ block: "start", behavior: "smooth" }); }, 120); });
+  if ($("rankChip")) $("rankChip").addEventListener("click", () => { showTab("system"); setTimeout(() => { const b = $("rankBlock"); if (b) b.scrollIntoView({ block: "start", behavior: "smooth" }); }, 120); });
 
   // ---------- v11: Daily Quest, Erfolge, Titel, Boss, Hunter-Lizenz, Coach-Stimme ----------
   const hashStr = (str) => { let h = 2166136261; for (let i = 0; i < str.length; i++) { h ^= str.charCodeAt(i); h = Math.imul(h, 16777619); } return h >>> 0; };
@@ -11454,7 +11480,7 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
     g.expires = keyed ? now + 3 * 3600e3 : Math.min(now + 3 * 3600e3, endOfDay(now) - 2.5 * 3600e3);
     G.cur = g; G.lastDay = todayKey();
     saveLocal();
-    sysShow("Ein Gate hat sich geöffnet", [{ t: "Rang", v: RANK_L[rank] + "-Rang" }, { t: "Zeitlimit drinnen", v: GATE_MIN[rank] + " Min." }, { t: "Schließt um", v: hhmm(g.expires) }], rank, "Du findest es unter Heute. Gefahr: unbekannt.", { hap: "gate", voice: { sit: "gate_open", vars: { rang: RANK_L[rank] } } });
+    sysShow("Ein Gate hat sich geöffnet", [{ t: "Rang", v: RANK_L[rank] + "-Rang" }, { t: "Zeitlimit drinnen", v: GATE_MIN[rank] + " Min." }, { t: "Schließt um", v: hhmm(g.expires) }], rank, "Du findest es unter System. Gefahr: unbekannt.", { hap: "gate", voice: { sit: "gate_open", vars: { rang: RANK_L[rank] } } });
     renderGate();
   }
   const hhmm = (ts) => { const d = new Date(ts); return pad(d.getHours()) + ":" + pad(d.getMinutes()); };
@@ -11506,7 +11532,7 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
     const rw = ["elixir", "rune", "key"][(h >>> 12) % 3];
     H.cur = { d: dk, t: HID_POOL[(h >>> 16) % HID_POOL.length], exp: endOfDay(now), rw };
     saveLocal();
-    sysShow("Verborgene Quest", [{ t: "Belohnung", v: ITEMS[rw].n + " + 30 XP" }, { t: "Frist", v: "bis heute Abend" }], null, H.cur.t + ". Du findest sie unter Heute.", { hap: "gate" });
+    sysShow("Verborgene Quest", [{ t: "Belohnung", v: ITEMS[rw].n + " + 30 XP" }, { t: "Frist", v: "bis heute Abend" }], null, H.cur.t + ". Du findest sie im System-Tab.", { hap: "gate" });
     renderHid();
   }
   function renderHid() {
@@ -12102,7 +12128,7 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
     if (!el) return;
     const id = classId(), J = jobMeta();
     if (!id) {
-      el.innerHTML = '<p class="lead">' + (J.passed ? "Prüfung bestanden. Wähle deine Klasse unter Heute." : playerRank() >= 2 ? "Die Prüfung des Job-Wechsels wartet unter Heute." : "Ab Gesamtrang C öffnet sich die Prüfung des Job-Wechsels. Danach wählst du eine Klasse mit eigenem Bonus und eigenen Quests.") + "</p>";
+      el.innerHTML = '<p class="lead">' + (J.passed ? "Prüfung bestanden. Wähle deine Klasse im System-Tab." : playerRank() >= 2 ? "Die Prüfung des Job-Wechsels wartet im System-Tab." : "Ab Gesamtrang C öffnet sich die Prüfung des Job-Wechsels. Danach wählst du eine Klasse mit eigenem Bonus und eigenen Quests.") + "</p>";
       return;
     }
     const c = CLASSES[id], cl = rankMeta().cls;
@@ -12629,12 +12655,10 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
     if (cur && !renderPass.scrolled) { renderPass.scrolled = true; requestAnimationFrame(() => { el.scrollLeft = Math.max(0, cur.offsetLeft - el.clientWidth / 2 + cur.offsetWidth / 2); }); }
   }
   function passDot() {
-    const b = document.querySelector('.tabs .tab[data-tab="progress"]');
-    if (!b) return;
     let st = null;
     try { st = passState(); } catch (e) { st = null; }
     const n = st ? st.claimable : 0;
-    b.classList.toggle("hasdot", n > 0);
+    sysDot();
     const pm = $("passMini");
     if (pm && st && window.__waGame) {
       pm.hidden = false;
@@ -12643,7 +12667,7 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
       renderGoldBits();
     }
   }
-  if ($("passMini")) $("passMini").addEventListener("click", () => { hap("tab"); showTab("progress"); setTimeout(() => { const b = $("passBlock"); if (b) b.scrollIntoView({ block: "start", behavior: "smooth" }); }, 120); });
+  if ($("passMini")) $("passMini").addEventListener("click", () => { hap("tab"); showTab("system"); setTimeout(() => { const b = $("passBlock"); if (b) b.scrollIntoView({ block: "start", behavior: "smooth" }); }, 120); });
   if ($("passClaim")) $("passClaim").addEventListener("click", passClaimAll);
 
   // ---- Wochen-Raid: ein Boss pro Woche, dein Training ist der Schaden ----
@@ -12780,7 +12804,7 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
       }
       goldAdd(gold, "Raid-Boss " + r.boss.n, true);
       saveLocal(); hap("pr");
-      sysShow(r.ev === "finale" ? "Der Winterkönig ist gefallen" : r.ev ? "Event-Boss besiegt" : "Raid-Boss besiegt", lines, null, r.ev === "finale" ? "Dein Arc hat seinen letzten Boss verloren. Den Titel trägst du ab jetzt, wann immer du willst." : r.ev ? "Titel und Farbe gehören dir. Du findest sie unter Fortschritt und im Plan." : "Der Wochen-Raid ist geschafft. Montag kommt der nächste.");
+      sysShow(r.ev === "finale" ? "Der Winterkönig ist gefallen" : r.ev ? "Event-Boss besiegt" : "Raid-Boss besiegt", lines, null, r.ev === "finale" ? "Dein Arc hat seinen letzten Boss verloren. Den Titel trägst du ab jetzt, wann immer du willst." : r.ev ? "Titel und Farbe gehören dir. Du findest sie im System-Tab und im Plan." : "Der Wochen-Raid ist geschafft. Montag kommt der nächste.");
       renderInv(); checkRanks(); try { renderTitleChips(); } catch (e) { /* ignore */ }
     }
   }
@@ -12932,11 +12956,6 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
   // ================= v20: Heute anpassen (Reihenfolge und Sichtbarkeit der Karten) =================
   const TL_ITEMS = [
     { k: "ampel", n: "Bereitschafts-Ampel", sel: ["#ampelCard"] },
-    { k: "chest", n: "Tägliche Truhe", sel: ["#chestCard"] },
-    { k: "advent", n: "Adventskalender (Dezember)", sel: ["#advCard"] },
-    { k: "quest", n: "Daily Quest", sel: ["#questCard"] },
-    { k: "raid", n: "Wochen-Raid", sel: ["#raidCard"] },
-    { k: "perfect", n: "Perfekter Tag", sel: ["#pdCard"] },
     { k: "training", n: "Training", sel: ["#today-empty", "#today-list-wrap", "#today-rest"], fixed: true },
     { k: "goal", n: "Wochenziel", sel: ["#goalCard"] },
     { k: "habits", n: "Jeden Tag", sel: ["#view-today .habits"] },
@@ -13104,7 +13123,7 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
     if (!show) return;
     if (d >= 1 && !(rankMeta().evSeen || {})["adv" + advYear()]) {
       const m = rankMeta(); m.evSeen = m.evSeen || {}; m.evSeen["adv" + advYear()] = todayKey(); saveLocal();
-      sysShow("Der Adventskalender ist offen", [{ t: "Türchen", v: "24" }, { t: "Öffnet sich", v: "nach Training oder Daily Quest" }, { t: "Verpasst?", v: ADV_LATE + " Gold zum Nachholen" }, { t: "24. Dezember", v: "Titel und Farbe Tannenzauber" }], null, "Jeden Tag ein Türchen. Du findest den Kalender unter Heute.");
+      sysShow("Der Adventskalender ist offen", [{ t: "Türchen", v: "24" }, { t: "Öffnet sich", v: "nach Training oder Daily Quest" }, { t: "Verpasst?", v: ADV_LATE + " Gold zum Nachholen" }, { t: "24. Dezember", v: "Titel und Farbe Tannenzauber" }], null, "Jeden Tag ein Türchen. Du findest den Kalender im System-Tab.");
     }
     const st = d >= 1 && d <= 24 ? advState(d) : "", n = Math.min(24, d);
     card.classList.toggle("ready", st === "ready");
@@ -13347,7 +13366,11 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
     const b = ev.target.closest("[data-go]");
     if (!b) return;
     const el = document.querySelector(b.dataset.go);
-    if (el && !el.hidden) { hap("tap"); el.scrollIntoView({ block: "start", behavior: "smooth" }); }
+    if (!el || el.hidden) return;
+    hap("tap");
+    const sec = el.closest("section[id^='view-']"), tab = sec ? sec.id.slice(5) : currentTab;
+    if (tab !== currentTab) { showTab(tab); setTimeout(() => el.scrollIntoView({ block: "start", behavior: "smooth" }), 160); }
+    else el.scrollIntoView({ block: "start", behavior: "smooth" });
   });
 
 
@@ -13399,11 +13422,7 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
     $("bountyNote").textContent = W.all ? "Alle drei geschafft. Der Bonus-Schlüssel liegt im Inventar. Montag gibt es neue Kopfgelder." : "Alle drei abgeholt: zusätzlich ein Gate-Schlüssel. Jeden Montag gibt es neue.";
   }
   function bountyDot() {
-    const b = document.querySelector('.tabs .tab[data-tab="week"]');
-    if (!b) return;
-    let n = 0;
-    try { n = bountyWeek().list.filter((x) => x.done && !x.got).length; } catch (e) { n = 0; }
-    b.classList.toggle("hasdot", n > 0);
+    sysDot();
   }
   if ($("bountyList")) $("bountyList").addEventListener("click", (ev) => {
     const bt = ev.target.closest("[data-bounty]");
@@ -13425,7 +13444,7 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
 
 
   // ================= v20: Einmalig „Neu im Winter Arc“ nach dem Update =================
-  const APP_FEATURES_VER = "v21";
+  const APP_FEATURES_VER = "v22";
   function whatsNew() {
     let seen = "";
     try { seen = localStorage.getItem("winterarc.seenVer") || ""; } catch (e) { return; }
@@ -13433,14 +13452,37 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
     try { localStorage.setItem("winterarc.seenVer", APP_FEATURES_VER); } catch (e) { /* ignore */ }
     if (!Object.keys(state.logs || {}).length || !window.__waGame) return;
     sysShow("Neu im Winter Arc", [
-      { t: "Saison-Pass, Gold und Händler", v: "Fortschritt" },
-      { t: "Raid, Truhe, Perfekter Tag", v: "Heute" },
-      { t: "Kopfgelder und Wochenduell", v: "Woche" },
-      { t: "Skill-Baum und Bestiarium", v: "Fortschritt" },
+      { t: "Rang, Quest, Gates, Raid, Truhe", v: "System" },
+      { t: "Saison-Pass, Händler, Erfolge", v: "System" },
+      { t: "Kopfgelder und Bestiarium", v: "System" },
+      { t: "Wochenduell", v: "Woche" },
       { t: "Halloween, Advent, Finale", v: "Events ab 26.10." },
       { t: "Heute anpassen", v: "unten auf Heute" },
       { t: "Plan und Einstellungen", v: "Zahnrad oben" }
-    ], null, "Dein bisheriger Arc zählt mit: Startkapital in Gold und Saison-Stufen für die Tage, die schon hinter dir liegen. Hol dir deine Belohnungen ab.", { action: { label: "Zum Saison-Pass", fn: () => { sysClose(); showTab("progress"); setTimeout(() => { const b = $("passBlock"); if (b) b.scrollIntoView({ block: "start", behavior: "smooth" }); }, 200); } } });
+    ], null, "Dein bisheriger Arc zählt mit: Startkapital in Gold und Saison-Stufen für die Tage, die schon hinter dir liegen. Hol dir deine Belohnungen ab.", { action: { label: "Zum System", fn: () => { sysClose(); showTab("system"); setTimeout(() => { const b = $("passBlock"); if (b) b.scrollIntoView({ block: "start", behavior: "smooth" }); }, 200); } } });
+  }
+
+  // ================= v22: System-Tab (alles aus dem Spiel an einem Ort) =================
+  function renderSystem() {
+    try { renderRanks(); } catch (e) { /* ignore */ }
+    if (!window.__waGame) return;
+    try { renderAch(); renderClsBlock(); renderArmy(); } catch (e) { /* ignore */ }
+    try { renderPass(); renderShop(); renderTitleChips(); renderInv(); } catch (e) { /* ignore */ }
+    try { renderBestiary(); renderBounties(); } catch (e) { /* ignore */ }
+    try { const dk = todayKey(); renderQuest(dk); renderGate(); renderJob(); renderHid(); renderRaid(); renderChest(); renderAdvent(); renderPerfect(); } catch (e) { /* ignore */ }
+  }
+  // Punkt am System-Tab, sobald dort etwas auf dich wartet
+  function sysDot() {
+    const b = document.querySelector('.tabs .tab[data-tab="system"]');
+    if (!b) return;
+    let on = false;
+    try { on = on || passState().claimable > 0; } catch (e) { /* ignore */ }
+    try { on = on || bountyWeek().list.some((x) => x.done && !x.got); } catch (e) { /* ignore */ }
+    try { on = on || !chestInfo().done; } catch (e) { /* ignore */ }
+    try { const g = gMeta().cur; on = on || !!(g && !g.entered); } catch (e) { /* ignore */ }
+    try { on = on || !!hidMeta().cur; } catch (e) { /* ignore */ }
+    try { const d = advDay(); on = on || (d >= 1 && d <= 24 && advState(d) === "ready"); } catch (e) { /* ignore */ }
+    b.classList.toggle("hasdot", !!(window.__waGame && on));
   }
 
   // ================= v22: Android-App (Capacitor): Benachrichtigungen, Health Connect, Widget, Zurück-Taste, Updates =================
@@ -13526,14 +13568,14 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
   function natRestIn() { if (NAT) natCancel([1]); }
 
   // ---- Health Connect: Schritte, Schlaf, Ruhepuls ----
-  const HC_TYPES = ["steps", "sleep", "restingHeartRate"];
+  const HC_TYPES = ["steps", "sleep", "restingHeartRate", "workouts"];
   function hcRender() {
     if (!$("hcState")) return;
     const on = !!S().hc, last = S().hcLast;
     $("hcConnect").textContent = on ? "Neu verbinden" : "Verbinden";
     $("hcConnect").classList.toggle("primary", !on);
     $("hcSync").hidden = !on; $("hcOpen").hidden = !on;
-    $("hcState").textContent = on ? "Verbunden. Schritte, Schlaf und Ruhepuls kommen automatisch, sobald du die App öffnest" + (last ? ". Zuletzt abgeglichen: " + last : "") + "." : "Holt Schritte, Schlaf und Ruhepuls automatisch, zum Beispiel von deiner Garmin-Uhr über Garmin Connect.";
+    $("hcState").textContent = on ? "Verbunden. Schritte, Schlaf, Ruhepuls und Läufe kommen automatisch, sobald du die App öffnest" + (last ? ". Zuletzt abgeglichen: " + last : "") + "." + (S().hcRunPerm === false ? " Für deine Läufe fehlt noch die Freigabe: tipp auf Neu verbinden." : "") : "Holt Schritte, Schlaf, Ruhepuls und Läufe automatisch, zum Beispiel von deiner Garmin-Uhr über Garmin Connect.";
   }
   async function hcConnect() {
     try {
@@ -13550,7 +13592,7 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
     if (!NAT || !S().hc || hcBusy) return 0;
     if (!force && Date.now() - hcAt < 5 * 60e3) return 0;
     hcBusy = true; hcAt = Date.now();
-    let changed = 0;
+    let changed = 0, runs = 0;
     try {
       const now = new Date(), t0 = startOfDay(now);
       // Schritte: heute und gestern als Tagessumme
@@ -13585,7 +13627,27 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
         const xs = ((r && r.samples) || []).filter((x) => +x.value >= 30 && +x.value <= 120);
         if (xs.length) { lt.vitals = Object.assign({}, lt.vitals || {}, { rhr: Math.round(+xs[xs.length - 1].value) }); saveLog(tk); changed++; }
       }
+      // Läufe (z. B. von Garmin): in den geplanten Lauf des Tages eintragen, sonst als Extra-Lauf
+      try {
+        const res = await NAT.Health.queryWorkouts({ startDate: addDays(t0, -13).toISOString(), endDate: now.toISOString(), limit: 60, ascending: true });
+        S().hcRunPerm = true;
+        ((res && res.workouts) || []).filter((w) => /^running/.test(w.workoutType || "") && +w.totalDistance > 300).forEach((w) => {
+          const st = new Date(w.startDate), dk = dateKey(st), wid = w.platformId || w.startDate;
+          const km = Math.round((+w.totalDistance / 1000) * 100) / 100, sec = Math.round(+w.duration || (new Date(w.endDate) - st) / 1000);
+          const l = ensureLog(dk); l.runs = l.runs || {}; l.exercises = l.exercises || {};
+          if (Object.keys(l.runs).some((k) => l.runs[k] && l.runs[k].hcId === wid)) return;
+          const sess = effSession(parseKey(dk));
+          const slot = sess && sess.exercises.find((e) => isRun(e) && !(l.runs[e.id] && l.runs[e.id].km));
+          if (slot) {
+            l.runs[slot.id] = Object.assign({}, l.runs[slot.id] || {}, { km, sec, hcId: wid });
+            const x = l.exercises[slot.id] || (l.exercises[slot.id] = { name: slot.name, done: [], note: "" });
+            x.name = slot.name; x.done = [true];
+          } else l.runs["hc_" + String(wid).replace(/[^\w-]/g, "").slice(-16)] = { km, sec, hcId: wid, extra: 1 };
+          saveLog(dk); changed++; runs++;
+        });
+      } catch (e) { S().hcRunPerm = false; }
       S().hcLast = pad(now.getHours()) + ":" + pad(now.getMinutes()); saveSettings();
+      if (runs && force !== "quiet") toast(runs === 1 ? "1 Lauf aus Health Connect übernommen" : runs + " Läufe aus Health Connect übernommen");
       if (changed) { renderAll(); try { checkRanks(); } catch (e) { /* ignore */ } }
       hcRender();
     } catch (e) { console.warn("hcSync", e); } finally { hcBusy = false; }
@@ -13671,7 +13733,12 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
         await natChannels();
         if (natOpt("natNotif") && !S().natAsked) { S().natAsked = 1; saveSettings(); await natPermOk(true); }
         natPlan(); natWidget();
-        setTimeout(() => { natPlan.upd = Date.now(); NAT.checkUpdate(); hcSync(true); }, 2500);
+        setTimeout(async () => {
+          natPlan.upd = Date.now(); NAT.checkUpdate();
+          // Wer schon verbunden war: einmal nach der neuen Freigabe für Läufe fragen
+          if (S().hc && !S().hcAsk2) { S().hcAsk2 = 1; saveSettings(); try { await NAT.Health.requestAuthorization({ read: HC_TYPES, write: [] }); } catch (e) { /* ignore */ } }
+          hcSync(true);
+        }, 2500);
       })();
       // Erster Start in der App: Hinweis zum Umzug der Daten aus dem Browser
       if (!Object.keys(state.logs || {}).length && !S().natHello) {
