@@ -438,7 +438,7 @@ pre.prompt { white-space: pre-wrap; margin: 0 0 12px; padding: 14px; border-radi
 .timer {
   position: fixed; left: 50%; transform: translateX(-50%); z-index: 30;
   bottom: calc(86px + env(safe-area-inset-bottom, 0px)); width: min(520px, calc(100% - 24px));
-  display: grid; grid-template-columns: 1fr auto auto; align-items: center; gap: 10px; padding: 12px 12px 12px 18px;
+  display: grid; grid-template-columns: 1fr auto auto auto; align-items: center; gap: 8px; padding: 12px 12px 12px 18px;
   border-radius: 18px; background: color-mix(in srgb, var(--surface-2) 94%, transparent); border: 1px solid var(--ice-deep);
   backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); overflow: hidden;
 }
@@ -448,7 +448,8 @@ pre.prompt { white-space: pre-wrap; margin: 0 0 12px; padding: 14px; border-radi
 .timer .tl strong { font-family: var(--display); font-weight: 800; font-size: 34px; line-height: 1; font-variant-numeric: tabular-nums; }
 .timer.done { border-color: var(--ice); }
 .timer.done .tl strong { color: var(--ice); }
-.timer .btn { min-height: 40px; padding: 8px 14px; font-size: 14px; }
+.timer .btn { min-height: 40px; padding: 8px 12px; font-size: 14px; }
+@media (max-width: 420px) { .timer { padding-left: 14px; } .timer .tl span { display: none; } .timer .btn { padding: 8px 10px; } }
 
 /* Bottom nav */
 .tabs {
@@ -2782,7 +2783,8 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
 <div class="timer" id="timer" hidden role="timer" aria-live="off">
   <div class="bar" id="timerbar"></div>
   <div class="tl"><span id="timerlabel">Pause</span><strong id="timertime">2:00</strong></div>
-  <button class="btn" id="timerPlus">+30 s</button>
+  <button class="btn" id="timerMinus" aria-label="30 Sekunden weniger">−30 s</button>
+  <button class="btn" id="timerPlus" aria-label="30 Sekunden mehr">+30 s</button>
   <button class="btn primary" id="timerSkip">Weiter</button>
 </div>
 
@@ -4735,6 +4737,12 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
   $("timerPlus").addEventListener("click", () => {
     if (timer.finished) { startTimer(30); return; }
     timer.end += 30000; timer.total += 30000; tick();
+  });
+  $("timerMinus").addEventListener("click", () => {
+    if (timer.finished) return;
+    timer.end -= 30000;
+    if (timer.end - Date.now() > timer.total) timer.total = timer.end - Date.now();
+    tick();
   });
   $("timerSkip").addEventListener("click", stopTimer);
 
