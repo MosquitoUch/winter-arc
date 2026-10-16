@@ -16,23 +16,32 @@ const REL = "https://github.com/MosquitoUch/winter-arc/releases/download/app-lat
 CapacitorUpdater.notifyAppReady().catch(() => {});
 
 let checking = false;
+const updLog = (step, err) => { window.__waUpd = { t: new Date().toLocaleTimeString("de-DE"), step, err: err ? String((err && err.message) || err).slice(0, 200) : "" }; };
 async function checkUpdate() {
-  if (checking) return null;
+  if (checking) return { status: "busy" };
   checking = true;
   try {
-    const r = await CapacitorHttp.get({ url: REL + "version.json?t=" + Date.now(), responseType: "json", connectTimeout: 8000, readTimeout: 8000 });
-    const v = typeof r.data === "string" ? JSON.parse(r.data) : r.data;
-    if (!v || !v.build || v.build === window.__waBuild) return null;
-    // Schon heruntergeladen? Dann nur noch vormerken
+    updLog("Version prüfen");
+    const r = await CapacitorHttp.get({ url: REL + "version.json?t=" + Date.now(), responseType: "json", connectTimeout: 10000, readTimeout: 10000 });
+    let v = r.data;
+    if (typeof v === "string") { try { v = JSON.parse(v); } catch (e) { v = null; } }
+    if (!v || !v.build) { updLog("Version lesen", "Antwort " + r.status + ": " + String(JSON.stringify(r.data)).slice(0, 80)); return { status: "error" }; }
+    if (v.build === window.__waBuild) { updLog("aktuell"); return { status: "current", build: v.build }; }
+    const nx = await CapacitorUpdater.getNextBundle().catch(() => null);
+    if (nx && nx.version === v.build) { updLog("wartet auf Neustart"); return { status: "ready", build: v.build }; }
+    updLog("Lade " + v.build);
     const list = await CapacitorUpdater.list().catch(() => ({ bundles: [] }));
     let b = (list.bundles || []).find((x) => x.version === v.build && x.status !== "error");
     if (!b) b = await CapacitorUpdater.download({ url: REL + "www.zip", version: v.build });
+    updLog("Vormerken " + v.build);
     await CapacitorUpdater.next({ id: b.id });
+    updLog("geladen " + v.build);
     window.dispatchEvent(new CustomEvent("wa-update-ready", { detail: v }));
-    return v;
+    return { status: "ready", build: v.build };
   } catch (e) {
+    updLog((window.__waUpd && window.__waUpd.step) || "Update", e);
     console.warn("Update-Check", e);
-    return null;
+    return { status: "error", err: String((e && e.message) || e) };
   } finally {
     checking = false;
   }

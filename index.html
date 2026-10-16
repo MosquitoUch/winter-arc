@@ -13721,9 +13721,25 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
       $("hcConnect").addEventListener("click", hcConnect);
       $("hcSync").addEventListener("click", async () => { const n = await hcSync(true); toast(n ? n + " Werte aus Health Connect übernommen" : "Alles schon aktuell"); });
       $("hcOpen").addEventListener("click", () => { NAT.Health.openHealthConnectSettings().catch(() => {}); });
-      $("natUpd").addEventListener("click", async () => { toast("Suche nach Updates …"); const v = await NAT.checkUpdate(); if (!v) toast("Du hast den neuesten Stand."); });
+      const natVerRender = async () => {
+        let cur = "", nxt = "";
+        try { const c = await NAT.CapacitorUpdater.current(); cur = c && c.bundle ? (c.bundle.version === "builtin" ? "aus der APK" : c.bundle.version) : ""; } catch (e) { /* ignore */ }
+        try { const n = await NAT.CapacitorUpdater.getNextBundle(); nxt = n && n.version ? n.version : ""; } catch (e) { /* ignore */ }
+        const u = window.__waUpd;
+        $("natVer").textContent = "Web-Stand " + (window.__waBuild || "?") + (cur ? " (" + cur + ")" : "") + (nxt ? ". Bereit zum Neustart: " + nxt : "") + (u ? ". Letzte Prüfung " + u.t + ": " + u.step + (u.err ? ", Fehler: " + u.err : "") : "") + ".";
+      };
+      $("natUpd").addEventListener("click", async () => {
+        toast("Suche nach Updates …");
+        const r = await NAT.checkUpdate();
+        natVerRender();
+        if (!r || r.status === "current") toast("Du hast den neuesten Stand.");
+        else if (r.status === "ready") toast("Update " + r.build + " ist geladen.", { label: "Jetzt starten", fn: () => NAT.applyUpdateNow() });
+        else if (r.status === "error") toast("Update fehlgeschlagen: " + (r.err || (window.__waUpd && window.__waUpd.err) || "unbekannt"));
+      });
+      natVerRender();
+      document.getElementById("grpApp").addEventListener("toggle", natVerRender);
       hcRender();
-      window.addEventListener("wa-update-ready", () => toast("Update geladen. Es ist beim nächsten Öffnen aktiv.", { label: "Jetzt", fn: () => NAT.applyUpdateNow() }));
+      window.addEventListener("wa-update-ready", () => (natVerRender(), toast("Update geladen. Es ist beim nächsten Öffnen aktiv.", { label: "Jetzt", fn: () => NAT.applyUpdateNow() })));
       NAT.App.addListener("backButton", natBack);
       NAT.App.addListener("appStateChange", (st) => {
         if (st.isActive) { natRestIn(); hcSync(false); renderAll(); if (Date.now() - (natPlan.upd || 0) > 30 * 60e3) { natPlan.upd = Date.now(); NAT.checkUpdate(); } }
