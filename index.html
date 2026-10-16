@@ -8731,7 +8731,12 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
       const v = Math.min(999, Math.max(1, Math.round(+numpad.val)));
       const prevItems = window.__waGame && voiceOn() && !numpad.secs ? historyFor(e.name).filter((x) => x.date < dk && !x.perf.secs) : null;
       const rvc = rivalAfterSet(e, numpad.i, v, numpad.showKg ? numpad.kg : (parts.weight || 0), numpad.secs);
-      if (prevItems) { const ni = numpad.i; setTimeout(() => coachSetFeedback(e.name, ni, v, numpad.showKg ? numpad.kg : 0, prevItems, rvc), 0); }
+      if (prevItems) {
+        const ni = numpad.i;
+        // beste Wiederholungszahl aus den anderen Sätzen von heute: ein gleicher Wert ist kein neuer Rekord
+        const todayBest = parts.reps.reduce((m, x, k) => (k !== ni && +x > m ? +x : m), 0);
+        setTimeout(() => coachSetFeedback(e.name, ni, v, numpad.showKg ? numpad.kg : 0, prevItems, rvc, todayBest), 0);
+      }
       if (numpad.i < parts.reps.length) parts.reps[numpad.i] = v; else parts.reps.push(v);
       parts.secs = numpad.secs;
       if (numpad.showKg) parts.weight = numpad.kg;
@@ -11399,13 +11404,13 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
     if (pre) sayLine(pre).then(() => setTimeout(() => sayLine(main), 250)); else sayLine(main);
   }
   // Rückmeldung direkt nach einem eingetragenen Satz
-  function coachSetFeedback(name, i, v, weight, prevItems, rv) {
+  function coachSetFeedback(name, i, v, weight, prevItems, rv, todayBest) {
     if (!voiceOn() || !v) return;
     const prev = prevItems.length ? prevItems[prevItems.length - 1] : null;
     let best = 0;
     prevItems.forEach((it) => { if ((it.perf.weight || 0) >= (weight || 0) - 0.01) it.perf.reps.forEach((x) => { if (x > best) best = x; }); });
     const vars = { wdh: v, uebung: name };
-    if (prevItems.length >= 1 && v > best) { coach("set_pr", vars); return; }
+    if (prevItems.length >= 1 && v > Math.max(best, todayBest || 0)) { coach("set_pr", vars); return; }
     if (rv && rv.win && rv.first) { coach("shadow_win", Object.assign(vars, { datum: shortDate(parseKey(rv.date)) })); return; }
     if (!prev || Math.abs((prev.perf.weight || 0) - (weight || 0)) > 0.01) return;
     const lv = prev.perf.reps[i];
