@@ -13,5 +13,8 @@ echo "== Pakete"
 mkdir -p "$GITHUB_WORKSPACE/out"
 cp android/app/build/outputs/apk/release/app-release.apk "$GITHUB_WORKSPACE/out/winter-arc.apk"
 (cd www && zip -qr "$GITHUB_WORKSPACE/out/www.zip" .)
-cp www/version.json "$GITHUB_WORKSPACE/out/version.json"
+# version.json für die App: Build plus SHA-256 der Zip (der Updater prüft sie)
+SUM=$(sha256sum "$GITHUB_WORKSPACE/out/www.zip" | cut -d' ' -f1)
+node -e 'const fs=require("fs");const v=JSON.parse(fs.readFileSync("www/version.json","utf8"));v.sha256=process.argv[1];fs.writeFileSync(process.argv[2],JSON.stringify(v)+"\n")' "$SUM" "$GITHUB_WORKSPACE/out/version.json"
+cat "$GITHUB_WORKSPACE/out/version.json"
 ls -la "$GITHUB_WORKSPACE/out"

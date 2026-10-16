@@ -32,7 +32,7 @@ async function checkUpdate() {
     updLog("Lade " + v.build);
     const list = await CapacitorUpdater.list().catch(() => ({ bundles: [] }));
     let b = (list.bundles || []).find((x) => x.version === v.build && x.status !== "error");
-    if (!b) b = await CapacitorUpdater.download({ url: REL + "www.zip", version: v.build });
+    if (!b) b = await CapacitorUpdater.download({ url: REL + "www.zip", version: v.build, checksum: v.sha256 || "" });
     updLog("Vormerken " + v.build);
     await CapacitorUpdater.next({ id: b.id });
     updLog("geladen " + v.build);
