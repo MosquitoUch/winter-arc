@@ -3727,7 +3727,7 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
     s.exercises = s.exercises.map((e) => {
       const x = Object.assign({}, e);
       if (isRun(x)) {
-        if (row && /km/i.test(x.reps || "")) {
+        if (row && /km/i.test(x.reps || "") && !/kelly/i.test(base.name || "")) {
           const km = row[runIdx(dow)];
           if (km) x.reps = km + " km";
           if (w === 12 && dow === 6) x.extra = "Abschlusstest: ganz locker durchlaufen";
@@ -3741,8 +3741,52 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
     return s;
   }
 
+  // Kelly-Einheiten steigern sich selbst: alle Wiederholungen geschafft → +1 pro Satz, ab 15 zurück auf die Basis mit +2,5 kg
+  const KELLY_MAX = 15, KELLY_KG = 2.5;
+  function kellyProg(name, base, sets, dk, keys) {
+    let reps = base, kg = 0, last = null;
+    const key = normName(name);
+    Object.keys(state.logs).filter((k) => k < dk).sort().forEach((k) => {
+      const exs = (state.logs[k] || {}).exercises || {};
+      // Kelly-Tag: laut Plan, oder (nach einer Planänderung) mindestens drei der Kelly-Übungen an dem Tag eingetragen
+      const s0 = baseEffSession(parseKey(k));
+      const have = new Set(Object.keys(exs).filter((i) => exs[i] && exs[i].note && exs[i].name).map((i) => normName(exs[i].name)));
+      if (!(s0 && /kelly/i.test(s0.name || "")) && keys.filter((x) => have.has(x)).length < 3) return;
+      const id = Object.keys(exs).find((i) => exs[i] && exs[i].name && normName(exs[i].name) === key && exs[i].note);
+      if (!id) return;
+      const perf = parsePerf(exs[id].note);
+      if (!perf || perf.secs || !perf.reps.length) return;
+      const sum = perf.reps.reduce((a, v) => a + (+v || 0), 0);
+      last = { date: k, sum, target: sets * reps, kg: perf.weight || 0 };
+      if (sum >= sets * reps && (perf.weight || 0) >= kg - 0.01) {
+        reps++;
+        if (reps > KELLY_MAX) { reps = base; kg += KELLY_KG; }
+      }
+    });
+    return { reps, kg, last };
+  }
+  function applyKelly(s, dk) {
+    if (!s || s.deload || !/kelly/i.test(s.name || "")) return;
+    const keys = s.exercises.filter((e) => !isRun(e)).map((e) => normName(e.name));
+    s.exercises.forEach((e) => {
+      if (e.custom || isRun(e)) return;
+      const r = parseRange(e.reps);
+      if (!r || r.secs || r.low !== r.high) return;
+      const sets = setCount(e);
+      const p = kellyProg(e.name, r.low, sets, dk, keys);
+      e.kellyBase = r.low;
+      if (p.reps === r.low && !p.kg) {
+        if (p.last) e.extra = "Ziel " + sets * r.low + " Wdh. Schaffst du sie, gibt es beim nächsten Mal 5 mehr.";
+        return;
+      }
+      e.reps = String(p.reps);
+      const kgTxt = p.kg ? "+" + fmtN(p.kg) + " kg Weste · " : "";
+      e.extra = kgTxt + "Steigerung: " + sets + " × " + p.reps + " = " + sets * p.reps + " Wdh." + (p.last ? " Letztes Mal " + p.last.sum + " geschafft." : "");
+    });
+  }
   function effSession(date) {
     let s = baseEffSession(date);
+    if (s) applyKelly(s, dateKey(date));
     const lg = state.logs[dateKey(date)];
     const extras = (lg && lg.extras) || [];
     const sk = (lg && lg.skipped) || {};
