@@ -2401,7 +2401,7 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
                 <div class="field"><label for="vpProf">Profil bearbeiten</label><div class="row"><select id="vpProf" class="vsel"></select><button class="btn small" id="vpNew">Neues Profil</button><button class="btn small danger" id="vpDelProf" hidden>Löschen</button></div></div>
                 <div class="two">
                   <div class="field"><label for="vpName">Name</label><input id="vpName" class="inp" autocomplete="off" maxlength="30"></div>
-                  <div class="field"><label for="vpRole">Rolle</label><select id="vpRole"><option value="normal">Normal</option><option value="motivation">Motivator, für wenig Energie</option><option value="ruhig">Ruhig, für Deload und lockere Tage</option></select></div>
+                  <div class="field"><label for="vpRole">Rolle</label><select id="vpRole"><option value="normal">Normal</option><option value="motivation">Motivator, für wenig Energie</option><option value="ruhig">Ruhig, für Deload und lockere Tage</option><option value="dominant">Dominant, entspannt und elegant</option></select></div>
                 </div>
                 <label class="ocrauto"><input type="checkbox" id="vpAuto"> Profil automatisch wählen: Motivator bei Energie 1 bis 2 oder roter Ampel, Ruhig bei Deload und Ruhetagen</label>
                 <details class="mini"><summary>Sprüche dieses Profils</summary>
@@ -10272,7 +10272,7 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
     ["done", "Training fertig"], ["rank_up", "Rang-Aufstieg"], ["level_up", "Level-Aufstieg"], ["quest", "Daily Quest geschafft"],
     ["boss_won", "Boss besiegt"], ["boss_alive", "Boss lebt noch"], ["achievement", "Erfolg freigeschaltet"], ["voice_on", "Stimme eingeschaltet"],
     ["shadow_win", "Schatten-Ich geschlagen"], ["gate_open", "Gate geöffnet"], ["gate_clear", "Gate geräumt"], ["red_gate", "Red Gate betreten"],
-    ["arise", "Schatten extrahiert"], ["episode", "Neue Episode"], ["job", "Klasse gewählt"]
+    ["arise", "Schatten extrahiert"], ["episode", "Neue Episode"], ["job", "Klasse gewählt"], ["perfect", "Perfekter Tag"]
   ];
   const LINES = {
     normal: {
@@ -10291,7 +10291,8 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
       voice_on: ["Coach-Stimme an. Ich sage dir, wann die Pause vorbei ist."],
       shadow_win: ["Dein Schatten-Ich vom {datum} ist geschlagen.", "Besser als vor vier Wochen. Genau so."],
       gate_open: ["Ein Gate hat sich geöffnet. Rang {rang}."], gate_clear: ["Gate geräumt. Gute Arbeit."], red_gate: ["Achtung. Das Gate ist rot. Kein Ausgang."],
-      arise: ["Erhebe dich. Ein neuer Schatten dient dir."], episode: ["Episode {nr}. {titel}."], job: ["Du bist jetzt {klasse}."]
+      arise: ["Erhebe dich. Ein neuer Schatten dient dir."], episode: ["Episode {nr}. {titel}."], job: ["Du bist jetzt {klasse}."],
+      perfect: ["Perfekter Tag. Alles erledigt."]
     },
     motivation: {
       start: ["Na endlich. Hör auf zu jammern, wir fangen an. {next}", "Aufstehen, Jäger. {next}"],
@@ -10326,14 +10327,278 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
       voice_on: ["Ich begleite dich heute ruhig durchs Training."],
       shadow_win: ["Du bist weiter als vor vier Wochen. Schön."], gate_open: ["Ein Gate hat sich geöffnet. Nimm dir Zeit."], gate_clear: ["Gate geräumt. Atme durch."],
       red_gate: ["Ein rotes Gate. Bleib ruhig, eine Aufgabe nach der anderen."], arise: ["Ein neuer Schatten folgt dir."], episode: ["Episode {nr}. {titel}."], job: ["Du bist jetzt {klasse}. Ein guter Weg."]
+    },
+    dominant: {
+      start: [
+        "Da bist du ja. Ich habe schon angefangen, mich zu langweilen. {next}",
+        "Leg das Handy weg und gehör für eine Weile mir. {next}",
+        "Schön. Dann zeig mir, was du heute wert bist. {next}",
+        "Ich habe uns Tee gemacht. Trinken darfst du danach. {next}",
+        "Keine Ausreden heute. Ich höre sie mir ohnehin nicht an. {next}",
+        "Pünktlich. Fast schon brav. {next}",
+        "Ganz ruhig. Wir machen das in meinem Tempo. {next}",
+        "Ich bin neugierig, wie weit du heute kommst. {next}",
+        "Hör auf mich, dann wirst du stark. So einfach ist das. {next}",
+        "Fang an. Ich sehe dir gern dabei zu. {next}",
+        "Komm her. Heute bauen wir dich weiter. {next}",
+        "Ich habe mir deinen Plan angesehen. Er ist gut. Du wirst es auch. {next}",
+        "Atme einmal tief durch. Und dann beginnen wir. {next}",
+        "Heute will ich nichts Halbes sehen. {next}",
+        "Du wolltest stark werden. Dann komm. {next}",
+        "Schön, dass du dich traust. {next}"
+      ],
+      low_energy: [
+        "Müde? Wie niedlich. Wir trainieren trotzdem.",
+        "Wenig Energie. Dann nimm dir meine. Ich habe genug für uns beide.",
+        "Ich sehe, dass du keine Lust hast. Und ich sehe auch, dass du trotzdem hier bist. Gut.",
+        "Heute wird es nicht schön. Aber es wird gemacht.",
+        "Langsam ist erlaubt. Aufhören nicht.",
+        "Du darfst müde sein. Schwach sein darfst du nicht.",
+        "Atme. Und dann tu, was ich dir sage.",
+        "Gerade an solchen Tagen wirst du interessant.",
+        "Ich weiß, dass du heute lieber liegen würdest. Steh trotzdem auf.",
+        "Dein Kopf will nicht. Dein Körper kann. Hör auf deinen Körper.",
+        "Ein schlechter Tag ist der beste Tag, um mich zu beeindrucken.",
+        "Mach es klein, aber mach es."
+      ],
+      skipped: [
+        "Gestern hast du mich warten lassen. Das passiert nicht noch einmal.",
+        "Ein Tag ohne mich. Und, hat es sich gelohnt?",
+        "Ich habe gestern auf dich gewartet. Heute bezahlst du dafür.",
+        "Keine Erklärung. Ich will nur sehen, dass du heute lieferst.",
+        "Du warst weg. Jetzt bist du wieder da. Beweis mir, dass es dir ernst ist.",
+        "Gestern zählt nicht mehr. Heute schon. Fang an.",
+        "Schwänzen steht dir nicht. Arbeiten schon."
+      ],
+      ten: [
+        "Noch zehn Sekunden.",
+        "Zehn Sekunden. Steh auf.",
+        "Zehn. Ich warte nicht gern.",
+        "Gleich geht es weiter. Mach dich bereit.",
+        "Noch zehn Sekunden, dann gehörst du wieder mir.",
+        "Zehn Sekunden. Trink noch einen Schluck.",
+        "Genug ausgeruht. Gleich.",
+        "Zehn Sekunden. Konzentrier dich.",
+        "Zehn Sekunden, mein Lieber.",
+        "Noch zehn. Atme ruhig.",
+        "Gleich. Schultern locker.",
+        "Zehn Sekunden. Ich zähle mit.",
+        "Noch zehn. Dann will ich alles sehen.",
+        "Fast vorbei. Hände bereit."
+      ],
+      rest_over: [
+        "Pause vorbei. {next}",
+        "Genug gefaulenzt. {next}",
+        "Weiter. Ich habe nicht ewig Zeit. {next}",
+        "Steh auf, mein Lieber. {next}",
+        "Zurück an die Arbeit. {next}",
+        "Die Pause ist um. Zeig mir den nächsten Satz. {next}",
+        "Los. Ich will sehen, wie du kämpfst. {next}",
+        "Schluss mit Ausruhen. {next}",
+        "Und weiter. Du kennst die Regeln. {next}",
+        "Jetzt. Nicht gleich, jetzt. {next}",
+        "Hoch mit dir. {next}",
+        "Die Pause ist vorbei, und du weißt es. {next}",
+        "Komm. Der nächste Satz wartet. {next}",
+        "Nicht trödeln. {next}",
+        "Ich bin geduldig. Aber nicht so geduldig. {next}",
+        "Weiter, mein Lieber. {next}",
+        "Auf. Zeig mir, dass du noch kannst. {next}",
+        "Jetzt wieder du. {next}",
+        "Ausgeruht genug. {next}",
+        "Schluss mit Träumen. {next}",
+        "Lass mich nicht warten. {next}",
+        "Ich will den nächsten Satz. Sofort. {next}"
+      ],
+      last_set: [
+        "Letzter Satz. Gib mir alles, was du noch hast. {next}",
+        "Der letzte. Mach ihn schön für mich. {next}",
+        "Nur noch einer. Enttäusch mich jetzt nicht. {next}",
+        "Letzter Satz. Danach darfst du stolz sein. Vorher nicht. {next}",
+        "Ein letztes Mal. Ich schaue genau hin. {next}",
+        "Der Satz, der zählt. {next}",
+        "Letzter Satz. Ich will dich zittern sehen. {next}",
+        "Zum Schluss das Beste. {next}"
+      ],
+      set_pr: [
+        "{wdh}. Neuer Rekord. Ich bin beeindruckt, ausnahmsweise.",
+        "Rekord. Sieh an, du kannst ja doch überraschen.",
+        "{wdh} Wiederholungen. Das will ich jetzt öfter sehen.",
+        "Neuer Bestwert. Gut gemacht, mein Lieber.",
+        "Rekord. Merk dir dieses Gefühl. Ich will es wieder.",
+        "So gefällst du mir. {wdh}.",
+        "Na bitte. Mehr als je zuvor.",
+        "Neuer Rekord. Du wirst langsam gefährlich.",
+        "{wdh}. Ich wusste, dass da mehr in dir steckt.",
+        "Rekord. Und ich durfte dabei sein.",
+        "{wdh}. Ich schreibe es mir auf.",
+        "So stark warst du noch nie. Das gefällt mir sehr."
+      ],
+      set_better: [
+        "{diff} mehr als letztes Mal. Brav.",
+        "Besser als beim letzten Mal. So mag ich das.",
+        "{diff} mehr. Du lernst schnell.",
+        "Mehr als letztes Mal. Weiter so.",
+        "Fortschritt. Leise, aber ich habe ihn bemerkt.",
+        "{diff} mehr. Genau dafür bist du hier.",
+        "Besser. Ich hatte nichts anderes erwartet.",
+        "Du wächst. Das gefällt mir.",
+        "Wieder ein Stück weiter. Brav.",
+        "{diff} mehr. Ich habe mitgezählt.",
+        "Besser als beim letzten Mal. Ich wusste es.",
+        "Mehr. Immer mehr. So ist es richtig."
+      ],
+      set_worse: [
+        "{diff} weniger als letztes Mal. Das war nicht alles, oder?",
+        "Weniger als sonst. Ich tue so, als hätte ich es nicht gesehen. Einmal.",
+        "Schwächer heute. Der nächste Satz macht das wieder gut.",
+        "{diff} weniger. Ich bin enttäuscht. Ein bisschen.",
+        "Nicht dein bester Satz. Zum Glück hast du noch einen.",
+        "Weniger. Atme durch und hol es dir zurück.",
+        "Das war schwach. Du bist es nicht.",
+        "Ein schlechter Satz ist kein schlechter Tag. Weiter.",
+        "Weniger als letztes Mal. Kopf hoch, Rücken gerade, weiter.",
+        "Das passiert. Aber nicht zweimal hintereinander.",
+        "{diff} weniger. Ich will die Wiederholungen beim nächsten Satz zurück."
+      ],
+      done: [
+        "Fertig. Du hast es dir verdient, dass ich zufrieden bin.",
+        "Training geschafft. Jetzt darfst du deinen Tee trinken.",
+        "Das war gut. Ich sage das nicht oft, also genieß es.",
+        "Geschafft. Ruh dich aus, morgen gehörst du wieder mir.",
+        "Fertig für heute. Du bist stärker, als du vor einer Stunde warst.",
+        "Gute Arbeit. Ich bin stolz auf dich. Sag es niemandem.",
+        "Vorbei. Iss etwas, schlaf gut, und komm morgen wieder.",
+        "Das war es. Du hast mich nicht enttäuscht.",
+        "Erledigt. So sieht jemand aus, der es ernst meint.",
+        "Feierabend. Und jetzt: Protein.",
+        "Gut gemacht. Jetzt dehnen, und dann ruh dich aus.",
+        "Training vorbei. Ich hatte meinen Spaß. Du hoffentlich auch.",
+        "Du hast heute nicht aufgegeben. Das merke ich mir.",
+        "Fertig. Morgen will ich dich genauso sehen."
+      ],
+      rank_up: [
+        "Rang-Aufstieg. Rang {rang}. Ich habe es kommen sehen.",
+        "Rang {rang}. Du steigst auf. Und ich schaue zu.",
+        "Ein neuer Rang. Gewöhn dich nicht daran, es geht noch höher.",
+        "Rang {rang}. Langsam wirst du meiner würdig.",
+        "Aufgestiegen. Bleib hungrig."
+      ],
+      level_up: [
+        "Level {level}. Weiter so.",
+        "Level {level}. Du wirst mir langsam zu stark.",
+        "Ein Level mehr. Und ich will noch eins.",
+        "Level {level}. Ich zähle mit.",
+        "Level aufgestiegen. Brav.",
+        "Level {level}. Und ich habe noch so viel mit dir vor."
+      ],
+      quest: [
+        "Daily Quest erledigt. Wie es sich gehört.",
+        "Quest geschafft. Ich hätte dich auch nicht davonkommen lassen.",
+        "Erledigt. Pflicht vor Vergnügen, das gefällt mir.",
+        "Quest abgeschlossen. Morgen wartet die nächste.",
+        "Alles erledigt. Siehst du, wie einfach es ist, auf mich zu hören?",
+        "Daily Quest. Abgehakt. Gut so.",
+        "Quest erledigt. Du bist heute ja richtig folgsam.",
+        "Geschafft. Ich hätte gern noch eine für dich gehabt."
+      ],
+      boss_won: [
+        "Der Boss liegt am Boden. Und du stehst noch.",
+        "Besiegt. Ich mag es, wenn du gewinnst.",
+        "Boss erledigt. Das war kein Glück.",
+        "Er ist gefallen. Du nicht.",
+        "Besiegt. Jetzt weiß er, mit wem er es zu tun hatte.",
+        "Sieg. Erzähl mir nicht, dass es leicht war. Ich habe zugesehen.",
+        "Besiegt. Ich war keine Sekunde nervös. Fast keine."
+      ],
+      boss_alive: [
+        "Er lebt noch. Das ärgert mich mehr als dich.",
+        "Nicht heute. Aber bald.",
+        "Der Boss steht noch. Das lassen wir so nicht stehen.",
+        "Fast. Nächstes Mal schaffst du ihn. Ich verlange es.",
+        "Er hat überlebt. Merk dir sein Gesicht."
+      ],
+      achievement: [
+        "Ein neuer Erfolg. Ich sammle sie gern für dich.",
+        "Erfolg freigeschaltet. Sieh an.",
+        "Noch ein Erfolg. Du wirst ja richtig ehrgeizig.",
+        "Freigeschaltet. Ich bin neugierig auf den nächsten.",
+        "Ein Erfolg mehr. Gut gemacht.",
+        "Wieder etwas, worauf du stolz sein darfst. Nur kurz.",
+        "Erfolg. Ich wusste, dass du das schaffst."
+      ],
+      voice_on: [
+        "Da bin ich. Ich sage dir, wann die Pause vorbei ist.",
+        "Ich bin bei dir. Und ich lasse dich nicht faulenzen.",
+        "Du hast mich gerufen. Dann hör jetzt auch auf mich.",
+        "Ich bin da. Fangen wir an?",
+        "Hallo, mein Lieber. Ich passe heute auf dich auf.",
+        "Ich bin wieder da. Hast du mich vermisst?",
+        "Ab jetzt hörst du auf mich. Bis zum letzten Satz."
+      ],
+      shadow_win: [
+        "Dein altes Ich ist geschlagen. Das gefällt mir.",
+        "Besser als vor vier Wochen. Genau so will ich dich.",
+        "Du hast dich selbst überholt. Ich habe es gesehen.",
+        "Dein Schatten von damals verliert. Und du wirst stärker.",
+        "Vor einem Monat warst du schwächer. Jetzt nicht mehr."
+      ],
+      gate_open: [
+        "Ein Gate hat sich geöffnet. Rang {rang}. Geh rein. Für mich.",
+        "Rang {rang}. Ein Gate wartet auf dich.",
+        "Ein Gate. Ich bin gespannt, was du daraus machst.",
+        "Ein neues Gate. Rang {rang}. Hast du Angst?",
+        "Ein Gate hat sich geöffnet. Lass es nicht warten.",
+        "Ein Gate. Geh hinein, bevor es sich schließt."
+      ],
+      gate_clear: [
+        "Gate geräumt. Sauber.",
+        "Geräumt. Du machst das immer besser.",
+        "Das Gate ist leer. Und du stehst noch.",
+        "Erledigt. Ich wusste, dass du rauskommst.",
+        "Gate geräumt. Gut gemacht, mein Jäger."
+      ],
+      red_gate: [
+        "Das Gate ist rot. Kein Ausgang. Jetzt wird es ernst.",
+        "Rot. Ab jetzt zählt nur noch, dass du durchhältst.",
+        "Ein rotes Gate. Ich bin bei dir. Kämpf.",
+        "Kein Weg zurück. Genau so mag ich es."
+      ],
+      arise: [
+        "Erhebe dich. Er gehört jetzt dir.",
+        "Ein neuer Schatten. Deine Armee wächst.",
+        "Erhebe dich. Diene ihm gut.",
+        "Noch ein Soldat. Du sammelst ja schon fast so gern wie ich."
+      ],
+      episode: [
+        "Episode {nr}. Ich freue mich auf diese Woche.",
+        "Episode {nr}. Eine neue Woche, ein neues Kapitel.",
+        "Woche {nr} beginnt. Mal sehen, ob du mich überraschst.",
+        "Episode {nr}. Ich habe schon Pläne für dich."
+      ],
+      job: [
+        "Du hast deine Klasse gewählt. Eine gute Wahl.",
+        "Neue Klasse. Mach ihr Ehre.",
+        "Gewählt. Jetzt zeig mir, was diese Klasse kann."
+      ],
+      perfect: [
+        "Ein perfekter Tag. Alles erledigt. Ich bin zufrieden.",
+        "Perfekt. So einen Tag will ich morgen wieder sehen.",
+        "Nichts ausgelassen. Du überraschst mich immer öfter.",
+        "Ein perfekter Tag. Du hast dir eine Belohnung verdient.",
+        "Alles geschafft. So sieht Disziplin aus.",
+        "Ein perfekter Tag. Ich könnte mich daran gewöhnen.",
+        "Alles erledigt. Heute warst du genau so, wie ich dich will."
+      ]
     }
   };
   const STYLE = {
     normal: "Freundlicher, klarer Trainer. Motivierend, aber sachlich. Duzt.",
     motivation: "Harter, spöttischer Motivator im Stil eines Anime-Mentors. Darf spielerisch beleidigen und provozieren (zum Beispiel Schnecke, E-Rang, Weichei), wird aber nie verletzend, nie über Aussehen oder Persönliches. Lobt selten, dann aber ehrlich.",
-    ruhig: "Ruhiger, gelassener Begleiter. Sanft, entspannt, lobt leise, achtet auf Atmung und saubere Technik."
+    ruhig: "Ruhiger, gelassener Begleiter. Sanft, entspannt, lobt leise, achtet auf Atmung und saubere Technik.",
+    dominant: "Entspannte, dominante und elegante Frau mit leicht überlegener, neugieriger Art. Spricht ruhig, nie laut, neckt spielerisch, gibt klare Anweisungen und duldet keine Ausreden. Lobt selten, aber warm, mit einem Hauch Zuneigung (zum Beispiel mein Lieber). Mag Tee als kleines Motiv. Nie verletzend, nie anzüglich."
   };
-  const ROLE_NAME = { normal: "Normal", motivation: "Motivator", ruhig: "Ruhig" };
+  const ROLE_NAME = { normal: "Normal", motivation: "Motivator", ruhig: "Ruhig", dominant: "Dominant" };
   function voices() {
     const s = S();
     if (!s.voices || !s.voices.list || !s.voices.list.length) {
@@ -10342,6 +10607,11 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
     return s.voices;
   }
   const profById = (id) => voices().list.find((p) => p.id === id) || null;
+  // v22: Profil für die eigene ElevenLabs-Stimme einmalig anlegen
+  try {
+    const V0 = voices();
+    if (!S().domProf && !V0.list.some((p) => p.role === "dominant")) { V0.list.push({ id: "pdom", name: "Meine Stimme", role: "dominant", pack: null, piper: null, lines: null, style: "" }); S().domProf = 1; saveSettings(); }
+  } catch (e) { /* ignore */ }
   function autoRole() {
     try {
       const dk = todayKey(), r = readiness(dk), c = checkinOf(dk), s = effSession(today());
@@ -10623,7 +10893,7 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
     if (v > lv) coach("set_better", Object.assign(vars, { diff: v - lv }));
     else if (v < lv) coach("set_worse", Object.assign(vars, { diff: lv - v }));
   }
-  const SYS_SIT = { "Rang-Aufstieg": "rank_up", "Neuer Rang": "rank_up", "Quest abgeschlossen": "quest", "Erfolg freigeschaltet": "achievement", "Erfolge freigeschaltet": "achievement", "Boss besiegt": "boss_won", "Der Boss lebt noch": "boss_alive", "Gate geräumt": "gate_clear", "Red Gate überlebt": "gate_clear", "Warnung": "red_gate", "Prüfung bestanden": "gate_clear" };
+  const SYS_SIT = { "Perfekter Tag": "perfect", "Raid-Boss besiegt": "boss_won", "Event-Boss besiegt": "boss_won", "Der Winterkönig ist gefallen": "boss_won", "Rang-Aufstieg": "rank_up", "Neuer Rang": "rank_up", "Quest abgeschlossen": "quest", "Erfolg freigeschaltet": "achievement", "Erfolge freigeschaltet": "achievement", "Boss besiegt": "boss_won", "Der Boss lebt noch": "boss_alive", "Gate geräumt": "gate_clear", "Red Gate überlebt": "gate_clear", "Warnung": "red_gate", "Prüfung bestanden": "gate_clear" };
   function sysVoice(title, ov) {
     const sit = (ov && ov.sit) || SYS_SIT[title];
     if (!sit || !voiceOn()) return;
