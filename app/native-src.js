@@ -8,6 +8,8 @@ import { Health } from "@capgo/capacitor-health";
 import { CapacitorUpdater } from "@capgo/capacitor-updater";
 import { Filesystem, Directory } from "@capacitor/filesystem";
 import { Share } from "@capacitor/share";
+// Körpererkennung für die Form-Kamera. Die WASM-Dateien und das Modell lädt die App beim ersten Gebrauch nach.
+import { FilesetResolver, PoseLandmarker } from "@mediapipe/tasks-vision";
 
 const WidgetBridge = registerPlugin("WidgetBridge");
 const REL = "https://github.com/MosquitoUch/winter-arc/releases/download/app-latest/";
@@ -77,5 +79,5 @@ navigator.share = async (d) => {
   }
 };
 
-window.WAN = { Filesystem, Directory, Share, Capacitor, CapacitorHttp, App, LocalNotifications, KeepAwake, Health, CapacitorUpdater, WidgetBridge, checkUpdate, applyUpdateNow, build: __WA_BUILD__ };
+window.WAN = { Pose: { FilesetResolver, PoseLandmarker }, Filesystem, Directory, Share, Capacitor, CapacitorHttp, App, LocalNotifications, KeepAwake, Health, CapacitorUpdater, WidgetBridge, checkUpdate, applyUpdateNow, build: __WA_BUILD__ };
 window.dispatchEvent(new Event("wan-ready"));

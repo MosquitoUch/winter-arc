@@ -613,6 +613,57 @@ pre.prompt { white-space: pre-wrap; margin: 0 0 12px; padding: 14px; border-radi
 
 .emom-clock { font-family: var(--display); font-weight: 800; font-size: 104px; line-height: 0.95; text-align: center; letter-spacing: 0.01em; font-variant-numeric: tabular-nums; margin: 6px 0 2px; }
 .emom-clock.go { color: var(--ice); text-shadow: 0 0 30px var(--glow); }
+/* Form-Kamera */
+.fcbtn { display: inline-flex; align-items: center; gap: 5px; margin-right: auto; color: var(--ice) !important; }
+.fcbtn svg { width: 16px; height: 16px; }
+.fc { position: fixed; inset: 0; z-index: 400; background: #000; color: #fff; display: flex; flex-direction: column; padding: env(safe-area-inset-top, 0px) 0 env(safe-area-inset-bottom, 0px); }
+.fc[hidden] { display: none; }
+.fc-top { display: flex; align-items: center; gap: 12px; padding: 10px 14px; }
+.fc-title { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+.fc-title b { font-family: var(--display); font-size: 20px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.fc-title span { font-size: 12.5px; color: rgba(255,255,255,0.7); }
+.fc-count { display: flex; flex-direction: column; align-items: flex-end; min-width: 64px; }
+.fc-count b { font-family: var(--display); font-weight: 800; font-size: 44px; line-height: 1; color: var(--ice); font-variant-numeric: tabular-nums; text-shadow: 0 0 18px var(--glow); }
+.fc-count span { font-size: 13px; color: rgba(255,255,255,0.75); font-variant-numeric: tabular-nums; }
+.fc-ib { min-width: 44px; height: 44px; border-radius: 22px; border: 1px solid rgba(255,255,255,0.25); background: rgba(255,255,255,0.08); color: #fff; display: inline-flex; align-items: center; justify-content: center; font-size: 15px; padding: 0 12px; }
+.fc-ib svg { width: 22px; height: 22px; }
+.fc-ib.wide { min-width: 92px; }
+.fc-ib[aria-pressed="false"] { opacity: 0.5; }
+.fc-stage { position: relative; flex: 1; min-height: 0; overflow: hidden; }
+.fc-stage video, .fc-stage canvas { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; }
+.fc-stage.mirror video, .fc-stage.mirror canvas { transform: scaleX(-1); }
+.fc-cd { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-family: var(--display); font-weight: 800; font-size: 140px; color: var(--ice); text-shadow: 0 0 40px var(--glow); background: rgba(0,0,0,0.35); }
+.fc-cd[hidden] { display: none; }
+.fc-msg { position: absolute; left: 12px; right: 12px; bottom: 10px; margin: 0; text-align: center; font-size: 14px; color: #fff; text-shadow: 0 1px 4px #000; }
+.fc-msg:empty { display: none; }
+.fc-msg span { background: rgba(0,0,0,0.55); padding: 6px 10px; border-radius: 10px; display: inline-block; }
+.fc-bot { display: flex; align-items: center; justify-content: space-between; padding: 14px 28px 18px; }
+.fc-rec { width: 76px; height: 76px; border-radius: 50%; border: 4px solid #fff; background: transparent; display: flex; align-items: center; justify-content: center; padding: 0; }
+.fc-rec i { width: 58px; height: 58px; border-radius: 50%; background: #ff3b45; transition: all .2s; }
+.fc-rec.on i { width: 30px; height: 30px; border-radius: 6px; }
+.fc-rev { padding: 10px 14px 14px; max-height: 48vh; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
+.fc-rev[hidden] { display: none; }
+.fc-sum { font-size: 15px; }
+.fc-sum b { font-family: var(--display); font-size: 22px; color: var(--ice); }
+.fc-reps { display: flex; flex-wrap: wrap; gap: 6px; }
+.fc-reps button { min-width: 40px; height: 36px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.25); background: rgba(255,255,255,0.06); color: #fff; font-weight: 700; font-variant-numeric: tabular-nums; }
+.fc-reps button.ok { border-color: rgba(134,242,192,0.6); color: #86F2C0; }
+.fc-reps button.bad { border-color: rgba(255,184,112,0.75); color: #FFB870; }
+.fc-reps button.cur { background: rgba(255,255,255,0.22); }
+.fc-iss { list-style: none; margin: 0; padding: 0; font-size: 13.5px; color: rgba(255,255,255,0.85); display: flex; flex-direction: column; gap: 4px; }
+.fc-iss b { color: #FFB870; }
+.fc-play { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.fc-speed { display: flex; gap: 4px; margin-left: auto; }
+.fc-speed button { min-width: 42px; height: 40px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.25); background: transparent; color: #fff; font-weight: 700; }
+.fc-speed button[aria-pressed="true"] { background: #fff; color: #000; }
+.fc-act { display: flex; flex-wrap: wrap; gap: 8px; }
+.fclib { list-style: none; margin: 14px 0 0; padding: 0; }
+.fclib li { display: grid; grid-template-columns: 64px minmax(0, 1fr) auto; gap: 10px; align-items: center; padding: 8px 0; border-top: 1px solid var(--line); }
+.fclib li:first-child { border-top: 0; }
+.fclib img, .fclib .ph { width: 64px; height: 64px; object-fit: cover; border-radius: 10px; background: var(--line); display: block; }
+.fclib .fi { min-width: 0; text-align: left; background: none; border: 0; color: inherit; padding: 0; }
+.fclib .fi b { display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.fclib .fi span { color: var(--mute); font-size: 13px; }
 .emom-clock.sw-clock { font-size: clamp(52px, 17vw, 92px); }
 .sw-row { justify-content: center; }
 .sw-laps { list-style: none; margin: 14px 0 0; padding: 0; max-height: 220px; overflow-y: auto; }
@@ -2316,6 +2367,17 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
             </div>
           </div>
 
+          <div class="tcard" id="fcCard">
+            <div class="shead"><h2>Form-Videos</h2><span id="fcLibState"></span></div>
+            <p class="tlead">Im Training startest du die Kamera über „Form-Kamera“ bei jeder Übung. Die App zählt deine Wiederholungen und markiert, welche nicht sauber waren. Videos bleiben nur auf diesem Handy.</p>
+            <div class="field-row">
+              <div><label for="fcFreeType">Freie Aufnahme</label><select class="inp" id="fcFreeType"><option value="pull">Klimmzüge / Chin-ups</option><option value="dip">Dips</option><option value="push">Liegestütze</option><option value="leg">Kniebeugen / Split Squats</option><option value="arm">Andere Übung (Ellbogen)</option><option value="hold">Nur Video, nicht zählen</option></select></div>
+              <div><label for="fcKeep">Videos behalten</label><select class="inp" id="fcKeep"><option value="3">3 Tage</option><option value="7">7 Tage</option><option value="14">14 Tage</option><option value="30">30 Tage</option><option value="0">Bis ich lösche</option></select></div>
+            </div>
+            <div class="row"><button class="btn primary" id="fcFree">Kamera öffnen</button></div>
+            <ul class="fclib" id="fcLib"></ul>
+          </div>
+
           <div class="tcard" id="gtgCard">
             <div class="shead"><h2>Greasing the Groove</h2><span id="gtgState"></span></div>
             <p class="tlead">Zwischendurch ein paar lockere Wiederholungen, nie bis zur Ermüdung. Ein Tipp auf die Karte oder ein Handy-Tipp an einen NFC-Tag trägt sie ein.</p>
@@ -2634,6 +2696,42 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
       </div>
     </section>
   </main>
+</div>
+
+<div class="fc" id="fcOv" role="dialog" aria-modal="true" aria-label="Form-Kamera" hidden>
+  <div class="fc-top">
+    <button class="fc-ib" id="fcClose" aria-label="Schließen"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg></button>
+    <div class="fc-title"><b id="fcName"></b><span id="fcSub"></span></div>
+    <div class="fc-count"><b id="fcCount">0</b><span id="fcTime"></span></div>
+  </div>
+  <div class="fc-stage" id="fcStage">
+    <video id="fcVid" playsinline muted></video>
+    <canvas id="fcCan" aria-hidden="true"></canvas>
+    <div class="fc-cd" id="fcCd" hidden></div>
+    <p class="fc-msg" id="fcMsg" aria-live="polite"></p>
+  </div>
+  <div class="fc-bot" id="fcLive">
+    <button class="fc-ib" id="fcFlip" aria-label="Kamera wechseln"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9a8 8 0 0 1 14-3l2 2M20 15a8 8 0 0 1-14 3l-2-2M20 4v4h-4M4 20v-4h4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+    <button class="fc-rec" id="fcRec" aria-label="Aufnahme starten"><i></i></button>
+    <button class="fc-ib fc-cdbtn" id="fcCdBtn" aria-pressed="true" aria-label="Countdown vor der Aufnahme">5 s</button>
+  </div>
+  <div class="fc-rev" id="fcRev" hidden>
+    <div class="fc-sum" id="fcSum"></div>
+    <div class="fc-reps" id="fcReps"></div>
+    <ul class="fc-iss" id="fcIss"></ul>
+    <div class="fc-play">
+      <button class="fc-ib" id="fcBack" aria-label="Ein Bild zurück"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 6l-6 6 6 6" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      <button class="fc-ib wide" id="fcPlay">Pause</button>
+      <button class="fc-ib" id="fcFwd" aria-label="Ein Bild vor"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      <div class="fc-speed" id="fcSpeed" role="group" aria-label="Tempo"><button data-r="0.25" aria-pressed="false">¼</button><button data-r="0.5" aria-pressed="false">½</button><button data-r="1" aria-pressed="true">1×</button></div>
+    </div>
+    <div class="fc-act">
+      <button class="btn primary" id="fcUse" hidden></button>
+      <button class="btn" id="fcNew">Neue Aufnahme</button>
+      <button class="btn" id="fcShare">Teilen</button>
+      <button class="btn danger" id="fcDel">Löschen</button>
+    </div>
+  </div>
 </div>
 
 <div class="rec" id="rec" hidden role="dialog" aria-modal="true" aria-label="Neuer Rekord">
@@ -3994,7 +4092,7 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
         (e.extra ? '<p class="ex-extra">' + esc(e.extra) + "</p>" : "") +
         '<p class="ex-tip" hidden><svg aria-hidden="true"><use href="#i-up"/></svg><span></span></p>' +
         '<div class="sets">' + setsHtml + "</div>" + body +
-        '<div class="ex-ctl">' + (e.custom ? '<button class="linkbtn" data-act="remove">Entfernen</button>' : '<button class="linkbtn" data-act="skip">Überspringen</button>') + "</div>";
+        '<div class="ex-ctl">' + (isRun(e) ? "" : '<button class="linkbtn fcbtn" data-act="cam"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M3 8h3l2-3h8l2 3h3v11H3z M12 17a4 4 0 1 0 0-8 4 4 0 0 0 0 8z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>Form-Kamera</button>') + (e.custom ? '<button class="linkbtn" data-act="remove">Entfernen</button>' : '<button class="linkbtn" data-act="skip">Überspringen</button>') + "</div>";
       ol.appendChild(li);
     });
     updateGarminButtons();
@@ -6191,6 +6289,7 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
     const li = b.closest(".ex");
     const id = li.dataset.id, dk = todayKey(), l = ensureLog(dk);
     const act = b.dataset.act;
+    if (act === "cam") { fcOpenEx(id); return; }
     if (act === "skip") { l.skipped = l.skipped || {}; l.skipped[id] = true; }
     else if (act === "unskip") { if (l.skipped) delete l.skipped[id]; }
     else if (act === "remove") {
@@ -7607,7 +7706,7 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
     } catch (e) { wakeLock = null; }
   }
   function wakeOff() { if (isNative()) { try { window.WAN.KeepAwake.allowSleep().catch(() => {}); } catch (e) { /* ignore */ } } try { if (wakeLock) wakeLock.release(); } catch (e) { /* ignore */ } wakeLock = null; }
-  const wakeNeeded = () => trainMode || emom.run || mob.run || stopw.run || (cdt.run && !cdt.paused);
+  const wakeNeeded = () => trainMode || emom.run || mob.run || stopw.run || (cdt.run && !cdt.paused) || !!window.__fcOpen;
   document.addEventListener("visibilitychange", () => { if (!document.hidden && wakeNeeded()) wakeOn(); });
 
   function beep(freq, ms, vol) {
@@ -8473,6 +8572,7 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
   });
 
   function renderTools() {
+    try { fcLibRender().catch(() => {}); } catch (e) { /* noch nicht bereit */ }
     renderStopwatch();
     renderTimerSetup();
     renderEmomSetup();
@@ -14288,7 +14388,7 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
 
 
   // ================= v20: Einmalig „Neu im Winter Arc“ nach dem Update =================
-  const APP_FEATURES_VER = "v22";
+  const APP_FEATURES_VER = "v23";
   function whatsNew() {
     let seen = "";
     try { seen = localStorage.getItem("winterarc.seenVer") || ""; } catch (e) { return; }
@@ -14296,14 +14396,11 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
     try { localStorage.setItem("winterarc.seenVer", APP_FEATURES_VER); } catch (e) { /* ignore */ }
     if (!Object.keys(state.logs || {}).length || !window.__waGame) return;
     sysShow("Neu im Winter Arc", [
-      { t: "Rang, Quest, Gates, Raid, Truhe", v: "System" },
-      { t: "Saison-Pass, Händler, Erfolge", v: "System" },
-      { t: "Kopfgelder und Bestiarium", v: "System" },
-      { t: "Wochenduell", v: "Woche" },
-      { t: "Halloween, Advent, Finale", v: "Events ab 26.10." },
-      { t: "Heute anpassen", v: "unten auf Heute" },
-      { t: "Plan und Einstellungen", v: "Zahnrad oben" }
-    ], null, "Dein bisheriger Arc zählt mit: Startkapital in Gold und Saison-Stufen für die Tage, die schon hinter dir liegen. Hol dir deine Belohnungen ab.", { action: { label: "Zum System", fn: () => { sysClose(); showTab("system"); setTimeout(() => { const b = $("passBlock"); if (b) b.scrollIntoView({ block: "start", behavior: "smooth" }); }, 200); } } });
+      { t: "Form-Kamera: zählt Wdh., prüft die Form", v: "bei jeder Übung" },
+      { t: "Alle Form-Videos", v: "Tools" },
+      { t: "Stoppuhr mit Bestzeit-Vergleich", v: "Tools" },
+      { t: "Timer", v: "Tools" }
+    ], null, "Stell das Handy seitlich hin, ganzer Körper im Bild. Beim ersten Öffnen lädt die App einmalig die KI nach, dafür brauchst du kurz Internet.", { action: { label: "Zu den Tools", fn: () => { sysClose(); showTab("tools"); } } });
   }
 
   // ================= v22: System-Tab (alles aus dem Spiel an einem Ort) =================
@@ -14610,6 +14707,550 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
       }
     } catch (e) { console.warn("native init", e); }
   }
+
+  // ================= Form-Kamera: Aufnahme, Wiederholungen zählen, Form-Check =================
+  // Körpererkennung mit MediaPipe Pose. Läuft auf dem Handy, offline, sobald WASM und Modell einmal geladen sind.
+  const FC_MP = "0.10.21";
+  const FC_CDN = "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@" + FC_MP + "/";
+  const FC_MODEL = "https://storage.googleapis.com/mediapipe-models/pose_landmarker/pose_landmarker_lite/float16/1/pose_landmarker_lite.task";
+  const FC_KP = [0, 11, 12, 13, 14, 15, 16, 23, 24, 25, 26, 27, 28];
+  const FK = { nose: 0, ls: 1, rs: 2, le: 3, re: 4, lw: 5, rw: 6, lh: 7, rh: 8, lk: 9, rk: 10, la: 11, ra: 12 };
+  const FC_BONES = [[1, 2], [1, 3], [3, 5], [2, 4], [4, 6], [1, 7], [2, 8], [7, 8], [7, 9], [9, 11], [8, 10], [10, 12]];
+  const FC_CFG = {
+    pull: { j: "elbow", ext: 140, flex: 95, lock: 158, name: "Klimmzug-Check: unten strecken, Kinn über die Stange, kein Schwung" },
+    dip: { j: "elbow", ext: 140, flex: 115, lock: 158, depth: 95, name: "Dip-Check: oben strecken, unten bis 90 Grad" },
+    push: { j: "elbow", ext: 140, flex: 115, lock: 158, depth: 95, line: true, name: "Liegestütz-Check: Tiefe, Streckung, gerade Körperlinie" },
+    arm: { j: "elbow", ext: 135, flex: 100, name: "Zählt über den Ellbogenwinkel" },
+    leg: { j: "knee", ext: 150, flex: 120, depth: 100, name: "Zählt über den Kniewinkel und prüft die Tiefe" },
+    hinge: { j: "hip", ext: 155, flex: 125, name: "Zählt über den Hüftwinkel" },
+    hold: null
+  };
+  const FC_TYPE_NAME = { pull: "Klimmzüge", dip: "Dips", push: "Liegestütze", leg: "Kniebeugen", arm: "Übung", hinge: "Kreuzheben", hold: "Video" };
+  const fc = { open: false, mode: "", ctx: null, stream: null, facing: "environment", rec: null, chunks: [], recT0: 0, recording: false, frames: [], eng: null, lm: null, loading: null, raf: 0, lastDet: 0, clip: null, url: "", cdTimer: 0, noBody: 0, ar: 1, lastP: null };
+
+  function fcType(e) {
+    const n = String((e && e.name) || "").toLowerCase();
+    const r = parseRange(e && e.reps);
+    if (r && r.secs) return "hold";
+    if (/klimm|chin|pull-?up|muscle/.test(n)) return "pull";
+    if (/dip/.test(n)) return "dip";
+    if (/liegest|push|pike/.test(n)) return "push";
+    if (/squat|kniebeu|split|ausfall|lunge|pistol/.test(n)) return "leg";
+    if (/kreuzheb|deadlift/.test(n)) return "hinge";
+    if (/wade|calf|lauf|run|hang|halten|plank|l-sit|flag|lever|handstand/.test(n)) return "hold";
+    return "arm";
+  }
+  function fcAng(a, b, c, ar) {
+    const abx = (a[0] - b[0]) * ar, aby = a[1] - b[1], cbx = (c[0] - b[0]) * ar, cby = c[1] - b[1];
+    const d = Math.hypot(abx, aby) * Math.hypot(cbx, cby);
+    if (!d) return null;
+    return Math.acos(Math.max(-1, Math.min(1, (abx * cbx + aby * cby) / d))) * 180 / Math.PI;
+  }
+  const fcVis = (p, i) => !!(p && p[i] && p[i][2] >= 0.5);
+  function fcFeat(p, cfg, ar) {
+    const S3 = cfg.j === "elbow" ? [[FK.ls, FK.le, FK.lw], [FK.rs, FK.re, FK.rw]] : cfg.j === "knee" ? [[FK.lh, FK.lk, FK.la], [FK.rh, FK.rk, FK.ra]] : [[FK.ls, FK.lh, FK.lk], [FK.rs, FK.rh, FK.rk]];
+    const vals = [];
+    S3.forEach((s) => { if (s.every((i) => fcVis(p, i))) { const a = fcAng(p[s[0]], p[s[1]], p[s[2]], ar); if (a != null) vals.push(a); } });
+    if (!vals.length) return null;
+    const f = { ang: vals.reduce((x, y) => x + y, 0) / vals.length };
+    const wr = [FK.lw, FK.rw].filter((i) => fcVis(p, i)).map((i) => p[i][1]);
+    if (fcVis(p, FK.nose) && wr.length) { f.noseSeen = true; f.noseUp = p[FK.nose][1] <= wr.reduce((x, y) => x + y, 0) / wr.length; }
+    const sh = [FK.ls, FK.rs].filter((i) => fcVis(p, i)), hp = [FK.lh, FK.rh].filter((i) => fcVis(p, i));
+    if (sh.length && hp.length) {
+      const av = (ix, k) => ix.reduce((x, i) => x + p[i][k], 0) / ix.length;
+      const sx = av(sh, 0), sy = av(sh, 1), hx = av(hp, 0), hy = av(hp, 1);
+      f.hipX = hx * ar; f.torso = Math.hypot((hx - sx) * ar, hy - sy);
+    }
+    if (cfg.line) {
+      [[FK.ls, FK.lh, FK.la, FK.lk], [FK.rs, FK.rh, FK.ra, FK.rk]].forEach((s) => {
+        const end = fcVis(p, s[2]) ? s[2] : fcVis(p, s[3]) ? s[3] : -1;
+        if (end < 0 || !fcVis(p, s[0]) || !fcVis(p, s[1])) return;
+        const a = fcAng(p[s[0]], p[s[1]], p[end], ar);
+        if (a != null && (f.line == null || a > f.line)) f.line = a;
+      });
+    }
+    return f;
+  }
+  // Zählt Wiederholungen über einen Gelenkwinkel mit Hysterese: aus der Streckung in die Beugung und zurück
+  function fcEngine(type, ar) {
+    const cfg = FC_CFG[type];
+    const E = { reps: [], phase: "", sm: null, extPeak: 0, tr: null, seen: 0, frames: 0 };
+    const upd = (tr, f, a) => {
+      if (a < tr.min) tr.min = a;
+      if (f.noseSeen) { tr.noseSeen = true; if (f.noseUp) tr.noseUp = true; }
+      if (f.hipX != null) { tr.hipMin = Math.min(tr.hipMin, f.hipX); tr.hipMax = Math.max(tr.hipMax, f.hipX); }
+      if (f.torso) { tr.torsoSum += f.torso; tr.torsoN++; }
+      if (f.line != null) tr.line = Math.min(tr.line, f.line);
+    };
+    E.push = (t, p) => {
+      E.frames++;
+      if (!cfg || !p) return null;
+      const f = fcFeat(p, cfg, ar);
+      if (!f) return null;
+      E.seen++;
+      E.sm = E.sm == null ? f.ang : E.sm * 0.4 + f.ang * 0.6;
+      const a = E.sm;
+      E.ang = a;
+      if (E.phase === "") { if (a >= cfg.ext) { E.phase = "ext"; E.extPeak = a; } return null; }
+      if (E.phase === "ext") {
+        if (a >= cfg.ext) { if (a > E.extPeak) E.extPeak = a; return null; }
+        const last = E.reps[E.reps.length - 1];
+        if (last && last.ext1 == null) last.ext1 = E.extPeak;
+        E.tr = { t0: t, min: a, noseSeen: false, noseUp: false, hipMin: Infinity, hipMax: -Infinity, torsoSum: 0, torsoN: 0, line: 180, ext0: E.extPeak, counted: false };
+        E.phase = "mid";
+      }
+      const tr = E.tr;
+      upd(tr, f, a);
+      let ev = null;
+      if (!tr.counted && a <= cfg.flex) {
+        tr.counted = true;
+        tr.n = E.reps.length + 1; tr.tTop = t;
+        E.reps.push(tr);
+        ev = { type: "rep", n: tr.n };
+      }
+      if (a >= cfg.ext) {
+        if (tr.counted) tr.t1 = t;
+        E.phase = "ext"; E.extPeak = a; E.tr = null;
+      }
+      return ev;
+    };
+    E.finish = () => {
+      const last = E.reps[E.reps.length - 1];
+      if (last && last.t1 != null && last.ext1 == null && E.phase === "ext") last.ext1 = E.extPeak;
+      return E.reps;
+    };
+    return E;
+  }
+  function fcIssues(reps, type) {
+    const cfg = FC_CFG[type] || {};
+    const durs = reps.filter((r) => r.t1 != null).slice(0, 3).map((r) => r.t1 - r.t0).sort((a, b) => a - b);
+    const base = durs.length ? durs[Math.floor(durs.length / 2)] : 0;
+    return reps.map((r) => {
+      const is = [];
+      if (cfg.lock) {
+        const lk = Math.min(r.ext0 || 180, r.ext1 == null ? 180 : r.ext1);
+        if (lk < cfg.lock) is.push(type === "pull" ? "unten nicht ganz gestreckt (" + Math.round(lk) + "°)" : "Arme nicht ganz durchgestreckt (" + Math.round(lk) + "°)");
+      }
+      if (type === "pull" && r.noseSeen && !r.noseUp) is.push("Kinn nicht über der Stange");
+      if (cfg.depth && r.min > cfg.depth) is.push("nicht tief genug (" + Math.round(r.min) + "°, Ziel " + cfg.depth + "°)");
+      const torso = r.torsoN ? r.torsoSum / r.torsoN : 0;
+      if (type === "pull" && torso > 0 && isFinite(r.hipMax) && r.hipMax - r.hipMin > 0.35 * torso) is.push("Schwung aus der Hüfte");
+      if (cfg.line && r.line < 155) is.push("Körperlinie bricht ein (" + Math.round(r.line) + "°)");
+      if (base && r.t1 != null && r.n > 3 && r.t1 - r.t0 > base * 1.6) is.push("deutlich langsamer, Ermüdung");
+      if (r.t1 == null) is.push("Aufnahme endete mitten in der Wiederholung");
+      return { n: r.n, t0: +r.t0.toFixed(2), t1: r.t1 == null ? null : +r.t1.toFixed(2), min: Math.round(r.min), issues: is };
+    });
+  }
+  window.__waFc = { fcType, fcEngine, fcIssues };
+
+  // ---- Speicher: Videos und geladene KI-Dateien in IndexedDB ----
+  let fdbP = null;
+  function fdb() {
+    if (fdbP) return fdbP;
+    fdbP = new Promise((res, rej) => {
+      let req;
+      try { req = indexedDB.open("winterarc-form", 1); } catch (e) { rej(e); return; }
+      req.onupgradeneeded = () => { const d = req.result; ["clips", "assets"].forEach((s) => { if (!d.objectStoreNames.contains(s)) d.createObjectStore(s, { keyPath: "id" }); }); };
+      req.onsuccess = () => { const d = req.result; d.onclose = () => { fdbP = null; }; res(d); };
+      req.onerror = () => { fdbP = null; rej(req.error); };
+    });
+    return fdbP;
+  }
+  const fdbReq = (store, mode, fn) => fdb().then((d) => new Promise((res, rej) => { const tx = d.transaction(store, mode); const r = fn(tx.objectStore(store)); tx.oncomplete = () => res(r && r.result); tx.onerror = () => rej(tx.error); tx.onabort = () => rej(tx.error); }));
+  const fdbPut = (s, o) => fdbReq(s, "readwrite", (st) => st.put(o));
+  const fdbGet = (s, id) => fdbReq(s, "readonly", (st) => st.get(id));
+  const fdbAll = (s) => fdbReq(s, "readonly", (st) => st.getAll());
+  const fdbDel = (s, id) => fdbReq(s, "readwrite", (st) => st.delete(id));
+
+  async function fcFetch(url, type, prog) {
+    try {
+      const r = await fetch(url);
+      if (!r.ok) throw new Error("HTTP " + r.status);
+      const total = +r.headers.get("content-length") || 0;
+      if (!r.body || !r.body.getReader) return new Blob([await r.arrayBuffer()], { type });
+      const rd = r.body.getReader(), parts = [];
+      let got = 0;
+      for (;;) { const x = await rd.read(); if (x.done) break; parts.push(x.value); got += x.value.length; if (prog) prog(got, total); }
+      return new Blob(parts, { type });
+    } catch (e) {
+      if (isNative() && window.WAN && window.WAN.CapacitorHttp) {
+        const r = await window.WAN.CapacitorHttp.get({ url, responseType: "blob", connectTimeout: 20000, readTimeout: 180000 });
+        if (r.status !== 200 || typeof r.data !== "string") throw e;
+        const bin = atob(r.data), u8 = new Uint8Array(bin.length);
+        for (let i = 0; i < bin.length; i++) u8[i] = bin.charCodeAt(i);
+        return new Blob([u8], { type });
+      }
+      throw e;
+    }
+  }
+  async function fcAsset(id, url, type, prog) {
+    const have = await fdbGet("assets", id).catch(() => null);
+    if (have && have.blob && have.blob.size > 1000) return have.blob;
+    const blob = await fcFetch(url, type, prog);
+    await fdbPut("assets", { id, blob, t: stamp() }).catch(() => {});
+    return blob;
+  }
+  function fcLoadModel() {
+    if (fc.lm) return Promise.resolve(fc.lm);
+    if (fc.loading) return fc.loading;
+    fc.loading = (async () => {
+      const mb = (n) => (n / 1048576).toFixed(1).replace(".", ",");
+      const prog = (label) => (got, total) => fcMsg("KI wird eingerichtet (nur beim ersten Mal): " + label + " " + mb(got) + (total ? " von " + mb(total) : "") + " MB");
+      const vision = (window.WAN && window.WAN.Pose) || await import(FC_CDN + "vision_bundle.mjs");
+      const loader = await fcAsset("mp-loader-" + FC_MP, FC_CDN + "wasm/vision_wasm_internal.js", "text/javascript", prog("Teil 1"));
+      const wasm = await fcAsset("mp-wasm-" + FC_MP, FC_CDN + "wasm/vision_wasm_internal.wasm", "application/wasm", prog("Teil 2"));
+      const model = await fcAsset("mp-pose-lite", FC_MODEL, "application/octet-stream", prog("Modell"));
+      fcMsg("KI startet …");
+      const fileset = { wasmLoaderPath: URL.createObjectURL(new Blob([loader], { type: "text/javascript" })), wasmBinaryPath: URL.createObjectURL(new Blob([wasm], { type: "application/wasm" })) };
+      const buf = new Uint8Array(await model.arrayBuffer());
+      let lm = null, err = null;
+      for (const delegate of ["GPU", "CPU"]) {
+        try {
+          lm = await vision.PoseLandmarker.createFromOptions(fileset, { baseOptions: { modelAssetBuffer: buf, delegate }, runningMode: "VIDEO", numPoses: 1, minPoseDetectionConfidence: 0.5, minPosePresenceConfidence: 0.5, minTrackingConfidence: 0.5 });
+          break;
+        } catch (e) { err = e; }
+      }
+      if (!lm) throw err || new Error("Pose");
+      fc.lm = lm;
+      fcMsg("");
+      return lm;
+    })();
+    fc.loading.catch((e) => { console.warn("Form-Kamera KI", e); fc.loading = null; fcMsg("Die KI konnte nicht geladen werden. Ohne Internet beim ersten Mal geht das nicht. Aufnehmen kannst du trotzdem."); });
+    return fc.loading;
+  }
+
+  function fcMsg(t) { const el = $("fcMsg"); el.innerHTML = t ? "<span>" + esc(t) + "</span>" : ""; }
+  const fcPack = (lms) => FC_KP.map((i) => { const q = lms[i]; return q ? [Math.round(q.x * 1000) / 1000, Math.round(q.y * 1000) / 1000, Math.round((q.visibility == null ? 1 : q.visibility) * 100) / 100] : [0, 0, 0]; });
+  function fcDraw(p, highlight) {
+    const cv = $("fcCan"), v = $("fcVid");
+    const w = cv.clientWidth, h = cv.clientHeight, dpr = window.devicePixelRatio || 1;
+    if (cv.width !== Math.round(w * dpr) || cv.height !== Math.round(h * dpr)) { cv.width = Math.round(w * dpr); cv.height = Math.round(h * dpr); }
+    const c = cv.getContext("2d");
+    c.setTransform(dpr, 0, 0, dpr, 0, 0);
+    c.clearRect(0, 0, w, h);
+    if (!p || !v.videoWidth) return;
+    const sc = Math.min(w / v.videoWidth, h / v.videoHeight), dw = v.videoWidth * sc, dh = v.videoHeight * sc, dx = (w - dw) / 2, dy = (h - dh) / 2;
+    const X = (q) => dx + q[0] * dw, Y = (q) => dy + q[1] * dh;
+    const col = highlight || getComputedStyle(document.documentElement).getPropertyValue("--ice").trim() || "#8EEBF8";
+    c.lineWidth = 4; c.lineCap = "round"; c.strokeStyle = col; c.globalAlpha = 0.9;
+    FC_BONES.forEach(([a, b]) => { if (fcVis(p, a) && fcVis(p, b)) { c.beginPath(); c.moveTo(X(p[a]), Y(p[a])); c.lineTo(X(p[b]), Y(p[b])); c.stroke(); } });
+    c.fillStyle = "#fff";
+    p.forEach((q, i) => { if (i && fcVis(p, i)) { c.beginPath(); c.arc(X(q), Y(q), 4.5, 0, 6.3); c.fill(); } });
+    c.globalAlpha = 1;
+  }
+  const fcClock = (s) => Math.floor(s / 60) + ":" + pad(Math.floor(s % 60));
+  function fcLoop() {
+    if (!fc.open) return;
+    const v = $("fcVid");
+    if (fc.mode === "live") {
+      const now = performance.now();
+      if (fc.recording) $("fcTime").textContent = fcClock((Date.now() - fc.recT0) / 1000);
+      if (fc.lm && v.readyState >= 2 && now - fc.lastDet > 45) {
+        fc.lastDet = now;
+        let res = null;
+        try { res = fc.lm.detectForVideo(v, now); } catch (e) { /* ignore */ }
+        const p = res && res.landmarks && res.landmarks[0] ? fcPack(res.landmarks[0]) : null;
+        fc.lastP = p;
+        if (fc.recording) {
+          const t = (Date.now() - fc.recT0) / 1000;
+          fc.frames.push([Math.round(t * 1000) / 1000, p]);
+          const ev = fc.eng && fc.eng.push(t, p);
+          if (ev) { $("fcCount").textContent = ev.n; beep(990, 70, 0.3); buzz(15); }
+        }
+        fcDraw(p);
+        fc.noBody = p ? 0 : fc.noBody + 1;
+        if (!fc.loading || fc.lm) {
+          const cfg = FC_CFG[fc.ctx.type];
+          if (fc.noBody > 25) fcMsg("Kein Körper im Bild. Handy weiter weg stellen, am besten seitlich und mit dem ganzen Körper.");
+          else if (p && cfg && !fcFeat(p, cfg, fc.ar)) fcMsg(cfg.j === "elbow" ? "Arme nicht gut zu sehen. Filme seitlich, Schulter, Ellbogen und Handgelenk im Bild." : "Beine nicht gut zu sehen. Ganzen Körper ins Bild.");
+          else if (p) fcMsg("");
+        }
+      }
+    } else if (fc.mode === "review" && fc.clip) {
+      const t = v.currentTime, fr = fc.clip.frames || [];
+      let lo = 0, hi = fr.length - 1;
+      while (lo < hi) { const m = (lo + hi + 1) >> 1; if (fr[m][0] <= t) lo = m; else hi = m - 1; }
+      const f = fr.length && Math.abs(fr[lo][0] - t) < 0.3 ? fr[lo][1] : null;
+      const rp = (fc.clip.reps || []).find((r) => t >= r.t0 - 0.05 && t <= (r.t1 == null ? 1e9 : r.t1 + 0.05));
+      fcDraw(f, rp && rp.issues.length ? "#FFB870" : null);
+      const cur = rp ? rp.n : 0;
+      if (cur !== fc.curRep) { fc.curRep = cur; $("fcReps").querySelectorAll("button").forEach((b) => b.classList.toggle("cur", +b.dataset.n === cur)); $("fcCount").textContent = cur ? cur : (fc.clip.count || 0); }
+    }
+    fc.raf = requestAnimationFrame(fcLoop);
+  }
+
+  async function fcStartCam() {
+    fcStopCam();
+    const stage = $("fcStage"), v = $("fcVid");
+    stage.classList.toggle("mirror", fc.facing === "user");
+    try {
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) throw new Error("Keine Kamera");
+      fc.stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: fc.facing, width: { ideal: 1280 }, frameRate: { ideal: 30 } }, audio: false });
+    } catch (e) {
+      fcMsg(/Permission|NotAllowed/i.test(String(e && (e.name || e.message))) ? "Kein Zugriff auf die Kamera. Erlaube ihn in den Android-Einstellungen der App." : "Die Kamera konnte nicht gestartet werden.");
+      return false;
+    }
+    v.removeAttribute("src"); v.loop = false; v.srcObject = fc.stream; v.muted = true;
+    await v.play().catch(() => {});
+    fc.ar = v.videoWidth && v.videoHeight ? v.videoWidth / v.videoHeight : 1;
+    return true;
+  }
+  function fcStopCam() {
+    if (fc.stream) { fc.stream.getTracks().forEach((t) => t.stop()); fc.stream = null; }
+    const v = $("fcVid"); v.srcObject = null;
+  }
+  function fcSetMode(m) {
+    fc.mode = m;
+    $("fcLive").hidden = m !== "live";
+    $("fcRev").hidden = m !== "review";
+    if (m !== "review") $("fcStage").classList.toggle("mirror", fc.facing === "user"); else $("fcStage").classList.remove("mirror");
+  }
+  function fcHeader() {
+    const x = fc.ctx;
+    $("fcName").textContent = x.name;
+    const cfg = FC_CFG[x.type];
+    $("fcSub").textContent = (x.setN > 1 && x.setIdx != null ? "Satz " + (x.setIdx + 1) + " von " + x.setN + " · " : "") + (cfg ? cfg.name : "Nur Video, ohne Zählen");
+  }
+  async function fcOpen(ctx) {
+    fc.ctx = ctx; fc.open = true; window.__fcOpen = true; fc.clip = null; fc.curRep = -1;
+    $("fcOv").hidden = false; document.body.classList.add("noscroll");
+    $("fcCount").textContent = "0"; $("fcTime").textContent = "";
+    $("fcRec").classList.remove("on");
+    $("fcCdBtn").setAttribute("aria-pressed", S().fcCd === false ? "false" : "true");
+    fcHeader(); fcMsg(""); fcSetMode("live");
+    wakeOn();
+    cancelAnimationFrame(fc.raf); fc.raf = requestAnimationFrame(fcLoop);
+    const ok = await fcStartCam();
+    if (ok && FC_CFG[ctx.type]) fcLoadModel().catch(() => {});
+    if (ok && !FC_CFG[ctx.type]) fcMsg("Diese Übung wird nicht gezählt. Das Video kannst du dir danach in Zeitlupe ansehen.");
+  }
+  function fcOpenEx(id) {
+    const e = todaySessionEx(id);
+    if (!e) return;
+    const li = $("exlist").querySelector('[data-id="' + CSS.escape(id) + '"]');
+    const nb = li && li.querySelector('.set[aria-pressed="false"]');
+    fcOpen({ exId: id, name: e.name, type: fcType(e), setIdx: nb ? +nb.dataset.i : null, setN: setCount(e), dk: todayKey() });
+  }
+  function fcClose() {
+    if (fc.recording) fcStopRec(false);
+    clearInterval(fc.cdTimer); $("fcCd").hidden = true;
+    fc.open = false; window.__fcOpen = false; fc.mode = "";
+    cancelAnimationFrame(fc.raf);
+    fcStopCam();
+    const v = $("fcVid"); v.pause(); v.removeAttribute("src"); v.load();
+    if (fc.url) { URL.revokeObjectURL(fc.url); fc.url = ""; }
+    $("fcOv").hidden = true; document.body.classList.remove("noscroll");
+    if (!wakeNeeded()) wakeOff();
+    if (currentTab === "tools") fcLibRender();
+  }
+  function fcPickMime() {
+    const list = ["video/mp4;codecs=avc1", "video/mp4", "video/webm;codecs=vp9", "video/webm;codecs=vp8", "video/webm"];
+    if (!window.MediaRecorder) return null;
+    return list.find((m) => { try { return MediaRecorder.isTypeSupported(m); } catch (e) { return false; } }) || "";
+  }
+  function fcBeginRec() {
+    const mime = fcPickMime();
+    if (mime == null || !fc.stream) { toast("Aufnehmen geht auf diesem Gerät nicht."); return; }
+    try { fc.rec = new MediaRecorder(fc.stream, mime ? { mimeType: mime, videoBitsPerSecond: 2500000 } : { videoBitsPerSecond: 2500000 }); } catch (e) { toast("Aufnahme konnte nicht starten."); return; }
+    fc.chunks = []; fc.frames = [];
+    const v = $("fcVid");
+    fc.ar = v.videoWidth && v.videoHeight ? v.videoWidth / v.videoHeight : fc.ar;
+    fc.eng = fcEngine(fc.ctx.type, fc.ar);
+    fc.rec.ondataavailable = (ev) => { if (ev.data && ev.data.size) fc.chunks.push(ev.data); };
+    fc.rec.start(1000);
+    fc.recT0 = Date.now(); fc.recording = true;
+    fc.thumb = fcThumb();
+    $("fcCount").textContent = "0";
+    $("fcRec").classList.add("on"); $("fcRec").setAttribute("aria-label", "Aufnahme beenden");
+    beep(1046, 160, 0.3); buzz([60, 40, 60]);
+  }
+  function fcThumb() {
+    try {
+      const v = $("fcVid"), c = document.createElement("canvas"), s = 160 / Math.max(v.videoWidth, v.videoHeight);
+      c.width = Math.round(v.videoWidth * s); c.height = Math.round(v.videoHeight * s);
+      c.getContext("2d").drawImage(v, 0, 0, c.width, c.height);
+      return c.toDataURL("image/jpeg", 0.6);
+    } catch (e) { return ""; }
+  }
+  function fcStopRec(review) {
+    if (!fc.recording || !fc.rec) return;
+    fc.recording = false;
+    const rec = fc.rec, dur = (Date.now() - fc.recT0) / 1000;
+    const reps = fc.eng ? fcIssues(fc.eng.finish(), fc.ctx.type) : [];
+    const seen = fc.eng ? fc.eng.seen : 0, frames = fc.frames, ctx = fc.ctx, ar = fc.ar, thumb = fc.thumb;
+    $("fcRec").classList.remove("on"); $("fcRec").setAttribute("aria-label", "Aufnahme starten");
+    rec.onstop = async () => {
+      const blob = new Blob(fc.chunks, { type: (rec.mimeType || "video/webm").split(";")[0] });
+      fc.chunks = [];
+      const clip = { id: "fc" + Date.now().toString(36), t: stamp(), dk: ctx.dk || todayKey(), exId: ctx.exId || "", name: ctx.name, type: ctx.type, setIdx: ctx.setIdx, setN: ctx.setN, dur: Math.round(dur * 10) / 10, ar, mime: blob.type, frames, reps, count: reps.length, seen, body: frames.filter((f) => f[1]).length, thumb, blob };
+      try { await fdbPut("clips", clip); } catch (e) { toast("Video konnte nicht gespeichert werden. Ist der Speicher voll?"); }
+      fcPrune();
+      if (review && fc.open) fcReview(clip);
+    };
+    try { rec.stop(); } catch (e) { /* ignore */ }
+    buzz([80, 40, 80]);
+  }
+  async function fcFixDur(v) {
+    await new Promise((res) => { if (v.readyState >= 1) res(); else { v.onloadedmetadata = () => { v.onloadedmetadata = null; res(); }; setTimeout(res, 3000); } });
+    if (v.duration === Infinity || isNaN(v.duration)) {
+      await new Promise((res) => { v.ontimeupdate = () => { v.ontimeupdate = null; res(); }; v.currentTime = 1e7; setTimeout(res, 2000); });
+      v.currentTime = 0;
+    }
+  }
+  async function fcReview(clip) {
+    fc.clip = clip; fc.curRep = -1;
+    if (!fc.ctx || fc.ctx.name !== clip.name) fc.ctx = { exId: clip.exId, name: clip.name, type: clip.type, setIdx: clip.setIdx, setN: clip.setN, dk: clip.dk };
+    fcStopCam();
+    fcSetMode("review"); fcHeader(); fcMsg("");
+    const v = $("fcVid");
+    if (fc.url) URL.revokeObjectURL(fc.url);
+    fc.url = URL.createObjectURL(clip.blob);
+    v.srcObject = null; v.muted = true; v.loop = true; v.src = fc.url;
+    await fcFixDur(v);
+    fcSpeed(1);
+    v.play().catch(() => {});
+    $("fcPlay").textContent = "Pause";
+    $("fcCount").textContent = clip.count || 0;
+    $("fcTime").textContent = fcClock(clip.dur || 0);
+    const bad = clip.reps.filter((r) => r.issues.length).length;
+    const cfg = FC_CFG[clip.type];
+    let sum;
+    if (!cfg) sum = "Video, " + fcClock(clip.dur || 0) + ". Mit ‹ und › gehst du Bild für Bild.";
+    else if (!clip.count) sum = clip.seen ? "Keine Wiederholung erkannt. Filme seitlich, mit dem ganzen Körper im Bild." : (clip.body ? "Körper erkannt, aber " + (cfg.j === "elbow" ? "Schulter, Ellbogen und Handgelenk" : "Hüfte, Knie und Fuß") + " waren nicht ganz zu sehen. Filme seitlich, mit dem ganzen Körper im Bild." : "Kein Körper erkannt" + (fc.lm ? "" : " (die KI war noch nicht bereit)") + ". Filme seitlich, mit dem ganzen Körper im Bild.");
+    else sum = "<b>" + clip.count + "</b> Wdh. erkannt · " + (clip.count - bad) + " sauber" + (bad ? " · " + bad + " mit Hinweis" : "");
+    $("fcSum").innerHTML = sum;
+    $("fcReps").innerHTML = clip.reps.map((r) => '<button data-n="' + r.n + '" class="' + (r.issues.length ? "bad" : "ok") + '" aria-label="Wiederholung ' + r.n + (r.issues.length ? ", mit Hinweis" : ", sauber") + '">' + r.n + "</button>").join("");
+    $("fcIss").innerHTML = clip.reps.filter((r) => r.issues.length).map((r) => "<li><b>Wdh. " + r.n + ":</b> " + esc(r.issues.join(", ")) + "</li>").join("") + (clip.count && !bad ? "<li>Alle Wiederholungen sauber. So will ich das sehen.</li>" : "");
+    const canUse = clip.dk === todayKey() && clip.exId && clip.count > 0 && cfg && !!todaySessionEx(clip.exId);
+    $("fcUse").hidden = !canUse;
+    if (canUse) $("fcUse").textContent = clip.count + " Wdh. eintragen" + (clip.setIdx != null ? " (Satz " + (clip.setIdx + 1) + ")" : "");
+    $("fcShare").hidden = !(navigator.share);
+    cancelAnimationFrame(fc.raf); fc.raf = requestAnimationFrame(fcLoop);
+  }
+  function fcSpeed(r) {
+    $("fcVid").playbackRate = r;
+    $("fcSpeed").querySelectorAll("button").forEach((b) => b.setAttribute("aria-pressed", +b.dataset.r === r ? "true" : "false"));
+  }
+  function fcStep(d) {
+    const v = $("fcVid");
+    v.pause(); $("fcPlay").textContent = "Abspielen";
+    v.currentTime = Math.max(0, Math.min((isFinite(v.duration) ? v.duration : 1e6) - 0.01, v.currentTime + d / 30));
+  }
+  async function fcPrune() {
+    try {
+      const keep = S().fcKeep == null ? 14 : +S().fcKeep;
+      const all = (await fdbAll("clips")).sort((a, b) => (a.t < b.t ? 1 : -1));
+      const cut = keep ? dateKey(addDays(today(), -keep)) : "";
+      for (let i = 0; i < all.length; i++) if (i >= 60 || (cut && all[i].dk < cut)) await fdbDel("clips", all[i].id);
+    } catch (e) { /* ignore */ }
+  }
+  async function fcLibRender() {
+    const ul = $("fcLib");
+    if (!ul) return;
+    $("fcKeep").value = String(S().fcKeep == null ? 14 : S().fcKeep);
+    let all = [];
+    try { all = (await fdbAll("clips")).sort((a, b) => (a.t < b.t ? 1 : -1)); } catch (e) { /* ignore */ }
+    $("fcLibState").textContent = all.length ? all.length + (all.length === 1 ? " Video" : " Videos") : "";
+    ul.innerHTML = all.slice(0, 30).map((c) => {
+      const bad = (c.reps || []).filter((r) => r.issues.length).length;
+      return '<li><button class="fi" data-open="' + esc(c.id) + '" aria-label="Video ansehen">' + (c.thumb ? '<img alt="" src="' + c.thumb + '">' : '<span class="ph"></span>') + "</button>" +
+        '<button class="fi" data-open="' + esc(c.id) + '"><b>' + esc(c.name) + (c.setIdx != null && c.setN > 1 ? ", Satz " + (c.setIdx + 1) : "") + "</b><span>" + esc(shortDate(parseKey(c.dk))) + " · " + fcClock(c.dur || 0) + (FC_CFG[c.type] ? " · " + (c.count || 0) + " Wdh." + (bad ? ", " + bad + " mit Hinweis" : "") : "") + "</span></button>" +
+        '<button class="btn small" data-del="' + esc(c.id) + '">Löschen</button></li>';
+    }).join("");
+  }
+  async function fcOpenClip(id) {
+    const c = await fdbGet("clips", id).catch(() => null);
+    if (!c) { toast("Video nicht gefunden."); fcLibRender(); return; }
+    fc.open = true; window.__fcOpen = true;
+    $("fcOv").hidden = false; document.body.classList.add("noscroll");
+    fc.ctx = null;
+    fcReview(c);
+  }
+
+  $("fcClose").addEventListener("click", fcClose);
+  $("fcFlip").addEventListener("click", async () => { if (fc.recording) return; fc.facing = fc.facing === "user" ? "environment" : "user"; await fcStartCam(); });
+  $("fcCdBtn").addEventListener("click", () => { S().fcCd = S().fcCd === false; saveSettings(); $("fcCdBtn").setAttribute("aria-pressed", S().fcCd === false ? "false" : "true"); });
+  $("fcRec").addEventListener("click", () => {
+    primeAudio();
+    if (fc.recording) { fcStopRec(true); return; }
+    if (!$("fcCd").hidden) { clearInterval(fc.cdTimer); $("fcCd").hidden = true; return; }
+    if (S().fcCd === false) { fcBeginRec(); return; }
+    let n = 5;
+    const cd = $("fcCd");
+    cd.hidden = false; cd.textContent = n; beep(660, 120, 0.25);
+    fc.cdTimer = setInterval(() => {
+      n--;
+      if (n <= 0) { clearInterval(fc.cdTimer); cd.hidden = true; if (fc.open && fc.mode === "live") fcBeginRec(); return; }
+      cd.textContent = n; beep(660, 120, 0.25); buzz(15);
+    }, 1000);
+  });
+  $("fcPlay").addEventListener("click", () => { const v = $("fcVid"); if (v.paused) { v.play().catch(() => {}); $("fcPlay").textContent = "Pause"; } else { v.pause(); $("fcPlay").textContent = "Abspielen"; } });
+  $("fcBack").addEventListener("click", () => fcStep(-1));
+  $("fcFwd").addEventListener("click", () => fcStep(1));
+  $("fcSpeed").addEventListener("click", (ev) => { const b = ev.target.closest("button[data-r]"); if (b) fcSpeed(+b.dataset.r); });
+  $("fcReps").addEventListener("click", (ev) => {
+    const b = ev.target.closest("button[data-n]");
+    if (!b || !fc.clip) return;
+    const r = fc.clip.reps.find((x) => x.n === +b.dataset.n);
+    if (!r) return;
+    const v = $("fcVid");
+    v.currentTime = Math.max(0, r.t0 - 0.3);
+    fcSpeed(0.5); v.play().catch(() => {}); $("fcPlay").textContent = "Pause";
+  });
+  $("fcNew").addEventListener("click", async () => {
+    const ctx = fc.ctx;
+    if (!ctx) return;
+    if (ctx.exId && ctx.dk === todayKey()) { const li = $("exlist").querySelector('[data-id="' + CSS.escape(ctx.exId) + '"]'); const nb = li && li.querySelector('.set[aria-pressed="false"]'); ctx.setIdx = nb ? +nb.dataset.i : ctx.setIdx; }
+    const v = $("fcVid"); v.pause(); v.removeAttribute("src"); v.load();
+    if (fc.url) { URL.revokeObjectURL(fc.url); fc.url = ""; }
+    fc.clip = null;
+    await fcOpen(ctx);
+  });
+  $("fcDel").addEventListener("click", async (ev) => {
+    const b = ev.currentTarget;
+    if (!fc.clip) return;
+    if (b.dataset.armed !== "1") { b.dataset.armed = "1"; b.textContent = "Wirklich löschen?"; setTimeout(() => { b.dataset.armed = ""; b.textContent = "Löschen"; }, 3000); return; }
+    b.dataset.armed = ""; b.textContent = "Löschen";
+    await fdbDel("clips", fc.clip.id).catch(() => {});
+    toast("Video gelöscht");
+    fcClose();
+  });
+  $("fcShare").addEventListener("click", async () => {
+    if (!fc.clip) return;
+    const ext = /mp4/.test(fc.clip.mime) ? "mp4" : "webm";
+    const f = new File([fc.clip.blob], "form-" + slug(fc.clip.name) + "-" + fc.clip.dk + "." + ext, { type: fc.clip.mime || "video/webm" });
+    try { await navigator.share({ files: [f], title: fc.clip.name }); } catch (e) { if (!/abort/i.test(String(e && (e.name || e.message)))) toast("Teilen hat nicht geklappt."); }
+  });
+  $("fcUse").addEventListener("click", () => {
+    const c = fc.clip;
+    if (!c) return;
+    const n = c.count, exId = c.exId, si = c.setIdx;
+    fcClose();
+    if (currentTab !== "today") showTab("today");
+    setTimeout(() => {
+      const li = $("exlist").querySelector('[data-id="' + CSS.escape(exId) + '"]');
+      if (!li) return;
+      let btn = si != null ? li.querySelector('.set[data-i="' + si + '"]') : null;
+      if (!btn || btn.getAttribute("aria-pressed") === "true") btn = li.querySelector('.set[aria-pressed="false"]') || btn;
+      if (!btn || !openPad(btn)) return;
+      numpad.val = String(n); numpad.pre = false; renderPad();
+    }, 60);
+  });
+  $("fcFree").addEventListener("click", () => {
+    const t = $("fcFreeType").value;
+    fcOpen({ exId: "", name: FC_TYPE_NAME[t] || "Freie Aufnahme", type: t, setIdx: null, setN: 0, dk: todayKey() });
+  });
+  $("fcKeep").addEventListener("change", () => { S().fcKeep = +$("fcKeep").value; saveSettings(); fcPrune().then(fcLibRender); });
+  $("fcLib").addEventListener("click", async (ev) => {
+    const o = ev.target.closest("[data-open]");
+    if (o) { fcOpenClip(o.dataset.open); return; }
+    const d = ev.target.closest("[data-del]");
+    if (!d) return;
+    if (d.dataset.armed !== "1") { d.dataset.armed = "1"; d.textContent = "Wirklich?"; setTimeout(() => { if (d.isConnected) { d.dataset.armed = ""; d.textContent = "Löschen"; } }, 3000); return; }
+    await fdbDel("clips", d.dataset.del).catch(() => {});
+    fcLibRender();
+  });
+  document.addEventListener("visibilitychange", () => { if (document.hidden && fc.recording) fcStopRec(false); });
 
   const deepHandled = handleDeepLink();
   initCollapsibles();

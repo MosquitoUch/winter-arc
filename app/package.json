@@ -16,7 +16,8 @@
     "@capacitor/local-notifications": "8.3.1",
     "@capacitor/share": "8.0.3",
     "@capgo/capacitor-health": "8.11.12",
-    "@capgo/capacitor-updater": "8.53.0"
+    "@capgo/capacitor-updater": "8.53.0",
+    "@mediapipe/tasks-vision": "0.10.21"
   },
   "devDependencies": {
     "@capacitor/cli": "8.5.3",
