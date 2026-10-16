@@ -613,6 +613,15 @@ pre.prompt { white-space: pre-wrap; margin: 0 0 12px; padding: 14px; border-radi
 
 .emom-clock { font-family: var(--display); font-weight: 800; font-size: 104px; line-height: 0.95; text-align: center; letter-spacing: 0.01em; font-variant-numeric: tabular-nums; margin: 6px 0 2px; }
 .emom-clock.go { color: var(--ice); text-shadow: 0 0 30px var(--glow); }
+.emom-clock.sw-clock { font-size: clamp(52px, 17vw, 92px); }
+.sw-row { justify-content: center; }
+.sw-laps { list-style: none; margin: 14px 0 0; padding: 0; max-height: 220px; overflow-y: auto; }
+.sw-laps li { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; gap: 12px; align-items: baseline; padding: 8px 0; border-top: 1px solid var(--line); font-variant-numeric: tabular-nums; }
+.sw-laps li:first-child { border-top: 0; }
+.sw-laps b { font-family: var(--display); font-weight: 700; font-size: 20px; color: var(--ice); }
+.sw-laps .cum { color: var(--mute); font-size: 13px; }
+.tm-presets { flex-wrap: wrap; }
+#swSave { margin-top: 14px; }
 .emom-sub { margin: 0; text-align: center; color: var(--ink-2); font-size: 15px; }
 .emom-bar { height: 6px; background: var(--line); border-radius: 3px; overflow: hidden; margin: 14px 0 0; }
 .emom-bar.thin { height: 3px; margin-top: 6px; }
@@ -2231,6 +2240,20 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
       <div class="toolsgrid">
         <div class="tcol">
 
+          <div class="tcard" id="swCard">
+            <div class="shead"><h2>Stoppuhr</h2><span id="swState"></span></div>
+            <div class="emom-clock go sw-clock" id="swClock" role="timer" aria-live="off">0:00.0</div>
+            <div class="row sw-row"><button class="btn primary" id="swStart">Start</button><button class="btn" id="swLap" hidden>Runde</button><button class="btn" id="swReset" hidden>Zurücksetzen</button></div>
+            <ol class="sw-laps" id="swLaps" aria-label="Runden"></ol>
+            <div id="swSave" hidden>
+              <p class="tlead">Speicher die Zeit unter einem Namen. Gleiche Namen werden verglichen, so siehst du, ob du schneller wirst.</p>
+              <label for="swLabel">Name der Einheit</label>
+              <input class="inp" id="swLabel" autocomplete="off" maxlength="40" placeholder="Kelly 50/50/50/50">
+              <div class="row"><button class="btn primary" id="swSaveBtn">Zeit speichern</button></div>
+            </div>
+            <ul class="reclist" id="swHist"></ul>
+          </div>
+
           <div class="tcard" id="emomCard">
             <div class="shead"><h2>EMOM-Timer</h2><span id="emStatus"></span></div>
             <div id="emSetup">
@@ -2274,6 +2297,24 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
 
         </div>
         <div class="tcol">
+
+          <div class="tcard" id="tmCard">
+            <div class="shead"><h2>Timer</h2><span id="tmState"></span></div>
+            <div id="tmSetup">
+              <p class="tlead">Ein einfacher Countdown. Die letzten drei Sekunden piepen, am Ende gibt es einen Ton und Vibration.</p>
+              <div class="field-row">
+                <div><label for="tmMin">Minuten</label><input class="inp" id="tmMin" inputmode="numeric" placeholder="1"></div>
+                <div><label for="tmSec">Sekunden</label><input class="inp" id="tmSec" inputmode="numeric" placeholder="30"></div>
+              </div>
+              <div class="row tm-presets" id="tmPresets"><button class="btn small" data-s="30">0:30</button><button class="btn small" data-s="60">1:00</button><button class="btn small" data-s="120">2:00</button><button class="btn small" data-s="180">3:00</button><button class="btn small" data-s="300">5:00</button><button class="btn small" data-s="600">10:00</button></div>
+              <div class="row"><button class="btn primary" id="tmStart">Starten</button></div>
+            </div>
+            <div id="tmRun" hidden>
+              <div class="emom-clock" id="tmClock" role="timer" aria-live="off">0:00</div>
+              <div class="emom-bar" aria-hidden="true"><i id="tmBar"></i></div>
+              <div class="row"><button class="btn" id="tmPause">Pause</button><button class="btn danger" id="tmStop">Abbrechen</button></div>
+            </div>
+          </div>
 
           <div class="tcard" id="gtgCard">
             <div class="shead"><h2>Greasing the Groove</h2><span id="gtgState"></span></div>
@@ -7566,7 +7607,7 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
     } catch (e) { wakeLock = null; }
   }
   function wakeOff() { if (isNative()) { try { window.WAN.KeepAwake.allowSleep().catch(() => {}); } catch (e) { /* ignore */ } } try { if (wakeLock) wakeLock.release(); } catch (e) { /* ignore */ } wakeLock = null; }
-  const wakeNeeded = () => trainMode || emom.run || mob.run;
+  const wakeNeeded = () => trainMode || emom.run || mob.run || stopw.run || (cdt.run && !cdt.paused);
   document.addEventListener("visibilitychange", () => { if (!document.hidden && wakeNeeded()) wakeOn(); });
 
   function beep(freq, ms, vol) {
@@ -7954,6 +7995,193 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
     }).join("");
   }
 
+  // ---------- Stoppuhr und Timer ----------
+  const TOOLS_KEY = "winterarc.tools.v1";
+  const stopw = { run: false, t0: 0, el: 0, laps: [], id: 0 };
+  const cdt = { run: false, paused: false, end: 0, left: 0, total: 0, done: false, lastBeep: -1, id: 0 };
+  function toolsPersist() {
+    try {
+      localStorage.setItem(TOOLS_KEY, JSON.stringify({
+        sw: { run: stopw.run, t0: stopw.t0, el: stopw.el, laps: stopw.laps },
+        cd: { run: cdt.run, paused: cdt.paused, end: cdt.end, left: cdt.left, total: cdt.total, done: cdt.done }
+      }));
+    } catch (e) { /* ignore */ }
+  }
+  const swNow = () => (stopw.run ? Date.now() - stopw.t0 : stopw.el);
+  function fmtSw(ms) {
+    ms = Math.max(0, Math.floor(ms));
+    const h = Math.floor(ms / 3600000), m = Math.floor(ms / 60000) % 60, s = Math.floor(ms / 1000) % 60, t = Math.floor((ms % 1000) / 100);
+    return h ? h + ":" + pad(m) + ":" + pad(s) : m + ":" + pad(s) + "." + t;
+  }
+  function swRender() {
+    const el = swNow();
+    $("swClock").textContent = fmtSw(el);
+    $("swStart").textContent = stopw.run ? "Stopp" : (el > 0 ? "Weiter" : "Start");
+    $("swStart").className = "btn " + (stopw.run ? "danger" : "primary");
+    $("swLap").hidden = !stopw.run;
+    $("swReset").hidden = stopw.run || el === 0;
+    $("swSave").hidden = stopw.run || el < 1000;
+    $("swState").textContent = stopw.run ? "läuft" : (el > 0 ? "angehalten" : "");
+    if (document.activeElement !== $("swLabel")) $("swLabel").value = S().swLabel || "Kelly 50/50/50/50";
+  }
+  function swLapsRender() {
+    $("swLaps").innerHTML = stopw.laps.slice().reverse().map((c, i) => {
+      const n = stopw.laps.length - i, prev = n > 1 ? stopw.laps[n - 2] : 0;
+      return "<li><span>Runde " + n + "</span><b>" + fmtSw(c - prev) + '</b><span class="cum">' + fmtSw(c) + "</span></li>";
+    }).join("");
+  }
+  function swTick() {
+    clearTimeout(stopw.id);
+    $("swClock").textContent = fmtSw(swNow());
+    if (stopw.run) stopw.id = setTimeout(swTick, 100);
+  }
+  function swHistRender() {
+    const asc = (S().swHist || []).slice().sort((x, y) => (x.t < y.t ? -1 : 1));
+    const best = {}, last = {}, prevOf = {};
+    asc.forEach((e) => {
+      if (best[e.label] == null || e.ms < best[e.label]) best[e.label] = e.ms;
+      prevOf[e.id] = last[e.label];
+      last[e.label] = e;
+    });
+    $("swHist").innerHTML = asc.reverse().slice(0, 10).map((e) => {
+      const p = prevOf[e.id];
+      let cmp = "";
+      if (p) { const d = e.ms - p.ms; cmp = Math.abs(d) < 100 ? ", genauso schnell wie zuletzt" : ", " + fmtSw(Math.abs(d)) + (d < 0 ? " schneller" : " langsamer") + " als zuletzt"; }
+      const isBest = e.ms === best[e.label] && (S().swHist || []).filter((x) => x.label === e.label).length > 1;
+      return '<li><span class="rn">' + esc(e.label) + '</span><span class="rv">' + fmtSw(e.ms) + '</span><span class="rd">' + esc(shortDate(parseKey(e.dk))) + cmp + (isBest ? ", Bestzeit" : "") + (e.laps && e.laps.length ? ", " + e.laps.length + " Runden" : "") + ' <button class="btn small" data-del="' + esc(e.id) + '">Löschen</button></span></li>';
+    }).join("");
+  }
+  $("swStart").addEventListener("click", () => {
+    primeAudio();
+    if (stopw.run) { stopw.el = Date.now() - stopw.t0; stopw.run = false; if (!wakeNeeded()) wakeOff(); }
+    else { stopw.t0 = Date.now() - stopw.el; stopw.run = true; wakeOn(); }
+    buzz(15); swRender(); swTick(); toolsPersist();
+  });
+  $("swLap").addEventListener("click", () => {
+    if (!stopw.run) return;
+    stopw.laps.push(swNow());
+    buzz(10); swLapsRender(); toolsPersist();
+  });
+  $("swReset").addEventListener("click", () => {
+    if (stopw.run) return;
+    Object.assign(stopw, { el: 0, laps: [] });
+    swRender(); swLapsRender(); toolsPersist();
+  });
+  $("swSaveBtn").addEventListener("click", () => {
+    const ms = Math.round(swNow());
+    if (stopw.run || ms < 1000) return;
+    const label = ($("swLabel").value || "").trim().slice(0, 40) || "Einheit";
+    const a = (S().swHist = S().swHist || []);
+    const same = a.filter((x) => x.label === label);
+    const prevBest = same.length ? Math.min.apply(null, same.map((x) => x.ms)) : null;
+    const prevLast = same.length ? same.slice().sort((x, y) => (x.t < y.t ? 1 : -1))[0] : null;
+    a.push({ id: "sw" + Date.now().toString(36), label, ms, dk: todayKey(), laps: stopw.laps.slice(), t: stamp() });
+    if (a.length > 80) a.splice(0, a.length - 80);
+    S().swLabel = label;
+    saveSettings();
+    Object.assign(stopw, { run: false, el: 0, laps: [] });
+    toolsPersist(); swRender(); swLapsRender(); swHistRender();
+    toast(prevBest == null ? "Gespeichert: " + fmtSw(ms) : ms < prevBest - 99 ? "Neue Bestzeit: " + fmtSw(ms) + ", " + fmtSw(prevBest - ms) + " schneller als je zuvor" : prevLast && ms < prevLast.ms - 99 ? "Gespeichert: " + fmtSw(ms) + ", " + fmtSw(prevLast.ms - ms) + " schneller als zuletzt" : "Gespeichert: " + fmtSw(ms));
+  });
+  $("swHist").addEventListener("click", (ev) => {
+    const b = ev.target.closest("button[data-del]");
+    if (!b) return;
+    if (b.dataset.armed !== "1") { b.dataset.armed = "1"; b.textContent = "Wirklich?"; setTimeout(() => { if (b.isConnected) { b.dataset.armed = ""; b.textContent = "Löschen"; } }, 3000); return; }
+    S().swHist = (S().swHist || []).filter((x) => x.id !== b.dataset.del);
+    saveSettings(); swHistRender();
+  });
+  function renderStopwatch() { swRender(); swLapsRender(); swHistRender(); swTick(); }
+
+  // Timer (Countdown)
+  function cdShow(mode) {
+    $("tmSetup").hidden = mode !== "setup";
+    $("tmRun").hidden = mode === "setup";
+    $("tmState").textContent = mode === "run" ? (cdt.paused ? "pausiert" : "läuft") : mode === "done" ? "abgelaufen" : "";
+  }
+  function cdTick() {
+    clearTimeout(cdt.id);
+    if (!cdt.run) return;
+    const left = cdt.paused ? cdt.left : cdt.end - Date.now();
+    if (left <= 0) { cdFinish(true); return; }
+    $("tmClock").textContent = fmtClock(left);
+    $("tmBar").style.transform = "scaleX(" + Math.max(0, Math.min(1, 1 - left / (cdt.total * 1000))).toFixed(4) + ")";
+    const s = Math.ceil(left / 1000);
+    if (!cdt.paused && s <= 3 && s !== cdt.lastBeep) { cdt.lastBeep = s; beep(660, 140, 0.25); buzz(20); }
+    cdt.id = setTimeout(cdTick, 200);
+  }
+  function cdFinish(live) {
+    clearTimeout(cdt.id);
+    cdt.run = false; cdt.done = true;
+    if (!wakeNeeded()) wakeOff();
+    $("tmClock").textContent = "Fertig";
+    $("tmClock").classList.add("go");
+    $("tmBar").style.transform = "scaleX(1)";
+    $("tmPause").textContent = "Nochmal";
+    $("tmStop").textContent = "Schließen";
+    $("tmStop").className = "btn";
+    cdShow("done");
+    toolsPersist();
+    if (live) { chime(); buzz([100, 60, 100, 60, 200]); }
+  }
+  function cdBegin(sec) {
+    primeAudio();
+    Object.assign(cdt, { run: true, paused: false, total: sec, end: Date.now() + sec * 1000, left: sec * 1000, done: false, lastBeep: -1 });
+    wakeOn();
+    $("tmClock").classList.remove("go");
+    $("tmPause").textContent = "Pause";
+    $("tmStop").textContent = "Abbrechen";
+    $("tmStop").className = "btn danger";
+    cdShow("run");
+    toolsPersist();
+    cdTick();
+  }
+  $("tmPresets").addEventListener("click", (ev) => {
+    const b = ev.target.closest("button[data-s]");
+    if (!b) return;
+    const s = +b.dataset.s;
+    $("tmMin").value = Math.floor(s / 60);
+    $("tmSec").value = s % 60 ? s % 60 : "";
+  });
+  $("tmStart").addEventListener("click", () => {
+    const sec = Math.round((num($("tmMin").value) || 0) * 60 + (num($("tmSec").value) || 0));
+    if (sec < 1 || sec > 10800) { toast("Trag eine Zeit zwischen 1 Sekunde und 180 Minuten ein."); return; }
+    S().tmLast = sec; saveSettings();
+    cdBegin(sec);
+  });
+  $("tmPause").addEventListener("click", () => {
+    if (cdt.done && !cdt.run) { cdBegin(cdt.total); return; }
+    if (!cdt.run) return;
+    if (cdt.paused) { cdt.end = Date.now() + cdt.left; cdt.paused = false; $("tmPause").textContent = "Pause"; cdShow("run"); cdTick(); }
+    else { cdt.left = cdt.end - Date.now(); cdt.paused = true; $("tmPause").textContent = "Weiter"; cdShow("run"); }
+    toolsPersist();
+  });
+  $("tmStop").addEventListener("click", () => {
+    clearTimeout(cdt.id);
+    Object.assign(cdt, { run: false, paused: false, done: false });
+    if (!wakeNeeded()) wakeOff();
+    cdShow("setup");
+    toolsPersist();
+  });
+  function renderTimerSetup() {
+    if (cdt.run || cdt.done) return;
+    const last = S().tmLast;
+    if (last && !$("tmMin").value && !$("tmSec").value) { $("tmMin").value = Math.floor(last / 60); $("tmSec").value = last % 60 ? last % 60 : ""; }
+  }
+  (function toolsRestore() {
+    try {
+      const d = JSON.parse(localStorage.getItem(TOOLS_KEY) || "null");
+      if (!d) return;
+      if (d.sw) { stopw.run = !!d.sw.run; stopw.t0 = +d.sw.t0 || 0; stopw.el = +d.sw.el || 0; stopw.laps = Array.isArray(d.sw.laps) ? d.sw.laps.map(Number).filter((x) => x >= 0) : []; if (stopw.run && stopw.t0 > Date.now()) stopw.run = false; }
+      if (d.cd && (d.cd.run || d.cd.done)) {
+        Object.assign(cdt, { run: !!d.cd.run, paused: !!d.cd.paused, end: +d.cd.end || 0, left: +d.cd.left || 0, total: +d.cd.total || 0, done: !!d.cd.done });
+        if (cdt.total < 1) { cdt.run = false; cdt.done = false; }
+        else if (cdt.run && !cdt.paused && cdt.end <= Date.now()) cdFinish(false);
+        else if (cdt.run) { $("tmStop").className = "btn danger"; cdShow("run"); cdTick(); }
+        else if (cdt.done) cdFinish(false);
+      }
+    } catch (e) { /* ignore */ }
+  })();
+
   // ---------- Mobility ----------
   const MOB_STEPS = [
     { n: "Katze und Kuh", s: 45, t: "Auf allen vieren, Wirbelsäule langsam rund und hohl, im Atemrhythmus." },
@@ -8245,6 +8473,8 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
   });
 
   function renderTools() {
+    renderStopwatch();
+    renderTimerSetup();
     renderEmomSetup();
     renderEmomHist();
     renderMobIdle();
@@ -14172,9 +14402,12 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
       if (timer && !timer.finished && timer.end && timer.end > Date.now() + 1500 && !$("timer").hidden) {
         await NAT.LocalNotifications.schedule({ notifications: [natN(1, new Date(timer.end), "Pause vorbei", "Nächster Satz. Los geht's.", "timer")] });
       }
+      if (cdt.run && !cdt.paused && cdt.end > Date.now() + 1500) {
+        await NAT.LocalNotifications.schedule({ notifications: [natN(2, new Date(cdt.end), "Timer abgelaufen", "Deine Zeit ist um.", "timer")] });
+      }
     } catch (e) { /* ignore */ }
   }
-  function natRestIn() { if (NAT) natCancel([1]); }
+  function natRestIn() { if (NAT) natCancel([1, 2]); }
 
   // ---- Health Connect: Schritte, Schlaf, Ruhepuls ----
   const HC_TYPES = ["steps", "sleep", "restingHeartRate", "workouts"];
