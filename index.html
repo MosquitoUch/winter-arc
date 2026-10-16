@@ -1679,6 +1679,14 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
 .sysview { display: flex; flex-direction: column; gap: 20px; }
 .sysview > * { order: 0 !important; margin: 0 !important; }
 .sysview > [hidden], .sysview > [data-tlhide] { display: none !important; }
+/* v23: Alle Sprüche anhören */
+.vllist { display: grid; gap: 4px; margin-top: 12px; }
+.vllist h4 { margin: 14px 0 4px; font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: var(--mute); }
+.vlrow { display: grid; grid-template-columns: 40px minmax(0, 1fr); align-items: center; gap: 10px; padding: 6px 8px; border-radius: 12px; }
+.vlrow.on { background: rgba(var(--acc-rgb), .12); }
+.vlrow button { width: 40px; height: 40px; border-radius: 50%; border: 1px solid var(--line-2); background: transparent; color: var(--ice); font-size: 14px; }
+.vlrow span { font-size: 14px; color: var(--ink-2); }
+.vlrow.miss span::after { content: " · noch nicht vertont"; color: var(--mute); font-size: 12px; }
 </style>
 </head>
 <body>
@@ -2401,7 +2409,7 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
                 <div class="field"><label for="vpProf">Profil bearbeiten</label><div class="row"><select id="vpProf" class="vsel"></select><button class="btn small" id="vpNew">Neues Profil</button><button class="btn small danger" id="vpDelProf" hidden>Löschen</button></div></div>
                 <div class="two">
                   <div class="field"><label for="vpName">Name</label><input id="vpName" class="inp" autocomplete="off" maxlength="30"></div>
-                  <div class="field"><label for="vpRole">Rolle</label><select id="vpRole"><option value="normal">Normal</option><option value="motivation">Motivator, für wenig Energie</option><option value="ruhig">Ruhig, für Deload und lockere Tage</option><option value="dominant">Dominant, entspannt und elegant</option></select></div>
+                  <div class="field"><label for="vpRole">Rolle</label><select id="vpRole"><option value="normal">Normal</option><option value="motivation">Motivator, für wenig Energie</option><option value="ruhig">Ruhig, für Deload und lockere Tage</option><option value="dominant">Dominant, entspannt und elegant</option><option value="dominant_en">Dominant, auf Englisch</option></select></div>
                 </div>
                 <label class="ocrauto"><input type="checkbox" id="vpAuto"> Profil automatisch wählen: Motivator bei Energie 1 bis 2 oder roter Ampel, Ruhig bei Deload und Ruhetagen</label>
                 <details class="mini"><summary>Sprüche dieses Profils</summary>
@@ -2416,7 +2424,7 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
                 <h4 class="vpsub">Voice-Pack (fertige Audio-Clips)</h4>
                 <p class="fhint" id="vpState"></p>
                 <div class="row"><button class="btn small" id="vpExport">Satzliste exportieren</button><button class="btn small" id="vpPick">Voice-Pack laden (ZIP)</button><input type="file" class="sr" id="vpFile" accept=".zip,application/zip" tabindex="-1"></div>
-                <div class="row"><button class="btn small" id="vpTest">Probe hören</button><button class="btn small danger" id="vpDel" hidden>Voice-Pack entfernen</button></div>
+                <div class="row"><button class="btn small" id="vpTest">Probe hören</button><button class="btn small" id="vpAll">Alle Sprüche anhören</button><button class="btn small danger" id="vpDel" hidden>Voice-Pack entfernen</button></div>
                 <div class="row"><button class="btn small primary" id="vpEl">Mit ElevenLabs vertonen</button><button class="btn small" id="vpElStop" hidden>Anhalten</button></div>
                 <small class="fhint">Erzeugt alle Sätze dieses Profils einmalig mit deiner ElevenLabs-Stimme (Schlüssel und Voice-ID unter Coach). Danach spielen sie sofort und offline, ohne weitere Credits. Fehlende Clips werden beim nächsten Mal ergänzt.</small>
                 <h4 class="vpsub">Eigenes Stimmmodell (Piper)</h4>
@@ -2809,6 +2817,14 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
     <p class="fhint">Blende aus, was du nicht brauchst, und schieb mit den Pfeilen nach oben, was dir wichtig ist. Gilt für das Handy.</p>
     <ul class="tllist" id="tlList"></ul>
     <button class="btn small" id="tlReset">Standard wiederherstellen</button>
+  </div>
+</div>
+<div class="tlsheet" id="vlSheet" hidden role="dialog" aria-label="Alle Sprüche anhören">
+  <div class="tlbox">
+    <div class="tlhead"><h3 id="vlTitle">Alle Sprüche</h3><button class="btn small" id="vlClose">Fertig</button></div>
+    <p class="fhint" id="vlHint"></p>
+    <div class="row"><button class="btn small primary" id="vlPlayAll">Alle nacheinander</button><button class="btn small" id="vlStop" hidden>Stopp</button></div>
+    <div id="vlList" class="vllist"></div>
   </div>
 </div>
 <div class="advsheet" id="advSheet" hidden role="dialog" aria-label="Adventskalender">
@@ -10590,15 +10606,279 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
         "Ein perfekter Tag. Ich könnte mich daran gewöhnen.",
         "Alles erledigt. Heute warst du genau so, wie ich dich will."
       ]
+    },
+    dominant_en: {
+      start: [
+        "There you are. I was starting to get bored. {next}",
+        "Put the phone down and be mine for a while. {next}",
+        "Good. Now show me what you're worth today. {next}",
+        "I made us some tea. You can drink it when we're done. {next}",
+        "No excuses today. I wouldn't listen to them anyway. {next}",
+        "On time. Almost obedient. {next}",
+        "Slowly. We do this at my pace. {next}",
+        "I'm curious how far you'll get today. {next}",
+        "Listen to me and you'll get stronger. It's that simple. {next}",
+        "Begin. I enjoy watching you work. {next}",
+        "Come here. Today we build you a little further. {next}",
+        "I looked at your plan. It's good. So will you be. {next}",
+        "Take a deep breath. Then we begin. {next}",
+        "I don't want to see anything half-hearted today. {next}",
+        "You wanted to be strong. Then come. {next}",
+        "How brave of you to show up. {next}"
+      ],
+      low_energy: [
+        "Tired? How cute. We're training anyway.",
+        "Low on energy. Then take some of mine. I have plenty for both of us.",
+        "I can see you don't want to. I can also see you're here anyway. Good.",
+        "Today won't be pretty. But it will be done.",
+        "Slow is allowed. Stopping is not.",
+        "You may be tired. You may not be weak.",
+        "Breathe. Then do as I say.",
+        "Days like this are when you get interesting.",
+        "I know you'd rather lie down. Get up anyway.",
+        "Your head says no. Your body says yes. Listen to your body.",
+        "A bad day is the best day to impress me.",
+        "Make it small. But make it happen."
+      ],
+      skipped: [
+        "You kept me waiting yesterday. That won't happen again.",
+        "A whole day without me. Was it worth it?",
+        "I waited for you yesterday. Today you pay for it.",
+        "No explanations. I just want to see you deliver today.",
+        "You were gone. Now you're back. Prove you mean it.",
+        "Yesterday doesn't count anymore. Today does. Begin.",
+        "Skipping doesn't suit you. Working does."
+      ],
+      ten: [
+        "Ten seconds.",
+        "Ten seconds. Get up.",
+        "Ten. I don't like waiting.",
+        "Almost time. Get ready.",
+        "Ten more seconds, then you're mine again.",
+        "Ten seconds. Take one more sip.",
+        "Rested enough. Almost.",
+        "Ten seconds. Focus.",
+        "Ten seconds, my dear.",
+        "Ten more. Breathe slowly.",
+        "Almost. Shoulders loose.",
+        "Ten seconds. I'm counting with you.",
+        "Ten more. Then I want everything.",
+        "Nearly over. Hands ready."
+      ],
+      rest_over: [
+        "Rest is over. {next}",
+        "Enough lazing around. {next}",
+        "Keep going. I don't have all day. {next}",
+        "Up you get, my dear. {next}",
+        "Back to work. {next}",
+        "Break's over. Show me the next set. {next}",
+        "Go. I want to watch you fight. {next}",
+        "No more resting. {next}",
+        "And again. You know the rules. {next}",
+        "Now. Not in a minute. Now. {next}",
+        "Up with you. {next}",
+        "The rest is over, and you know it. {next}",
+        "Come. The next set is waiting. {next}",
+        "Don't dawdle. {next}",
+        "I'm patient. But not that patient. {next}",
+        "Keep going, my dear. {next}",
+        "Up. Show me you still can. {next}",
+        "Your turn again. {next}",
+        "You've rested enough. {next}",
+        "Stop dreaming. {next}",
+        "Don't keep me waiting. {next}",
+        "I want the next set. Right now. {next}"
+      ],
+      last_set: [
+        "Last set. Give me everything you have left. {next}",
+        "The last one. Make it beautiful for me. {next}",
+        "Just one more. Don't disappoint me now. {next}",
+        "Last set. After this you may be proud. Not before. {next}",
+        "One last time. I'm watching closely. {next}",
+        "The set that counts. {next}",
+        "Last set. I want to see you shake. {next}",
+        "Save the best for last. {next}"
+      ],
+      set_pr: [
+        "{wdh}. A new record. I'm impressed, for once.",
+        "A record. Look at you, full of surprises.",
+        "{wdh} reps. I want to see that more often.",
+        "New personal best. Well done, my dear.",
+        "A record. Remember this feeling. I want it again.",
+        "That's how I like you. {wdh}.",
+        "There we go. More than ever before.",
+        "New record. You're becoming dangerous.",
+        "{wdh}. I knew there was more in you.",
+        "A record. And I got to watch.",
+        "{wdh}. I'm writing that down.",
+        "You've never been this strong. I like it very much."
+      ],
+      set_better: [
+        "{diff} more than last time. Very good.",
+        "Better than last time. That's how I like it.",
+        "{diff} more. You learn quickly.",
+        "More than last time. Keep it up.",
+        "Progress. Quiet, but I noticed.",
+        "{diff} more. That's exactly why you're here.",
+        "Better. I expected nothing less.",
+        "You're growing. I like that.",
+        "Another step forward. Good.",
+        "{diff} more. I was counting.",
+        "Better than last time. I knew it.",
+        "More. Always more. That's right."
+      ],
+      set_worse: [
+        "{diff} fewer than last time. That wasn't everything, was it?",
+        "Fewer than usual. I'll pretend I didn't see that. Once.",
+        "Weaker today. The next set will make up for it.",
+        "{diff} fewer. I'm disappointed. A little.",
+        "Not your best set. Luckily you have another one.",
+        "Fewer. Breathe and take it back.",
+        "That was weak. You are not.",
+        "One bad set isn't a bad day. Keep going.",
+        "Fewer than last time. Chin up, back straight, keep going.",
+        "It happens. But not twice in a row.",
+        "{diff} fewer. I want those reps back next set."
+      ],
+      done: [
+        "Done. You've earned my approval.",
+        "Workout complete. Now you may drink your tea.",
+        "That was good. I don't say that often, so enjoy it.",
+        "Finished. Rest now. Tomorrow you're mine again.",
+        "Done for today. You're stronger than you were an hour ago.",
+        "Good work. I'm proud of you. Don't tell anyone.",
+        "That's it. Eat something, sleep well, and come back tomorrow.",
+        "Done. You didn't disappoint me.",
+        "Finished. This is what someone who means it looks like.",
+        "That's a wrap. And now: protein.",
+        "Good job. Now stretch, and then rest.",
+        "Workout over. I had fun. I hope you did too.",
+        "You didn't give up today. I'll remember that.",
+        "Done. Tomorrow I want to see you exactly like this."
+      ],
+      rank_up: [
+        "Rank up. Rank {rang}. I saw it coming.",
+        "Rank {rang}. You're rising. And I'm watching.",
+        "A new rank. Don't get used to it, there's more above.",
+        "Rank {rang}. You're slowly becoming worthy of me.",
+        "Ranked up. Stay hungry."
+      ],
+      level_up: [
+        "Level {level}. Keep going.",
+        "Level {level}. You're getting a little too strong for me.",
+        "One more level. And I want another.",
+        "Level {level}. I'm keeping count.",
+        "Level up. Good.",
+        "Level {level}. And I have so much more planned for you."
+      ],
+      quest: [
+        "Daily quest done. As it should be.",
+        "Quest complete. I wouldn't have let you off anyway.",
+        "Done. Duty before pleasure. I like that.",
+        "Quest complete. Another one waits tomorrow.",
+        "All done. See how easy it is to listen to me?",
+        "Daily quest. Checked off. Good.",
+        "Quest done. You're very obedient today.",
+        "Done. I would have liked to give you another one."
+      ],
+      boss_won: [
+        "The boss is on the ground. And you're still standing.",
+        "Defeated. I like it when you win.",
+        "Boss down. That wasn't luck.",
+        "He fell. You didn't.",
+        "Defeated. Now he knows who he was dealing with.",
+        "Victory. Don't tell me it was easy. I was watching.",
+        "Defeated. I wasn't nervous for a second. Almost."
+      ],
+      boss_alive: [
+        "He's still alive. That annoys me more than you.",
+        "Not today. But soon.",
+        "The boss is still standing. We won't leave it like that.",
+        "Almost. Next time you'll get him. I insist.",
+        "He survived. Remember his face."
+      ],
+      achievement: [
+        "A new achievement. I like collecting them for you.",
+        "Achievement unlocked. Well, well.",
+        "Another achievement. You're getting ambitious.",
+        "Unlocked. I'm curious about the next one.",
+        "One more achievement. Well done.",
+        "Something else to be proud of. Briefly.",
+        "An achievement. I knew you could do it."
+      ],
+      voice_on: [
+        "Here I am. I'll tell you when your rest is over.",
+        "I'm with you. And I won't let you slack off.",
+        "You called for me. Then listen to me now.",
+        "I'm here. Shall we begin?",
+        "Hello, my dear. I'll be watching over you today.",
+        "I'm back. Did you miss me?",
+        "From now on you listen to me. Until the very last set."
+      ],
+      shadow_win: [
+        "Your old self is beaten. I like that.",
+        "Better than four weeks ago. That's how I want you.",
+        "You overtook yourself. I saw it.",
+        "Your shadow from back then loses. And you get stronger.",
+        "A month ago you were weaker. Not anymore."
+      ],
+      gate_open: [
+        "A gate has opened. Rank {rang}. Go in. For me.",
+        "Rank {rang}. A gate is waiting for you.",
+        "A gate. I'm curious what you'll make of it.",
+        "A new gate. Rank {rang}. Are you scared?",
+        "A gate has opened. Don't keep it waiting.",
+        "A gate. Go in before it closes."
+      ],
+      gate_clear: [
+        "Gate cleared. Clean.",
+        "Cleared. You keep getting better.",
+        "The gate is empty. And you're still standing.",
+        "Done. I knew you'd make it out.",
+        "Gate cleared. Well done, my hunter."
+      ],
+      red_gate: [
+        "The gate turned red. No way out. Now it gets serious.",
+        "Red. From now on, all that matters is that you hold on.",
+        "A red gate. I'm with you. Fight.",
+        "No way back. Just the way I like it."
+      ],
+      arise: [
+        "Arise. He belongs to you now.",
+        "A new shadow. Your army grows.",
+        "Arise. Serve him well.",
+        "Another soldier. You collect almost as greedily as I do."
+      ],
+      episode: [
+        "Episode {nr}. I'm looking forward to this week.",
+        "Episode {nr}. A new week, a new chapter.",
+        "Week {nr} begins. Let's see if you surprise me.",
+        "Episode {nr}. I already have plans for you."
+      ],
+      job: [
+        "You chose your class. A good choice.",
+        "A new class. Do it honor.",
+        "Chosen. Now show me what this class can do."
+      ],
+      perfect: [
+        "A perfect day. Everything done. I'm pleased.",
+        "Perfect. I want to see a day like this again tomorrow.",
+        "Nothing skipped. You surprise me more and more.",
+        "A perfect day. You've earned a reward.",
+        "Everything done. This is what discipline looks like.",
+        "A perfect day. I could get used to this.",
+        "All done. Today you were exactly how I want you."
+      ]
     }
   };
   const STYLE = {
     normal: "Freundlicher, klarer Trainer. Motivierend, aber sachlich. Duzt.",
     motivation: "Harter, spöttischer Motivator im Stil eines Anime-Mentors. Darf spielerisch beleidigen und provozieren (zum Beispiel Schnecke, E-Rang, Weichei), wird aber nie verletzend, nie über Aussehen oder Persönliches. Lobt selten, dann aber ehrlich.",
     ruhig: "Ruhiger, gelassener Begleiter. Sanft, entspannt, lobt leise, achtet auf Atmung und saubere Technik.",
+    dominant_en: "Relaxed, dominant and elegant woman with a slightly superior, curious manner. Speaks calmly, never loud, teases playfully, gives clear instructions and accepts no excuses. Rarely praises, but warmly (for example my dear). Likes tea as a small motif. Never hurtful, never suggestive. Answer in English.",
     dominant: "Entspannte, dominante und elegante Frau mit leicht überlegener, neugieriger Art. Spricht ruhig, nie laut, neckt spielerisch, gibt klare Anweisungen und duldet keine Ausreden. Lobt selten, aber warm, mit einem Hauch Zuneigung (zum Beispiel mein Lieber). Mag Tee als kleines Motiv. Nie verletzend, nie anzüglich."
   };
-  const ROLE_NAME = { normal: "Normal", motivation: "Motivator", ruhig: "Ruhig", dominant: "Dominant" };
+  const ROLE_NAME = { normal: "Normal", motivation: "Motivator", ruhig: "Ruhig", dominant: "Dominant", dominant_en: "Dominant, Englisch" };
   function voices() {
     const s = S();
     if (!s.voices || !s.voices.list || !s.voices.list.length) {
@@ -10607,10 +10887,18 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
     return s.voices;
   }
   const profById = (id) => voices().list.find((p) => p.id === id) || null;
+  const profLang = (p) => (p && /_en$/.test(p.role || "") ? "en" : "de");
   // v22: Profil für die eigene ElevenLabs-Stimme einmalig anlegen
   try {
     const V0 = voices();
     if (!S().domProf && !V0.list.some((p) => p.role === "dominant")) { V0.list.push({ id: "pdom", name: "Meine Stimme", role: "dominant", pack: null, piper: null, lines: null, style: "" }); S().domProf = 1; saveSettings(); }
+    // v23: Die eigene Stimme spricht Englisch (noch nicht vertonte Profile werden umgestellt)
+    if (!S().enProf) {
+      const pd = V0.list.find((p) => p.id === "pdom");
+      if (pd && !(pd.pack && pd.pack.ids && pd.pack.ids.length) && !pd.lines) { pd.role = "dominant_en"; pd.name = "My Voice"; }
+      else if (!V0.list.some((p) => p.role === "dominant_en")) V0.list.push({ id: "pdomen", name: "My Voice", role: "dominant_en", pack: null, piper: null, lines: null, style: "" });
+      S().enProf = 1; saveSettings();
+    }
   } catch (e) { /* ignore */ }
   function autoRole() {
     try {
@@ -10714,14 +11002,15 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
     const g = outGain();
     let t = audioCtx.currentTime + 0.04;
     bufs.forEach((b) => { const s = audioCtx.createBufferSource(); s.buffer = b; s.connect(g); s.start(t); vp.srcs.push(s); t += b.duration + 0.09; });
+    vp.endAt = t;
     return true;
   }
-  function ttsSay(text) {
+  function ttsSay(text, lang) {
     if (!window.speechSynthesis || !text) return;
     try {
       speechSynthesis.cancel();
       const u = new SpeechSynthesisUtterance(text);
-      u.lang = "de-DE"; if (deVoice) u.voice = deVoice;
+      if (lang === "en") u.lang = "en-US"; else { u.lang = "de-DE"; if (deVoice) u.voice = deVoice; }
       u.rate = 1.04; u.pitch = 1;
       speechSynthesis.speak(u);
     } catch (e) { /* ignore */ }
@@ -10831,7 +11120,8 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
   function say(text, parts, force, prof) {
     if ((!voiceOn() && !force) || !text) return Promise.resolve();
     const p = prof || curProf();
-    const rest = () => { if (parts && parts.length && packIds(p).size) return vpPlay(p, parts).then((ok) => { if (!ok) ttsSay(text); }); ttsSay(text); return Promise.resolve(); };
+    const lg = profLang(p);
+    const rest = () => { if (parts && parts.length && packIds(p).size) return vpPlay(p, parts).then((ok) => { if (!ok) { vp.endAt = 0; ttsSay(text, lg); } return ok; }); vp.endAt = 0; ttsSay(text, lg); return Promise.resolve(false); };
     if (piperOk(p)) return piperSay(p, text).catch(rest);
     return rest();
   }
@@ -10935,7 +11225,8 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
   function vpList(p) {
     const out = [];
     SITS.forEach(([sit]) => linesOf(p, sit).forEach((tpl, i) => { let k = 0; lineSegments(tpl).forEach((s) => { if (s.lit != null) out.push({ id: "s_" + sit + "_" + i + "_" + k++, text: s.lit }); }); }));
-    [["satz", "Satz"], ["von", "von"], ["ziel", "Ziel"], ["bis", "bis"], ["sekunden", "Sekunden"], ["name", (S().partner && S().partner.me) || "Jäger"]].forEach(([id, text]) => out.push({ id, text }));
+    const en = profLang(p) === "en";
+    [["satz", en ? "set" : "Satz"], ["von", en ? "of" : "von"], ["ziel", en ? "target" : "Ziel"], ["bis", en ? "to" : "bis"], ["sekunden", en ? "seconds" : "Sekunden"], ["name", (S().partner && S().partner.me) || (en ? "Hunter" : "Jäger")]].forEach(([id, text]) => out.push({ id, text }));
     RANK_L.forEach((l) => out.push({ id: "rang_" + vslug(l.replace("+", "plus")), text: rankSpoken(l) }));
     for (let n = 1; n <= 100; n++) out.push({ id: "zahl_" + n, text: String(n) });
     const names = {};
@@ -11077,6 +11368,54 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
       const v = nx.text ? { next: nx, uebung: nx.name } : { next: { text: "Klimmzüge, Satz 2 von 3. Ziel 6 bis 8.", parts: ["uebung_klimmzuege", "satz", "zahl_2", "von", "zahl_3", "ziel", "zahl_6", "bis", "zahl_8"] }, uebung: "Klimmzüge" };
       sayLine(pickLine("rest_over", v, p), true);
     });
+    // ---- v23: Alle Sprüche eines Profils anhören ----
+    let vlRun = 0;
+    function vlItems(p) {
+      const en = profLang(p) === "en", ids = packIds(p);
+      const ue = vpList(p).find((x) => x.id.indexOf("uebung_") === 0);
+      const uName = ue ? ue.text : en ? "Pull-ups" : "Klimmzüge", uPart = ue ? ue.id : "uebung_" + vslug(uName);
+      const next = { text: uName + (en ? ", set 2 of 3. Target 8." : ", Satz 2 von 3. Ziel 8."), parts: [uPart, "satz", "zahl_2", "von", "zahl_3", "ziel", "zahl_8"], name: uName };
+      const vv = { next, uebung: uName, wdh: 12, diff: 2, level: 15, rang: "C", nr: 3, name: (S().partner && S().partner.me) || (en ? "Hunter" : "Jäger") };
+      const out = [];
+      SITS.forEach(([sit, label]) => linesOf(p, sit).forEach((tpl, i) => {
+        const parts = lineParts(sit, i, tpl, vv);
+        out.push({ sit, label, i, line: { text: fillLine(tpl, vv), parts, prof: p }, miss: !(parts && parts.every((x) => ids.has(x))) });
+      }));
+      return out;
+    }
+    function vlRender() {
+      const p = edProf(), items = vlItems(p), miss = items.filter((x) => x.miss).length;
+      $("vlTitle").textContent = "Alle Sprüche: " + p.name;
+      $("vlHint").textContent = items.length + " Sprüche" + (packIds(p).size ? (miss ? ", " + miss + " davon noch ohne Aufnahme (die spricht die Systemstimme)" : ", alle mit deiner Stimme") : ", noch nichts vertont, du hörst die Systemstimme") + ". Zahlen und Übungen sind Beispiele.";
+      let last = "";
+      $("vlList").innerHTML = items.map((x, k) => (x.sit !== last ? "<h4>" + esc((last = x.sit, x.label)) + "</h4>" : "") + '<div class="vlrow' + (x.miss ? " miss" : "") + '" data-k="' + k + '"><button aria-label="Abspielen">▶</button><span>' + esc(x.line.text) + "</span></div>").join("");
+      vlRender.items = items;
+    }
+    const vlWait = (ms) => new Promise((r) => setTimeout(r, ms));
+    async function vlPlay(k) {
+      const x = (vlRender.items || [])[k];
+      if (!x) return;
+      document.querySelectorAll("#vlList .vlrow.on").forEach((e) => e.classList.remove("on"));
+      const row = document.querySelector('#vlList .vlrow[data-k="' + k + '"]');
+      if (row) { row.classList.add("on"); row.scrollIntoView({ block: "nearest" }); }
+      primeAudio();
+      const ok = await say(x.line.text, x.line.parts, true, x.line.prof);
+      // warten, bis der Clip zu Ende ist
+      if (ok && audioCtx && vp.endAt) { while (audioCtx.currentTime < vp.endAt) await vlWait(120); }
+      else { await vlWait(400); while (window.speechSynthesis && speechSynthesis.speaking) await vlWait(150); }
+    }
+    $("vpAll").addEventListener("click", () => { vlRender(); $("vlSheet").hidden = false; });
+    const vlClose = () => { vlRun++; vpStop(); try { speechSynthesis.cancel(); } catch (e) { /* ignore */ } $("vlSheet").hidden = true; $("vlStop").hidden = true; };
+    $("vlClose").addEventListener("click", vlClose);
+    $("vlSheet").addEventListener("click", (ev) => { if (ev.target === $("vlSheet")) vlClose(); });
+    $("vlList").addEventListener("click", (ev) => { const r = ev.target.closest(".vlrow"); if (!r) return; vlRun++; vlPlay(+r.dataset.k); });
+    $("vlStop").addEventListener("click", () => { vlRun++; vpStop(); try { speechSynthesis.cancel(); } catch (e) { /* ignore */ } $("vlStop").hidden = true; });
+    $("vlPlayAll").addEventListener("click", async () => {
+      const run = ++vlRun, items = vlRender.items || [];
+      $("vlStop").hidden = false;
+      for (let k = 0; k < items.length && run === vlRun; k++) { await vlPlay(k); if (run !== vlRun) break; await vlWait(450); }
+      if (run === vlRun) $("vlStop").hidden = true;
+    });
     $("vpDel").addEventListener("click", async () => {
       const p = edProf();
       for (const id of (p.pack && p.pack.ids) || []) { try { await mdb.del(kClip(p.id, id)); } catch (e) { /* ignore */ } }
@@ -11105,7 +11444,7 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
         if (!velSpoken(c.text)) { await mdb.put(kClip(p.id, c.id), velSilence(), c.id); return true; }
         for (let tries = 0; tries < 3; tries++) {
           const body = { text: c.text, model_id: model };
-          if (/flash_v2_5|turbo_v2_5/.test(model)) body.language_code = "de";
+          if (/flash_v2_5|turbo_v2_5/.test(model)) body.language_code = profLang(p);
           const r = await fetch("https://api.elevenlabs.io/v1/text-to-speech/" + encodeURIComponent(voice) + "?output_format=mp3_44100_128", {
             method: "POST", headers: { "content-type": "application/json", "xi-api-key": key, accept: "audio/mpeg" }, body: JSON.stringify(body)
           });
