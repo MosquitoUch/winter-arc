@@ -1,0 +1,9 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Winter Arc</string>
+    <string name="title_activity_main">Winter Arc</string>
+    <string name="package_name">com.mosquitouch.winterarc</string>
+    <string name="custom_url_scheme">com.mosquitouch.winterarc</string>
+    <string name="widget_desc">Dein Tag im Winter Arc: Einheit, Sätze, Quest und Serie.</string>
+    <string name="health_connect_privacy_policy_url">https://mosquitouch.github.io/winter-arc/privacy.html</string>
+</resources>

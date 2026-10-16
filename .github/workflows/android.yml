@@ -1,0 +1,71 @@
+name: Android-App
+
+on:
+  push:
+    branches: [main]
+    paths-ignore:
+      - "README.md"
+      - "tools/**"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: android-app
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: app/package-lock.json
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - uses: android-actions/setup-android@v3
+
+      - uses: gradle/actions/setup-gradle@v4
+
+      - name: App bauen
+        run: bash app/scripts/ci-build.sh
+
+      - name: Release aktualisieren
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: app-latest
+          name: Winter Arc App
+          make_latest: true
+          body: |
+            Neueste Android-App. Auf dem Handy die Datei winter-arc.apk herunterladen und installieren.
+            Die App holt sich Web-Updates danach selbst (www.zip und version.json).
+            Stand: ${{ github.sha }}
+          files: |
+            out/winter-arc.apk
+            out/www.zip
+            out/version.json
+
+      - name: Log bei Fehler sichern
+        if: failure()
+        run: |
+          mkdir -p /tmp/cilog
+          cp build.log /tmp/cilog/build.log 2>/dev/null || echo "kein Log" > /tmp/cilog/build.log
+          tail -c 900000 /tmp/cilog/build.log > /tmp/cilog/tail.log
+          git config user.name "ci"
+          git config user.email "ci@users.noreply.github.com"
+          git checkout --orphan ci-log
+          git rm -rf -q . || true
+          cp /tmp/cilog/tail.log build.log
+          git add build.log
+          git commit -q -m "Build-Log ${GITHUB_SHA}"
+          git push -f origin ci-log

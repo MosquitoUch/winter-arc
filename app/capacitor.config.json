@@ -1,0 +1,23 @@
+{
+  "appId": "com.mosquitouch.winterarc",
+  "appName": "Winter Arc",
+  "webDir": "www",
+  "android": {
+    "backgroundColor": "#000000"
+  },
+  "plugins": {
+    "CapacitorUpdater": {
+      "autoUpdate": false,
+      "appReadyTimeout": 15000,
+      "responseTimeout": 30
+    },
+    "SystemBars": {
+      "style": "DARK",
+      "initialViewportFitValueHint": "cover"
+    },
+    "LocalNotifications": {
+      "smallIcon": "ic_stat_wa",
+      "iconColor": "#8EEBF8"
+    }
+  }
+}

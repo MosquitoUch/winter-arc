@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#000000">
+<script>window.__waBuild = "dev";try{if(window.Capacitor&&window.Capacitor.isNativePlatform&&window.Capacitor.isNativePlatform()){document.documentElement.classList.add("native");document.write('<script src="native.js"><\/script>')}}catch(e){}</script>
 <script>try{var a=localStorage.getItem("winterarc.accent"),v=localStorage.getItem("winterarc.accentVars");if(v)document.documentElement.style.cssText=v;else if(a&&a!=="eis")document.documentElement.setAttribute("data-accent",a)}catch(e){}</script>
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -2506,6 +2507,30 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
               </div>
             </div>
           </details>
+          <details class="grp" id="grpApp" hidden>
+            <summary><span class="gt">Android-App<small>Benachrichtigungen, Health Connect, Widget</small></span></summary>
+            <div class="gbody settings">
+              <div class="toggle"><span>Benachrichtigungen<small>Pausen-Timer, wenn die App im Hintergrund ist, dazu die Erinnerungen darunter.</small></span><button class="switch" role="switch" aria-checked="true" id="swNatNotif" aria-label="Benachrichtigungen"></button></div>
+              <div class="toggle"><span>Vor dem Training<small>30 Minuten vor der Uhrzeit aus deinem Plan.</small></span><button class="switch" role="switch" aria-checked="true" id="swNatTrain" aria-label="Erinnerung vor dem Training"></button></div>
+              <div class="toggle"><span>Trinkzeiten<small>Zu den Zeiten aus deinem Trinkfenster, nur solange du hinterher bist.</small></span><button class="switch" role="switch" aria-checked="true" id="swNatDrink" aria-label="Trinkzeiten"></button></div>
+              <div class="toggle"><span>Abends: Was noch offen ist<small>Zur Uhrzeit, die du bei den Erinnerungen gewählt hast.</small></span><button class="switch" role="switch" aria-checked="true" id="swNatEve" aria-label="Abend-Erinnerung"></button></div>
+              <div class="row"><button class="btn small" id="natTest">Test-Benachrichtigung</button></div>
+              <div class="block sub">
+                <h3>Health Connect</h3>
+                <p class="lead" id="hcState">Holt Schritte, Schlaf und Ruhepuls automatisch, zum Beispiel von deiner Garmin-Uhr über Garmin Connect.</p>
+                <div class="row"><button class="btn small primary" id="hcConnect">Verbinden</button><button class="btn small" id="hcSync" hidden>Jetzt abgleichen</button><button class="btn small" id="hcOpen" hidden>Berechtigungen</button></div>
+              </div>
+              <div class="block sub">
+                <h3>Widget</h3>
+                <p class="lead">Halte auf dem Startbildschirm eine freie Stelle gedrückt, tipp auf Widgets und such nach Winter Arc. Es zeigt deinen Tag, die Sätze, die Quest und deine Serie.</p>
+              </div>
+              <div class="block sub">
+                <h3>Version</h3>
+                <p class="lead" id="natVer"></p>
+                <div class="row"><button class="btn small" id="natUpd">Nach Update suchen</button></div>
+              </div>
+            </div>
+          </details>
           <details class="grp" id="grpData">
             <summary><span class="gt">Daten und Backup<small>Sichern, laden, Plan zurücksetzen</small></span></summary>
             <div class="gbody">
@@ -3834,6 +3859,7 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
     try { renderAdvent(); } catch (e) { /* ignore */ }
     try { arcEndCheck(); } catch (e) { /* ignore */ }
     try { renderPerfect(); } catch (e) { /* ignore */ }
+    try { natWidget(); } catch (e) { /* ignore */ }
   }
 
   function placeholderFor(e) {
@@ -7488,6 +7514,7 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
   let trainMode = false;
   let wakeLock = null;
   function wakeOn() {
+    if (isNative()) { try { window.WAN.KeepAwake.keepAwake().catch(() => {}); } catch (e) { /* ignore */ } return; }
     try {
       if (!navigator.wakeLock || wakeLock) return;
       navigator.wakeLock.request("screen").then((wl) => {
@@ -7496,7 +7523,7 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
       }).catch(() => { wakeLock = null; });
     } catch (e) { wakeLock = null; }
   }
-  function wakeOff() { try { if (wakeLock) wakeLock.release(); } catch (e) { /* ignore */ } wakeLock = null; }
+  function wakeOff() { if (isNative()) { try { window.WAN.KeepAwake.allowSleep().catch(() => {}); } catch (e) { /* ignore */ } } try { if (wakeLock) wakeLock.release(); } catch (e) { /* ignore */ } wakeLock = null; }
   const wakeNeeded = () => trainMode || emom.run || mob.run;
   document.addEventListener("visibilitychange", () => { if (!document.hidden && wakeNeeded()) wakeOn(); });
 
@@ -13416,6 +13443,244 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
     ], null, "Dein bisheriger Arc zählt mit: Startkapital in Gold und Saison-Stufen für die Tage, die schon hinter dir liegen. Hol dir deine Belohnungen ab.", { action: { label: "Zum Saison-Pass", fn: () => { sysClose(); showTab("progress"); setTimeout(() => { const b = $("passBlock"); if (b) b.scrollIntoView({ block: "start", behavior: "smooth" }); }, 200); } } });
   }
 
+  // ================= v22: Android-App (Capacitor): Benachrichtigungen, Health Connect, Widget, Zurück-Taste, Updates =================
+  function isNative() { try { return !!(window.WAN && window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform()); } catch (e) { return false; } }
+  const NAT = isNative() ? window.WAN : null;
+  const natOpt = (k) => S()[k] !== false;
+  async function natPermOk(ask) {
+    try {
+      let p = await NAT.LocalNotifications.checkPermissions();
+      if (p.display !== "granted" && ask) p = await NAT.LocalNotifications.requestPermissions();
+      return p.display === "granted";
+    } catch (e) { return false; }
+  }
+  async function natChannels() {
+    try {
+      await NAT.LocalNotifications.createChannel({ id: "timer", name: "Pausen-Timer", description: "Meldet sich, wenn deine Satzpause vorbei ist.", importance: 5, visibility: 1, vibration: true });
+      await NAT.LocalNotifications.createChannel({ id: "remind", name: "Erinnerungen", description: "Training, Trinken und was am Abend noch offen ist.", importance: 3, visibility: 1, vibration: true });
+    } catch (e) { /* ignore */ }
+  }
+  const natN = (id, at, title, body, ch) => ({ id, title, body, schedule: { at, allowWhileIdle: true }, channelId: ch || "remind", smallIcon: "ic_stat_wa", iconColor: "#8EEBF8", autoCancel: true });
+  async function natCancel(ids) { try { if (ids.length) await NAT.LocalNotifications.cancel({ notifications: ids.map((id) => ({ id })) }); } catch (e) { /* ignore */ } }
+  function openToday(dk) {
+    const open = [], l = state.logs[dk] || {};
+    const pt = +S().proteinTarget || 120, p = proteinTotal(dk);
+    if (p < pt) open.push(Math.round(pt - p) + " g Protein");
+    const dt = drinkCfg().target, w = drinkTotal(dk);
+    if (w < dt) open.push(fmtL(dt - w) + " Wasser");
+    const s = effSession(parseKey(dk));
+    if (s) { const pr = sessionProgress(dk, s); if (pr.total && pr.done < pr.total) open.push((pr.total - pr.done) + (pr.total - pr.done === 1 ? " Satz" : " Sätze")); }
+    if (window.__waGame && !((rankMeta().quests || {})[dk])) open.push("die Daily Quest");
+    (S().habits || []).forEach((h) => { if (/protein|wasser|trinken/i.test(h)) return; if (!(l.habits && l.habits[h])) open.push(h); });
+    return open;
+  }
+  // Plant alle Erinnerungen der nächsten Tage neu (beim Start und jedes Mal, wenn die App in den Hintergrund geht)
+  let natPlanBusy = false;
+  async function natPlan() {
+    if (!NAT || natPlanBusy) return;
+    natPlanBusy = true;
+    try {
+      const pend = await NAT.LocalNotifications.getPending().catch(() => ({ notifications: [] }));
+      await natCancel((pend.notifications || []).map((n) => +n.id).filter((id) => id >= 10));
+      if (!natOpt("natNotif") || !(await natPermOk(false))) return;
+      const now = Date.now(), list = [], tk = todayKey();
+      for (let i = 0; i < 7; i++) {
+        const d = addDays(today(), i), dk = dateKey(d);
+        if (natOpt("natTrain")) {
+          const s = effSession(d);
+          if (s && !s.free && s.time && /^\d{1,2}:\d{2}$/.test(s.time)) {
+            const [h, m] = s.time.split(":").map(Number), at = new Date(d.getFullYear(), d.getMonth(), d.getDate(), h, m - 30);
+            const pr = sessionProgress(dk, s);
+            if (at.getTime() > now + 30000 && !(pr.total && pr.done >= pr.total)) list.push(natN(10 + i, at, "Gleich Training: " + s.name, "Um " + s.time + " Uhr, " + s.exercises.length + (s.exercises.length === 1 ? " Übung" : " Übungen") + ". Trink vorher noch was."));
+          }
+        }
+        const from = S().remindFrom == null ? 19 : S().remindFrom;
+        if (natOpt("natEve") && from !== "aus") {
+          const at = new Date(d.getFullYear(), d.getMonth(), d.getDate(), +from, 0);
+          if (at.getTime() > now + 30000) {
+            if (dk === tk) { const o = openToday(dk); if (o.length) list.push(natN(20 + i, at, "Heute noch offen", o.slice(0, 4).join(", ") + ".")); }
+            else list.push(natN(20 + i, at, "Wie läuft dein Tag?", "Check-in, Daily Quest und Truhe warten noch auf dich."));
+          }
+        }
+        if (natOpt("natDrink") && i < 2) {
+          const c = drinkCfg(), have = dk === tk ? drinkTotal(dk) : 0;
+          drinkSchedule().forEach((x) => {
+            if (have >= x.i * c.bottle) return;
+            const [h, m] = x.t.split(":").map(Number), at = new Date(d.getFullYear(), d.getMonth(), d.getDate(), h, m);
+            if (at.getTime() > now + 30000) list.push(natN(100 + i * 40 + x.i, at, "Trinkpause", "Shaker " + x.i + " sollte bis jetzt leer sein (" + fmtL(x.i * c.bottle) + " von " + fmtL(c.target) + ")."));
+          });
+        }
+      }
+      if (list.length) await NAT.LocalNotifications.schedule({ notifications: list });
+    } catch (e) { console.warn("natPlan", e); } finally { natPlanBusy = false; }
+  }
+  // Pausen-Timer: Meldung nur, wenn die App gerade nicht sichtbar ist
+  async function natRestOut() {
+    if (!NAT || !natOpt("natNotif")) return;
+    try {
+      if (timer && !timer.finished && timer.end && timer.end > Date.now() + 1500 && !$("timer").hidden) {
+        await NAT.LocalNotifications.schedule({ notifications: [natN(1, new Date(timer.end), "Pause vorbei", "Nächster Satz. Los geht's.", "timer")] });
+      }
+    } catch (e) { /* ignore */ }
+  }
+  function natRestIn() { if (NAT) natCancel([1]); }
+
+  // ---- Health Connect: Schritte, Schlaf, Ruhepuls ----
+  const HC_TYPES = ["steps", "sleep", "restingHeartRate"];
+  function hcRender() {
+    if (!$("hcState")) return;
+    const on = !!S().hc, last = S().hcLast;
+    $("hcConnect").textContent = on ? "Neu verbinden" : "Verbinden";
+    $("hcConnect").classList.toggle("primary", !on);
+    $("hcSync").hidden = !on; $("hcOpen").hidden = !on;
+    $("hcState").textContent = on ? "Verbunden. Schritte, Schlaf und Ruhepuls kommen automatisch, sobald du die App öffnest" + (last ? ". Zuletzt abgeglichen: " + last : "") + "." : "Holt Schritte, Schlaf und Ruhepuls automatisch, zum Beispiel von deiner Garmin-Uhr über Garmin Connect.";
+  }
+  async function hcConnect() {
+    try {
+      const av = await NAT.Health.isAvailable();
+      if (!av.available) { toast("Health Connect ist auf diesem Handy nicht verfügbar" + (av.reason ? ": " + av.reason : ".")); return; }
+      await NAT.Health.requestAuthorization({ read: HC_TYPES, write: [] });
+      S().hc = true; saveSettings(); hcRender();
+      const n = await hcSync(true);
+      toast(n ? "Health Connect verbunden, " + n + " Werte übernommen" : "Health Connect verbunden");
+    } catch (e) { toast("Verbindung fehlgeschlagen: " + ((e && e.message) || e)); }
+  }
+  let hcBusy = false, hcAt = 0;
+  async function hcSync(force) {
+    if (!NAT || !S().hc || hcBusy) return 0;
+    if (!force && Date.now() - hcAt < 5 * 60e3) return 0;
+    hcBusy = true; hcAt = Date.now();
+    let changed = 0;
+    try {
+      const now = new Date(), t0 = startOfDay(now);
+      // Schritte: heute und gestern als Tagessumme
+      for (let back = 0; back < 2; back++) {
+        const a = addDays(t0, -back), b = back ? t0 : now, dk = dateKey(a);
+        const r = await NAT.Health.queryAggregated({ dataType: "steps", startDate: a.toISOString(), endDate: b.toISOString(), bucket: "day", aggregation: "sum" }).catch(() => null);
+        const n = Math.round(((r && r.samples) || []).reduce((s, x) => s + (+x.value || 0), 0));
+        if (!n) continue;
+        const l = ensureLog(dk); l.steps = l.steps || [];
+        const old = l.steps.find((x) => x.hc);
+        if (old && old.n === n) continue;
+        if (old) old.n = n; else l.steps.push({ l: "Health Connect", n, hc: 1 });
+        const goal = stepGoal(), tot = stepsTotal(dk);
+        if (tot >= goal) (S().habits || []).forEach((h) => { if (/schritte/i.test(h)) { l.habits = l.habits || {}; l.habits[h] = true; } });
+        saveLog(dk); changed++;
+      }
+      // Schlaf der letzten Nacht (Sitzungen, die zwischen gestern 18 Uhr und heute 14 Uhr enden)
+      const tk = todayKey(), lt = ensureLog(tk);
+      if (!(lt.sleep && lt.sleep.min)) {
+        const r = await NAT.Health.readSamples({ dataType: "sleep", startDate: new Date(t0.getTime() - 6 * 3600e3).toISOString(), endDate: new Date(t0.getTime() + 14 * 3600e3).toISOString(), limit: 20 }).catch(() => null);
+        let min = 0;
+        ((r && r.samples) || []).forEach((x) => {
+          if (x.stages && x.stages.length) x.stages.forEach((st) => { if (st.stage !== "awake" && st.stage !== "inBed") min += (new Date(st.endDate) - new Date(st.startDate)) / 60000; });
+          else if (x.sleepState !== "awake" && x.sleepState !== "inBed") min += +x.value || (new Date(x.endDate) - new Date(x.startDate)) / 60000;
+        });
+        min = Math.round(min);
+        if (min >= 60 && min <= 1000) { lt.sleep = Object.assign({}, lt.sleep || {}, { min, hc: 1 }); saveLog(tk); changed++; }
+      }
+      // Ruhepuls von heute
+      if (!(lt.vitals && lt.vitals.rhr)) {
+        const r = await NAT.Health.readSamples({ dataType: "restingHeartRate", startDate: t0.toISOString(), endDate: now.toISOString(), limit: 10 }).catch(() => null);
+        const xs = ((r && r.samples) || []).filter((x) => +x.value >= 30 && +x.value <= 120);
+        if (xs.length) { lt.vitals = Object.assign({}, lt.vitals || {}, { rhr: Math.round(+xs[xs.length - 1].value) }); saveLog(tk); changed++; }
+      }
+      S().hcLast = pad(now.getHours()) + ":" + pad(now.getMinutes()); saveSettings();
+      if (changed) { renderAll(); try { checkRanks(); } catch (e) { /* ignore */ } }
+      hcRender();
+    } catch (e) { console.warn("hcSync", e); } finally { hcBusy = false; }
+    return changed;
+  }
+
+  // ---- Homescreen-Widget ----
+  let wTimer = 0;
+  function natWidget() {
+    if (!NAT) return;
+    clearTimeout(wTimer);
+    wTimer = setTimeout(() => {
+      try {
+        const dk = todayKey(), s = effSession(today()), n = arcDay(), len = S().arcLength || 90;
+        const pr = s ? sessionProgress(dk, s) : { total: 0, done: 0 };
+        let q = null; try { if (window.__waGame) q = questState(dk); } catch (e) { q = null; }
+        let pct = 0, line = "";
+        if (s && pr.total) { pct = Math.round((pr.done / pr.total) * 100); line = pr.done + " von " + pr.total + " Sätzen"; }
+        else { const pi = perfectInfo(dk); pct = Math.round((pi.n / Math.max(1, pi.items.length)) * 100); line = s ? "Freies Training" : "Ruhetag, " + pi.n + " von " + pi.items.length + " Tageszielen"; }
+        if (q) line += " · Quest " + (q.all ? "geschafft" : q.done + "/" + q.items.length);
+        const foot = [];
+        try { const st = perfectStreak(); if (st) foot.push("Perfekt-Serie " + st); } catch (e) { /* ignore */ }
+        try { const r = raidState(); if (!r.won && r.dmg < r.hp) foot.push(r.boss.n + " " + Math.max(0, Math.round(100 - (r.dmg / r.hp) * 100)) + " % HP"); else foot.push("Raid besiegt"); } catch (e) { /* ignore */ }
+        foot.push(fmtL(drinkTotal(dk)) + " getrunken");
+        NAT.WidgetBridge.update({
+          day: (n < 1 ? "START IN " + (1 - n) + " TAGEN" : n > len ? "TAG " + n + " · ARC GESCHAFFT" : "TAG " + n + " VON " + len).toUpperCase(),
+          rank: window.__waGame ? "Rang " + RANK_L[playerRank()] : "",
+          title: s ? s.name : "Ruhetag", line, pct, foot: foot.join(" · ")
+        }).catch(() => {});
+      } catch (e) { /* ignore */ }
+    }, 700);
+  }
+
+  // ---- Zurück-Taste von Android ----
+  function natBack() {
+    if (!$("sysWin").hidden) { $("sysOk").click(); return; }
+    const open = [...document.querySelectorAll('[role="dialog"]:not([hidden]), .overlay:not([hidden])')].filter((el) => el.id !== "sysWin" && getComputedStyle(el).display !== "none");
+    if (open.length) {
+      const el = open[open.length - 1];
+      const btn = el.querySelector('[id$="Close"], [id$="Done"], [id$="Cancel"], .close, [data-close]');
+      if (btn) btn.click(); else el.hidden = true;
+      document.body.classList.remove("noscroll");
+      return;
+    }
+    if (currentTab === "plan") { const b = $("planBack"); if (b) { b.click(); return; } }
+    if (currentTab !== "today") { showTab("today"); return; }
+    NAT.App.minimizeApp().catch(() => {});
+  }
+
+  function natSwitch(id, key) {
+    const b = $(id);
+    if (!b) return;
+    b.setAttribute("aria-checked", natOpt(key) ? "true" : "false");
+    b.addEventListener("click", async () => {
+      S()[key] = !natOpt(key); saveSettings();
+      b.setAttribute("aria-checked", natOpt(key) ? "true" : "false");
+      if (key === "natNotif" && natOpt(key) && !(await natPermOk(true))) toast("Erlaube Benachrichtigungen in den Android-Einstellungen der App.");
+      natPlan();
+    });
+  }
+  if (NAT) {
+    try {
+      $("grpApp").hidden = false;
+      $("natVer").textContent = "Web-Stand " + (window.__waBuild || "?") + ". Updates der App lädt sie selbst im Hintergrund, sie werden beim nächsten Öffnen aktiv.";
+      natSwitch("swNatNotif", "natNotif"); natSwitch("swNatTrain", "natTrain"); natSwitch("swNatDrink", "natDrink"); natSwitch("swNatEve", "natEve");
+      $("natTest").addEventListener("click", async () => {
+        if (!(await natPermOk(true))) { toast("Benachrichtigungen sind für die App aus. Erlaube sie in den Android-Einstellungen."); return; }
+        await NAT.LocalNotifications.schedule({ notifications: [natN(2, new Date(Date.now() + 4000), "Winter Arc", "So sieht eine Erinnerung aus. Jetzt zurück ans Training.", "timer")] });
+        toast("Kommt in 4 Sekunden. Sperr ruhig den Bildschirm.");
+      });
+      $("hcConnect").addEventListener("click", hcConnect);
+      $("hcSync").addEventListener("click", async () => { const n = await hcSync(true); toast(n ? n + " Werte aus Health Connect übernommen" : "Alles schon aktuell"); });
+      $("hcOpen").addEventListener("click", () => { NAT.Health.openHealthConnectSettings().catch(() => {}); });
+      $("natUpd").addEventListener("click", async () => { toast("Suche nach Updates …"); const v = await NAT.checkUpdate(); if (!v) toast("Du hast den neuesten Stand."); });
+      hcRender();
+      window.addEventListener("wa-update-ready", () => toast("Update geladen. Es ist beim nächsten Öffnen aktiv.", { label: "Jetzt", fn: () => NAT.applyUpdateNow() }));
+      NAT.App.addListener("backButton", natBack);
+      NAT.App.addListener("appStateChange", (st) => {
+        if (st.isActive) { natRestIn(); hcSync(false); renderAll(); if (Date.now() - (natPlan.upd || 0) > 30 * 60e3) { natPlan.upd = Date.now(); NAT.checkUpdate(); } }
+        else { natRestOut(); natPlan(); natWidget(); }
+      });
+      (async () => {
+        await natChannels();
+        if (natOpt("natNotif") && !S().natAsked) { S().natAsked = 1; saveSettings(); await natPermOk(true); }
+        natPlan(); natWidget();
+        setTimeout(() => { natPlan.upd = Date.now(); NAT.checkUpdate(); hcSync(true); }, 2500);
+      })();
+      // Erster Start in der App: Hinweis zum Umzug der Daten aus dem Browser
+      if (!Object.keys(state.logs || {}).length && !S().natHello) {
+        S().natHello = 1; saveSettings();
+        setTimeout(() => sysShow("Willkommen in der App", [{ t: "Deine Daten", v: "noch im Browser" }, { t: "Dort", v: "Plan · Daten und Backup · Backup speichern" }, { t: "Hier", v: "Plan · Daten und Backup · Backup laden" }], null, "Die App speichert getrennt vom Browser. Mit dem Backup ziehst du alles in einem Rutsch um: Plan, Verlauf, Rang, Gold und Erfolge."), 1200);
+      }
+    } catch (e) { console.warn("native init", e); }
+  }
+
   const deepHandled = handleDeepLink();
   initCollapsibles();
   initInfos();
@@ -13430,7 +13695,7 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
   renderBackupInfo();
   if (navigator.storage && navigator.storage.persist) { try { navigator.storage.persist(); } catch (e) { /* ignore */ } }
   setTimeout(() => { try { whatsNew(); } catch (e) { /* ignore */ } }, 2200);
-  if ("serviceWorker" in navigator && location.protocol === "https:") {
+  if ("serviceWorker" in navigator && location.protocol === "https:" && !isNative()) {
     window.addEventListener("load", () => { navigator.serviceWorker.register("sw.js").catch(() => {}); });
   }
 
