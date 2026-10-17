@@ -14720,14 +14720,14 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
   function natRestIn() { if (NAT) natCancel([1, 2]); }
 
   // ---- Health Connect: Schritte, Schlaf, Ruhepuls ----
-  const HC_TYPES = ["steps", "sleep", "restingHeartRate", "workouts"];
+  const HC_TYPES = ["steps", "sleep", "restingHeartRate", "vo2Max", "workouts"];
   function hcRender() {
     if (!$("hcState")) return;
     const on = !!S().hc, last = S().hcLast;
     $("hcConnect").textContent = on ? "Neu verbinden" : "Verbinden";
     $("hcConnect").classList.toggle("primary", !on);
     $("hcSync").hidden = !on; $("hcOpen").hidden = !on;
-    $("hcState").textContent = on ? "Verbunden. Schritte, Schlaf, Ruhepuls und Läufe kommen automatisch, sobald du die App öffnest" + (last ? ". Zuletzt abgeglichen: " + last : "") + "." + (S().hcRunPerm === false ? " Für deine Läufe fehlt noch die Freigabe: tipp auf Neu verbinden." : "") : "Holt Schritte, Schlaf, Ruhepuls und Läufe automatisch, zum Beispiel von deiner Garmin-Uhr über Garmin Connect.";
+    $("hcState").textContent = on ? "Verbunden. Schritte, Schlaf, Ruhepuls, VO2max und Läufe kommen automatisch, sobald du die App öffnest" + (last ? ". Zuletzt abgeglichen: " + last : "") + "." + (S().hcRunPerm === false ? " Für deine Läufe fehlt noch die Freigabe: tipp auf Neu verbinden." : "") : "Holt Schritte, Schlaf, Ruhepuls, VO2max und Läufe automatisch, zum Beispiel von deiner Garmin-Uhr über Garmin Connect.";
   }
   async function hcConnect() {
     try {
@@ -14778,6 +14778,12 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
         const r = await NAT.Health.readSamples({ dataType: "restingHeartRate", startDate: t0.toISOString(), endDate: now.toISOString(), limit: 10 }).catch(() => null);
         const xs = ((r && r.samples) || []).filter((x) => +x.value >= 30 && +x.value <= 120);
         if (xs.length) { lt.vitals = Object.assign({}, lt.vitals || {}, { rhr: Math.round(+xs[xs.length - 1].value) }); saveLog(tk); changed++; }
+      }
+      // VO2max: letzter Wert der letzten 30 Tage (Garmin schreibt ihn nur nach Läufen neu)
+      if (!(lt.vitals && lt.vitals.vo2)) {
+        const r = await NAT.Health.readSamples({ dataType: "vo2Max", startDate: addDays(t0, -30).toISOString(), endDate: now.toISOString(), limit: 50 }).catch(() => null);
+        const xs = ((r && r.samples) || []).filter((x) => +x.value >= 20 && +x.value <= 90).sort((a, b) => new Date(a.startDate) - new Date(b.startDate));
+        if (xs.length) { lt.vitals = Object.assign({}, lt.vitals || {}, { vo2: Math.round(+xs[xs.length - 1].value * 10) / 10 }); saveLog(tk); changed++; }
       }
       // Läufe (z. B. von Garmin): in den geplanten Lauf des Tages eintragen, sonst als Extra-Lauf
       try {
@@ -14903,8 +14909,8 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
         natPlan(); natWidget();
         setTimeout(async () => {
           natPlan.upd = Date.now(); NAT.checkUpdate();
-          // Wer schon verbunden war: einmal nach der neuen Freigabe für Läufe fragen
-          if (S().hc && !S().hcAsk2) { S().hcAsk2 = 1; saveSettings(); try { await NAT.Health.requestAuthorization({ read: HC_TYPES, write: [] }); } catch (e) { /* ignore */ } }
+          // Wer schon verbunden war: einmal nach den neuen Freigaben fragen (Läufe, VO2max)
+          if (S().hc && !S().hcAsk3) { S().hcAsk2 = 1; S().hcAsk3 = 1; saveSettings(); try { await NAT.Health.requestAuthorization({ read: HC_TYPES, write: [] }); } catch (e) { /* ignore */ } }
           hcSync(true);
         }, 2500);
       })();
