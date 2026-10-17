@@ -674,6 +674,8 @@ pre.prompt { white-space: pre-wrap; margin: 0 0 12px; padding: 14px; border-radi
 .phleg { display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: 13px; color: var(--ink-2); font-variant-numeric: tabular-nums; }
 .phleg span { display: inline-flex; align-items: center; gap: 6px; }
 .phleg i { width: 9px; height: 9px; border-radius: 3px; }
+.phest { margin: 0; font-size: 13px; color: var(--mute); }
+.phest b { color: var(--ink); }
 .ph-deep { background: #4D5BFF; }
 .ph-light { background: #8EC5FF; }
 .ph-rem { background: #C77DFF; }
@@ -6135,10 +6137,39 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
   });
   $("sleepFile").addEventListener("change", onSleepFile);
   $("sleepFileCam").addEventListener("change", onSleepFile);
+  // Schätzung des Garmin-Schlaf-Scores aus Dauer, Phasen und Wachzeit. Garmin rechnet nicht öffentlich nach;
+  // die Gewichte sind eine Näherung und werden mit jedem echten Score, den du einträgst, nachjustiert.
+  const SLEEP_RANGE = { deep: [16, 33], light: [30, 64], rem: [21, 31] };
+  function sleepRaw(sl) {
+    const ph = sl && sl.ph, m = sl && sl.min;
+    if (!ph || !m) return null;
+    const tot = ph.deep + ph.light + ph.rem + (ph.asleep || 0);
+    if (tot < 60) return null;
+    const dur = m >= 480 ? 100 : m >= 420 ? 80 + (m - 420) / 60 * 20 : m >= 360 ? 60 + (m - 360) / 60 * 20 : Math.max(10, 60 - (360 - m) / 60 * 25);
+    const st = (k) => { const pct = ph[k] / tot * 100, [lo, hi] = SLEEP_RANGE[k]; return Math.max(0, Math.min(100, pct < lo ? 100 - (lo - pct) * 4 : pct > hi ? 100 - (pct - hi) * 3 : 100)); };
+    const aw = Math.max(30, Math.min(100, 100 - Math.max(0, (ph.awake || 0) - 10) * 2));
+    return 0.45 * dur + 0.15 * st("deep") + 0.15 * st("rem") + 0.05 * st("light") + 0.2 * aw;
+  }
+  function sleepEst(dk) {
+    const sl = state.logs[dk] && state.logs[dk].sleep;
+    const raw = sleepRaw(sl);
+    if (raw == null) return null;
+    const pairs = [];
+    Object.keys(state.logs).forEach((k) => { const x = state.logs[k] && state.logs[k].sleep; if (x && x.score && k !== dk) { const r = sleepRaw(x); if (r != null) pairs.push([r, +x.score]); } });
+    let a = 1, b = 0;
+    if (pairs.length >= 4) {
+      const n = pairs.length, mx = pairs.reduce((t, p) => t + p[0], 0) / n, my = pairs.reduce((t, p) => t + p[1], 0) / n;
+      const sxx = pairs.reduce((t, p) => t + (p[0] - mx) ** 2, 0), sxy = pairs.reduce((t, p) => t + (p[0] - mx) * (p[1] - my), 0);
+      a = sxx > 1 ? Math.max(0.5, Math.min(1.5, sxy / sxx)) : 1; b = my - a * mx;
+    } else if (pairs.length) b = pairs.reduce((t, p) => t + p[1] - p[0], 0) / pairs.length;
+    return { v: Math.max(0, Math.min(100, Math.round(a * raw + b))), n: pairs.length };
+  }
   function renderSleepRow(dk) {
     const sl = (state.logs[dk] && state.logs[dk].sleep) || {};
     if (document.activeElement !== $("sleepDur")) $("sleepDur").value = sl.min ? fmtSleep(sl.min).replace(" h", "") : "";
     if (document.activeElement !== $("sleepScore")) $("sleepScore").value = sl.score ? String(sl.score) : "";
+    const est = sleepEst(dk);
+    $("sleepScore").placeholder = est && !sl.score ? "~" + est.v : "Score";
     $("sleepShot").hidden = photosState !== "ok";
     $("sleepCam").hidden = photosState !== "ok";
     if (typeof renderVitals === "function") renderVitals(dk);
@@ -6150,7 +6181,8 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
         const tot = parts.reduce((a, [k]) => a + ph[k], 0);
         const hm = (m) => Math.floor(m / 60) + ":" + pad(m % 60);
         pe.innerHTML = '<div class="phbar" aria-hidden="true">' + parts.map(([k]) => '<i class="ph-' + k + '" style="width:' + (ph[k] / tot * 100).toFixed(1) + '%"></i>').join("") + "</div>" +
-          '<div class="phleg">' + parts.map(([k, n]) => '<span><i class="ph-' + k + '"></i>' + n + " <b>" + hm(ph[k]) + "</b> (" + Math.round(ph[k] / tot * 100) + " %)</span>").join("") + "</div>";
+          '<div class="phleg">' + parts.map(([k, n]) => '<span><i class="ph-' + k + '"></i>' + n + " <b>" + hm(ph[k]) + "</b> (" + Math.round(ph[k] / tot * 100) + " %)</span>").join("") + "</div>" +
+          (est ? '<p class="phest">' + (sl.score ? "Die App hätte " + est.v + " geschätzt, Garmin sagt " + sl.score + "." : "Geschätzter Score <b>~" + est.v + "</b>" + (est.n ? ", abgeglichen mit " + est.n + (est.n === 1 ? " echten Garmin-Wert" : " echten Garmin-Werten") : ". Trag ab und zu den echten Score ein, dann wird die Schätzung genauer") + ".") + "</p>" : "");
       }
     }
     $("sleepInfo").textContent = photoIdx[dk + "|sleep"] ? "Garmin-Screenshot von heute ist gespeichert." : "";
