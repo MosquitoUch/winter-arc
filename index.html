@@ -666,6 +666,18 @@ pre.prompt { white-space: pre-wrap; margin: 0 0 12px; padding: 14px; border-radi
 .fclib .fi b { display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .fclib .fi span { color: var(--mute); font-size: 13px; }
 .emom-clock.sw-clock { font-size: clamp(52px, 17vw, 92px); }
+/* Schlafphasen */
+.sleepph { margin: -2px 0 8px; display: flex; flex-direction: column; gap: 8px; }
+.sleepph[hidden] { display: none; }
+.phbar { display: flex; height: 10px; border-radius: 5px; overflow: hidden; background: var(--line); }
+.phbar i, .phleg i { display: block; }
+.phleg { display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: 13px; color: var(--ink-2); font-variant-numeric: tabular-nums; }
+.phleg span { display: inline-flex; align-items: center; gap: 6px; }
+.phleg i { width: 9px; height: 9px; border-radius: 3px; }
+.ph-deep { background: #4D5BFF; }
+.ph-light { background: #8EC5FF; }
+.ph-rem { background: #C77DFF; }
+.ph-awake { background: #FFB870; }
 /* Trainingsuhr */
 .clockcard { margin-top: 22px; padding-top: 18px; border-top: 1px solid var(--line); }
 .clockbig { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; margin: 4px 0 6px; }
@@ -1933,6 +1945,7 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
                 <input class="sr" type="file" id="sleepFileCam" accept="image/*" capture="environment" tabindex="-1">
               </div>
             </div>
+            <div class="sleepph" id="sleepPh" hidden></div>
             <div class="ci-row"><span class="ci-l">Herz</span>
               <div class="sleepin">
                 <label class="sr" for="rhrIn">Ruhepuls</label>
@@ -6129,6 +6142,17 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
     $("sleepShot").hidden = photosState !== "ok";
     $("sleepCam").hidden = photosState !== "ok";
     if (typeof renderVitals === "function") renderVitals(dk);
+    const ph = sl.ph, pe = $("sleepPh");
+    if (pe) {
+      const parts = ph ? [["deep", "Tief"], ["light", "Leicht"], ["rem", "REM"], ["awake", "Wach"]].filter(([k]) => ph[k] > 0) : [];
+      pe.hidden = !parts.length;
+      if (parts.length) {
+        const tot = parts.reduce((a, [k]) => a + ph[k], 0);
+        const hm = (m) => Math.floor(m / 60) + ":" + pad(m % 60);
+        pe.innerHTML = '<div class="phbar" aria-hidden="true">' + parts.map(([k]) => '<i class="ph-' + k + '" style="width:' + (ph[k] / tot * 100).toFixed(1) + '%"></i>').join("") + "</div>" +
+          '<div class="phleg">' + parts.map(([k, n]) => '<span><i class="ph-' + k + '"></i>' + n + " <b>" + hm(ph[k]) + "</b> (" + Math.round(ph[k] / tot * 100) + " %)</span>").join("") + "</div>";
+      }
+    }
     $("sleepInfo").textContent = photoIdx[dk + "|sleep"] ? "Garmin-Screenshot von heute ist gespeichert." : "";
     if (typeof patchRestRing === "function" && restReady) patchRestRing(dk);
   }
@@ -14763,15 +14787,24 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
       }
       // Schlaf der letzten Nacht (Sitzungen, die zwischen gestern 18 Uhr und heute 14 Uhr enden)
       const tk = todayKey(), lt = ensureLog(tk);
-      if (!(lt.sleep && lt.sleep.min)) {
+      if (!(lt.sleep && lt.sleep.min) || (lt.sleep.hc && !lt.sleep.ph)) {
         const r = await NAT.Health.readSamples({ dataType: "sleep", startDate: new Date(t0.getTime() - 6 * 3600e3).toISOString(), endDate: new Date(t0.getTime() + 14 * 3600e3).toISOString(), limit: 20 }).catch(() => null);
         let min = 0;
+        const ph = { deep: 0, light: 0, rem: 0, awake: 0, asleep: 0 };
+        const addPh = (k, m) => { if (ph[k] != null) ph[k] += m; };
         ((r && r.samples) || []).forEach((x) => {
-          if (x.stages && x.stages.length) x.stages.forEach((st) => { if (st.stage !== "awake" && st.stage !== "inBed") min += (new Date(st.endDate) - new Date(st.startDate)) / 60000; });
-          else if (x.sleepState !== "awake" && x.sleepState !== "inBed") min += +x.value || (new Date(x.endDate) - new Date(x.startDate)) / 60000;
+          if (x.stages && x.stages.length) x.stages.forEach((st) => { const m = (new Date(st.endDate) - new Date(st.startDate)) / 60000; addPh(st.stage, m); if (st.stage !== "awake" && st.stage !== "inBed") min += m; });
+          else { const m = +x.value || (new Date(x.endDate) - new Date(x.startDate)) / 60000; addPh(x.sleepState, m); if (x.sleepState !== "awake" && x.sleepState !== "inBed") min += m; }
         });
         min = Math.round(min);
-        if (min >= 60 && min <= 1000) { lt.sleep = Object.assign({}, lt.sleep || {}, { min, hc: 1 }); saveLog(tk); changed++; }
+        Object.keys(ph).forEach((k) => { ph[k] = Math.round(ph[k]); });
+        const hasPh = ph.deep + ph.light + ph.rem > 0;
+        if (min >= 60 && min <= 1000) {
+          const add = { hc: 1 };
+          if (!(lt.sleep && lt.sleep.min)) add.min = min;
+          if (hasPh) add.ph = ph;
+          lt.sleep = Object.assign({}, lt.sleep || {}, add); saveLog(tk); changed++;
+        }
       }
       // Ruhepuls von heute
       if (!(lt.vitals && lt.vitals.rhr)) {
