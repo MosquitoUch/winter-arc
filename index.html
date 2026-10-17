@@ -6140,7 +6140,23 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
   // Schätzung des Garmin-Schlaf-Scores aus Dauer, Phasen und Wachzeit. Garmin rechnet nicht öffentlich nach;
   // die Gewichte sind eine Näherung und werden mit jedem echten Score, den du einträgst, nachjustiert.
   const SLEEP_RANGE = { deep: [16, 33], light: [30, 64], rem: [21, 31] };
-  function sleepRaw(sl) {
+  // Persönlicher Normalwert (Median der 21 Nächte davor) für Schlafpuls oder HRV
+  function sleepBase(dk, f) {
+    const xs = [];
+    for (let i = 1; i <= 21; i++) { const x = state.logs[dateKey(addDays(parseKey(dk), -i))]; const v = x && x.sleep && f(x.sleep); if (v) xs.push(v); }
+    if (xs.length < 3) return null;
+    xs.sort((p, q) => p - q);
+    return xs[Math.floor(xs.length / 2)];
+  }
+  function sleepRecov(sl, dk) {
+    const parts = [];
+    const bh = sl.hr && sleepBase(dk, (x) => x.hr && x.hr.avg);
+    if (bh) { const d = sl.hr.avg - bh; parts.push(Math.max(30, Math.min(100, 100 - Math.max(0, d) * 6))); }
+    const bv = sl.hrv && sleepBase(dk, (x) => x.hrv);
+    if (bv) { const rt = sl.hrv / bv; parts.push(Math.max(30, Math.min(100, rt >= 1 ? 100 : 100 - (1 - rt) * 150))); }
+    return parts.length ? { v: parts.reduce((p, q) => p + q, 0) / parts.length, bh, bv } : null;
+  }
+  function sleepRaw(sl, dk) {
     const ph = sl && sl.ph, m = sl && sl.min;
     if (!ph || !m) return null;
     const tot = ph.deep + ph.light + ph.rem + (ph.asleep || 0);
@@ -6148,21 +6164,23 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
     const dur = m >= 480 ? 100 : m >= 420 ? 80 + (m - 420) / 60 * 20 : m >= 360 ? 60 + (m - 360) / 60 * 20 : Math.max(10, 60 - (360 - m) / 60 * 25);
     const st = (k) => { const pct = ph[k] / tot * 100, [lo, hi] = SLEEP_RANGE[k]; return Math.max(0, Math.min(100, pct < lo ? 100 - (lo - pct) * 4 : pct > hi ? 100 - (pct - hi) * 3 : 100)); };
     const aw = Math.max(30, Math.min(100, 100 - Math.max(0, (ph.awake || 0) - 10) * 2));
-    return 0.45 * dur + 0.15 * st("deep") + 0.15 * st("rem") + 0.05 * st("light") + 0.2 * aw;
+    const base = 0.45 * dur + 0.15 * st("deep") + 0.15 * st("rem") + 0.05 * st("light") + 0.2 * aw;
+    const rc = dk ? sleepRecov(sl, dk) : null;
+    return rc ? 0.82 * base + 0.18 * rc.v : base;
   }
   function sleepEst(dk) {
     const sl = state.logs[dk] && state.logs[dk].sleep;
-    const raw = sleepRaw(sl);
+    const raw = sleepRaw(sl, dk);
     if (raw == null) return null;
     const pairs = [];
-    Object.keys(state.logs).forEach((k) => { const x = state.logs[k] && state.logs[k].sleep; if (x && x.score && k !== dk) { const r = sleepRaw(x); if (r != null) pairs.push([r, +x.score]); } });
+    Object.keys(state.logs).forEach((k) => { const x = state.logs[k] && state.logs[k].sleep; if (x && x.score && k !== dk) { const r = sleepRaw(x, k); if (r != null) pairs.push([r, +x.score]); } });
     let a = 1, b = 0;
     if (pairs.length >= 4) {
       const n = pairs.length, mx = pairs.reduce((t, p) => t + p[0], 0) / n, my = pairs.reduce((t, p) => t + p[1], 0) / n;
       const sxx = pairs.reduce((t, p) => t + (p[0] - mx) ** 2, 0), sxy = pairs.reduce((t, p) => t + (p[0] - mx) * (p[1] - my), 0);
       a = sxx > 1 ? Math.max(0.5, Math.min(1.5, sxy / sxx)) : 1; b = my - a * mx;
     } else if (pairs.length) b = pairs.reduce((t, p) => t + p[1] - p[0], 0) / pairs.length;
-    return { v: Math.max(0, Math.min(100, Math.round(a * raw + b))), n: pairs.length };
+    return { v: Math.max(0, Math.min(100, Math.round(a * raw + b))), n: pairs.length, rc: sleepRecov(sl, dk) };
   }
   function renderSleepRow(dk) {
     const sl = (state.logs[dk] && state.logs[dk].sleep) || {};
@@ -6182,7 +6200,8 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
         const hm = (m) => Math.floor(m / 60) + ":" + pad(m % 60);
         pe.innerHTML = '<div class="phbar" aria-hidden="true">' + parts.map(([k]) => '<i class="ph-' + k + '" style="width:' + (ph[k] / tot * 100).toFixed(1) + '%"></i>').join("") + "</div>" +
           '<div class="phleg">' + parts.map(([k, n]) => '<span><i class="ph-' + k + '"></i>' + n + " <b>" + hm(ph[k]) + "</b> (" + Math.round(ph[k] / tot * 100) + " %)</span>").join("") + "</div>" +
-          (est ? '<p class="phest">' + (sl.score ? "Die App hätte " + est.v + " geschätzt, Garmin sagt " + sl.score + "." : "Geschätzter Score <b>~" + est.v + "</b>" + (est.n ? ", abgeglichen mit " + est.n + (est.n === 1 ? " echten Garmin-Wert" : " echten Garmin-Werten") : ". Trag ab und zu den echten Score ein, dann wird die Schätzung genauer") + ".") + "</p>" : "");
+          (est ? '<p class="phest">' + (sl.score ? "Die App hätte " + est.v + " geschätzt, Garmin sagt " + sl.score + "." : "Geschätzter Score <b>~" + est.v + "</b>" + (est.n ? ", abgeglichen mit " + est.n + (est.n === 1 ? " echten Garmin-Wert" : " echten Garmin-Werten") : ". Trag ab und zu den echten Score ein, dann wird die Schätzung genauer") + ".") + "</p>" : "") +
+          (sl.hr || sl.hrv ? '<p class="phest">' + [sl.hr ? "Schlafpuls Ø <b>" + sl.hr.avg + "</b>, tiefster " + sl.hr.min + (est && est.rc && est.rc.bh ? " (normal " + est.rc.bh + ")" : "") : "", sl.hrv ? "HRV <b>" + sl.hrv + " ms</b>" + (est && est.rc && est.rc.bv ? " (normal " + est.rc.bv + ")" : "") : ""].filter(Boolean).join(" · ") + "</p>" : "");
       }
     }
     $("sleepInfo").textContent = photoIdx[dk + "|sleep"] ? "Garmin-Screenshot von heute ist gespeichert." : "";
@@ -14776,7 +14795,7 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
   function natRestIn() { if (NAT) natCancel([1, 2]); }
 
   // ---- Health Connect: Schritte, Schlaf, Ruhepuls ----
-  const HC_TYPES = ["steps", "sleep", "restingHeartRate", "vo2Max", "workouts"];
+  const HC_TYPES = ["steps", "sleep", "restingHeartRate", "heartRate", "heartRateVariability", "vo2Max", "workouts"];
   function hcRender() {
     if (!$("hcState")) return;
     const on = !!S().hc, last = S().hcLast;
@@ -14819,12 +14838,16 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
       }
       // Schlaf der letzten Nacht (Sitzungen, die zwischen gestern 18 Uhr und heute 14 Uhr enden)
       const tk = todayKey(), lt = ensureLog(tk);
-      if (!(lt.sleep && lt.sleep.min) || (lt.sleep.hc && !lt.sleep.ph)) {
+      if (!(lt.sleep && lt.sleep.min) || (lt.sleep.hc && (!lt.sleep.ph || (!lt.sleep.hr && (lt.sleep.hrTry || 0) < 6)))) {
         const r = await NAT.Health.readSamples({ dataType: "sleep", startDate: new Date(t0.getTime() - 6 * 3600e3).toISOString(), endDate: new Date(t0.getTime() + 14 * 3600e3).toISOString(), limit: 20 }).catch(() => null);
         let min = 0;
         const ph = { deep: 0, light: 0, rem: 0, awake: 0, asleep: 0 };
         const addPh = (k, m) => { if (ph[k] != null) ph[k] += m; };
+        let w0 = Infinity, w1 = 0;
         ((r && r.samples) || []).forEach((x) => {
+          const a0 = new Date(x.startDate).getTime(), a1 = new Date(x.endDate).getTime();
+          if (a0 < w0) w0 = a0;
+          if (a1 > w1) w1 = a1;
           if (x.stages && x.stages.length) x.stages.forEach((st) => { const m = (new Date(st.endDate) - new Date(st.startDate)) / 60000; addPh(st.stage, m); if (st.stage !== "awake" && st.stage !== "inBed") min += m; });
           else { const m = +x.value || (new Date(x.endDate) - new Date(x.startDate)) / 60000; addPh(x.sleepState, m); if (x.sleepState !== "awake" && x.sleepState !== "inBed") min += m; }
         });
@@ -14835,6 +14858,19 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
           const add = { hc: 1 };
           if (!(lt.sleep && lt.sleep.min)) add.min = min;
           if (hasPh) add.ph = ph;
+          // Puls und HRV während des Schlafs: Grundlage für den Erholungs-Anteil des geschätzten Scores
+          if (w1 > w0) {
+            const hr = await NAT.Health.readSamples({ dataType: "heartRate", startDate: new Date(w0).toISOString(), endDate: new Date(w1).toISOString(), limit: 3000 }).catch(() => null);
+            const hv = ((hr && hr.samples) || []).map((x) => +x.value).filter((v) => v >= 30 && v <= 150);
+            if (hv.length >= 10) {
+              const srt = hv.slice().sort((p, q) => p - q);
+              add.hr = { avg: Math.round(hv.reduce((p, q) => p + q, 0) / hv.length), min: srt[Math.floor(srt.length * 0.05)] };
+            }
+            const rv = await NAT.Health.readSamples({ dataType: "heartRateVariability", startDate: new Date(w0).toISOString(), endDate: new Date(w1).toISOString(), limit: 500 }).catch(() => null);
+            const vv = ((rv && rv.samples) || []).map((x) => +x.value).filter((v) => v > 5 && v < 300);
+            if (vv.length) add.hrv = Math.round(vv.reduce((p, q) => p + q, 0) / vv.length);
+            if (!add.hr) add.hrTry = ((lt.sleep && lt.sleep.hrTry) || 0) + 1;
+          }
           lt.sleep = Object.assign({}, lt.sleep || {}, add); saveLog(tk); changed++;
         }
       }
@@ -14975,7 +15011,7 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
         setTimeout(async () => {
           natPlan.upd = Date.now(); NAT.checkUpdate();
           // Wer schon verbunden war: einmal nach den neuen Freigaben fragen (Läufe, VO2max)
-          if (S().hc && !S().hcAsk3) { S().hcAsk2 = 1; S().hcAsk3 = 1; saveSettings(); try { await NAT.Health.requestAuthorization({ read: HC_TYPES, write: [] }); } catch (e) { /* ignore */ } }
+          if (S().hc && !S().hcAsk4) { S().hcAsk2 = 1; S().hcAsk3 = 1; S().hcAsk4 = 1; saveSettings(); try { await NAT.Health.requestAuthorization({ read: HC_TYPES, write: [] }); } catch (e) { /* ignore */ } }
           hcSync(true);
         }, 2500);
       })();
