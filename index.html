@@ -612,6 +612,11 @@ pre.prompt { white-space: pre-wrap; margin: 0 0 12px; padding: 14px; border-radi
 .field-row label { display: block; margin-bottom: 4px; color: var(--mute); font-size: 13px; }
 .field-row .inp { width: 100%; min-height: 46px; }
 .wu-chips { margin-bottom: 12px; }
+.gllist { display: grid; gap: 10px; margin: 6px 0 4px; max-height: 50vh; overflow-y: auto; }
+.gllist label small { color: var(--mute); font-weight: 400; margin-left: 6px; }
+.glrow { display: flex; align-items: center; gap: 8px; }
+.glrow input { width: 110px; min-height: 44px; }
+.glrow span { color: var(--ink-2); font-size: 14px; }
 .wu-chips .chip[aria-pressed="true"] { border-color: var(--ice); color: var(--ink); background: rgba(var(--tint-rgb), 0.10); }
 .wusteps { list-style: none; margin: 14px 0 0; padding: 0; display: grid; gap: 6px; }
 .wusteps .wuh { margin: 12px 0 2px; color: var(--mute); font-size: 12px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; }
@@ -2937,6 +2942,15 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
   </div>
 </div>
 
+<div class="overlay sheetov" id="glOv" role="dialog" aria-modal="true" aria-labelledby="glTitle" hidden>
+  <div class="sheet">
+    <h3 id="glTitle">Was hast du im Gate geschafft?</h3>
+    <p id="glLead"></p>
+    <div class="gllist" id="glList"></div>
+    <div class="row"><button class="btn primary" id="glSave">Ins Training eintragen</button><button class="btn" id="glSkip">Nichts eintragen</button></div>
+  </div>
+</div>
+
 <div class="gaterun" id="gateRun" hidden role="dialog" aria-modal="true" aria-labelledby="grTitle">
   <div class="grbox">
     <div class="grhead"><span id="grBadge"></span><div><h2 id="grTitle"></h2><p id="grSub"></p></div></div>
@@ -3869,7 +3883,7 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
     if (!s && !extras.length) return null;
     if (!s) s = { dow: dowOf(date), name: "Freies Training", time: null, free: true, week: arcWeek(date), deload: false, exercises: [] };
     s.exercises.forEach((e) => { if (sk[e.id]) e.skipped = true; });
-    extras.forEach((x) => s.exercises.push({ id: x.id, name: x.name, sets: x.sets || 1, reps: "", extra: "Eigene Übung", custom: true }));
+    extras.forEach((x) => s.exercises.push({ id: x.id, name: x.name, sets: x.sets || 1, reps: "", extra: x.src === "emom" ? "Automatisch aus dem EMOM-Timer" : x.src === "gate" ? "Automatisch aus dem Gate" : "Eigene Übung", custom: true, auto: x.src || "" }));
     return s;
   }
 
@@ -3882,6 +3896,21 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
     return l;
   }
   const setCount = (e) => e.sets || 1;
+  // Ergebnisse aus EMOM-Timer und Gates landen automatisch als erledigte Übung im Heute-Tab
+  function autoExtra(dk, id, name, note, sets, src, eq) {
+    const l = ensureLog(dk);
+    l.extras = l.extras || [];
+    if (!note) {
+      l.extras = l.extras.filter((x) => x.id !== id);
+      delete l.exercises[id];
+    } else {
+      const x = l.extras.find((y) => y.id === id);
+      if (x) Object.assign(x, { name, sets, src }); else l.extras.push({ id, name, sets, src });
+      l.exercises[id] = { name, done: Array.from({ length: sets }, () => true), note, eq, auto: src };
+    }
+    saveLog(dk);
+    try { todaySig = ""; if (dk === todayKey()) renderToday(); } catch (e) { /* noch nicht bereit */ }
+  }
   function exLog(date, e) {
     const l = state.logs[date];
     const x = l && l.exercises && l.exercises[e.id];
@@ -3936,7 +3965,7 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
     const pm = t.match(/(\d+)\s*(?:partials?|teil-?wdh\.?|teilwiederholungen)/);
     if (pm) { partials = +pm[1]; t = t.replace(pm[0], " "); }
     const secs = /\d\s*(s|sek|sec|sekunden)\b/.test(t);
-    const reps = (t.match(/\d+(?:\.\d+)?/g) || []).map(Number).filter((n) => n > 0 && n < 1000).slice(0, 12);
+    const reps = (t.match(/\d+(?:\.\d+)?/g) || []).map(Number).filter((n) => n > 0 && n < 1000).slice(0, 90);
     if (!reps.length) return null;
     return { reps, weight, secs, partials };
   }
@@ -6379,7 +6408,8 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
       Object.keys(l.exercises || {}).forEach((id) => {
         const x = l.exercises[id];
         if (x && x.name) {
-          const nd = (x.done || []).filter(Boolean).length;
+          let nd = (x.done || []).filter(Boolean).length;
+          if (x.eq != null) nd = Math.min(nd, x.eq);
           if (nd) muscleOf(x.name).forEach(([g, w]) => { st.mg[g] = (st.mg[g] || 0) + nd * w; });
         }
         if (!x || !x.name || !x.note) return;
@@ -8194,14 +8224,15 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
       const sets = (x.done || []).filter(Boolean).length;
       let eq = sets;
       const perf = x.note ? parsePerf(x.note) : null;
-      if (perf && !perf.secs) eq = Math.max(sets, perf.reps.reduce((a, b) => a + b, 0) / 8);
+      if (x.eq != null) eq = x.eq;
+      else if (perf && !perf.secs) eq = Math.max(sets, perf.reps.reduce((a, b) => a + b, 0) / 8);
       add(famOf(x.name), eq);
     });
     Object.keys(l.runs || {}).forEach((id) => {
       const r = l.runs[id];
       if (r && r.km) { out.km += r.km; if (r.avg && r.avg > (+S().easyHr || 155) + 8) out.hard = true; }
     });
-    (l.emom || []).forEach((s) => add(famOf(s.name), (s.total || 0) / 8));
+    (l.emom || []).forEach((s) => { if (!s.synced) add(famOf(s.name), (s.total || 0) / 8); });
     (l.gtg || []).forEach((g) => add(famOf(g.n), (g.r || 0) / 8));
     return out;
   }
@@ -8455,9 +8486,30 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
     const l = ensureLog(emom.dk);
     l.emom = l.emom || [];
     const rec = { id: emom.sessId, name: emom.name, dur: emom.durMin, reps: emom.reps, done: !!emom.finished, mins: emom.mins.map((m) => ({ n: m.n, ok: !!m.ok, a: m.ok ? null : Math.max(0, Math.round(+m.a) || 0) })), total: emomTotal(), t: stamp() };
+    if (emom.finished) rec.synced = emomSync(emom.dk, rec);
     const i = l.emom.findIndex((s) => s.id === rec.id);
     if (i >= 0) l.emom[i] = rec; else l.emom.push(rec);
     saveLog(emom.dk);
+  }
+  // Fertiger EMOM: in die geplante EMOM-Übung von heute schreiben, sonst als eigene Übung anlegen
+  function emomSync(dk, rec) {
+    const per = rec.mins.map((m) => (m.ok ? rec.reps : m.a || 0));
+    const note = rec.total > 0 ? per.join("/") : "";
+    const eq = Math.max(1, Math.round(rec.total / 8));
+    if (dk === todayKey()) {
+      const s = effSession(today());
+      const pe = s && s.exercises.find((x) => !x.custom && /emom/i.test(x.name || "") && normName(String(x.name).replace(/emom/i, "").replace(/\(.*?\)/g, "")).indexOf(normName(rec.name)) >= 0);
+      if (pe && note) {
+        const l = ensureLog(dk);
+        const sets = setCount(pe);
+        l.exercises[pe.id] = Object.assign(l.exercises[pe.id] || {}, { name: pe.name, done: Array.from({ length: sets }, (_, k) => k < per.length), note, eq });
+        saveLog(dk);
+        try { todaySig = ""; renderToday(); } catch (e) { /* egal */ }
+        return pe.id;
+      }
+    }
+    autoExtra(dk, "em-" + rec.id, rec.name + " (EMOM)", note, Math.max(1, per.length), "emom", eq);
+    return note ? "em-" + rec.id : 0;
   }
   function finishEmom(auto) {
     clearTimeout(emom.id);
@@ -8468,7 +8520,7 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
     const ok = emom.mins.filter((m) => m.ok).length;
     $("emClock").textContent = auto ? "Fertig" : "Beendet";
     $("emClock").classList.add("go");
-    $("emSub").textContent = emom.mins.length ? ok + " von " + emom.mins.length + " Minuten geschafft, " + emomTotal() + " Wiederholungen." : "Keine volle Minute geschafft.";
+    $("emSub").textContent = emom.mins.length ? ok + " von " + emom.mins.length + " Minuten geschafft, " + emomTotal() + " Wiederholungen. Steht im Heute-Tab." : "Keine volle Minute geschafft.";
     $("emBar").style.transform = "scaleX(1)";
     $("emPause").textContent = "Neuer EMOM";
     $("emStop").hidden = true;
@@ -13072,7 +13124,7 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
   }
   function gateLog(g, res, extra) {
     const G = gMeta();
-    G.log.push(Object.assign({ id: g.id, rank: g.rank, red: g.red, res, d: todayKey() }, extra || {}));
+    G.log.push(Object.assign({ id: g.id, rank: g.rank, red: g.red, res, d: todayKey(), brk: !!g.brk, tasks: (g.tasks || []).map((t) => ({ n: t.n, c: t.c, s: !!t.s, done: !!t.done })) }, extra || {}));
     if (G.log.length > 200) G.log = G.log.slice(-200);
     G.cur = null;
     saveLocal();
@@ -13081,6 +13133,7 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
     if (!window.__waGame) return;
     const G = gMeta(), now = Date.now(), dk = todayKey();
     try { hidTick(); } catch (e) { /* ignore */ }
+    try { gateSyncCheck(); } catch (e) { /* ignore */ }
     const g = G.cur;
     if (g) {
       if (!g.entered && now > g.expires) { gateLog(g, "closed"); toast("Das Gate hat sich geschlossen."); renderGate(); return; }
@@ -13219,6 +13272,7 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
     if (!loot.length) lines.push({ t: "Beute", v: "keine" });
     let sh = null;
     if (g.rank >= 2 || g.red || g.brk) { const nm = SH_NAMES[g.rank][hashStr("n" + g.id) % 3]; sh = shadowOffer("gate", g.rank + (g.red || g.brk ? 1 : 0), (g.red ? "Roter " : "") + nm); lines.push({ t: "Gate-Wächter", v: sh.n }); }
+    try { gateSyncCheck(); } catch (e) { /* ignore */ }
     sysShow(g.brk ? "Dungeon Break gestoppt" : g.red ? "Red Gate überlebt" : "Gate geräumt", lines, g.rank, sh ? "Der Wächter liegt am Boden. Willst du seinen Schatten?" : fast ? "Schnell geräumt: eine Extra-Chance auf Beute." : "Die Beute liegt in deinem Inventar unter Fortschritt.", sh ? Object.assign(offerOpts(sh), { badgeHtml: "" }) : {});
     renderGate();
     checkRanks();
@@ -13231,11 +13285,66 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
     gateLog(g, timeout ? "lost" : g.red || g.job ? "gaveup" : "left", { n: done, job: !!g.job });
     gateRunClose();
     renderGate();
+    setTimeout(() => { try { gateSyncCheck(); } catch (e) { /* ignore */ } }, 600);
     if (g.job) { jobMeta().failDay = todayKey(); saveLocal(); renderJob(); sysShow("Prüfung gescheitert", [{ t: "Aufgaben", v: done + " von " + g.tasks.length }], g.rank, "Das System gibt dir eine zweite Chance. Morgen öffnet sich die Prüfung erneut."); return; }
     if (g.red) sysShow(timeout ? "Zeit abgelaufen" : "Aufgegeben", [{ t: "Aufgaben", v: done + " von " + g.tasks.length }, { t: "Strafe", v: "Strafquest morgen" }], g.rank, "Das Red Gate hat dich ausgespuckt. Morgen wartet eine Strafquest.");
     else if (timeout) sysShow("Zeit abgelaufen", [{ t: "Aufgaben", v: done + " von " + g.tasks.length }, { t: "Beute", v: "keine" }], g.rank, "Das Gate ist zusammengebrochen. Das nächste kommt.");
     else toast("Gate verlassen. Keine Beute.");
   }
+  // ---- Gate-Ergebnisse in den Heute-Tab ----
+  const gName = (n) => String(n).replace(/,\s*(in Etappen|gesamt)\s*$/i, "").trim();
+  function gateTasksOf(e) {
+    if (e.tasks && e.tasks.length) return e.tasks;
+    if (e.job) return null;
+    const t0 = parseInt(String(e.id || "").slice(1), 36);
+    if (!isFinite(t0) || t0 < 1.5e12) return null;
+    try { return gateMake(e.rank, e.red, t0, e.brk ? Math.min(5, GATE_N[e.rank] + 1) : undefined).tasks.map((t) => Object.assign({}, t, { done: null })); } catch (er) { return null; }
+  }
+  function gateWrite(e, ts, vals) {
+    ts.forEach((t, i) => {
+      const v = Math.max(0, Math.round(+vals[i] || 0));
+      autoExtra(e.d, "g-" + e.id + "-" + i, gName(t.n), v ? (t.s ? v + " s" : String(v)) : "", 1, "gate", 1);
+    });
+    e.synced = 1;
+    saveLocal();
+  }
+  let gateSyncT = 0;
+  function gateSyncCheck() {
+    if (!window.__waGame) return;
+    const G = gMeta(), tk = todayKey();
+    const list = G.log.filter((e) => e.d === tk && !e.synced && e.res !== "closed");
+    if (!list.length) return;
+    list.forEach((e) => {
+      if (e.res === "won") { const ts = gateTasksOf(e); if (ts) gateWrite(e, ts, ts.map((t) => t.c)); else e.synced = 1; }
+      else if (e.res === "left" && !e.n) e.synced = 1;
+    });
+    saveLocal();
+    const open = list.filter((e) => !e.synced);
+    if (!open.length || !$("glOv").hidden) return;
+    const sw = $("sysWin");
+    if ((sw && sw.classList.contains("open")) || (G.cur && G.cur.entered)) { clearTimeout(gateSyncT); gateSyncT = setTimeout(() => { try { gateSyncCheck(); } catch (er) { /* ignore */ } }, 1500); return; }
+    const e = open[0], ts = gateTasksOf(e);
+    if (!ts) { e.synced = 1; saveLocal(); return; }
+    glCur = { e, ts };
+    const retro = ts.some((t) => t.done == null);
+    $("glLead").textContent = retro ? "Die Werte stehen schon drin. Korrigier nur die Aufgaben, die du nicht ganz geschafft hast." : "Erledigte Aufgaben stehen schon drin. Bei den anderen trägst du ein, wie viel du geschafft hast. Leer heißt: gar nicht gemacht.";
+    $("glList").innerHTML = ts.map((t, i) => '<div class="field"><label for="gl' + i + '">' + esc(gName(t.n)) + ' <small>Ziel ' + t.c + (t.s ? " s" : " Wdh.") + "</small></label>" +
+      '<div class="glrow"><input id="gl' + i + '" inputmode="numeric" autocomplete="off" placeholder="0" value="' + (t.done === false ? "" : t.c) + '"><span>' + (t.s ? "Sek." : "Wdh.") + "</span></div></div>").join("");
+    $("glOv").hidden = false;
+  }
+  let glCur = null;
+  $("glSave").addEventListener("click", () => {
+    if (!glCur) return;
+    const vals = glCur.ts.map((t, i) => num($("gl" + i).value) || 0);
+    gateWrite(glCur.e, glCur.ts, vals);
+    $("glOv").hidden = true; glCur = null;
+    toast("Im Heute-Tab beim Training eingetragen.");
+    setTimeout(() => { try { gateSyncCheck(); } catch (er) { /* ignore */ } }, 400);
+  });
+  $("glSkip").addEventListener("click", () => {
+    if (glCur) { glCur.e.synced = 1; saveLocal(); }
+    $("glOv").hidden = true; glCur = null;
+  });
   function useItem(k) {
     const G = gMeta();
     if (!(G.inv[k] > 0)) return;
