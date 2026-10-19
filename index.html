@@ -666,6 +666,11 @@ pre.prompt { white-space: pre-wrap; margin: 0 0 12px; padding: 14px; border-radi
 .fclib .fi b { display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .fclib .fi span { color: var(--mute); font-size: 13px; }
 .emom-clock.sw-clock { font-size: clamp(52px, 17vw, 92px); }
+/* Backup-Auswahl */
+.bkchoice { margin-top: 14px; padding: 14px; border: 1px solid var(--ice-deep); border-radius: 14px; display: flex; flex-direction: column; gap: 8px; }
+.bkchoice[hidden] { display: none; }
+.bkchoice p { margin: 0; }
+.bkexp { margin: 0; padding-left: 18px; color: var(--ink-2); font-size: 13.5px; display: flex; flex-direction: column; gap: 4px; }
 /* Schlafphasen */
 .sleepph { margin: -2px 0 8px; display: flex; flex-direction: column; gap: 8px; }
 .sleepph[hidden] { display: none; }
@@ -2716,7 +2721,9 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
             <input class="sr" type="file" id="backupFile" accept=".json,application/json">
             <label class="btn" for="backupFile"><svg aria-hidden="true"><use href="#i-file"/></svg>Backup laden</label>
           </div>
+          <div class="bkchoice" id="bkChoice" hidden></div>
           <p class="lead" id="backupInfo" style="margin-top:12px"></p>
+          <p class="fhint">Nicht im Backup enthalten: Fortschrittsfotos und Form-Videos. Die bleiben nur auf diesem Handy, Fotos sicherst du über „Foto-Backup“ im Körper-Tab.</p>
           <h4 class="vpsub">Automatische Sicherungen</h4>
           <p class="fhint">Die App legt jeden Tag selbst eine Sicherung auf diesem Handy an und behält die letzten 7. Sie helfen, wenn etwas schiefgeht, ersetzen aber kein Backup in Google Drive: Löschst du die App-Daten oder verlierst das Handy, sind auch sie weg.</p>
           <ul class="snaplist" id="snapList"></ul>
@@ -3078,7 +3085,9 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
   const RUN_TABLE = {
     1: [5, 5, 8, 0], 2: [5, 5, 9, 0], 3: [6, 5, 10, 0], 4: [4, 4, 7, 0],
     5: [6, 5, 12, 4], 6: [6, 6, 13, 4], 7: [6, 6, 14, 4], 8: [5, 4, 9, 0],
-    9: [7, 6, 16, 5], 10: [7, 7, 18, 5], 11: [7, 7, 19, 5], 12: [4, 4, 21, 0]
+    9: [7, 6, 16, 5], 10: [7, 7, 18, 5], 11: [7, 7, 19, 5], 12: [4, 4, 10, 0],
+    // Woche 12 ist eine echte Entlastungswoche, der Halbmarathon-Test folgt ausgeruht in Woche 13
+    13: [5, 4, 21, 0]
   };
   const RUN_MAINTAIN = [6, 6, 12, 4];
   const TEST_WEEKS = [1, 5, 9, 13];
@@ -3720,6 +3729,18 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
     return days.find((d) => d.dow === dow) || null;
   }
   const planHasRuns = () => !!(state.plan && state.plan.days && state.plan.days.some((d) => d.exercises.some(isRun)));
+  // Wie viele Tage im Plan einen Lauf enthalten (für den automatischen Sonntagslauf)
+  const planRunDays = () => (state.plan && state.plan.days ? new Set(state.plan.days.filter((d) => d.exercises.some(isRun)).map((d) => d.dow)).size : 0);
+  // Längster tatsächlich gelaufener Lauf in den 4 Wochen vor einem Datum (eingetragene oder von Garmin übernommene Läufe)
+  function recentRunMax(dk) {
+    let mx = 0;
+    for (let i = 1; i <= 28; i++) {
+      const l = state.logs[dateKey(addDays(parseKey(dk), -i))];
+      const runs = (l && l.runs) || {};
+      Object.keys(runs).forEach((k) => { const km = +(runs[k] && runs[k].km) || 0; if (km > mx) mx = km; });
+    }
+    return mx;
+  }
 
   function baseEffSession(date) {
     const dow = dowOf(date);
@@ -3727,7 +3748,7 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
     const base = baseSession(dow, w);
     const row = S().autoRun ? runRow(w) : null;
     if (!base) {
-      if (dow === 7 && row && row[3] > 0 && planHasRuns()) {
+      if (dow === 7 && row && row[3] > 0 && planHasRuns() && planRunDays() < 3) {
         const sat = baseSession(6);
         return {
           dow: 7, name: "Shakeout-Lauf", time: (sat && sat.time) || "10:00", virtual: true, week: w, deload: false,
@@ -3743,10 +3764,18 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
       const x = Object.assign({}, e);
       if (isRun(x)) {
         if (row && /km/i.test(x.reps || "") && !/kelly/i.test(base.name || "")) {
-          const km = row[runIdx(dow)];
-          if (km) x.reps = km + " km";
-          if (w === 12 && dow === 6) x.extra = "Abschlusstest: ganz locker durchlaufen";
+          let km = row[runIdx(dow)];
+          // Nicht weiter planen, als du zuletzt wirklich gelaufen bist: höchstens 20 % (mindestens 2 km) über deinem längsten Lauf der letzten 4 Wochen
+          const rm = recentRunMax(dateKey(date));
+          if (km && rm > 0) {
+            const cap = Math.max(rm + 2, Math.round(rm * 1.2 * 2) / 2);
+            if (km > cap) { x.extra = "Angepasst: Der Plan sah " + km + " km vor, dein längster Lauf zuletzt waren " + fmtN(rm) + " km. Steiger dich in Ruhe."; km = cap; }
+          }
+          if (km) x.reps = fmtN(km) + " km";
+          if (w === 13 && dow === 6) x.extra = "Abschlusstest: ganz locker durchlaufen";
+          else if (s.deload && !x.extra) x.extra = "Entlastungswoche: kürzer und locker";
         }
+        painAdjust(x, dateKey(date));
       } else if (s.deload && x.sets && x.sets > 1) {
         x.baseSets = x.sets;
         x.sets = Math.max(1, Math.ceil(x.sets / 2));
@@ -4237,6 +4266,24 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
     const xh = $("exHint"); if (xh) xh.hidden = !noData;
   }
 
+  // Beschwerden beim letzten Lauf (bis 4 Tage zurück) ändern den nächsten Lauf sichtbar: Zwicken = kürzer und locker, Schmerz = nicht laufen.
+  // Verpasste Kilometer werden nie nachgeholt.
+  function painAdjust(x, dk) {
+    const lc = lastCalf(dk);
+    if (!lc || lc.c < 1) return;
+    const days = Math.round((parseKey(dk) - parseKey(lc.date)) / 864e5);
+    if (days > 4) return;
+    x.pain = lc.c;
+    if (lc.c >= 2) {
+      x.reps = "30 min gehen";
+      x.extra = "Beim letzten Lauf (" + shortDate(parseKey(lc.date)) + ") hat es geschmerzt. Heute nicht laufen, geh stattdessen locker spazieren. Lauf erst wieder, wenn du zwei Tage schmerzfrei bist. Hält der Schmerz an, lass ihn ärztlich oder physiotherapeutisch abklären.";
+      return;
+    }
+    const m = /([\d.,]+)\s*km/i.exec(x.reps || "");
+    if (m) { const km = Math.max(1, Math.round(num(m[1]) * 2 / 3 * 2) / 2); x.reps = fmtN(km) + " km"; }
+    else x.reps = "20–30 min locker";
+    x.extra = "Beim letzten Lauf (" + shortDate(parseKey(lc.date)) + ") hat es gezwickt. Heute " + (m ? "ein Drittel kürzer" : "keine Intervalle") + ", ganz locker und mit kurzen Schritten. Zwickt es wieder, brich ab.";
+  }
   function calfAdvice(c) {
     if (c === 0) return "Gut. Bleib bei der geplanten Strecke und steigere sie langsam.";
     if (c === 1) return "Kürz den nächsten Lauf um ein Drittel, nimm kurze Schritte und lauf nur locker. Zwickt es morgen noch, ersetz den Lauf durch Gehen.";
@@ -6952,12 +6999,22 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
     const values = {};
     $("testform").querySelectorAll("input[data-k]").forEach((inp) => {
       const it = TEST_ITEMS.find((t) => t.k === inp.dataset.k);
-      const raw = inp.value.trim();
-      if (!raw) return;
-      const v = it.pace ? parseDuration(raw.indexOf(":") >= 0 ? raw : raw + ":00") : num(raw);
-      if (v != null && v !== 0 && isFinite(v)) values[it.k] = v;
+      const r = testVal(it, inp.value);
+      if (!r.empty && !r.bad) values[it.k] = r.v;
     });
     return values;
+  }
+  // Ein Testwert: leer, ungültig oder eine Zahl. 0 ist gültig (z. B. Fingerspitzen genau am Boden, 0 Sekunden gehalten),
+  // nur bei Pace, Puls und VO2max ergibt 0 keinen Sinn. Negativ nur bei der Vorbeuge.
+  const TEST_POS_ONLY = { hr: 1, vo2: 1 };
+  function testVal(it, rawIn) {
+    const raw = String(rawIn == null ? "" : rawIn).trim();
+    if (!raw) return { empty: true };
+    const v = it.pace ? parseDuration(raw.indexOf(":") >= 0 ? raw : raw + ":00") : num(raw);
+    if (v == null || !isFinite(v)) return { bad: true };
+    if ((it.pace || TEST_POS_ONLY[it.k]) && v <= 0) return { bad: true };
+    if (v < 0 && it.k !== "reach") return { bad: true };
+    return { v };
   }
   const testPrev = () => { const tk = todayKey(); return (state.tests.entries || []).slice().sort((a, b) => (a.date < b.date ? -1 : 1)).filter((e) => e.date < tk).pop(); };
   $("testform").addEventListener("input", () => {
@@ -6967,15 +7024,16 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
   });
   $("testform").addEventListener("click", (ev) => {
     if (!ev.target.closest("#testSave")) return;
-    const values = {};
+    const values = {}, bad = [];
     let count = 0;
     $("testform").querySelectorAll("input[data-k]").forEach((inp) => {
       const it = TEST_ITEMS.find((t) => t.k === inp.dataset.k);
-      const raw = inp.value.trim();
-      if (!raw) return;
-      const v = it.pace ? parseDuration(raw.indexOf(":") >= 0 ? raw : raw + ":00") : num(raw);
-      if (v != null && v !== 0 && isFinite(v)) { values[it.k] = v; count++; }
+      const r = testVal(it, inp.value);
+      if (r.empty) return;
+      if (r.bad) { bad.push(it.l); return; }
+      values[it.k] = r.v; count++;
     });
+    if (bad.length) { toast("Ungültiger Wert bei: " + bad.join(", ")); return; }
     if (!count) { toast("Trag mindestens einen Wert ein."); return; }
     const tk = todayKey();
     const entries = (state.tests.entries || []).filter((e) => e.date !== tk);
@@ -7152,28 +7210,67 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
     r.onload = () => {
       let d;
       try { d = JSON.parse(String(r.result || "")); } catch (e) { toast("Die Datei ist kein gültiges Backup."); return; }
-      applyBackup(d, false);
+      const v = validateBackup(d);
+      if (v.err) { toast(v.err); return; }
+      // Leere App (z. B. nach dem Umzug aufs neue Handy): ohne Rückfrage übernehmen
+      if (!Object.keys(state.logs || {}).length) { applyBackup(d, "replace"); return; }
+      bkPending = { d, v }; bkArm = false; bkChoiceRender();
+      $("bkChoice").scrollIntoView({ block: "center", behavior: "smooth" });
     };
     r.onerror = () => toast("Die Datei konnte nicht gelesen werden.");
     r.readAsText(file);
   }
-  function applyBackup(d, snap) {
-    {
-      const data = d && d.app === "winter-arc" && d.data ? d.data : null;
-      if (!data || typeof data !== "object") { toast("Die Datei ist kein Winter-Arc-Backup."); return; }
-      try { snapTake(true); } catch (e) { /* ignore */ }
-      state.plan = data.plan || state.plan;
-      state.settings = Object.assign(clone(DEFAULT_SETTINGS), data.settings || {});
-      const logs = data.logs || {};
-      Object.keys(logs).forEach((k) => { state.logs[k] = logs[k]; });
-      state.skills = data.skills || state.skills;
-      state.tests = data.tests && Array.isArray(data.tests.entries) ? data.tests : state.tests;
-      if (data.body && Array.isArray(data.body.entries)) state.body = data.body;
-      if (data.meta && typeof data.meta === "object") { const lb = state.meta && state.meta.lastBackup; state.meta = data.meta; if (lb) state.meta.lastBackup = lb; }
+  // Backup prüfen: nur bekannte Bereiche mit passenden Datentypen übernehmen, kaputte Tage überspringen
+  function validateBackup(d) {
+    if (!d || typeof d !== "object" || d.app !== "winter-arc" || !d.data || typeof d.data !== "object") return { err: "Die Datei ist kein Winter-Arc-Backup." };
+    const x = d.data, out = { logs: {} }, warn = [];
+    const isObj = (v) => !!v && typeof v === "object" && !Array.isArray(v);
+    if (x.plan != null) { if (isObj(x.plan) && Array.isArray(x.plan.days)) out.plan = x.plan; else warn.push("Plan unlesbar, übersprungen"); }
+    if (x.settings != null) { if (isObj(x.settings)) out.settings = x.settings; else warn.push("Einstellungen unlesbar, übersprungen"); }
+    let bad = 0;
+    if (isObj(x.logs)) Object.keys(x.logs).forEach((k) => { if (/^\d{4}-\d{2}-\d{2}$/.test(k) && isObj(x.logs[k])) out.logs[k] = x.logs[k]; else bad++; });
+    if (bad) warn.push(bad + (bad === 1 ? " fehlerhafter Tag" : " fehlerhafte Tage") + " übersprungen");
+    if (isObj(x.skills)) out.skills = x.skills;
+    if (x.tests && Array.isArray(x.tests.entries)) out.tests = { entries: x.tests.entries.filter((e) => e && typeof e.date === "string" && isObj(e.values)) };
+    if (x.body && Array.isArray(x.body.entries)) out.body = Object.assign({}, x.body, { entries: x.body.entries.filter((e) => e && typeof e.date === "string") });
+    if (isObj(x.meta)) out.meta = x.meta;
+    if (isObj(x.media)) out.media = x.media;
+    if (!out.plan && !out.settings && !Object.keys(out.logs).length) return { err: "Im Backup stehen keine lesbaren Daten." };
+    return { data: out, warn, at: typeof d.exportedAt === "string" ? d.exportedAt : "" };
+  }
+  // mode "merge": Deine jetzigen Daten bleiben, nur Fehlendes kommt dazu. mode "replace": Alles, was im Backup steht, ersetzt den jetzigen Stand.
+  // Vorher wird eine Sicherung angelegt; geht beim Übernehmen etwas schief, wird der alte Stand sofort zurückgeholt.
+  function applyBackup(d, mode, quiet) {
+    const v = validateBackup(d);
+    if (v.err) { toast(v.err); return false; }
+    const data = v.data;
+    const before = JSON.stringify({ plan: state.plan, settings: state.settings, logs: state.logs, skills: state.skills, tests: state.tests, body: state.body, meta: state.meta });
+    try { snapTake(true); } catch (e) { /* ignore */ }
+    let added = 0;
+    try {
+      if (mode === "replace") {
+        if (data.plan) state.plan = data.plan;
+        if (data.settings) state.settings = Object.assign(clone(DEFAULT_SETTINGS), data.settings);
+        state.logs = data.logs;
+        if (data.skills) state.skills = data.skills;
+        if (data.tests) state.tests = data.tests;
+        if (data.body) state.body = data.body;
+        if (data.meta) { const lb = state.meta && state.meta.lastBackup; state.meta = data.meta; if (lb) state.meta.lastBackup = lb; }
+        added = Object.keys(data.logs).length;
+      } else {
+        if (data.plan && !(state.plan && state.plan.days && state.plan.days.length)) state.plan = data.plan;
+        if (data.settings) state.settings = Object.assign(clone(DEFAULT_SETTINGS), data.settings, state.settings || {});
+        Object.keys(data.logs).forEach((k) => { if (!state.logs[k]) { state.logs[k] = data.logs[k]; added++; } });
+        if (data.skills) Object.keys(data.skills).forEach((k) => { const a = state.skills[k], b2 = data.skills[k]; if (!a || ((b2 && b2.level) || 0) > (a.level || 0)) state.skills[k] = b2; });
+        if (data.tests) { const have = new Set((state.tests.entries || []).map((e) => e.date)); state.tests = { entries: (state.tests.entries || []).concat(data.tests.entries.filter((e) => !have.has(e.date))).sort((a, b) => (a.date < b.date ? -1 : 1)) }; }
+        if (data.body) { state.body = state.body || { entries: [] }; const have = new Set((state.body.entries || []).map((e) => e.date)); state.body.entries = (state.body.entries || []).concat(data.body.entries.filter((e) => !have.has(e.date))).sort((a, b) => (a.date < b.date ? -1 : 1)); }
+        if (data.meta && !(state.meta && Object.keys(state.meta).length > 2)) { const lb = state.meta && state.meta.lastBackup; state.meta = data.meta; if (lb) state.meta.lastBackup = lb; }
+      }
       if (data.media && typeof mdb !== "undefined") {
         Object.keys(data.media).forEach((k) => {
           const m = data.media[k];
           if (!m || !/^data:/.test(m.d || "")) return;
+          if (mode !== "replace" && k !== "bg" && !/^snd-/.test(k)) return;
           fetch(m.d).then((r) => r.blob()).then((b) => mdb.put(k, b, m.name)).then(() => {
             if (k === "bg") loadBg(); else { delete sndBuf[k.slice(4)]; loadSndNames(); }
           }).catch(() => {});
@@ -7182,12 +7279,39 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
       todaySig = "";
       saveLocal();
       renderAll();
-      renderBackupInfo();
-      const nd = Object.keys(logs).length;
-      toast((snap ? "Sicherung wiederhergestellt: " : "Backup geladen: ") + nd + (nd === 1 ? " Tag" : " Tage") + (data.meta ? ", mit Spielstand" : ""));
-      renderSnaps();
+    } catch (e) {
+      console.warn("Backup", e);
+      try { const o = JSON.parse(before); Object.assign(state, o); saveLocal(); todaySig = ""; renderAll(); } catch (er) { /* ignore */ }
+      toast("Das Backup konnte nicht übernommen werden. Deine Daten sind unverändert.");
+      return false;
     }
+    renderBackupInfo();
+    renderSnaps();
+    if (!quiet) toast((mode === "replace" ? "Wiederhergestellt: " + added + (added === 1 ? " Tag" : " Tage") : added ? added + (added === 1 ? " Tag" : " Tage") + " aus dem Backup ergänzt" : "Nichts Neues im Backup, deine Daten waren schon vollständig") + (v.warn.length ? ". " + v.warn.join(", ") : ""));
+    return true;
   }
+  let bkPending = null, bkArm = false;
+  function bkChoiceRender() {
+    const el = $("bkChoice");
+    if (!bkPending) { el.hidden = true; el.innerHTML = ""; return; }
+    const v = bkPending.v, n = Object.keys(v.data.logs).length;
+    const when = v.at ? new Date(v.at) : null;
+    el.hidden = false;
+    el.innerHTML = "<p><b>Backup" + (when && !isNaN(when) ? " vom " + esc(shortDate(when)) : "") + "</b>: " + n + (n === 1 ? " Tag" : " Tage") + (v.data.plan ? ", mit Plan" : "") + (v.data.meta ? ", mit Spielstand" : "") + "." + (v.warn.length ? " " + esc(v.warn.join(", ")) + "." : "") + "</p>" +
+      '<ul class="bkexp"><li><b>Zusammenführen:</b> Deine jetzigen Daten bleiben. Tage, Tests und Messungen, die hier fehlen, kommen aus dem Backup dazu.</li><li><b>Komplett ersetzen:</b> Alles wird auf den Stand des Backups gesetzt, auch neuere Einträge auf diesem Handy verschwinden. Vorher legt die App eine Sicherung an.</li></ul>' +
+      '<div class="row"><button class="btn primary" data-bk="merge">Zusammenführen</button><button class="btn' + (bkArm ? " danger" : "") + '" data-bk="replace">' + (bkArm ? "Wirklich alles ersetzen?" : "Komplett ersetzen") + '</button><button class="btn small" data-bk="cancel">Abbrechen</button></div>';
+  }
+  $("bkChoice").addEventListener("click", (ev) => {
+    const b = ev.target.closest("[data-bk]");
+    if (!b || !bkPending) return;
+    const act = b.dataset.bk;
+    if (act === "cancel") { bkPending = null; bkArm = false; bkChoiceRender(); return; }
+    if (act === "replace" && !bkArm) { bkArm = true; bkChoiceRender(); setTimeout(() => { if (bkArm) { bkArm = false; bkChoiceRender(); } }, 6000); return; }
+    const d = bkPending.d;
+    bkPending = null; bkArm = false; bkChoiceRender();
+    applyBackup(d, act === "replace" ? "replace" : "merge");
+  });
+
   // ---- Automatische Sicherungen: täglich eine Kopie in IndexedDB, die letzten 7 bleiben ----
   const SNAP_LS = "winterarc.snaps";
   const snapIdx = () => { try { const a = JSON.parse(localStorage.getItem(SNAP_LS) || "[]"); return Array.isArray(a) ? a : []; } catch (e) { return []; } };
@@ -7221,7 +7345,7 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
     snapArm = "";
     mdb.get(id).then((rec) => rec && rec.blob ? rec.blob.text() : null).then((txt) => {
       if (!txt) { toast("Diese Sicherung ist nicht mehr da."); renderSnaps(); return; }
-      applyBackup(JSON.parse(txt), true);
+      if (applyBackup(JSON.parse(txt), "replace", true)) toast("Sicherung wiederhergestellt");
     }).catch(() => toast("Die Sicherung konnte nicht gelesen werden."));
   });
   renderSnaps();
@@ -10769,14 +10893,15 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
   const BOSSES = { 5: "Eiswächter", 9: "Frostriese", 13: "Winterkönig" };
   const bossName = (dk) => BOSSES[arcWeek(parseKey(dk))] || "Schattenboss";
   function bossCalc(values, prev) {
-    const its = TEST_ITEMS.filter((it) => prev && prev[it.k] != null && prev[it.k] !== "" && +prev[it.k] !== 0);
+    const its = TEST_ITEMS.filter((it) => prev && prev[it.k] != null && prev[it.k] !== "" && isFinite(+prev[it.k]) && (+prev[it.k] !== 0 || (!it.pace && !TEST_POS_ONLY[it.k])));
     if (!its.length) return null;
     const share = 100 / its.length;
     let dmg = 0, hits = 0, crits = 0, miss = 0;
     its.forEach((it) => {
       const v = values[it.k], p = +prev[it.k];
       if (v == null || v === "" || !isFinite(v)) { miss++; return; }
-      const rel = it.lowerBetter ? (p - v) / Math.abs(p || 1) : (v - p) / Math.abs(p || 1);
+      const base = Math.max(Math.abs(p), it.k === "reach" ? 5 : 1);
+      const rel = it.lowerBetter ? (p - v) / base : (v - p) / base;
       if (rel > 0.0001) { if (rel >= 0.1) { dmg += share * 1.3; crits++; } else { dmg += share; hits++; } }
       else if (Math.abs(rel) <= 0.0001) dmg += share * 0.4;
       else miss++;
@@ -11778,7 +11903,9 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
     const c = checkinOf(dk), r = readiness(dk);
     const y = dateKey(addDays(today(), -1)), ys = effSession(addDays(today(), -1));
     let pre = null;
-    if ((c.energy && c.energy <= 2) || (r.hasInput && r.pts >= 3.5)) pre = pickLine("low_energy", {});
+    const lcP = lastCalf(dk), painNow = !!(lcP && lcP.c >= 1 && (parseKey(dk) - parseKey(lcP.date)) / 864e5 <= 4) || (c.soreness && c.soreness >= 5);
+    if (painNow) pre = null;
+    else if ((c.energy && c.energy <= 2) || (r.hasInput && r.pts >= 3.5)) pre = pickLine("low_energy", {});
     else if (ys && !ys.free && y >= (S().arcStart || "") && sessionProgress(y, ys).done === 0) pre = pickLine("skipped", {});
     const main = pickLine("start", { next: nx, uebung: nx.name });
     if (pre) sayLine(pre).then(() => setTimeout(() => sayLine(main), 250)); else sayLine(main);
@@ -12211,6 +12338,7 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
     } catch (e) { /* ignore */ }
     try { const q = questState(dk); L.push("Daily Quest: " + q.items.map((i) => (i.done ? "[x] " : "[ ] ") + i.t).join(", ") + "."); } catch (e) { /* ignore */ }
     L.push("Körpergewicht: " + (S().bodyweight || "unbekannt") + " kg.");
+    try { const lc = lastCalf(todayKey()); if (lc && lc.c >= 1) L.push("Beschwerden beim letzten Lauf (" + shortDate(parseKey(lc.date)) + "): Waden/Sprunggelenk " + (lc.c === 1 ? "zwickt" : "Schmerz") + ". Nicht zum Laufen drängen."); } catch (e) { /* ignore */ }
     try { L.push(gameContext()); } catch (e) { /* ignore */ }
     return L.join("\n");
   }
