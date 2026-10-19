@@ -359,6 +359,14 @@ textarea, select, input.inp, input[type=range] { max-width: 100%; box-sizing: bo
 .trow label { font-size: 14px; }
 .trow label small { display: block; color: var(--mute); font-size: 12px; }
 .trow input { min-height: 40px; padding: 7px 10px; border-radius: 10px; border: 1px solid var(--line-2); background: var(--surface); color: var(--ink); text-align: right; width: 100%; }
+.trow.tw { grid-template-columns: minmax(0, 1fr) 150px; }
+.twin { display: grid; grid-template-columns: minmax(0, 1fr) auto 52px; gap: 6px; align-items: center; color: var(--mute); font-size: 14px; }
+.test-est { grid-column: 1 / -1; color: var(--ice); font-size: 13px; text-align: right; min-height: 0; }
+.test-est:empty { display: none; }
+.tnote { display: grid; gap: 6px; }
+.tnote textarea { min-height: 64px; padding: 8px 10px; border-radius: 10px; border: 1px solid var(--line-2); background: var(--surface); color: var(--ink); font: inherit; resize: vertical; }
+.tcompare td small { display: block; color: var(--mute); font-size: 11px; }
+.testnote { margin: 10px 0 0; color: var(--ink-2); font-size: 13px; }
 .tcompare { width: 100%; border-collapse: collapse; margin-top: 12px; font-size: 14px; }
 .tcompare th { text-align: right; color: var(--mute); font-weight: 500; font-size: 12px; padding: 6px 0 6px 10px; }
 .tcompare th:first-child { text-align: left; padding-left: 0; }
@@ -3189,8 +3197,8 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
   const TEST_ITEMS = [
     { g: "Kraft im Park", k: "pullups", l: "Klimmzüge, Maximum", u: "Wdh." },
     { g: "Kraft im Park", k: "dips", l: "Dips am Barren, Maximum", u: "Wdh." },
-    { g: "Kraft im Park", k: "pull5", l: "Klimmzüge, Zusatzgewicht für 5", u: "kg", hint: "nur wenn über 12 Wdh." },
-    { g: "Kraft im Park", k: "dips5", l: "Dips, Zusatzgewicht für 5", u: "kg", hint: "nur wenn über 12 Wdh." },
+    { g: "Kraft im Park", k: "pull5", l: "Klimmzüge, Zusatzgewicht für 5", u: "kg", hint: "Gewicht × Wdh., die App rechnet auf 5 um" },
+    { g: "Kraft im Park", k: "dips5", l: "Dips, Zusatzgewicht für 5", u: "kg", hint: "Gewicht × Wdh., die App rechnet auf 5 um" },
     { g: "Kraft im Park", k: "pushups", l: "Liegestütze, Maximum", u: "Wdh." },
     { g: "Kraft im Park", k: "pike", l: "Pike Push-ups, Maximum", u: "Wdh." },
     { g: "Kraft im Park", k: "rows", l: "Rows an niedriger Stange", u: "Wdh." },
@@ -7008,6 +7016,14 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
 
   // ================= Progress: tests =================
   const fmtTest = (it, v) => (v == null || v === "" ? "–" : it.pace ? fmtPace(v) : fmtN(v));
+  // Gewichtstests: Gewicht × Wiederholungen, umgerechnet auf das Zusatzgewicht für genau 5 (Epley mit Körpergewicht)
+  const TEST_WREPS = { pull5: 1, dips5: 1 };
+  function testEst5(kg, reps) {
+    if (!(reps > 0) || reps === 5) return kg;
+    const bw = +S().bodyweight || 75;
+    const one = (bw + kg) * (1 + reps / 30);
+    return Math.round((one / (1 + 5 / 30) - bw) * 2) / 2;
+  }
   function testWeekStart(w) { return addDays(startOfWeek(arcStartDate()), (w - 1) * 7); }
   function renderTests() {
     const entries = state.tests.entries || [];
@@ -7040,10 +7056,12 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
           delta = (dv > 0 ? "+" : "−") + (it.pace ? fmtPace(Math.abs(dv)) : fmtN(Math.abs(dv)));
         } else delta = "±0";
       }
-      rows += "<tr><td>" + esc(it.l) + "</td>" + (prev ? "<td>" + esc(fmtTest(it, p)) + "</td>" : "") + "<td>" + esc(fmtTest(it, c)) + (it.u ? " " + esc(it.u) : "") + '</td>' + (prev ? '<td class="' + cls + '">' + esc(delta) + "</td>" : "") + "</tr>";
+      const rawOf = (e) => { const r = e && e.raw && e.raw[it.k]; return r && r.reps && r.reps !== 5 ? "<small>" + esc(fmtN(r.kg) + " kg × " + r.reps) + "</small>" : ""; };
+      rows += "<tr><td>" + esc(it.l) + "</td>" + (prev ? "<td>" + esc(fmtTest(it, p)) + rawOf(prev) + "</td>" : "") + "<td>" + (rawOf(cur) ? "≈ " : "") + esc(fmtTest(it, c)) + (it.u ? " " + esc(it.u) : "") + rawOf(cur) + '</td>' + (prev ? '<td class="' + cls + '">' + esc(delta) + "</td>" : "") + "</tr>";
     });
     $("testcompare").innerHTML = '<table class="tcompare"><thead><tr><th>Test</th>' +
-      (prev ? "<th>" + esc(shortDate(parseKey(prev.date))) + "</th>" : "") + "<th>" + esc(shortDate(parseKey(cur.date))) + "</th>" + (prev ? "<th>Änderung</th>" : "") + "</tr></thead><tbody>" + rows + "</tbody></table>";
+      (prev ? "<th>" + esc(shortDate(parseKey(prev.date))) + "</th>" : "") + "<th>" + esc(shortDate(parseKey(cur.date))) + "</th>" + (prev ? "<th>Änderung</th>" : "") + "</tr></thead><tbody>" + rows + "</tbody></table>" +
+      (cur.note ? '<p class="testnote"><b>Notiz ' + esc(shortDate(parseKey(cur.date))) + ":</b> " + esc(cur.note) + "</p>" : "") + (prev && prev.note ? '<p class="testnote"><b>Notiz ' + esc(shortDate(parseKey(prev.date))) + ":</b> " + esc(prev.note) + "</p>" : "");
   }
   $("testStart").addEventListener("click", () => {
     const form = $("testform");
@@ -7058,9 +7076,15 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
       const v = existing ? existing.values[it.k] : null;
       const pv = prev ? prev.values[it.k] : null;
       const hint = [it.u, it.hint, pv != null && pv !== "" ? "zuletzt " + fmtTest(it, pv) : ""].filter(Boolean).join(", ");
+      if (TEST_WREPS[it.k]) {
+        const raw = existing && existing.raw && existing.raw[it.k];
+        const kg = raw ? raw.kg : v;
+        return '<div class="trow tw"><label for="t-' + it.k + '">' + esc(it.l) + "<small>" + esc(hint) + '</small></label><div class="twin"><input id="t-' + it.k + '" data-k="' + it.k + '" inputmode="decimal" placeholder="kg" value="' + esc(kg == null || kg === "" ? "" : fmtTest(it, kg)) + '"><span>×</span><input id="t-' + it.k + '-r" data-r="' + it.k + '" inputmode="numeric" placeholder="5" aria-label="Wiederholungen" value="' + esc(raw && raw.reps ? raw.reps : "") + '"></div><small class="test-est" id="te-' + it.k + '"></small></div>';
+      }
       return '<div class="trow"><label for="t-' + it.k + '">' + esc(it.l) + "<small>" + esc(hint) + '</small></label><input id="t-' + it.k + '" data-k="' + it.k + '" inputmode="' + (it.pace ? "text" : "decimal") + '" placeholder="' + (it.pace ? "6:10" : "") + '" value="' + esc(v == null || v === "" ? "" : fmtTest(it, v)) + '"></div>';
-    }).join("") + "</div>").join("") + '<div class="row"><button class="btn primary" id="testSave">Test speichern</button></div>';
+    }).join("") + "</div>").join("") + '<div class="tnote"><label for="testNote">Notiz zum Test</label><textarea id="testNote" maxlength="300" placeholder="z. B. Zimmerstange, enger Griff, nüchtern, wenig geschlafen">' + esc(existing && existing.note ? existing.note : "") + '</textarea></div><div class="row"><button class="btn primary" id="testSave">Test speichern</button></div>';
     form.hidden = false;
+    testEstRender();
     $("testStart").textContent = "Formular schließen";
   });
   function testFormValues() {
@@ -7070,7 +7094,24 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
       const r = testVal(it, inp.value);
       if (!r.empty && !r.bad) values[it.k] = r.v;
     });
+    testApplyReps(values, {});
     return values;
+  }
+  function testReps(k) { const el = $("t-" + k + "-r"); const r = el ? Math.round(num(el.value) || 0) : 0; return r > 0 && r <= 50 ? r : 5; }
+  function testApplyReps(values, raw) {
+    Object.keys(TEST_WREPS).forEach((k) => {
+      if (values[k] == null) return;
+      const reps = testReps(k);
+      if (reps !== 5) { raw[k] = { kg: values[k], reps }; values[k] = testEst5(values[k], reps); }
+    });
+  }
+  function testEstRender() {
+    Object.keys(TEST_WREPS).forEach((k) => {
+      const el = $("te-" + k), inp = $("t-" + k);
+      if (!el || !inp) return;
+      const kg = num(inp.value), reps = testReps(k);
+      el.textContent = kg != null && kg >= 0 && reps !== 5 ? "≈ " + fmtN(testEst5(kg, reps)) + " kg für 5 Wiederholungen" : "";
+    });
   }
   // Ein Testwert: leer, ungültig oder eine Zahl. 0 ist gültig (z. B. Fingerspitzen genau am Boden, 0 Sekunden gehalten),
   // nur bei Pace, Puls und VO2max ergibt 0 keinen Sinn. Negativ nur bei der Vorbeuge.
@@ -7086,6 +7127,7 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
   }
   const testPrev = () => { const tk = todayKey(); return (state.tests.entries || []).slice().sort((a, b) => (a.date < b.date ? -1 : 1)).filter((e) => e.date < tk).pop(); };
   $("testform").addEventListener("input", () => {
+    testEstRender();
     if (!window.__waGame || !$("bossBox")) return;
     const pv = testPrev();
     $("bossBox").innerHTML = bossPanel(testFormValues(), pv ? pv.values : null, todayKey());
@@ -7103,9 +7145,15 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
     });
     if (bad.length) { toast("Ungültiger Wert bei: " + bad.join(", ")); return; }
     if (!count) { toast("Trag mindestens einen Wert ein."); return; }
+    const raw = {};
+    testApplyReps(values, raw);
+    const note = ($("testNote") ? $("testNote").value : "").trim().slice(0, 300);
     const tk = todayKey();
     const entries = (state.tests.entries || []).filter((e) => e.date !== tk);
-    entries.push({ date: tk, values });
+    const ent = { date: tk, values };
+    if (Object.keys(raw).length) ent.raw = raw;
+    if (note) ent.note = note;
+    entries.push(ent);
     entries.sort((a, b) => (a.date < b.date ? -1 : 1));
     state.tests = { entries: entries.slice(-30) };
     saveTests();
