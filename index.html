@@ -620,6 +620,9 @@ pre.prompt { white-space: pre-wrap; margin: 0 0 12px; padding: 14px; border-radi
 .field-row label { display: block; margin-bottom: 4px; color: var(--mute); font-size: 13px; }
 .field-row .inp { width: 100%; min-height: 46px; }
 .wu-chips { margin-bottom: 12px; }
+.ci-where { display: flex; flex-wrap: wrap; gap: 6px; }
+.ci-where .chip { min-height: 36px; padding: 6px 12px; font-size: 13px; }
+.ci-where .chip[aria-pressed="true"] { border-color: var(--ice); color: var(--ink); background: rgba(var(--tint-rgb), 0.10); }
 .em-picks { margin: 10px 0 0; gap: 6px; }
 .em-picks .chip { min-height: 36px; padding: 6px 12px; font-size: 13px; }
 .em-picks .chip[aria-pressed="true"] { border-color: var(--ice); color: var(--ink); background: rgba(var(--tint-rgb), 0.10); }
@@ -1971,6 +1974,7 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
             <div class="shead"><h2>Check-in</h2><span id="cistate"></span></div>
             <div class="ci-row"><span class="ci-l">Energie</span><div class="ci-btns" data-k="energy" role="group" aria-label="Energie von 1 bis 5"></div></div>
             <div class="ci-row"><span class="ci-l">Muskelkater</span><div class="ci-btns" data-k="soreness" role="group" aria-label="Muskelkater von 1 bis 5"></div></div>
+            <div class="ci-row" id="ciWhereRow" hidden><span class="ci-l">Wo?</span><div class="ci-where" role="group" aria-label="Wo hast du Muskelkater?"><button class="chip" data-w="legs" aria-pressed="false">Beine</button><button class="chip" data-w="upper" aria-pressed="false">Oberkörper</button><button class="chip" data-w="all" aria-pressed="false">Überall</button></div></div>
             <div class="ci-row"><span class="ci-l">Schlaf</span>
               <div class="sleepin">
                 <label class="sr" for="sleepDur">Schlafdauer</label>
@@ -3836,6 +3840,7 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
           else if (s.deload && !x.extra) x.extra = "Entlastungswoche: kürzer und locker";
         }
         painAdjust(x, dateKey(date));
+        soreAdjust(x, dateKey(date));
       } else if (s.deload && x.sets && x.sets > 1) {
         x.baseSets = x.sets;
         x.sets = Math.max(1, Math.ceil(x.sets / 2));
@@ -4358,6 +4363,27 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
     if (m) { const km = Math.max(1, Math.round(num(m[1]) * 2 / 3 * 2) / 2); x.reps = fmtN(km) + " km"; }
     else x.reps = "20–30 min locker";
     x.extra = "Beim letzten Lauf (" + shortDate(parseKey(lc.date)) + ") hat es gezwickt. Heute " + (m ? "ein Drittel kürzer" : "keine Intervalle") + ", ganz locker und mit kurzen Schritten. Zwickt es wieder, brich ab.";
+  }
+  // Muskelkater in den Beinen (Check-in): harte Läufe entschärfen, bei sehr starkem Kater nur gehen
+  function soreAdjust(x, dk) {
+    if (x.pain >= 2) return;
+    const c = checkinOf(dk), s = c.soreness || 0;
+    if (s < 3 || (c.soreWhere !== "legs" && c.soreWhere !== "all")) return;
+    const hard = /intervall|vo2|tempo|schnell|hart|sprint|\d+\s*[x×]\s*\d+/i.test([x.name, x.reps, x.extra].join(" "));
+    x.sore = s;
+    if (s >= 5) {
+      x.reps = "30 min gehen";
+      x.extra = "Sehr starker Muskelkater in den Beinen: Heute nicht laufen. Geh locker spazieren, das hilft der Erholung." + (hard ? " Die harte Einheit holst du nach, sobald die Beine wieder frisch sind." : "");
+      return;
+    }
+    if (s >= 4) {
+      if (hard) { x.reps = "20–30 min locker"; x.extra = "Starker Muskelkater in den Beinen: heute keine Intervalle. Lauf ganz locker oder geh spazieren. Die harte Einheit holst du nach, sobald die Beine frisch sind."; return; }
+      const m = /([\d.,]+)\s*km/i.exec(x.reps || "");
+      if (m) x.reps = fmtN(Math.max(1, Math.round(num(m[1]) * 2 / 3 * 2) / 2)) + " km";
+      x.extra = "Starker Muskelkater in den Beinen: heute ein Drittel kürzer und ganz locker.";
+      return;
+    }
+    if (hard) x.extra = (x.extra ? x.extra + " " : "") + "Spürbarer Muskelkater: Lauf dich länger ein. Fühlen sich die Beine danach noch schwer an, mach nur die Hälfte der Intervalle.";
   }
   function calfAdvice(c) {
     if (c === 0) return "Gut. Bleib bei der geplanten Strecke und steigere sie langsam.";
@@ -5071,6 +5097,8 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
       const v = c[g.dataset.k];
       g.querySelectorAll(".ci-btn").forEach((b) => b.setAttribute("aria-pressed", +b.dataset.n === v ? "true" : "false"));
     });
+    $("ciWhereRow").hidden = !(c.soreness >= 3);
+    document.querySelectorAll(".ci-where button").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.w === c.soreWhere)));
     $("cistate").textContent = c.energy && c.soreness ? "erledigt" : c.energy || c.soreness ? "fast" : "offen";
     doneColl("checkin", !!(c.energy && c.soreness));
     const hint = ciHintFor(dk);
@@ -5080,6 +5108,15 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
     if (typeof patchRestRing === "function" && restReady) patchRestRing(dk);
   }
   $("checkinCard").addEventListener("click", (ev) => {
+    const w = ev.target.closest(".ci-where button");
+    if (w) {
+      const dk = todayKey(), l = ensureLog(dk);
+      l.checkin = l.checkin || {};
+      if (l.checkin.soreWhere === w.dataset.w) delete l.checkin.soreWhere; else l.checkin.soreWhere = w.dataset.w;
+      saveLog(dk); renderCheckin(dk); buzz(8);
+      try { todaySig = ""; renderToday(); } catch (e) { /* egal */ }
+      return;
+    }
     const b = ev.target.closest(".ci-btn");
     if (!b) return;
     const k = b.parentElement.dataset.k, n = +b.dataset.n;
@@ -5090,6 +5127,7 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
     saveLog(dk);
     renderCheckin(dk);
     buzz(8);
+    if (k === "soreness") { try { todaySig = ""; renderToday(); } catch (e) { /* egal */ } }
   });
   function renderCheckinList() {
     const keys = Object.keys(state.logs).filter((k) => { const c = checkinOf(k); return c.energy || c.soreness; }).sort().reverse().slice(0, 10);
