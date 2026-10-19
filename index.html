@@ -1388,6 +1388,7 @@ main[data-dir="l"] > section:not([hidden]) { animation: viewInL 260ms cubic-bezi
 .grt.ok { opacity: .55; }
 .grt.ok i { background: var(--gc); }
 .grt.ok span { text-decoration: line-through; }
+.grall { justify-self: center; margin-top: 4px; }
 .grquit { justify-self: center; background: transparent; border: 0; color: var(--mute); min-height: 44px; padding: 0 16px; text-decoration: underline; }
 .gaterun.red .grquit { color: #FF8A7A; }
 .invgrid { display: grid; gap: 10px; margin-top: 12px; }
@@ -2961,6 +2962,7 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
     <div class="grtime" id="grTime" role="timer">0:00</div>
     <div class="grbar"><i id="grBar"></i></div>
     <ul class="grlist" id="grList"></ul>
+    <button class="btn primary grall" id="grAll">Alles geschafft</button>
     <button class="grquit" id="grLater" hidden>Prüfung verschieben (kein Fehlschlag)</button>
     <button class="grquit" id="grQuit">Gate verlassen</button>
   </div>
@@ -4034,7 +4036,7 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
     return Math.max(3, Math.floor((parseKey(dk) - parseKey(lastPr)) / (7 * 864e5)));
   }
   function tipFor(e, dk, deload, hist) {
-    if (isRun(e)) return null;
+    if (isRun(e) || e.custom) return null;
     if (deload) return { up: false, text: "Deload: gleiche Last wie zuletzt, halbe Sätze, 3 bis 4 Wiederholungen vor dem Limit aufhören." };
     const rng = parseRange(e.reps);
     if (!rng) return null;
@@ -8090,12 +8092,39 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
     const s = Math.max(0, Math.round(ms / 1000)), h = Math.floor(s / 3600), m = Math.floor(s / 60) % 60;
     return h ? h + ":" + pad(m) + ":" + pad(s % 60) : m + ":" + pad(s % 60);
   }
-  const clockTotal = (c) => ((c.t1 || Date.now()) - c.t0 - (c.off || 0));
+  const clockTotal = (c) => (c.t0 ? (c.t1 || Date.now()) - c.t0 - (c.off || 0) : 0) + (c.blk || []).reduce((a, b) => a + (b.inc ? 0 : b.ms || 0), 0);
+  // Zeit aus EMOM-Timer und Gates: als eigener Block, nicht doppelt, wenn die Uhr gerade lief
+  function clockBlock(dk, id, name, ms, start) {
+    if (!(ms > 0)) return;
+    const l = ensureLog(dk);
+    let c = l.clock;
+    if (!c) c = l.clock = { t0: null, t1: null, off: 0, ev: [], auto: true };
+    c.blk = c.blk || [];
+    const old = c.blk.find((b) => b.id === id);
+    const inc = old ? old.inc : !!(c.t0 && start && start >= c.t0 && !c.t1);
+    const b = { id, name, ms: Math.round(ms), inc };
+    if (old) Object.assign(old, b); else c.blk.push(b);
+    saveLog(dk);
+    try { if (dk === todayKey()) renderClock(); } catch (e) { /* noch nicht bereit */ }
+  }
+  function clockBackfill(dk) {
+    const l = state.logs[dk];
+    if (!l) return;
+    let ch = false;
+    (l.emom || []).forEach((r) => { if (r.done && !r.synced && r.total > 0 && dk === todayKey()) { r.synced = emomSync(dk, r); ch = true; } });
+    if (ch) saveLog(dk);
+    (l.emom || []).forEach((r) => { if (r.synced && r.mins && r.mins.length) clockBlock(dk, "em-" + r.id, r.name + " (EMOM)", r.mins.length * 60000, 0); });
+    try {
+      if (!window.__waGame) return;
+      gMeta().log.forEach((e) => { if (e.d === dk && e.synced && e.res !== "closed") { const ms = gateMs(e); if (ms) clockBlock(dk, "gate-" + e.id, gateTitle(e), ms, e.t0 || 0); } });
+    } catch (e) { /* ignore */ }
+  }
   function clockStart(auto) {
     const dk = todayKey(), l = ensureLog(dk);
     const c = l.clock;
     if (clockRun(c)) { renderClock(); return; }
-    if (c && c.t1) {
+    if (c && !c.t0) { Object.assign(c, { t0: Date.now(), t1: null, off: 0, ev: c.ev || [], auto: !!auto }); }
+    else if (c && c.t1) {
       const s = effSession(today());
       const pr = s ? sessionProgress(dk, s) : null;
       if (pr && pr.total && pr.done >= pr.total) { renderClock(); return; }
@@ -8116,6 +8145,7 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
     let c = l.clock;
     if (done) {
       if (!c) { c = l.clock = { t0: Date.now(), t1: null, off: 0, ev: [], auto: true }; }
+      else if (!c.t0) Object.assign(c, { t0: Date.now(), t1: null, off: 0, ev: c.ev || [], auto: true });
       else if (c.t1) { c.off = (c.off || 0) + (Date.now() - c.t1); c.t1 = null; }
       c.ev.push(["s", Date.now() - c.t0, id, i]);
     } else if (c) {
@@ -8154,7 +8184,7 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
     if (!run && clockIv) { clearInterval(clockIv); clockIv = 0; }
     card.hidden = !c;
     if (!c) return;
-    $("clockState").textContent = run ? "läuft" : "fertig";
+    $("clockState").textContent = run ? "läuft" : c.t0 ? "fertig" : "";
     $("clockStop").hidden = !run;
     clockTick();
     const s = effSession(parseKey(dk));
@@ -8171,7 +8201,7 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
       const rests = ss.slice(1).map((x) => x.rest).filter((v) => v != null);
       const avgR = rests.length ? rests.reduce((a, b) => a + b, 0) / rests.length : null;
       return "<li><b>" + esc(nameOf(id)) + '</b><span class="ct">' + clkFmt(span) + '</span><span class="cs">Sätze ' + durs.join(" · ") + (avgR != null ? " · Ø Pause " + clkFmt(avgR) : "") + "</span></li>";
-    }).join("") || '<li><span class="cs">Sobald du den ersten Satz abhakst, erscheinen hier die Zeiten.</span></li>';
+    }).join("") + (c.blk || []).map((b) => "<li><b>" + esc(b.name) + '</b><span class="ct">' + clkFmt(b.ms) + '</span><span class="cs">' + (/^gate-/.test(b.id) ? "Zeit im Gate" : "Zeit im EMOM-Timer") + (b.inc ? ", schon in der Trainingsuhr enthalten" : "") + "</span></li>").join("") || '<li><span class="cs">Sobald du den ersten Satz abhakst, erscheinen hier die Zeiten.</span></li>';
     let cmp = "";
     for (let k = 1; k <= 60 && s; k++) {
       const pk = dateKey(addDays(parseKey(dk), -k)), pl = state.logs[pk];
@@ -8527,10 +8557,12 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
         l.exercises[pe.id] = Object.assign(l.exercises[pe.id] || {}, { name: pe.name, done: Array.from({ length: sets }, (_, k) => k < per.length), note, eq });
         saveLog(dk);
         try { todaySig = ""; renderToday(); } catch (e) { /* egal */ }
+        clockBlock(dk, "em-" + rec.id, rec.name + " (EMOM)", per.length * 60000, emom.t0 || 0);
         return pe.id;
       }
     }
     autoExtra(dk, "em-" + rec.id, rec.name + " (EMOM)", note, Math.max(1, per.length), "emom", eq);
+    if (note) clockBlock(dk, "em-" + rec.id, rec.name + " (EMOM)", per.length * 60000, emom.t0 || 0);
     return note ? "em-" + rec.id : 0;
   }
   function finishEmom(auto) {
@@ -13146,7 +13178,7 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
   }
   function gateLog(g, res, extra) {
     const G = gMeta();
-    G.log.push(Object.assign({ id: g.id, rank: g.rank, red: g.red, res, d: todayKey(), brk: !!g.brk, tasks: (g.tasks || []).map((t) => ({ n: t.n, c: t.c, s: !!t.s, done: !!t.done })) }, extra || {}));
+    G.log.push(Object.assign({ id: g.id, rank: g.rank, red: g.red, res, d: todayKey(), brk: !!g.brk, t0: g.entered || 0, lim: g.limit || 0, t: g.entered ? Math.min(g.limit || 1e9, Math.round((Date.now() - g.entered) / 1000)) : 0, tasks: (g.tasks || []).map((t) => ({ n: t.n, c: t.c, s: !!t.s, done: !!t.done })) }, extra || {}));
     if (G.log.length > 200) G.log = G.log.slice(-200);
     G.cur = null;
     saveLocal();
@@ -13322,6 +13354,12 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
     if (!isFinite(t0) || t0 < 1.5e12) return null;
     try { return gateMake(e.rank, e.red, t0, e.brk ? Math.min(5, GATE_N[e.rank] + 1) : undefined).tasks.map((t) => Object.assign({}, t, { done: null })); } catch (er) { return null; }
   }
+  const gateTitle = (e) => (e.job ? "Prüfung" : e.brk ? "Dungeon Break" : e.red ? "Red Gate" : RANK_L[e.rank] + "-Rang-Gate");
+  function gateMs(e) {
+    if (e.t) return e.t * 1000;
+    if (e.res === "lost") return (e.lim || GATE_MIN[e.rank] * 60) * 1000;
+    return 0;
+  }
   function gateWrite(e, ts, vals) {
     ts.forEach((t, i) => {
       const v = Math.max(0, Math.round(+vals[i] || 0));
@@ -13329,6 +13367,7 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
     });
     e.synced = 1;
     saveLocal();
+    if (vals.some((v) => +v > 0)) clockBlock(e.d, "gate-" + e.id, gateTitle(e), gateMs(e), e.t0 || 0);
   }
   let gateSyncT = 0;
   function gateSyncCheck() {
@@ -13439,6 +13478,15 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
       if (t.done) { hap("set"); try { sndOverride("set"); } catch (e) { /* ignore */ } }
       b.classList.toggle("ok", t.done); b.setAttribute("aria-pressed", t.done); b.querySelector("i").textContent = t.done ? "✓" : "";
       if (g.tasks.every((x) => x.done)) setTimeout(gateClear, 350);
+    });
+    $("grAll").addEventListener("click", () => {
+      const g = gMeta().cur;
+      if (!g || !g.entered) return;
+      if (!$("grAll").dataset.armed) { $("grAll").dataset.armed = "1"; $("grAll").textContent = "Wirklich alle Aufgaben geschafft?"; setTimeout(() => { if ($("grAll")) { $("grAll").dataset.armed = ""; $("grAll").textContent = "Alles geschafft"; } }, 3500); return; }
+      $("grAll").dataset.armed = ""; $("grAll").textContent = "Alles geschafft";
+      g.tasks.forEach((t) => { t.done = true; });
+      saveLocal(); hap("set");
+      gateClear();
     });
     $("grLater").addEventListener("click", () => {
       const G = gMeta(), g = G.cur;
@@ -14029,6 +14077,7 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
   window.__waGame = true;
   applyAura();
   setTimeout(() => { try { gateTick(); renderGate(); } catch (e) { /* ignore */ } }, 1200);
+  setTimeout(() => { try { clockBackfill(todayKey()); } catch (e) { /* ignore */ } }, 2500);
 
   // ---------- Vitalwerte im Check-in ----------
   function renderVitals(dk) {
