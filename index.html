@@ -611,6 +611,20 @@ pre.prompt { white-space: pre-wrap; margin: 0 0 12px; padding: 14px; border-radi
 .field-row.two { grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); }
 .field-row label { display: block; margin-bottom: 4px; color: var(--mute); font-size: 13px; }
 .field-row .inp { width: 100%; min-height: 46px; }
+.wu-chips { margin-bottom: 12px; }
+.wu-chips .chip[aria-pressed="true"] { border-color: var(--ice); color: var(--ink); background: rgba(var(--tint-rgb), 0.10); }
+.wusteps { list-style: none; margin: 14px 0 0; padding: 0; display: grid; gap: 6px; }
+.wusteps .wuh { margin: 12px 0 2px; color: var(--mute); font-size: 12px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; }
+.wusteps .wuh:first-child { margin-top: 0; }
+.wustep { display: grid; grid-template-columns: 26px minmax(0, 1fr); gap: 10px; align-items: start; width: 100%; text-align: left; padding: 10px 12px; border-radius: 12px; border: 1px solid var(--line-2); background: transparent; color: var(--ink); font: inherit; }
+.wustep .wx { width: 22px; height: 22px; border-radius: 50%; border: 1.5px solid var(--line-2); margin-top: 1px; display: grid; place-items: center; font-size: 13px; color: var(--ice-ink); }
+.wustep[aria-pressed="true"] { opacity: .55; }
+.wustep[aria-pressed="true"] .wx { background: var(--ice); border-color: var(--ice); }
+.wustep b { font-weight: 700; font-variant-numeric: tabular-nums; }
+.wustep small { display: block; color: var(--ink-2); font-size: 13px; margin-top: 2px; }
+.wustep.test { border-color: var(--ice-deep); }
+.wurest { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 2px 12px 2px 48px; color: var(--mute); font-size: 13px; font-variant-numeric: tabular-nums; }
+.wunote { margin: 10px 0 0; color: var(--ink-2); font-size: 13px; max-width: 60ch; }
 
 .emom-clock { font-family: var(--display); font-weight: 800; font-size: 104px; line-height: 0.95; text-align: center; letter-spacing: 0.01em; font-variant-numeric: tabular-nums; margin: 6px 0 2px; }
 .emom-clock.go { color: var(--ice); text-shadow: 0 0 30px var(--glow); }
@@ -2392,6 +2406,24 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
 
         </div>
         <div class="tcol">
+
+          <div class="tcard" id="wuCard">
+            <div class="shead"><h2>Aufwärmen für Tests</h2><span id="wuState"></span></div>
+            <p class="tlead">Wähl deinen Test. Die Gewichte rechnet die App aus deinem Testgewicht aus. Tipp einen Schritt an, wenn er erledigt ist. Bei einer Pause startet „Starten“ den Timer darunter.</p>
+            <div class="chips wu-chips" id="wuChips" role="group" aria-label="Test wählen"></div>
+            <div class="field-row two" id="wuInputs"></div>
+            <ol class="wusteps" id="wuSteps" aria-label="Ablauf"></ol>
+            <p class="wunote" id="wuNote"></p>
+            <div class="row"><button class="btn small" id="wuReset">Haken zurücksetzen</button></div>
+            <details class="nfc"><summary>Regeln für den Testtag</summary><ul class="nfcsteps">
+              <li><b>Reihenfolge:</b> Klimmzüge, dann Dips, dann Liegestütze. Zug vor Druck, schwer vor leicht.</li>
+              <li><b>Zwischen zwei Tests:</b> mindestens 10 Minuten Pause. Das allgemeine Aufwärmen machst du nur einmal am Anfang.</li>
+              <li><b>Nur saubere Wiederholungen zählen:</b> Klimmzüge aus dem toten Hang, Kinn über die Stange. Dips mit Oberarmen mindestens waagerecht und oben gestreckt. Liegestütze mit Brust fast am Boden und Körper gerade.</li>
+              <li><b>Gewichtstests:</b> höchstens zwei Versuche am Testgewicht. Ziel sind 1 bis 2 Wiederholungen Reserve, kein Muskelversagen.</li>
+              <li><b>Gleiche Bedingungen:</b> gleiche Stange, gleicher Griff, ähnliche Tageszeit. Nur dann kannst du Tests fair vergleichen.</li>
+              <li><b>Eintragen:</b> Fortschritt, Test eintragen. Beim Gewicht nur die Kilo, mit denen du die Wiederholungen geschafft hast.</li>
+            </ul></details>
+          </div>
 
           <div class="tcard" id="tmCard">
             <div class="shead"><h2>Timer</h2><span id="tmState"></span></div>
@@ -8975,6 +9007,133 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
     renderPartner();
   });
 
+  // ---------- Aufwärmen für Tests ----------
+  const WU_PROTOS = [
+    { k: "pull5", l: "Klimmzüge Gewicht", name: "Klimmzüge", kind: "w", grp: "pull", test: "pull5" },
+    { k: "dips5", l: "Dips Gewicht", name: "Dips", kind: "w", grp: "push", test: "dips5" },
+    { k: "pushW", l: "Liegestütze Gewicht", name: "Liegestütze", kind: "w", grp: "push", test: null },
+    { k: "pullMax", l: "Klimmzüge Max-Wdh.", name: "Klimmzüge", kind: "r", grp: "pull", test: "pullups", def: 10 },
+    { k: "dipsMax", l: "Dips Max-Wdh.", name: "Dips", kind: "r", grp: "push", test: "dips", def: 15 },
+    { k: "pushMax", l: "Liegestütze Max-Wdh.", name: "Liegestütze", kind: "r", grp: "push", test: "pushups", def: 30 }
+  ];
+  const wu = { done: new Set(), key: "" };
+  const wuProto = () => WU_PROTOS.find((p) => p.k === S().wuSel) || WU_PROTOS[0];
+  const wuLast = (k) => {
+    if (!k) return null;
+    const es = (state.tests.entries || []).slice().sort((a, b) => (a.date < b.date ? -1 : 1));
+    for (let i = es.length - 1; i >= 0; i--) { const v = es[i].values && es[i].values[k]; if (v != null && v !== "" && isFinite(+v) && +v > 0) return +v; }
+    return null;
+  };
+  const wuKg = (x) => { const r = Math.round(x * 2) / 2; return r < 1 ? "ohne Gewicht" : "+" + String(r).replace(".", ",") + " kg"; };
+  const wuKgX = (x) => "+" + String(Math.round(x * 10) / 10).replace(".", ",") + " kg";
+  const wuClock = (sec) => Math.floor(sec / 60) + ":" + String(sec % 60).padStart(2, "0");
+  function wuGeneral(grp) {
+    const pull = grp === "pull";
+    return [
+      { main: "2 Minuten Hampelmann oder Seilspringen", sub: "Puls hoch, leicht warm werden." },
+      { main: "Armkreisen, je 10 vorwärts und rückwärts", sub: "Groß und locker, danach Schulterkreisen." },
+      { main: "Handgelenke 30 Sekunden kreisen und dehnen", sub: pull ? "Kurz, aber nicht weglassen." : "Wichtig bei Dips und Liegestützen." },
+      pull ? { main: "Schulterblatt-Klimmzüge × 8", sub: "Im Hang nur die Schulterblätter runterziehen, Arme bleiben gestreckt." }
+           : { main: "Schulterblatt-Liegestütze × 10", sub: "Arme gestreckt, nur die Schulterblätter zusammen und auseinander." },
+      pull ? { main: "Toter Hang, 20 Sekunden", sub: "Locker hängen, Schultern aktiv." }
+           : { main: "Stütz am Barren, 20 Sekunden", sub: "Arme gestreckt, Schultern weg von den Ohren." },
+      pull ? { main: "Australian Rows × 8", sub: "An niedriger Stange oder Tisch, ruhig und sauber." }
+           : { main: "Liegestütze × 10, locker", sub: "Weit weg vom Versagen." }
+    ];
+  }
+  function wuSpecific(p, val, reps) {
+    const out = [];
+    const set = (main, sub, rest) => { out.push({ main, sub }); if (rest) out.push({ rest }); };
+    if (p.kind === "w") {
+      const T = val;
+      if (reps === 1) {
+        set(p.name + " ohne Gewicht × 5", "Ruhig und sauber.", 90);
+        set(p.name + " " + wuKg(T * 0.4) + " × 3", "Explosiv hoch, kontrolliert runter.", 120);
+        set(p.name + " " + wuKg(T * 0.65) + " × 2", "Muss sich leicht anfühlen.", 150);
+        set(p.name + " " + wuKg(T * 0.8) + " × 1", "Volle Spannung, sauberer Weg.", 180);
+        set(p.name + " " + wuKg(T * 0.9) + " × 1", "Die letzte Probe vor dem Test.", 240);
+        out.push({ main: "TEST: " + p.name + " " + wuKgX(T) + " × 1", sub: "Ging locker: nach 4 Minuten noch ein Versuch mit +1 bis +2,5 kg. Höchstens zwei Versuche.", test: true });
+      } else {
+        set(p.name + " ohne Gewicht × " + (p.grp === "pull" ? 8 : 10), "Langsam, volle Bewegung.", 90);
+        set(p.name + " " + wuKg(T * 0.4) + " × 5", "Locker, Technik einschleifen.", 120);
+        set(p.name + " " + wuKg(T * 0.65) + " × 3", "Explosiv hoch, kontrolliert runter.", 150);
+        set(p.name + " " + wuKg(T * 0.85) + " × 1", "Nur eine. Gefühl fürs Gewicht holen.", 180);
+        out.push({ main: "TEST: " + p.name + " " + wuKgX(T) + " × 5", sub: "1 bis 2 Wdh. Reserve: Wert steht. 3 oder mehr Reserve: 4 Minuten Pause, ein Versuch mit +2,5 bis +5 kg. Unsauber: das letzte saubere Gewicht zählt.", test: true });
+      }
+    } else {
+      const M = val;
+      const a = Math.max(3, Math.round(M * 0.3)), b = Math.max(2, Math.min(3, Math.round(M * 0.1)));
+      set(p.name + " × " + a, "Locker, etwa 30 % von deinem letzten Maximum.", 120);
+      set(p.name + " × " + b, "Explosiv, sofort aufhören.", 180);
+      out.push({ main: "TEST: " + p.name + " so viele wie möglich", sub: "Ein Satz, nur saubere Wiederholungen zählen. Aufhören, sobald die Technik bricht." , test: true });
+    }
+    return out;
+  }
+  function renderWarm() {
+    const p = wuProto();
+    $("wuChips").innerHTML = WU_PROTOS.map((x) => '<button class="chip" data-wu="' + x.k + '" aria-pressed="' + (x.k === p.k) + '">' + esc(x.l) + "</button>").join("");
+    const saved = (S().wuVal || {})[p.k];
+    const last = wuLast(p.test);
+    const reps = p.kind === "w" ? ((S().wuReps || {})[p.k] === 1 ? 1 : 5) : null;
+    const lbl = p.kind === "w" ? "Testgewicht in kg" : "Letztes Maximum (Wdh.)";
+    const ph = p.kind === "w" ? "z. B. 14,4" : "z. B. 12";
+    const cur = saved != null ? saved : last;
+    $("wuInputs").innerHTML = '<div><label for="wuVal">' + lbl + '</label><input class="inp" id="wuVal" inputmode="decimal" placeholder="' + ph + '" value="' + (cur != null ? String(cur).replace(".", ",") : "") + '"></div>' +
+      (p.kind === "w" ? '<div><label for="wuReps">Ziel</label><select class="inp" id="wuReps"><option value="5"' + (reps === 5 ? " selected" : "") + '>5 Wdh.</option><option value="1"' + (reps === 1 ? " selected" : "") + ">1 Wdh.</option></select></div>" : "");
+    wuSteps();
+  }
+  function wuSteps() {
+    const p = wuProto();
+    const v = num($("wuVal") && $("wuVal").value);
+    const reps = p.kind === "w" ? (+($("wuReps") && $("wuReps").value) === 1 ? 1 : 5) : null;
+    const key = p.k + "|" + v + "|" + reps;
+    if (key !== wu.key) { if (wu.key && wu.key.split("|")[0] !== p.k) wu.done.clear(); wu.key = key; }
+    const gen = wuGeneral(p.grp);
+    let spec = [];
+    let note = "";
+    if (p.kind === "w" && !(v > 0)) note = "Trag dein geplantes Testgewicht ein, dann rechnet die App die Aufwärmsätze aus.";
+    else spec = wuSpecific(p, p.kind === "w" ? v : (v > 0 ? Math.round(v) : p.def), reps);
+    if (p.kind === "r" && !(v > 0)) note = "Ohne letzten Wert rechnet die App mit " + p.def + " Wiederholungen.";
+    if (p.kind === "w" && v > 0) note = "Gewichte auf 0,5 kg gerundet. Nimm das nächste Gewicht, das du wirklich hast. Etwas weniger ist besser als etwas mehr.";
+    let i = 0, html = '<li class="wuh">Allgemein, nur einmal am Anfang (ca. 6 Min.)</li>';
+    const row = (st) => { const n = i++; return '<li><button class="wustep' + (st.test ? " test" : "") + '" data-i="' + n + '" aria-pressed="' + wu.done.has(n) + '"><span class="wx" aria-hidden="true">' + (wu.done.has(n) ? "✓" : "") + "</span><span><b>" + esc(st.main) + "</b><small>" + esc(st.sub) + "</small></span></button></li>"; };
+    gen.forEach((st) => { html += row(st); });
+    if (spec.length) {
+      html += '<li class="wuh">Spezifisch: ' + esc(p.l) + "</li>";
+      spec.forEach((st) => { html += st.rest ? '<li class="wurest"><span>Pause ' + wuClock(st.rest) + '</span><button class="btn small" data-rest="' + st.rest + '">Starten</button></li>' : row(st); });
+    }
+    $("wuSteps").innerHTML = html;
+    $("wuNote").textContent = note;
+    const total = i, done = [...wu.done].filter((n) => n < total).length;
+    $("wuState").textContent = done ? done + " / " + total : "";
+  }
+  $("wuChips").addEventListener("click", (ev) => {
+    const b = ev.target.closest("button[data-wu]");
+    if (!b) return;
+    S().wuSel = b.dataset.wu; saveSettings();
+    wu.done.clear();
+    renderWarm();
+  });
+  $("wuInputs").addEventListener("input", () => {
+    const p = wuProto(), v = num($("wuVal").value);
+    const vals = Object.assign({}, S().wuVal || {});
+    if (v > 0) vals[p.k] = v; else delete vals[p.k];
+    S().wuVal = vals;
+    if ($("wuReps")) S().wuReps = Object.assign({}, S().wuReps || {}, { [p.k]: +$("wuReps").value === 1 ? 1 : 5 });
+    saveSettings();
+    wuSteps();
+  });
+  $("wuSteps").addEventListener("click", (ev) => {
+    const r = ev.target.closest("button[data-rest]");
+    if (r) { cdBegin(+r.dataset.rest); try { $("tmCard").scrollIntoView({ behavior: "smooth", block: "center" }); } catch (e) { /* egal */ } return; }
+    const b = ev.target.closest("button.wustep");
+    if (!b) return;
+    const n = +b.dataset.i;
+    if (wu.done.has(n)) wu.done.delete(n); else wu.done.add(n);
+    wuSteps();
+  });
+  $("wuReset").addEventListener("click", () => { wu.done.clear(); wuSteps(); });
+
   function renderTools() {
     try { fcLibRender().catch(() => {}); } catch (e) { /* noch nicht bereit */ }
     renderStopwatch();
@@ -8982,6 +9141,7 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
     renderEmomSetup();
     renderEmomHist();
     renderMobIdle();
+    renderWarm();
     renderGtg();
     renderPartner();
   }
