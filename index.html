@@ -12205,6 +12205,49 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
   }
   function piperWarm(texts, prof) { const p = prof || curProf(); if (!piperOk(p)) return; texts.filter(Boolean).forEach((t) => { pmSynth(p.id, t).catch(() => {}); }); }
 
+  // ---- ElevenLabs: ganze Sätze statt zusammengesetzter Einzel-Clips (klingt flüssig), Ergebnis bleibt auf dem Handy gespeichert ----
+  const elc = new Map();
+  const elReady = () => { try { return !!(elKey() && (S().elVoice || "").trim()); } catch (e) { return false; } };
+  const elPackProf = (p) => !!(p && p.pack && /eleven/i.test(p.pack.name || "") && elReady());
+  function elBuf(text, lang) {
+    const voice = (S().elVoice || "").trim(), model = (S().elModel || "").trim() || "eleven_flash_v2_5";
+    const key = "elc:" + hashStr(voice + "|" + model + "|" + lang + "|" + text);
+    if (elc.has(key)) return elc.get(key);
+    const job = (async () => {
+      let blob = null;
+      try { const r = await mdb.get(key); if (r && r.blob) blob = r.blob; } catch (e) { /* kein Cache */ }
+      if (!blob) {
+        const body = { text, model_id: model };
+        if (/flash_v2_5|turbo_v2_5|multilingual_v2/.test(model)) body.language_code = lang;
+        const r = await fetch("https://api.elevenlabs.io/v1/text-to-speech/" + encodeURIComponent(voice) + "?output_format=mp3_44100_128", {
+          method: "POST", headers: { "content-type": "application/json", "xi-api-key": elKey(), accept: "audio/mpeg" }, body: JSON.stringify(body)
+        });
+        if (!r.ok) throw new Error("el " + r.status);
+        blob = new Blob([await r.arrayBuffer()], { type: "audio/mpeg" });
+        mdb.put(key, blob, "elc").catch(() => {});
+      }
+      primeAudio();
+      const ab = await blob.arrayBuffer();
+      const b = await new Promise((res, rej) => { try { const pr = audioCtx.decodeAudioData(ab, res, rej); if (pr && pr.catch) pr.catch(rej); } catch (e) { rej(e); } });
+      return vpTrim(b);
+    })();
+    elc.set(key, job);
+    job.catch(() => elc.delete(key));
+    if (elc.size > 60) elc.delete(elc.keys().next().value);
+    return job;
+  }
+  async function elSay(p, text) {
+    const buf = await Promise.race([elBuf(text.trim(), profLang(p)), new Promise((_, rej) => setTimeout(() => rej(new Error("timeout")), 4500))]);
+    primeAudio(); vpStop();
+    try { if (window.speechSynthesis) speechSynthesis.cancel(); } catch (e) { /* ignore */ }
+    const s = audioCtx.createBufferSource();
+    const t = audioCtx.currentTime + 0.03;
+    s.buffer = buf; s.connect(outGain()); s.start(t);
+    vp.srcs.push(s); vp.endAt = t + buf.duration;
+    return new Promise((res) => { s.onended = () => res(true); });
+  }
+  function elWarm(texts, prof) { const p = prof || curProf(); if (!elPackProf(p)) return; texts.filter(Boolean).forEach((t) => { elBuf(t.trim(), profLang(p)).catch(() => {}); }); }
+
   // ---- Sprechen ----
   const voiceOn = () => !!S().voice;
   const piperOn = () => piperOk(curProf());
@@ -12214,8 +12257,9 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
     const p = prof || curProf();
     const lg = profLang(p);
     const rest = () => { if (parts && parts.length && packIds(p).size) return vpPlay(p, parts).then((ok) => { if (!ok) { vp.endAt = 0; ttsSay(text, lg); } return ok; }); vp.endAt = 0; ttsSay(text, lg); return Promise.resolve(false); };
-    if (piperOk(p)) return piperSay(p, text).catch(rest);
-    return rest();
+    const fall = () => (piperOk(p) ? piperSay(p, text).catch(rest) : rest());
+    if (elPackProf(p)) return elSay(p, text).catch(fall);
+    return fall();
   }
   function sayLine(line, force) { if (line) return say(line.text, line.parts, force, line.prof); return Promise.resolve(); }
   function coach(sit, v, force) { if (!voiceOn() && !force) return; sayLine(pickLine(sit, v), force); }
@@ -12248,6 +12292,7 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
     const nx = nextSet();
     const lines = { ten: pickLine("ten", {}), over: pickLine(nx.last ? "last_set" : "rest_over", { next: nx, uebung: nx.name }) };
     if (piperOn()) piperWarm([lines.ten && lines.ten.text, lines.over && lines.over.text]);
+    elWarm([lines.ten && lines.ten.text, lines.over && lines.over.text]);
     return lines;
   }
   function coachStart() {
@@ -12927,6 +12972,8 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
       primeAudio();
       const body = { text: t, model_id: (S().elModel || "").trim() || "eleven_flash_v2_5" };
       if (/flash_v2_5|turbo_v2_5|multilingual_v2/.test(body.model_id)) body.language_code = liveLang();
+      if (live.prevText) body.previous_text = live.prevText.slice(-300);
+      live.prevText = (live.prevText + " " + t).slice(-600);
       pre = fetch("https://api.elevenlabs.io/v1/text-to-speech/" + encodeURIComponent(elv) + "?output_format=mp3_44100_128", {
         method: "POST",
         headers: { "content-type": "application/json", "xi-api-key": elk, accept: "audio/mpeg" },
@@ -12934,7 +12981,7 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
       }).then((r) => {
         if (!r.ok) { elFail(r.status); throw new Error("el"); }
         return r.arrayBuffer();
-      }).then((b) => audioCtx.decodeAudioData(b)).catch(() => null);
+      }).then((b) => audioCtx.decodeAudioData(b)).then((b) => vpTrim(b)).catch(() => null);
     } else if (url) {
       primeAudio();
       pre = fetch(url, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ text: t, lang: liveLang() }) })
@@ -12945,17 +12992,21 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
       if (gen !== live.gen) { res(); return; }
       if (pre && buf) {
         const s = audioCtx.createBufferSource(); s.buffer = buf; s.connect(outGain()); s.onended = res;
-        live.srcs.push(s); s.start();
+        const at = Math.max(audioCtx.currentTime + 0.01, live.tEnd || 0);
+        live.tEnd = at + buf.duration + 0.14;
+        live.srcs.push(s); s.start(at);
       } else liveSysSay(t, gen, res);
     })).then(() => { if (gen !== live.gen) return; live.pending--; liveEnded(gen); });
   }
   function liveFlush(fin, gen) {
     for (;;) {
       const re = /[.!?…]+["”')\]]*\s+/g; let m, cut = -1;
-      while ((m = re.exec(live.buf))) { if (m.index >= 7) { cut = m.index + m[0].length; break; } }
-      if (cut < 0 && live.buf.length > 90) { const c = live.buf.indexOf(", ", 40); if (c > 0) cut = c + 2; }
+      const minLen = live.chunks ? 70 : 7;
+      while ((m = re.exec(live.buf))) { if (m.index >= minLen) { cut = m.index + m[0].length; break; } }
+      if (cut < 0 && live.buf.length > 160) { const c = live.buf.indexOf(", ", 90); if (c > 0) cut = c + 2; }
       if (cut < 0) break;
       const sent = live.buf.slice(0, cut); live.buf = live.buf.slice(cut);
+      live.chunks = (live.chunks || 0) + 1;
       liveSpeak(sent, gen);
     }
     if (fin && live.buf.trim()) { liveSpeak(live.buf, gen); live.buf = ""; }
@@ -12975,7 +13026,7 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
     while (live.hist.length && (live.hist[0].role !== "user" || hasRes(live.hist[0]))) live.hist.shift();
     $("liveYou").textContent = text; $("liveAi").textContent = "";
     liveSet("thinking");
-    const ctl = new AbortController(); live.ctl = ctl; live.done = false; live.buf = "";
+    const ctl = new AbortController(); live.ctl = ctl; live.done = false; live.buf = ""; live.chunks = 0; live.prevText = ""; live.tEnd = 0;
     let full = "";
     const u = { input_tokens: 0, output_tokens: 0 };
     try {
