@@ -620,6 +620,9 @@ pre.prompt { white-space: pre-wrap; margin: 0 0 12px; padding: 14px; border-radi
 .field-row label { display: block; margin-bottom: 4px; color: var(--mute); font-size: 13px; }
 .field-row .inp { width: 100%; min-height: 46px; }
 .wu-chips { margin-bottom: 12px; }
+.dailygrid { display: grid; grid-template-columns: minmax(0, 1fr); gap: 28px; margin: 18px 0 34px; }
+.dailygrid > * { min-width: 0; margin: 0; }
+@media (min-width: 920px) { .dailygrid { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); column-gap: 56px; align-items: start; } }
 .ci-where { display: flex; flex-wrap: wrap; gap: 6px; }
 .ci-where .chip { min-height: 36px; padding: 6px 12px; font-size: 13px; }
 .ci-where .chip[aria-pressed="true"] { border-color: var(--ice); color: var(--ink); background: rgba(var(--tint-rgb), 0.10); }
@@ -1929,46 +1932,8 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
             <div class="goalrings" id="goalRings"></div>
           </div>
 
-          <div class="habits">
-            <div class="shead"><h2>Jeden Tag</h2><span id="streak"></span></div>
-            <div class="habit-list" id="habits"></div>
-          </div>
 
-          <div class="steps" id="stepsCard" data-coll="steps">
-            <div class="shead"><h2>Schritte</h2><span id="stState"></span></div>
-            <div class="pmeter"><strong id="stTotal">0</strong><span id="stUnit">von 10.000</span></div>
-            <div class="pbar" id="stBar"><i></i></div>
-            <div class="pfoods" id="stQuick"></div>
-            <div class="pcustom">
-              <label class="sr" for="stInput">Eigene Schrittzahl</label>
-              <input type="number" inputmode="numeric" min="1" max="60000" id="stInput" placeholder="Schritte">
-              <button class="btn small" id="stAdd">Hinzufügen</button>
-              <button class="btn small" id="stUndo">Rückgängig</button>
-            </div>
-            <p class="plog" id="stLog"></p>
-            <p class="plog explain">Eine Gassi-Runde zählt als Schätzung mit 100 Schritten pro Minute. Deinen echten Garmin-Wert kannst du als eigene Menge dazugeben.</p>
-          </div>
 
-          <div class="drink" id="drinkCard" data-coll="drink">
-            <div class="shead"><h2>Trinken</h2><span id="dstate"></span></div>
-            <div class="pmeter"><strong id="dtotal">0</strong><span id="dunit">l von 3 l</span></div>
-            <div class="pbar" id="dbar"><i></i></div>
-            <div class="pips" id="dhex" aria-hidden="true"></div>
-            <p class="dpace" id="dpace" aria-live="polite"></p>
-            <div class="row"><button class="btn primary" id="dBtn">+ Shaker</button></div>
-            <div class="pfoods" id="dquick" style="margin-top:10px">
-              <button class="pfood" data-ml="250">Glas<b>+250 ml</b></button>
-              <button class="pfood" data-ml="330">Dose<b>+330 ml</b></button>
-              <button class="pfood" data-ml="500">Flasche<b>+500 ml</b></button>
-            </div>
-            <div class="pcustom">
-              <label class="sr" for="dinput">Eigene Menge in Millilitern</label>
-              <input type="number" inputmode="numeric" min="10" max="2000" id="dinput" placeholder="ml">
-              <button class="btn small" id="dadd">Hinzufügen</button>
-              <button class="btn small" id="dundo">Rückgängig</button>
-            </div>
-            <p class="plog" id="dlog"></p>
-          </div>
 
           <div class="checkin" id="checkinCard" data-coll="checkin">
             <div class="shead"><h2>Check-in</h2><span id="cistate"></span></div>
@@ -2001,13 +1966,6 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
             <p class="ci-hint" id="cihint" hidden></p>
           </div>
 
-          <div class="bodycard" id="bodyCard" data-coll="body">
-            <div class="shead"><h2>Körper</h2><span id="bcstate"></span></div>
-            <div class="bc-line"><span>Tagesfotos</span><b id="bcPhotos">–</b></div>
-            <div class="bc-line"><span>Wochenfotos</span><b id="bcWeekly">–</b></div>
-            <div class="bc-line"><span>Wochenmessung</span><b id="bcMeasure">–</b></div>
-            <div class="row"><button class="btn small primary" id="bcCam">Fotos aufnehmen</button><button class="btn small" id="bcMeasureBtn">Messung eintragen</button></div>
-          </div>
 
         </div>
 
@@ -2040,24 +1998,6 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
           <div id="today-rest" hidden>
             <div class="shead"><h2>Diese Woche</h2></div>
             <p class="rest-note" id="nextsession" style="margin-top:6px"></p>
-          </div>
-          <div class="protein" data-coll="protein">
-            <div class="shead"><h2>Protein</h2><span id="ptarget"></span></div>
-            <div class="pmeter"><strong id="ptotal">0</strong><span id="punit">g von 120 g</span></div>
-            <div class="pbar" id="pbar"><i></i></div>
-            <p class="pkcal" id="pkcal"></p>
-            <div class="pfoods" id="pfoods"></div>
-            <div class="pfoods" id="pprods" style="margin-top:8px"></div>
-            <div class="foodrow"><button class="btn small" id="fscan">Etikett fotografieren</button><button class="btn small" id="fmeal">Essen schätzen (KI)</button><button class="btn small" id="fman">Produkt eintragen</button><input type="file" id="foodFile" accept="image/*" capture="environment" hidden><input type="file" id="mealFile" accept="image/*" capture="environment" hidden></div>
-            <div class="pcustom">
-              <label class="sr" for="pinput">Eigene Menge in Gramm Protein</label>
-              <input type="number" inputmode="numeric" min="1" max="200" id="pinput" placeholder="g">
-              <label class="sr" for="pkin">Kalorien, optional</label>
-              <input type="number" inputmode="numeric" min="1" max="3000" id="pkin" placeholder="kcal">
-              <button class="btn small" id="padd">Hinzufügen</button>
-              <button class="btn small" id="pundo">Rückgängig</button>
-            </div>
-            <p class="plog" id="plog"></p>
           </div>
           <div class="tlwrap"><button class="btn small" id="tlOpen"><svg aria-hidden="true"><use href="#i-gear"/></svg>Heute anpassen</button></div>
         </div>
@@ -2275,9 +2215,76 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
     </section>
 
     <!-- BODY -->
-    <section id="view-body" aria-label="Körper" hidden>
-      <h1 class="pagetitle">Körper</h1>
-      <p class="pagesub">Fotos, Messwerte und dein Check-in. Veränderung siehst du nicht von Tag zu Tag, sondern im Zeitraffer.</p>
+    <section id="view-body" aria-label="Gesundheit" hidden>
+      <h1 class="pagetitle">Gesundheit</h1>
+      <p class="pagesub">Essen, Trinken, Schritte und deine Gewohnheiten für heute. Darunter Fotos und Messwerte.</p>
+      <div class="dailygrid" id="dailyGrid">
+          <div class="protein" data-coll="protein">
+            <div class="shead"><h2>Protein</h2><span id="ptarget"></span></div>
+            <div class="pmeter"><strong id="ptotal">0</strong><span id="punit">g von 120 g</span></div>
+            <div class="pbar" id="pbar"><i></i></div>
+            <p class="pkcal" id="pkcal"></p>
+            <div class="pfoods" id="pfoods"></div>
+            <div class="pfoods" id="pprods" style="margin-top:8px"></div>
+            <div class="foodrow"><button class="btn small" id="fscan">Etikett fotografieren</button><button class="btn small" id="fmeal">Essen schätzen (KI)</button><button class="btn small" id="fman">Produkt eintragen</button><input type="file" id="foodFile" accept="image/*" capture="environment" hidden><input type="file" id="mealFile" accept="image/*" capture="environment" hidden></div>
+            <div class="pcustom">
+              <label class="sr" for="pinput">Eigene Menge in Gramm Protein</label>
+              <input type="number" inputmode="numeric" min="1" max="200" id="pinput" placeholder="g">
+              <label class="sr" for="pkin">Kalorien, optional</label>
+              <input type="number" inputmode="numeric" min="1" max="3000" id="pkin" placeholder="kcal">
+              <button class="btn small" id="padd">Hinzufügen</button>
+              <button class="btn small" id="pundo">Rückgängig</button>
+            </div>
+            <p class="plog" id="plog"></p>
+          </div>
+          <div class="drink" id="drinkCard" data-coll="drink">
+            <div class="shead"><h2>Trinken</h2><span id="dstate"></span></div>
+            <div class="pmeter"><strong id="dtotal">0</strong><span id="dunit">l von 3 l</span></div>
+            <div class="pbar" id="dbar"><i></i></div>
+            <div class="pips" id="dhex" aria-hidden="true"></div>
+            <p class="dpace" id="dpace" aria-live="polite"></p>
+            <div class="row"><button class="btn primary" id="dBtn">+ Shaker</button></div>
+            <div class="pfoods" id="dquick" style="margin-top:10px">
+              <button class="pfood" data-ml="250">Glas<b>+250 ml</b></button>
+              <button class="pfood" data-ml="330">Dose<b>+330 ml</b></button>
+              <button class="pfood" data-ml="500">Flasche<b>+500 ml</b></button>
+            </div>
+            <div class="pcustom">
+              <label class="sr" for="dinput">Eigene Menge in Millilitern</label>
+              <input type="number" inputmode="numeric" min="10" max="2000" id="dinput" placeholder="ml">
+              <button class="btn small" id="dadd">Hinzufügen</button>
+              <button class="btn small" id="dundo">Rückgängig</button>
+            </div>
+            <p class="plog" id="dlog"></p>
+          </div>
+          <div class="steps" id="stepsCard" data-coll="steps">
+            <div class="shead"><h2>Schritte</h2><span id="stState"></span></div>
+            <div class="pmeter"><strong id="stTotal">0</strong><span id="stUnit">von 10.000</span></div>
+            <div class="pbar" id="stBar"><i></i></div>
+            <div class="pfoods" id="stQuick"></div>
+            <div class="pcustom">
+              <label class="sr" for="stInput">Eigene Schrittzahl</label>
+              <input type="number" inputmode="numeric" min="1" max="60000" id="stInput" placeholder="Schritte">
+              <button class="btn small" id="stAdd">Hinzufügen</button>
+              <button class="btn small" id="stUndo">Rückgängig</button>
+            </div>
+            <p class="plog" id="stLog"></p>
+            <p class="plog explain">Eine Gassi-Runde zählt als Schätzung mit 100 Schritten pro Minute. Deinen echten Garmin-Wert kannst du als eigene Menge dazugeben.</p>
+          </div>
+          <div class="habits">
+            <div class="shead"><h2>Jeden Tag</h2><span id="streak"></span></div>
+            <div class="habit-list" id="habits"></div>
+          </div>
+      </div>
+      <div class="dailyhidden" hidden>
+          <div class="bodycard" id="bodyCard" data-coll="body">
+            <div class="shead"><h2>Körper</h2><span id="bcstate"></span></div>
+            <div class="bc-line"><span>Tagesfotos</span><b id="bcPhotos">–</b></div>
+            <div class="bc-line"><span>Wochenfotos</span><b id="bcWeekly">–</b></div>
+            <div class="bc-line"><span>Wochenmessung</span><b id="bcMeasure">–</b></div>
+            <div class="row"><button class="btn small primary" id="bcCam">Fotos aufnehmen</button><button class="btn small" id="bcMeasureBtn">Messung eintragen</button></div>
+          </div>
+      </div>
       <div class="progview">
         <div class="block" id="photoBlock">
           <h2 class="bh">Fotos des Tages</h2>
@@ -2894,7 +2901,7 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
   <button class="tab" data-tab="system"><svg aria-hidden="true"><use href="#i-sys"/></svg>System</button>
   <button class="tab" data-tab="week"><svg aria-hidden="true"><use href="#i-week"/></svg>Woche</button>
   <button class="tab" data-tab="progress"><svg aria-hidden="true"><use href="#i-prog"/></svg>Fortschritt</button>
-  <button class="tab" data-tab="body"><svg aria-hidden="true"><use href="#i-body"/></svg>Körper</button>
+  <button class="tab" data-tab="body"><svg aria-hidden="true"><use href="#i-body"/></svg>Gesundheit</button>
   <button class="tab" data-tab="tools"><svg aria-hidden="true"><use href="#i-tools"/></svg>Tools</button>
   <button class="tab" data-tab="coach"><svg aria-hidden="true"><use href="#i-coach"/></svg>Coach</button>
 </nav>
@@ -6802,6 +6809,7 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
 
   // ================= Render body tab =================
   function renderBody() {
+    try { const dk = todayKey(); renderProtein(dk); renderDrink(dk); renderSteps(dk); renderHabits(dk); } catch (e) { /* ignore */ }
     renderPoseGrid();
     renderGallery();
     renderMeasure();
@@ -10427,6 +10435,8 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
     if (!b) return;
     const sel = { protein: '[data-coll="protein"]', drink: "#drinkCard", sleep: "#sleepDur", checkin: "#checkinCard", habits: "#habits" }[b.dataset.go];
     const el = sel && document.querySelector(sel);
+    const sec = el && el.closest("section[id^='view-']"), tab = sec ? sec.id.slice(5) : currentTab;
+    if (el && tab !== currentTab) { showTab(tab); setTimeout(() => el.scrollIntoView({ block: "center", behavior: "smooth" }), 160); return; }
     if (el) { el.scrollIntoView({ block: "center", behavior: "smooth" }); if (el.tagName === "INPUT") setTimeout(() => { if (el.readOnly) el.click(); else el.focus({ preventScroll: true }); }, 400); }
   });
 
@@ -14826,12 +14836,7 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
     { k: "ampel", n: "Bereitschafts-Ampel", sel: ["#ampelCard"] },
     { k: "training", n: "Training", sel: ["#today-empty", "#today-list-wrap", "#today-rest"], fixed: true },
     { k: "goal", n: "Wochenziel", sel: ["#goalCard"] },
-    { k: "habits", n: "Jeden Tag", sel: ["#view-today .habits"] },
-    { k: "protein", n: "Protein und Essen", sel: ["#view-today .protein"] },
-    { k: "steps", n: "Schritte", sel: ["#stepsCard"] },
-    { k: "drink", n: "Trinken", sel: ["#drinkCard"] },
-    { k: "checkin", n: "Check-in", sel: ["#checkinCard"] },
-    { k: "body", n: "Körper", sel: ["#bodyCard"] }
+    { k: "checkin", n: "Check-in", sel: ["#checkinCard"] }
   ];
   function tlCfg() {
     const c = S().todayLayout || {};
@@ -15197,9 +15202,9 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
     const s = effSession(parseKey(dk)), m = rankMeta(), items = [];
     if (s && !s.free) { const pr = sessionProgress(dk, s); items.push({ k: "train", t: "Training", ok: pr.total > 0 && pr.done === pr.total, go: "#today-list-wrap" }); }
     items.push({ k: "quest", t: "Quest", ok: !!(m.quests || {})[dk], go: "#questCard" });
-    items.push({ k: "prot", t: "Protein", ok: proteinTotal(dk) >= (+S().proteinTarget || 120), go: "#view-today .protein" });
+    items.push({ k: "prot", t: "Protein", ok: proteinTotal(dk) >= (+S().proteinTarget || 120), go: "#view-body .protein" });
     items.push({ k: "drink", t: "Trinken", ok: drinkTotal(dk) >= drinkCfg().target, go: "#drinkCard" });
-    if ((S().habits || []).length) items.push({ k: "habits", t: "Gewohnheiten", ok: habitsDone(dk), go: "#view-today .habits" });
+    if ((S().habits || []).length) items.push({ k: "habits", t: "Gewohnheiten", ok: habitsDone(dk), go: "#view-body .habits" });
     return { items, n: items.filter((i) => i.ok).length, all: items.length > 0 && items.every((i) => i.ok) };
   }
   function perfectStreak() {
