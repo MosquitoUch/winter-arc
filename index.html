@@ -620,6 +620,57 @@ pre.prompt { white-space: pre-wrap; margin: 0 0 12px; padding: 14px; border-radi
 .field-row label { display: block; margin-bottom: 4px; color: var(--mute); font-size: 13px; }
 .field-row .inp { width: 100%; min-height: 46px; }
 .wu-chips { margin-bottom: 12px; }
+.tov { position: fixed; inset: 0; z-index: 85; background: var(--bg); color: var(--ink); display: flex; flex-direction: column; align-items: center; gap: 10px; padding: calc(16px + env(safe-area-inset-top, 0px)) 20px calc(20px + env(safe-area-inset-bottom, 0px)); overflow-y: auto; text-align: center; }
+.tovtop { width: 100%; max-width: 520px; display: flex; justify-content: space-between; align-items: center; color: var(--ink-2); font-size: 14px; min-height: 40px; font-variant-numeric: tabular-nums; }
+.tovx { width: 40px; height: 40px; border-radius: 50%; border: 1px solid var(--line-2); background: transparent; color: var(--ink-2); font-size: 16px; }
+.tovtitle { margin: 6px 0 0; font-size: 26px; text-wrap: balance; }
+.tovsub { margin: 0; color: var(--ink-2); font-size: 15px; max-width: 40ch; min-height: 1.3em; }
+.tovchips { justify-content: center; margin: 4px 0 0; }
+.tovchips .chip[aria-pressed="true"], .wtgoal .chip[aria-pressed="true"] { border-color: var(--ice); color: var(--ink); background: rgba(var(--tint-rgb), 0.10); }
+.tovprog { width: 100%; max-width: 520px; height: 6px; border-radius: 3px; background: var(--line); overflow: hidden; }
+.tovprog i { display: block; height: 100%; width: 0; background: var(--ice); transition: width .2s linear; }
+.tovbar { width: 100%; max-width: 520px; display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-top: auto; padding-top: 10px; }
+.tovbar .btn { min-width: 120px; min-height: 52px; font-size: 17px; }
+.hoclock { flex: 0 0 auto; width: 100%; max-width: 520px; min-height: 240px; border: 0; background: transparent; color: var(--ink); display: flex; align-items: baseline; justify-content: center; gap: 8px; padding: 30px 0; font-family: var(--display); font-variant-numeric: tabular-nums; }
+.holdov #hoName, .irov #irName { margin-top: auto; }
+.hoclock b { font-size: clamp(110px, 38vw, 200px); font-weight: 800; line-height: 1; }
+.hoclock small { font-size: 28px; color: var(--ink-2); }
+.holdov.counting .hoclock b { color: var(--ink-2); }
+.holdov.holding .hoclock b { color: var(--ice); text-shadow: 0 0 30px var(--glow, rgba(142, 235, 248, .3)); }
+.holdov.goal .hoclock b { color: var(--ice); }
+.horest { margin: 0; padding: 8px 14px; border-radius: 12px; border: 1px solid var(--line-2); color: var(--ink-2); font-variant-numeric: tabular-nums; }
+.irov { --irc: var(--ice); }
+.irov.fast { --irc: var(--warn); }
+.irphase { margin: 18px 0 0; font-family: var(--display); font-size: clamp(40px, 13vw, 72px); letter-spacing: .04em; text-transform: uppercase; color: var(--irc); }
+.irclock { font-family: var(--display); font-weight: 800; font-size: clamp(96px, 32vw, 180px); line-height: 1; font-variant-numeric: tabular-nums; }
+.irov.paused .irclock { opacity: .45; }
+.irsegs { width: 100%; max-width: 520px; display: flex; gap: 3px; height: 14px; margin-top: 8px; }
+.irsegs i { display: block; height: 100%; border-radius: 3px; background: var(--line-2); position: relative; overflow: hidden; }
+.irsegs i.f { background: color-mix(in srgb, var(--warn) 30%, var(--line-2)); }
+.irsegs i b { position: absolute; inset: 0 auto 0 0; width: 0; background: var(--ice); }
+.irsegs i.f b { background: var(--warn); }
+.irgrid { display: grid; grid-template-columns: repeat(auto-fit, minmax(96px, 1fr)); gap: 8px; }
+.irgrid label { display: block; margin-bottom: 4px; color: var(--mute); font-size: 13px; }
+.irgrid small { color: var(--mute); font-size: 12px; }
+.irgrid .inp { width: 100%; min-height: 44px; }
+.irsum { margin: 10px 0 0; color: var(--ink-2); font-size: 14px; }
+.irvoice { display: flex; align-items: center; gap: 8px; margin-top: 8px; color: var(--ink-2); font-size: 14px; }
+.wtrow { display: flex; gap: 8px; margin: 4px 0 10px; }
+.wtrow .inp { flex: 1; min-width: 0; min-height: 44px; }
+.wtgoal { margin-bottom: 10px; }
+.wtgoal .chip { min-height: 36px; padding: 6px 12px; font-size: 13px; }
+.wtchart { position: relative; width: 100%; }
+.wtchart svg { display: block; width: 100%; height: auto; overflow: visible; touch-action: pan-y; }
+.wtchart .wtax { fill: var(--mute); font-size: 10px; font-variant-numeric: tabular-nums; }
+.wtchart .wtgrid { stroke: var(--line); stroke-width: 1; }
+.wtchart .wtband { fill: rgba(var(--tint-rgb), 0.12); }
+.wtchart .wtbandl { fill: var(--ink-2); font-size: 10px; }
+.wtchart .wtdot { fill: var(--mute); }
+.wtchart .wtavg { fill: none; stroke: var(--ice); stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; }
+.wtchart .wtx { stroke: var(--ink-2); stroke-width: 1; stroke-dasharray: 3 3; }
+.wttip { position: absolute; top: 0; transform: translateX(-50%); pointer-events: none; background: var(--surface, #111); border: 1px solid var(--line-2); border-radius: 10px; padding: 6px 9px; font-size: 12px; color: var(--ink); white-space: nowrap; font-variant-numeric: tabular-nums; }
+.wttip small { display: block; color: var(--ink-2); }
+.wtinfo { margin: 10px 0 0; color: var(--ink-2); font-size: 14px; max-width: 60ch; }
 .scancam { position: fixed; inset: 0; z-index: 90; background: #000; display: flex; flex-direction: column; }
 .scancam video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
 .scanframe { position: absolute; left: 8%; right: 8%; top: 20%; bottom: 24%; border: 2px solid rgba(255, 255, 255, .7); border-radius: 18px; box-shadow: 0 0 0 9999px rgba(0, 0, 0, .35); pointer-events: none; }
@@ -1827,6 +1878,16 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
 .syschips { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
 .syschips .rankchip, .syschips .passmini { margin: 0; }
 .sysview { display: flex; flex-direction: column; gap: 20px; }
+.sysseg { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 4px; padding: 4px; margin: -4px 0 20px; border-radius: 14px; border: 1px solid var(--line-2); background: color-mix(in srgb, var(--bg, #05070b) 88%, transparent); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
+.sysseg-b { position: relative; min-height: 42px; border: 0; border-radius: 10px; background: transparent; color: var(--ink-2); font: inherit; font-size: 15px; font-weight: 600; }
+.sysseg-b[aria-selected="true"] { background: rgba(var(--tint-rgb), 0.14); color: var(--ink); box-shadow: inset 0 0 0 1px var(--ice-deep); }
+.sysseg-b i { position: absolute; top: 8px; right: 12px; width: 7px; height: 7px; border-radius: 50%; background: #FFD25C; box-shadow: 0 0 8px rgba(255, 194, 61, .9); display: none; }
+.sysseg-b.dot i { display: block; }
+.sysview[data-seg="heute"] > [data-seg]:not([data-seg="heute"]),
+.sysview[data-seg="rang"] > [data-seg]:not([data-seg="rang"]),
+.sysview[data-seg="sammlung"] > [data-seg]:not([data-seg="sammlung"]) { display: none !important; }
+.achgrid:not(.all) .ach.more { display: none; }
+.achmore-row { margin-top: 12px; }
 .sysview > * { order: 0 !important; margin: 0 !important; }
 .sysview > [hidden], .sysview > [data-tlhide] { display: none !important; }
 /* v23: Alle Sprüche anhören */
@@ -2030,24 +2091,29 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
           <button class="passmini" id="passMini" hidden aria-label="Zum Saison-Pass"></button>
         </div>
       </div>
-      <div class="sysview">
-        <div class="gatecard" id="gateCard" hidden>
+      <div class="sysseg" id="sysSeg" role="tablist" aria-label="Bereiche im System">
+        <button class="sysseg-b" role="tab" data-seg="heute" aria-selected="true">Heute<i aria-hidden="true"></i></button>
+        <button class="sysseg-b" role="tab" data-seg="rang" aria-selected="false">Rang<i aria-hidden="true"></i></button>
+        <button class="sysseg-b" role="tab" data-seg="sammlung" aria-selected="false">Sammlung<i aria-hidden="true"></i></button>
+      </div>
+      <div class="sysview" id="sysView" data-seg="heute">
+        <div class="gatecard" id="gateCard" data-seg="heute" hidden>
             <div class="gportal" aria-hidden="true"><b id="gateRank">C</b></div>
             <div><span class="systag sm"><span>!</span>Gate</span><h3 id="gateTitle"></h3><p id="gateMeta"></p><button class="btn small" id="gateEnter">Betreten</button></div>
           </div>
-        <div class="hidcard" id="hidCard" hidden>
+        <div data-seg="heute" class="hidcard" id="hidCard" hidden>
             <span class="systag sm"><span>!</span>Verborgene Quest</span>
             <h3 id="hidTitle">Das System hat dir etwas zugeflüstert</h3>
             <p id="hidText"></p>
             <div class="row"><button class="btn small" id="hidDone">Erledigt</button><button class="btn small" id="hidSkip">Nicht heute</button></div>
           </div>
-        <div class="jobcard" id="jobCard" hidden>
+        <div data-seg="heute" class="jobcard" id="jobCard" hidden>
             <span class="systag sm"><span>!</span>Job-Wechsel</span>
             <h3 id="jobTitle">Die Prüfung wartet</h3>
             <p id="jobText"></p>
             <button class="btn small" id="jobGo">Prüfung beginnen</button>
           </div>
-        <div class="chestcard" id="chestCard" hidden>
+        <div data-seg="heute" class="chestcard" id="chestCard" hidden>
             <svg class="chest" viewBox="0 0 64 56" aria-hidden="true">
               <defs><linearGradient id="chW" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8A5A2B"/><stop offset="1" stop-color="#4A2B10"/></linearGradient><linearGradient id="chG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFF0B0"/><stop offset=".5" stop-color="#FFC23D"/><stop offset="1" stop-color="#B26A0C"/></linearGradient></defs>
               <g class="chburst"><circle cx="32" cy="26" r="20" fill="rgba(255,210,92,.35)"/></g>
@@ -2058,17 +2124,17 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
             <div class="chtext"><b id="chestTitle">Tägliche Truhe</b><small id="chestSub"></small></div>
             <button class="btn small" id="chestOpen">Öffnen</button>
           </div>
-        <div class="advcard" id="advCard" hidden>
+        <div data-seg="heute" class="advcard" id="advCard" hidden>
             <div class="advmini" id="advMini" aria-hidden="true">1</div>
             <div class="advtext"><b id="advTitle">Adventskalender</b><small id="advSub"></small></div>
             <button class="btn small" id="advBtn">Kalender</button>
           </div>
-        <div class="questcard" id="questCard">
+        <div data-seg="heute" class="questcard" id="questCard">
             <div class="qhead"><span class="systag sm"><span>!</span>Daily Quest</span><span class="qstate" id="questState"></span></div>
             <ul class="qlist" id="questList"></ul>
             <p class="qnote" id="questNote"></p>
           </div>
-        <div class="raidcard" id="raidCard" hidden>
+        <div data-seg="heute" class="raidcard" id="raidCard" hidden>
             <div class="qhead"><span class="systag sm"><span>!</span><i id="raidTag">Wochen-Raid</i></span><span class="qstate" id="raidToday"></span></div>
             <svg class="raidsig" id="raidSig" viewBox="0 0 64 64" aria-hidden="true"><path d="M8 6l10 12 4-8 10 6 10-6 4 8 10-12-2 22c0 14-10 26-22 32C20 54 10 42 10 28z" fill="rgba(255,60,80,.14)" stroke="#FF4D5E" stroke-width="2" stroke-linejoin="round"/><path d="M16 32c5-7 11-10 16-10s11 3 16 10c-5 7-11 10-16 10s-11-3-16-10z" fill="#1A0306" stroke="#FF8A95" stroke-width="1.6"/><path d="M32 24c2.4 3 2.4 13 0 16-2.4-3-2.4-13 0-16z" fill="#FF4D5E"/></svg>
             <h3 id="raidName"></h3>
@@ -2077,16 +2143,16 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
             <p class="raidnums" id="raidNums"></p>
             <p class="raidnext" id="raidNext" hidden></p>
           </div>
-        <div class="pdcard" id="pdCard" hidden>
+        <div data-seg="heute" class="pdcard" id="pdCard" hidden>
             <div class="pdhead"><b id="pdTitle">Perfekter Tag</b><span id="pdState"></span></div>
             <div class="pdchips" id="pdChips"></div>
           </div>
-        <div class="bountybox" id="bountyBox" hidden>
+        <div data-seg="heute" class="bountybox" id="bountyBox" hidden>
             <div class="shead"><h2>Kopfgelder der Woche</h2><span id="bountyState"></span></div>
             <ul class="bountylist" id="bountyList"></ul>
             <p class="fhint" id="bountyNote"></p>
           </div>
-        <div class="block" id="rankBlock">
+        <div data-seg="rang" class="block" id="rankBlock">
             <h2 class="bh">Dein Rang</h2>
             <div class="syscard" id="statusWin"></div>
             <p class="lead">Jeder Bereich zahlt auf ein Attribut ein, die Attribute ergeben deinen Gesamtrang. Stimmt ein Wert nicht, tipp auf die Zeile und korrigiere ihn.</p>
@@ -2097,7 +2163,7 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
               <p class="rrnote">Übungen: bester Satz am Stück, Zusatzgewicht wird in Wiederholungen umgerechnet. 5 km: beste Zeit, Läufe ab 4,8 km, längere werden umgerechnet. Ruhepuls: Schnitt aus 3 Messungen, weniger ist besser. Laufeffizienz: Meter pro Herzschlag bei Läufen ab 3 km. Maximalkraft: geschätztes Pull-up-Maximum über Körpergewicht. Protein und Gewohnheiten: bester Zeitraum von 4 Wochen.</p>
             </details>
           </div>
-        <div class="block" id="passBlock">
+        <div data-seg="rang" class="block" id="passBlock">
             <h2 class="bh">Saison-Pass <span class="achcount" id="passSeason">Winter Arc</span></h2>
             <div class="passhead" id="passHead"></div>
             <div class="passbar" id="passBar"><i></i></div>
@@ -2106,39 +2172,40 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
             <ol class="passtrack" id="passTrack" aria-label="Stufen des Saison-Passes"></ol>
             <p class="lead">Jede XP aus deinem Training bringt dich eine Stufe weiter. Stufe 10, 20 und 30 schalten exklusive Farben frei, dazu Titel, Items und Gold. Nach Stufe 30 gibt es Bonusstufen.</p>
           </div>
-        <div class="block" id="clsBlock">
+        <div data-seg="rang" class="block" id="clsBlock">
             <h2 class="bh">Klasse</h2>
             <div id="clsCur"></div>
           </div>
-        <div class="block" id="armyBlock">
+        <div data-seg="rang" class="block" id="armyBlock">
             <h2 class="bh">Schatten-Armee <span class="achcount" id="armyCount"></span></h2>
             <p class="lead">Besiegte Bosse und Gate-Wächter ab C-Rang kannst du als Schatten extrahieren. Du hast drei Versuche, danach zerfällt der Schatten. Ein Schatten wartet zwei Tage.</p>
             <div id="armyPend"></div>
             <div class="armygrid" id="armyGrid"></div>
           </div>
-        <div class="block" id="bestBlock" hidden>
+        <div data-seg="sammlung" class="block" id="bestBlock" hidden>
             <h2 class="bh">Bestiarium <span class="achcount" id="bestCount"></span></h2>
             <p class="lead">Jede Woche ein Raid-Boss. Hier steht, wen du erlegt hast und wer dir entkommen ist.</p>
             <ol class="besttrack" id="bestTrack" aria-label="Raid-Bosse deines Arcs"></ol>
             <div class="bestdet" id="bestDet" aria-live="polite"></div>
           </div>
-        <div class="block" id="invBlock">
+        <div data-seg="sammlung" class="block" id="invBlock">
             <h2 class="bh">Inventar</h2>
             <p class="lead">Beute aus Gates. Gates öffnen sich zwischendurch von selbst, meistens tagsüber. Ein Red Gate erkennst du erst, wenn du drin bist.</p>
             <div class="invgrid" id="invGrid"></div>
             <p class="gatestats" id="gateStats"></p>
             <ul class="gatelog" id="gateLog"></ul>
           </div>
-        <div class="block" id="shopBlock">
+        <div data-seg="sammlung" class="block" id="shopBlock">
             <h2 class="bh">Händler <span class="goldbal" id="shopGold"></span></h2>
             <p class="lead">Gold bekommst du für Gates, Daily Quests, Erfolge, Bosse, den Wochen-Raid und Skill-Stufen. Jeden Tag ist ein Angebot 30 % günstiger. Zum Kaufen zweimal tippen.</p>
             <div class="invgrid" id="shopGrid"></div>
             <ul class="goldlog" id="goldLog"></ul>
           </div>
-        <div class="block" id="achBlock">
+        <div data-seg="sammlung" class="block" id="achBlock">
             <h2 class="bh">Erfolge <span class="achcount" id="achCount"></span></h2>
             <p class="lead">Besondere Momente deines Arcs. Manche schalten einen Titel frei, den du im Status-Fenster trägst. Tipp auf einen freigeschalteten Titel, um ihn anzulegen.</p>
             <div class="achgrid" id="achGrid"></div>
+            <div class="row achmore-row"><button class="btn small" id="achMore" hidden></button></div>
             <div class="titlechips" id="titleChips" hidden></div>
           </div>
       </div>
@@ -2236,6 +2303,14 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
       <h1 class="pagetitle">Gesundheit</h1>
       <p class="pagesub">Essen, Trinken, Schritte und deine Gewohnheiten für heute. Darunter Fotos und Messwerte.</p>
       <div class="dailygrid" id="dailyGrid">
+          <div class="wtcard" id="wtCard" data-coll="weight">
+            <div class="shead"><h2>Gewicht</h2><span id="wtState"></span></div>
+            <div class="wtrow"><label class="sr" for="wtIn">Gewicht heute in kg</label><input class="inp" id="wtIn" inputmode="decimal" autocomplete="off" placeholder="kg, morgens nüchtern"><button class="btn small primary" id="wtSave">Eintragen</button></div>
+            <div class="chips wtgoal" id="wtGoal" role="group" aria-label="Dein Ziel"><button class="chip" data-g="bulk" aria-pressed="false">Aufbauen</button><button class="chip" data-g="hold" aria-pressed="false">Halten</button><button class="chip" data-g="cut" aria-pressed="false">Abnehmen</button></div>
+            <div class="wtchart" id="wtChart"></div>
+            <p class="wtinfo" id="wtInfo"></p>
+            <div class="row" id="wtSugRow" hidden><button class="btn small" id="wtSug"></button></div>
+          </div>
           <div class="protein" data-coll="protein">
             <div class="shead"><h2>Protein</h2><span id="ptarget"></span></div>
             <div class="pmeter"><strong id="ptotal">0</strong><span id="punit">g von 120 g</span></div>
@@ -2406,6 +2481,21 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
               <div class="row"><button class="btn primary" id="swSaveBtn">Zeit speichern</button></div>
             </div>
             <ul class="reclist" id="swHist"></ul>
+          </div>
+
+          <div class="tcard" id="irCard">
+            <div class="shead"><h2>Intervall-Lauf</h2><span id="irState"></span></div>
+            <p class="tlead">Geführte Intervalle mit Piepen, Vibration und Ansage. Der Bildschirm bleibt an, du musst nicht draufschauen.</p>
+            <div class="irgrid">
+              <div><label for="irWarm">Einlaufen</label><input class="inp" id="irWarm" inputmode="decimal" placeholder="10"><small>Min.</small></div>
+              <div><label for="irReps">Intervalle</label><input class="inp" id="irReps" inputmode="numeric" placeholder="5"><small>×</small></div>
+              <div><label for="irWork">Schnell</label><input class="inp" id="irWork" inputmode="decimal" placeholder="3"><small>Min.</small></div>
+              <div><label for="irRest">Traben</label><input class="inp" id="irRest" inputmode="decimal" placeholder="2"><small>Min.</small></div>
+              <div><label for="irCool">Auslaufen</label><input class="inp" id="irCool" inputmode="decimal" placeholder="10"><small>Min.</small></div>
+            </div>
+            <p class="irsum" id="irSum"></p>
+            <label class="irvoice"><input type="checkbox" id="irVoice" checked> Ansagen sprechen</label>
+            <div class="row"><button class="btn primary" id="irStart">Starten</button><button class="btn small" id="irPlan" hidden></button></div>
           </div>
 
           <div class="tcard" id="emomCard">
@@ -3002,6 +3092,28 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
     <button class="grquit" id="grLater" hidden>Prüfung verschieben (kein Fehlschlag)</button>
     <button class="grquit" id="grQuit">Gate verlassen</button>
   </div>
+</div>
+
+<div class="tov holdov" id="holdOv" role="dialog" aria-modal="true" aria-labelledby="hoName" hidden>
+  <div class="tovtop"><span id="hoSet"></span><button class="tovx" id="hoClose" aria-label="Halte-Timer schließen">✕</button></div>
+  <h2 class="tovtitle" id="hoName"></h2>
+  <p class="tovsub" id="hoGoal"></p>
+  <div class="chips tovchips" id="hoMode" role="group" aria-label="Wie gemessen wird"></div>
+  <button class="hoclock" id="hoClock" type="button"><b id="hoNum">0</b><small id="hoUnit">s</small></button>
+  <div class="tovprog" aria-hidden="true"><i id="hoBar"></i></div>
+  <p class="tovsub" id="hoHint" aria-live="polite"></p>
+  <p class="horest" id="hoRest" hidden></p>
+  <div class="tovbar"><button class="btn primary" id="hoBtn">Start</button></div>
+</div>
+
+<div class="tov irov" id="irOv" role="dialog" aria-modal="true" aria-labelledby="irPhase" hidden>
+  <div class="tovtop"><span id="irRep"></span><span id="irTotal"></span></div>
+  <p class="tovsub" id="irName"></p>
+  <h2 class="irphase" id="irPhase">Einlaufen</h2>
+  <div class="irclock" id="irClock" role="timer" aria-live="off">0:00</div>
+  <p class="tovsub" id="irNext"></p>
+  <div class="irsegs" id="irSegs" aria-hidden="true"></div>
+  <div class="tovbar"><button class="btn" id="irPause">Pause</button><button class="btn" id="irSkip">Nächste Phase</button><button class="btn danger" id="irStop">Beenden</button></div>
 </div>
 
 <div class="scancam" id="scanCam" role="dialog" aria-modal="true" aria-labelledby="scanTitle" hidden>
@@ -4364,7 +4476,7 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
         (e.extra ? '<p class="ex-extra">' + esc(e.extra) + "</p>" : "") +
         '<p class="ex-tip" hidden><svg aria-hidden="true"><use href="#i-up"/></svg><span></span></p>' +
         '<div class="sets">' + setsHtml + "</div>" + body +
-        '<div class="ex-ctl">' + (isRun(e) ? "" : '<button class="linkbtn fcbtn" data-act="cam"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M3 8h3l2-3h8l2 3h3v11H3z M12 17a4 4 0 1 0 0-8 4 4 0 0 0 0 8z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>Form-Kamera</button>') + (e.custom ? '<button class="linkbtn" data-act="remove">Entfernen</button>' : '<button class="linkbtn" data-act="skip">Überspringen</button>') + "</div>";
+        '<div class="ex-ctl">' + (isRun(e) ? (irIsInterval(e) ? '<button class="linkbtn irbtn" data-act="ir">Intervall-Timer</button>' : "") : (((parseRange(e.reps) || {}).secs ? '<button class="linkbtn holdbtn" data-act="hold">Halte-Timer</button>' : "") + '<button class="linkbtn fcbtn" data-act="cam"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M3 8h3l2-3h8l2 3h3v11H3z M12 17a4 4 0 1 0 0-8 4 4 0 0 0 0 8z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>Form-Kamera</button>')) + (e.custom ? '<button class="linkbtn" data-act="remove">Entfernen</button>' : '<button class="linkbtn" data-act="skip">Überspringen</button>') + "</div>";
       ol.appendChild(li);
     });
     updateGarminButtons();
@@ -6835,6 +6947,8 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
     const id = li.dataset.id, dk = todayKey(), l = ensureLog(dk);
     const act = b.dataset.act;
     if (act === "cam") { fcOpenEx(id); return; }
+    if (act === "hold") { holdOpen(id); return; }
+    if (act === "ir") { const e0 = todaySessionEx(id); irStart(irParse(e0 ? e0.name + " " + (e0.extra || "") + " " + (e0.reps || "") : ""), id); return; }
     if (act === "skip") { l.skipped = l.skipped || {}; l.skipped[id] = true; }
     else if (act === "unskip") { if (l.skipped) delete l.skipped[id]; }
     else if (act === "remove") {
@@ -6992,6 +7106,7 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
   // ================= Render body tab =================
   function renderBody() {
     try { const dk = todayKey(); renderProtein(dk); renderDrink(dk); renderSteps(dk); renderHabits(dk); } catch (e) { /* ignore */ }
+    try { renderWeight(); } catch (e) { /* ignore */ }
     renderPoseGrid();
     renderGallery();
     renderMeasure();
@@ -8369,7 +8484,7 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
     } catch (e) { wakeLock = null; }
   }
   function wakeOff() { if (isNative()) { try { window.WAN.KeepAwake.allowSleep().catch(() => {}); } catch (e) { /* ignore */ } } try { if (wakeLock) wakeLock.release(); } catch (e) { /* ignore */ } wakeLock = null; }
-  const wakeNeeded = () => trainMode || emom.run || mob.run || stopw.run || (cdt.run && !cdt.paused) || !!window.__fcOpen;
+  const wakeNeeded = () => trainMode || emom.run || mob.run || stopw.run || (cdt.run && !cdt.paused) || !!window.__fcOpen || !!window.__waIr || !!window.__waHold;
   document.addEventListener("visibilitychange", () => { if (!document.hidden && wakeNeeded()) wakeOn(); });
 
   function beep(freq, ms, vol) {
@@ -9555,6 +9670,410 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
   });
   $("wuReset").addEventListener("click", () => { wu.done.clear(); wuSteps(); });
 
+
+  // ================= Halte-Timer: Handstand, Lever, L-Sit und alles mit Sekunden-Ziel =================
+  const hold = { on: false, phase: "idle", exId: "", i: 0, n: 1, t0: 0, cdEnd: 0, low: 0, high: 0, goal: 0, mode: "goal", iv: 0, beeped: {} };
+  const HOLD_LEAD = 5;
+  function holdEx() { return todaySessionEx(hold.exId); }
+  function holdNextIndex(e) { const lg = exLog(todayKey(), e), n = setCount(e); for (let k = 0; k < n; k++) if (!lg.done[k]) return k; return -1; }
+  function holdOpen(id) {
+    const e = todaySessionEx(id);
+    if (!e) return;
+    const rng = parseRange(e.reps) || { low: 30, high: 30, secs: true };
+    Object.assign(hold, { on: true, phase: "idle", exId: id, n: setCount(e), low: rng.low, high: rng.high, beeped: {} });
+    const nx = holdNextIndex(e);
+    hold.i = nx < 0 ? hold.n - 1 : nx;
+    const pref = (S().holdMode || {})[normName(e.name)];
+    hold.mode = pref === "free" ? "free" : "goal";
+    hold.goal = pref && pref !== "free" && +pref > 0 ? +pref : rng.low;
+    window.__waHold = true;
+    primeAudio(); wakeOn();
+    $("holdOv").hidden = false; document.body.style.overflow = "hidden";
+    holdRender(nx < 0 ? "Alle Sätze sind schon erledigt. Ein neuer Wert ersetzt den letzten Satz." : "");
+    clearInterval(hold.iv); hold.iv = setInterval(holdTick, 100);
+  }
+  function holdClose() {
+    clearInterval(hold.iv); hold.iv = 0;
+    hold.on = false; hold.phase = "idle"; window.__waHold = false;
+    $("holdOv").hidden = true; document.body.style.overflow = "";
+    if (!wakeNeeded()) wakeOff();
+  }
+  function holdRender(hint) {
+    const e = holdEx();
+    if (!e) { holdClose(); return; }
+    const dk = todayKey(), lg = exLog(dk, e);
+    const prev = historyFor(e.name).filter((x) => x.date < dk);
+    const last = prev.length ? prev[prev.length - 1] : null;
+    $("hoName").textContent = e.name;
+    $("hoSet").textContent = hold.n > 1 ? "Satz " + (hold.i + 1) + " von " + hold.n : "";
+    const cur = noteParts(lg.note).reps;
+    $("hoGoal").textContent = "Ziel " + (hold.low === hold.high ? hold.low : hold.low + " bis " + hold.high) + " s" + (cur.length ? " · heute " + cur.join("/") + " s" : last && last.perf.secs ? " · letztes Mal " + last.perf.reps.join("/") + " s" : "");
+    const opts = [hold.low].concat(hold.high !== hold.low ? [hold.high] : []);
+    $("hoMode").innerHTML = opts.map((v) => '<button class="chip" data-m="' + v + '" aria-pressed="' + (hold.mode === "goal" && hold.goal === v) + '">Bis ' + v + " s</button>").join("") + '<button class="chip" data-m="free" aria-pressed="' + (hold.mode === "free") + '">Frei messen</button>';
+    $("hoMode").hidden = hold.phase !== "idle";
+    $("hoBtn").textContent = hold.phase === "idle" ? (hold.n > 1 ? "Satz " + (hold.i + 1) + " starten" : "Start") : hold.phase === "count" ? "Abbrechen" : "Stopp";
+    if (hint != null) $("hoHint").textContent = hint || (hold.mode === "goal" ? "Nach dem Start hast du " + HOLD_LEAD + " Sekunden, um reinzugehen. Bei " + hold.goal + " s piept es dreimal, dann ist der Satz automatisch eingetragen. Kommst du früher raus, tipp auf Stopp." : "Nach " + HOLD_LEAD + " Sekunden zum Reingehen läuft die Uhr. Tipp auf Stopp, sobald du rauskommst.");
+    if (hold.phase === "idle") { $("hoNum").textContent = hold.mode === "goal" ? hold.goal : "0"; $("hoBar").style.width = "0%"; }
+    $("holdOv").classList.toggle("counting", hold.phase === "count");
+    $("holdOv").classList.toggle("holding", hold.phase === "hold");
+  }
+  function holdTick() {
+    if (!hold.on) return;
+    const now = Date.now();
+    try {
+      const run = typeof timer !== "undefined" && timer.end && !timer.finished && !$("timer").hidden && timer.end > now;
+      $("hoRest").hidden = !run || hold.phase !== "idle";
+      if (run) $("hoRest").textContent = "Pause: noch " + fmtClock(timer.end - now);
+    } catch (e) { /* ignore */ }
+    if (hold.phase === "count") {
+      const left = Math.ceil((hold.cdEnd - now) / 1000);
+      if (left > 0) {
+        $("hoNum").textContent = left;
+        if (left <= 3 && !hold.beeped["c" + left]) { hold.beeped["c" + left] = 1; beep(660, 140, 0.3); buzz(20); }
+        return;
+      }
+      hold.phase = "hold"; hold.t0 = hold.cdEnd; hold.beeped = {};
+      beep(1046, 320, 0.35); buzz([60, 40, 60]);
+      holdRender(hold.mode === "goal" ? "Halten. Bei " + hold.goal + " s ist der Satz fertig." : "Halten. Tipp auf Stopp, wenn du rauskommst.");
+    }
+    if (hold.phase === "hold") {
+      const el = (now - hold.t0) / 1000, sec = Math.floor(el);
+      if (hold.mode === "goal") {
+        const left = Math.max(0, hold.goal - el);
+        $("hoNum").textContent = Math.ceil(left);
+        $("hoBar").style.width = Math.min(100, (el / hold.goal) * 100).toFixed(1) + "%";
+        const l = Math.ceil(left);
+        if (l <= 3 && l > 0 && !hold.beeped["g" + l]) { hold.beeped["g" + l] = 1; beep(660, 120, 0.25); }
+        if (el >= hold.goal) { holdSave(hold.goal, true); return; }
+      } else {
+        $("hoNum").textContent = sec;
+        $("hoBar").style.width = Math.min(100, (el / Math.max(1, hold.high)) * 100).toFixed(1) + "%";
+        if (sec >= hold.low && !hold.beeped.low) { hold.beeped.low = 1; beep(880, 220, 0.3); buzz(80); }
+        if (hold.high > hold.low && sec >= hold.high && !hold.beeped.high) { hold.beeped.high = 1; beep(880, 160, 0.3); setTimeout(() => beep(880, 160, 0.3), 220); buzz([60, 40, 60]); }
+      }
+    }
+  }
+  function holdSave(v, auto) {
+    const e = holdEx();
+    v = Math.max(1, Math.round(v));
+    hold.phase = "idle";
+    if (auto) { beep(1046, 160, 0.35); setTimeout(() => beep(1046, 160, 0.35), 200); setTimeout(() => beep(1318, 300, 0.35), 400); buzz([100, 60, 100, 60, 200]); }
+    const li = $("exlist").querySelector('.ex[data-id="' + CSS.escape(hold.exId) + '"]');
+    const btn = li && li.querySelector('.set[data-i="' + hold.i + '"]');
+    if (e && btn && openPad(btn)) { numpad.val = String(v); numpad.pre = false; numpad.secs = true; savePad(true); }
+    const nx = e ? holdNextIndex(e) : -1;
+    const doneTxt = v + " s eingetragen" + (hold.n > 1 ? " (Satz " + (hold.i + 1) + ")" : "") + ".";
+    if (nx < 0) { holdRender(doneTxt + " Alle Sätze geschafft."); $("hoBtn").textContent = "Fertig"; hold.phase = "done"; $("hoMode").hidden = true; $("hoNum").textContent = v; return; }
+    hold.i = nx;
+    holdRender(doneTxt + " Die Pause läuft, starte den nächsten Satz, wenn du bereit bist.");
+    $("hoNum").textContent = v;
+  }
+  $("hoBtn").addEventListener("click", () => {
+    if (hold.phase === "done") { holdClose(); return; }
+    if (hold.phase === "idle") { primeAudio(); hold.phase = "count"; hold.cdEnd = Date.now() + HOLD_LEAD * 1000; hold.beeped = {}; holdRender(hold.mode === "goal" ? "Geh rein …" : "Geh rein, gleich läuft die Uhr."); try { if (timer && !timer.finished) stopTimer(); } catch (e) { /* ignore */ } return; }
+    if (hold.phase === "count") { hold.phase = "idle"; holdRender(""); return; }
+    if (hold.phase === "hold") holdSave((Date.now() - hold.t0) / 1000, false);
+  });
+  $("hoClock").addEventListener("click", () => { if (hold.phase === "hold") holdSave((Date.now() - hold.t0) / 1000, false); });
+  $("hoMode").addEventListener("click", (ev) => {
+    const b = ev.target.closest("button[data-m]");
+    if (!b || hold.phase !== "idle") return;
+    const e = holdEx();
+    if (b.dataset.m === "free") hold.mode = "free"; else { hold.mode = "goal"; hold.goal = +b.dataset.m; }
+    if (e) { S().holdMode = Object.assign({}, S().holdMode || {}, { [normName(e.name)]: hold.mode === "free" ? "free" : hold.goal }); saveSettings(); }
+    hap("tap"); holdRender("");
+  });
+  $("hoClose").addEventListener("click", holdClose);
+
+  // ================= Intervall-Lauf =================
+  const IR_KEY = "winterarc.ir.v1";
+  const IR_L = { warm: "Einlaufen", fast: "Schnell", easy: "Traben", cool: "Auslaufen" };
+  const ir = { run: false, paused: false, t0: 0, real0: 0, pausedAt: 0, pauseMs: 0, cfg: null, P: [], exId: "", dk: "", idx: -1, cue: {}, iv: 0, stopArmed: 0, name: "" };
+  const irIsInterval = (e) => /intervall|interval|vo2|\d+\s*[x×]\s*\d+(?:[.,]\d+)?\s*(min|s\b|sek)/i.test((e.name || "") + " " + (e.extra || ""));
+  function irParse(text) {
+    const t = String(text || "").toLowerCase().replace(/(\d),(\d)/g, "$1.$2");
+    const c = Object.assign({ warm: 10, reps: 5, work: 3, rest: 2, cool: 10 }, S().ir || {});
+    let m;
+    if ((m = /(\d+(?:\.\d+)?)\s*min\w*\s*einlauf/.exec(t))) c.warm = +m[1];
+    if ((m = /(\d+)\s*[x×]\s*(\d+(?:\.\d+)?)\s*min/.exec(t))) { c.reps = +m[1]; c.work = +m[2]; }
+    else if ((m = /(\d+)\s*[x×]\s*(\d+)\s*(s\b|sek)/.exec(t))) { c.reps = +m[1]; c.work = Math.round((+m[2] / 60) * 100) / 100; }
+    if ((m = /(\d+(?:\.\d+)?)\s*min\w*\s*(trab|locker|geh|pause)/.exec(t))) c.rest = +m[1];
+    if ((m = /(\d+(?:\.\d+)?)\s*min\w*\s*auslauf/.exec(t))) c.cool = +m[1];
+    return c;
+  }
+  function irPhases(c) {
+    const P = [];
+    if (c.warm > 0) P.push({ k: "warm", d: Math.round(c.warm * 60) });
+    for (let r = 1; r <= c.reps; r++) { P.push({ k: "fast", d: Math.round(c.work * 60), r }); if (r < c.reps && c.rest > 0) P.push({ k: "easy", d: Math.round(c.rest * 60), r }); }
+    if (c.cool > 0) P.push({ k: "cool", d: Math.round(c.cool * 60) });
+    let t = 0; P.forEach((p) => { p.s = t; t += p.d; });
+    return P;
+  }
+  const irTotal = (P) => (P.length ? P[P.length - 1].s + P[P.length - 1].d : 0);
+  const irElapsed = (now) => ((ir.paused ? ir.pausedAt : now || Date.now()) - ir.t0 - ir.pauseMs) / 1000;
+  function irSay(t) { if (S().irVoice === false || !t) return; try { say(t, null, true); } catch (e) { /* ignore */ } }
+  function irPersist() { try { if (ir.run) localStorage.setItem(IR_KEY, JSON.stringify({ t0: ir.t0, real0: ir.real0, paused: ir.paused, pausedAt: ir.pausedAt, pauseMs: ir.pauseMs, cfg: ir.cfg, exId: ir.exId, dk: ir.dk, name: ir.name })); else localStorage.removeItem(IR_KEY); } catch (e) { /* ignore */ } }
+  function irStart(cfg, exId, restore) {
+    const c = Object.assign({ warm: 10, reps: 5, work: 3, rest: 2, cool: 10 }, cfg || {});
+    const P = irPhases(c);
+    if (!P.length || irTotal(P) < 30) { toast("Trag mindestens ein Intervall ein."); return; }
+    primeAudio();
+    const e = exId ? todaySessionEx(exId) : null;
+    Object.assign(ir, { run: true, paused: false, t0: Date.now() + 3000, real0: Date.now() + 3000, pausedAt: 0, pauseMs: 0, cfg: c, P, exId: exId || "", dk: todayKey(), idx: -1, cue: {}, stopArmed: 0, name: e ? e.name : "Intervall-Lauf" }, restore || {});
+    ir.P = irPhases(ir.cfg);
+    window.__waIr = true;
+    wakeOn();
+    $("irOv").hidden = false; document.body.style.overflow = "hidden";
+    $("irName").textContent = ir.name;
+    $("irSegs").innerHTML = ir.P.map((p) => '<i class="' + (p.k === "fast" ? "f" : "") + '" style="flex:' + p.d + ' 1 0"><b></b></i>').join("");
+    $("irPause").textContent = ir.paused ? "Weiter" : "Pause";
+    $("irStop").textContent = "Beenden";
+    irPersist();
+    if (!restore) irSay("Gleich geht's los. " + IR_L[ir.P[0].k] + ", " + irMin(ir.P[0].d) + ".");
+    clearInterval(ir.iv); ir.iv = setInterval(irTick, 200);
+    irTick();
+  }
+  const irMin = (sec) => (sec % 60 === 0 ? (sec / 60 === 1 ? "eine Minute" : sec / 60 + " Minuten") : sec < 60 ? sec + " Sekunden" : (Math.round((sec / 60) * 10) / 10).toString().replace(".", ",") + " Minuten");
+  function irPhaseText(p) {
+    const n = ir.cfg.reps;
+    if (p.k === "warm") return "Einlaufen. " + irMin(p.d) + " ganz locker.";
+    if (p.k === "fast") return "Schnell! Intervall " + p.r + " von " + n + ".";
+    if (p.k === "easy") return "Traben. " + irMin(p.d) + " locker." + (p.r === n - 1 ? " Gleich kommt das letzte." : "");
+    return "Auslaufen. Alle Intervalle geschafft, jetzt " + irMin(p.d) + " locker.";
+  }
+  function irTick() {
+    if (!ir.run) return;
+    const el = irElapsed(), P = ir.P, tot = irTotal(P);
+    if (el < 0) { $("irPhase").textContent = "Bereit"; $("irClock").textContent = Math.ceil(-el); $("irRep").textContent = ""; $("irTotal").textContent = "Gesamt " + clkFmt(tot * 1000); $("irNext").textContent = "Als Erstes: " + IR_L[P[0].k] + ", " + irMin(P[0].d); const s = Math.ceil(-el); if (!ir.paused && !ir.cue["pre" + s]) { ir.cue["pre" + s] = 1; beep(660, 140, 0.3); } return; }
+    if (el >= tot) { irFinish(true); return; }
+    let idx = P.findIndex((p) => el >= p.s && el < p.s + p.d);
+    if (idx < 0) idx = P.length - 1;
+    const p = P[idx], left = p.s + p.d - el;
+    if (idx !== ir.idx) {
+      ir.idx = idx;
+      $("irOv").classList.toggle("fast", p.k === "fast");
+      if (!ir.paused) {
+        if (p.k === "fast") { beep(988, 160, 0.4); setTimeout(() => beep(988, 160, 0.4), 220); setTimeout(() => beep(1318, 360, 0.4), 440); buzz([120, 60, 120, 60, 220]); }
+        else if (p.k === "cool") { chime(); buzz([200, 80, 200]); }
+        else { beep(523, 520, 0.35); buzz(300); }
+        irSay(irPhaseText(p));
+      }
+    }
+    $("irPhase").textContent = IR_L[p.k];
+    $("irClock").textContent = clkFmt(Math.ceil(left) * 1000);
+    $("irRep").textContent = p.k === "fast" ? "Intervall " + p.r + " von " + ir.cfg.reps : p.k === "easy" ? "Nach Intervall " + p.r + " von " + ir.cfg.reps : "";
+    $("irTotal").textContent = "noch " + clkFmt(Math.max(0, tot - el) * 1000);
+    const nx = P[idx + 1];
+    $("irNext").textContent = ir.paused ? "Pausiert" : nx ? "Danach: " + IR_L[nx.k] + (nx.k === "fast" ? " " + nx.r + " von " + ir.cfg.reps : "") + ", " + irMin(nx.d) : "Danach: fertig";
+    const segs = $("irSegs").children;
+    for (let k = 0; k < segs.length; k++) { const q = P[k]; const f = Math.max(0, Math.min(1, (el - q.s) / q.d)); const b = segs[k].firstChild; if (b) b.style.width = (f * 100).toFixed(1) + "%"; }
+    if (!ir.paused) {
+      const s = Math.ceil(left);
+      if (s <= 3 && s >= 1 && !ir.cue[idx + ":" + s]) { ir.cue[idx + ":" + s] = 1; beep(660, 130, 0.3); }
+      if (p.k === "fast" && p.d >= 60 && s === 30 && !ir.cue[idx + ":half"]) { ir.cue[idx + ":half"] = 1; irSay("Noch 30 Sekunden."); }
+    }
+  }
+  function irBoundaries() {
+    if (!ir.run || ir.paused) return [];
+    const base = ir.t0 + ir.pauseMs, now = Date.now(), out = [];
+    ir.P.forEach((p) => { const at = base + p.s * 1000; if (at > now + 1500) out.push({ at, title: p.k === "fast" ? "Schnell! Intervall " + p.r + " von " + ir.cfg.reps : IR_L[p.k], body: irPhaseText(p) }); });
+    const end = base + irTotal(ir.P) * 1000;
+    if (end > now + 1500) out.push({ at: end, title: "Intervall-Lauf geschafft", body: "Öffne die App, die Zeit wird eingetragen." });
+    return out;
+  }
+  function irFinish(done) {
+    clearInterval(ir.iv); ir.iv = 0;
+    const sec = Math.max(0, Math.round(((ir.paused ? ir.pausedAt : Date.now()) - ir.real0 - ir.pauseMs) / 1000));
+    const exId = ir.exId, dk = ir.dk, t0 = ir.t0;
+    ir.run = false; window.__waIr = false; irPersist();
+    if (!wakeNeeded()) wakeOff();
+    try { natRestIn(); } catch (e) { /* ignore */ }
+    $("irOv").hidden = true; document.body.style.overflow = "";
+    if (done) { chime(); buzz([100, 60, 100, 60, 300]); irSay("Geschafft. Starke Arbeit."); }
+    if (sec >= 60) {
+      try { clockBlock(dk, "ir-" + t0, "Intervall-Lauf", sec * 1000, t0); } catch (e) { /* ignore */ }
+      if (exId && dk === todayKey()) {
+        const li = $("exlist").querySelector('.ex[data-id="' + CSS.escape(exId) + '"]');
+        const inp = li && li.querySelector('[data-rf="time"]');
+        if (inp && !inp.value) { inp.value = fmtDur(sec); try { saveRunFromPanel(li); } catch (e) { /* ignore */ } }
+        toast("Intervall-Lauf: " + fmtDur(sec) + " eingetragen. Trag noch Distanz und Puls ein oder lies den Garmin-Screenshot aus.");
+      } else toast("Intervall-Lauf beendet nach " + fmtDur(sec) + ". Die Zeit steht bei der Trainingszeit.");
+    }
+    renderIrSetup();
+  }
+  $("irPause").addEventListener("click", () => {
+    if (!ir.run) return;
+    if (ir.paused) { ir.pauseMs += Date.now() - ir.pausedAt; ir.paused = false; $("irPause").textContent = "Pause"; $("irOv").classList.remove("paused"); }
+    else { ir.paused = true; ir.pausedAt = Date.now(); $("irPause").textContent = "Weiter"; $("irOv").classList.add("paused"); }
+    hap("tap"); irPersist(); irTick();
+  });
+  $("irSkip").addEventListener("click", () => {
+    if (!ir.run) return;
+    const el = irElapsed();
+    if (el < 0) { ir.t0 -= -el * 1000; irTick(); return; }
+    const p = ir.P[Math.max(0, ir.idx)];
+    if (!p) return;
+    const jump = (p.s + p.d - el) * 1000 + 50;
+    ir.t0 -= jump; if (ir.paused) ir.pausedAt = Math.max(ir.pausedAt, ir.t0);
+    hap("tap"); irPersist(); irTick();
+  });
+  $("irStop").addEventListener("click", () => {
+    if (!ir.run) return;
+    if (Date.now() - ir.stopArmed > 3000) { ir.stopArmed = Date.now(); $("irStop").textContent = "Wirklich beenden?"; setTimeout(() => { if (ir.run) $("irStop").textContent = "Beenden"; }, 3000); return; }
+    irFinish(false);
+  });
+  function irCfgFromForm() {
+    const g = (id, d) => { const v = num($(id).value); return v == null ? d : v; };
+    return { warm: Math.max(0, Math.min(60, g("irWarm", 10))), reps: Math.max(1, Math.min(30, Math.round(g("irReps", 5)))), work: Math.max(0.1, Math.min(30, g("irWork", 3))), rest: Math.max(0, Math.min(30, g("irRest", 2))), cool: Math.max(0, Math.min(60, g("irCool", 10))) };
+  }
+  function irPlanEx() { const s = effSession(today()); return s && s.exercises.find((e) => isRun(e) && !e.skipped && irIsInterval(e)); }
+  function renderIrSetup() {
+    if (!$("irCard")) return;
+    const c = Object.assign({ warm: 10, reps: 5, work: 3, rest: 2, cool: 10 }, S().ir || {});
+    [["irWarm", "warm"], ["irReps", "reps"], ["irWork", "work"], ["irRest", "rest"], ["irCool", "cool"]].forEach(([id, k]) => { if (document.activeElement !== $(id) && !$(id).value) $(id).value = String(c[k]).replace(".", ","); });
+    $("irVoice").checked = S().irVoice !== false;
+    const cf = irCfgFromForm(), tot = irTotal(irPhases(cf));
+    $("irSum").textContent = "Dauer insgesamt " + clkFmt(tot * 1000) + ", davon " + clkFmt(cf.reps * cf.work * 60000) + " schnell.";
+    $("irState").textContent = ir.run ? "läuft" : "";
+    const pe = irPlanEx();
+    $("irPlan").hidden = !pe;
+    if (pe) { const pc = irParse(pe.name + " " + (pe.extra || "")); $("irPlan").textContent = "Plan von heute: " + pc.reps + " × " + String(pc.work).replace(".", ",") + " Min."; }
+  }
+  $("irCard").addEventListener("input", (ev) => { if (ev.target.id === "irVoice") return; S().ir = irCfgFromForm(); saveSettings(); renderIrSetup(); });
+  $("irVoice").addEventListener("change", function () { S().irVoice = this.checked; saveSettings(); });
+  $("irStart").addEventListener("click", () => { S().ir = irCfgFromForm(); saveSettings(); const pe = irPlanEx(); irStart(S().ir, pe ? pe.id : ""); });
+  $("irPlan").addEventListener("click", () => { const pe = irPlanEx(); if (!pe) return; const pc = irParse(pe.name + " " + (pe.extra || "")); [["irWarm", "warm"], ["irReps", "reps"], ["irWork", "work"], ["irRest", "rest"], ["irCool", "cool"]].forEach(([id, k]) => { $(id).value = String(pc[k]).replace(".", ","); }); S().ir = irCfgFromForm(); saveSettings(); renderIrSetup(); });
+  (function irRestore() {
+    try {
+      const d = JSON.parse(localStorage.getItem(IR_KEY) || "null");
+      if (!d || !d.cfg || !d.t0) return;
+      const P = irPhases(d.cfg), el = ((d.paused ? d.pausedAt : Date.now()) - d.t0 - (d.pauseMs || 0)) / 1000;
+      if (el > irTotal(P) + 900 || d.dk !== todayKey()) { localStorage.removeItem(IR_KEY); return; }
+      setTimeout(() => irStart(d.cfg, d.exId, { t0: d.t0, real0: d.real0 || d.t0, paused: !!d.paused, pausedAt: d.pausedAt || 0, pauseMs: d.pauseMs || 0, dk: d.dk }), 600);
+    } catch (e) { /* ignore */ }
+  })();
+
+  // ================= Gewicht: Trend, Zielkorridor, Kalorien-Vorschlag =================
+  const WT_GOALS = { bulk: { lo: 0.25, hi: 0.5, l: "Aufbauen", t: "+0,25 bis +0,5 kg pro Woche" }, hold: { lo: -0.15, hi: 0.15, l: "Halten", t: "etwa ±0,15 kg pro Woche" }, cut: { lo: -0.75, hi: -0.25, l: "Abnehmen", t: "−0,25 bis −0,75 kg pro Woche" } };
+  const wtGoal = () => (WT_GOALS[S().wtGoal] ? S().wtGoal : "bulk");
+  const wtList = () => bodyEntries().filter((e) => +e.weight > 0).map((e) => ({ date: e.date, w: +e.weight }));
+  function wtAvg(list, dk) {
+    const end = parseKey(dk), from = dateKey(addDays(end, -6));
+    const xs = list.filter((x) => x.date >= from && x.date <= dk);
+    return xs.length ? xs.reduce((a, x) => a + x.w, 0) / xs.length : null;
+  }
+  function wtTrend(list) {
+    const tk = todayKey(), from = dateKey(addDays(today(), -20));
+    const xs = list.filter((x) => x.date >= from && x.date <= tk);
+    if (xs.length < 6) return null;
+    const d0 = parseKey(xs[0].date).getTime();
+    const pts = xs.map((x) => ({ x: (parseKey(x.date).getTime() - d0) / 864e5, y: x.w }));
+    const span = pts[pts.length - 1].x;
+    if (span < 9) return null;
+    const mx = pts.reduce((a, p) => a + p.x, 0) / pts.length, my = pts.reduce((a, p) => a + p.y, 0) / pts.length;
+    let num0 = 0, den = 0;
+    pts.forEach((p) => { num0 += (p.x - mx) * (p.y - my); den += (p.x - mx) * (p.x - mx); });
+    return den ? { perWeek: (num0 / den) * 7, span, n: pts.length } : null;
+  }
+  const fmtKgS = (v, d) => (v > 0 ? "+" : v < 0 ? "−" : "±") + Math.abs(v).toFixed(d == null ? 2 : d).replace(".", ",");
+  function renderWeight() {
+    if (!$("wtCard")) return;
+    const list = wtList(), tk = todayKey(), g = wtGoal(), G = WT_GOALS[g];
+    document.querySelectorAll("#wtGoal .chip").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.g === g)));
+    const todayE = list.find((x) => x.date === tk);
+    if (document.activeElement !== $("wtIn")) $("wtIn").value = todayE ? String(todayE.w).replace(".", ",") : "";
+    $("wtState").textContent = todayE ? "heute eingetragen" : "offen";
+    const avg = list.length ? wtAvg(list, list[list.length - 1].date) : null;
+    const tr = wtTrend(list);
+    let info = "";
+    if (!list.length) info = "Wieg dich jeden Morgen nach dem Aufstehen und vor dem Frühstück. Einzelne Tage schwanken um 1 bis 2 kg, deshalb zählt der Durchschnitt.";
+    else if (!tr) info = "Schnitt der letzten 7 Tage: " + fmtN(Math.round(avg * 10) / 10) + " kg. Ab etwa 10 Tagen mit mindestens 6 Messungen siehst du deinen Trend. Ziel " + G.l + ": " + G.t + ".";
+    else {
+      const ok = tr.perWeek >= G.lo && tr.perWeek <= G.hi;
+      info = "Schnitt der letzten 7 Tage: " + fmtN(Math.round(avg * 10) / 10) + " kg. Trend: " + fmtKgS(tr.perWeek) + " kg pro Woche. Ziel " + G.l + ": " + G.t + ". " + (ok ? "Passt genau." : tr.perWeek < G.lo ? (g === "cut" ? "Du nimmst schneller ab als geplant." : "Das ist zu langsam.") : g === "cut" ? "Das ist zu langsam." : "Das ist schneller als nötig, es kommt eher Fett dazu.");
+    }
+    $("wtInfo").textContent = info;
+    // Vorschlag: erst nach 14 Tagen Daten, und 10 Tage Ruhe nach der letzten Anpassung
+    let sug = 0;
+    if (tr && tr.span >= 13 && tr.n >= 8 && (!S().wtSugAt || (parseKey(tk) - parseKey(S().wtSugAt)) / 864e5 >= 10)) {
+      if (tr.perWeek < G.lo) sug = 200; else if (tr.perWeek > G.hi) sug = -200;
+    }
+    const kt = +S().kcalTarget || 3200;
+    $("wtSugRow").hidden = !sug;
+    if (sug) $("wtSug").textContent = "Kalorienziel auf " + (kt + sug).toLocaleString("de-DE") + " kcal setzen (" + (sug > 0 ? "+" : "−") + Math.abs(sug) + ")";
+    $("wtSug").dataset.v = String(kt + sug);
+    $("wtChart").innerHTML = wtChartSvg(list, g);
+  }
+  function wtChartSvg(list, g) {
+    if (list.length < 2) return "";
+    const W = 340, H = 170, L = 34, Rr = 10, T = 22, B = 22;
+    const end = parseKey(list[list.length - 1].date), startCut = dateKey(addDays(end, -55));
+    const xs = list.filter((x) => x.date >= startCut);
+    const d0 = parseKey(xs[0].date).getTime(), days = Math.max(1, (end.getTime() - d0) / 864e5);
+    const avgs = xs.map((x) => ({ date: x.date, a: wtAvg(list, x.date) }));
+    const G = WT_GOALS[g], a0 = avgs[0].a;
+    const bandHi = a0 + (G.hi * days) / 7, bandLo = a0 + (G.lo * days) / 7;
+    let lo = Math.min.apply(null, xs.map((x) => x.w).concat([bandLo, a0])), hi = Math.max.apply(null, xs.map((x) => x.w).concat([bandHi, a0]));
+    const pad0 = Math.max(0.4, (hi - lo) * 0.12); lo -= pad0; hi += pad0;
+    const X = (dk) => L + ((parseKey(dk).getTime() - d0) / 864e5 / days) * (W - L - Rr);
+    const Y = (v) => T + (1 - (v - lo) / (hi - lo)) * (H - T - B);
+    const ticks = [lo + (hi - lo) * 0.15, (lo + hi) / 2, hi - (hi - lo) * 0.15];
+    let o = '<svg viewBox="0 0 ' + W + " " + H + '" role="img" aria-label="Gewichtsverlauf mit 7-Tage-Schnitt und Zielkorridor">';
+    ticks.forEach((v) => { o += '<line class="wtgrid" x1="' + L + '" x2="' + (W - Rr) + '" y1="' + Y(v).toFixed(1) + '" y2="' + Y(v).toFixed(1) + '"/><text class="wtax" x="' + (L - 6) + '" y="' + (Y(v) + 3).toFixed(1) + '" text-anchor="end">' + fmtN(Math.round(v * 10) / 10) + "</text>"; });
+    const xA = X(xs[0].date), xB = X(xs[xs.length - 1].date);
+    o += '<polygon class="wtband" points="' + [xA + "," + Y(a0).toFixed(1), xB + "," + Y(bandHi).toFixed(1), xB + "," + Y(bandLo).toFixed(1)].join(" ") + '"/>';
+    o += '<text class="wtbandl" x="' + (xB - 2).toFixed(1) + '" y="' + (Math.min(Y(bandHi), Y(bandLo)) - 6).toFixed(1) + '" text-anchor="end">Zielkorridor ' + esc(G.l) + "</text>";
+    xs.forEach((x) => { o += '<circle class="wtdot" cx="' + X(x.date).toFixed(1) + '" cy="' + Y(x.w).toFixed(1) + '" r="2.6"/>'; });
+    o += '<polyline class="wtavg" points="' + avgs.map((p) => X(p.date).toFixed(1) + "," + Y(p.a).toFixed(1)).join(" ") + '"/>';
+    o += '<text class="wtax" x="' + L + '" y="' + (H - 6) + '">' + esc(shortDate(parseKey(xs[0].date))) + '</text><text class="wtax" x="' + (W - Rr) + '" y="' + (H - 6) + '" text-anchor="end">' + esc(shortDate(end)) + "</text>";
+    o += '<line class="wtx" id="wtX" x1="0" x2="0" y1="' + T + '" y2="' + (H - B) + '" hidden/>';
+    o += "</svg>";
+    wtChartData = { xs, avgs, X, W };
+    return o + '<div class="wttip" id="wtTip" hidden></div>';
+  }
+  let wtChartData = null;
+  function wtHover(ev) {
+    const svg = $("wtChart").querySelector("svg");
+    if (!svg || !wtChartData) return;
+    const r = svg.getBoundingClientRect(), vx = ((ev.clientX - r.left) / r.width) * wtChartData.W;
+    let best = null, bd = 1e9;
+    wtChartData.xs.forEach((x, k) => { const d = Math.abs(wtChartData.X(x.date) - vx); if (d < bd) { bd = d; best = k; } });
+    if (best == null) return;
+    const x = wtChartData.xs[best], a = wtChartData.avgs[best].a, px = wtChartData.X(x.date);
+    const line = $("wtX"), tip = $("wtTip");
+    line.setAttribute("x1", px); line.setAttribute("x2", px); line.removeAttribute("hidden");
+    tip.hidden = false;
+    tip.style.left = Math.max(60, Math.min(r.width - 60, (px / wtChartData.W) * r.width)) + "px";
+    tip.innerHTML = esc(shortDate(parseKey(x.date))) + ": <b>" + fmtN(x.w) + " kg</b><small>Ø 7 Tage " + fmtN(Math.round(a * 10) / 10) + " kg</small>";
+  }
+  $("wtChart").addEventListener("pointermove", wtHover);
+  $("wtChart").addEventListener("pointerdown", wtHover);
+  $("wtChart").addEventListener("pointerleave", () => { const t = $("wtTip"), l = $("wtX"); if (t) t.hidden = true; if (l) l.setAttribute("hidden", ""); });
+  $("wtSave").addEventListener("click", () => {
+    const v = num($("wtIn").value);
+    if (!(v >= 30 && v <= 250)) { toast("Trag dein Gewicht in kg ein, zum Beispiel 77,4."); return; }
+    const tk = todayKey(), w = Math.round(v * 10) / 10;
+    const old = (state.body.entries || []).find((e) => e.date === tk) || { date: tk };
+    state.body.entries = (state.body.entries || []).filter((e) => e.date !== tk).concat([Object.assign({}, old, { date: tk, weight: w })]).sort((a, b) => (a.date < b.date ? -1 : 1)).slice(-400);
+    saveLocal(); try { saveBody(); } catch (e) { /* ignore */ }
+    const a = wtAvg(wtList(), tk);
+    if (a) { S().bodyweight = Math.round(a * 10) / 10; saveSettings(); }
+    hap("set"); $("wtIn").blur();
+    renderWeight();
+    try { renderMeasure(); } catch (e) { /* ignore */ }
+    toast("Gewicht eingetragen: " + fmtN(w) + " kg.");
+  });
+  $("wtIn").addEventListener("keydown", (ev) => { if (ev.key === "Enter") $("wtSave").click(); });
+  $("wtGoal").addEventListener("click", (ev) => { const b = ev.target.closest("button[data-g]"); if (!b) return; S().wtGoal = b.dataset.g; saveSettings(); hap("tap"); renderWeight(); });
+  $("wtSug").addEventListener("click", function () {
+    const v = Math.round(+this.dataset.v || 0);
+    if (!(v >= 1200 && v <= 6000)) return;
+    S().kcalTarget = v; S().wtSugAt = todayKey(); saveSettings();
+    try { renderProtein(todayKey()); } catch (e) { /* ignore */ }
+    renderWeight();
+    toast("Kalorienziel ist jetzt " + v.toLocaleString("de-DE") + " kcal. In 10 Tagen schaut die App wieder auf deinen Trend.");
+  });
+
   function renderTools() {
     try { fcLibRender().catch(() => {}); } catch (e) { /* noch nicht bereit */ }
     renderStopwatch();
@@ -9563,6 +10082,7 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
     renderEmomHist();
     renderMobIdle();
     renderWarm();
+    renderIrSetup();
     renderGtg();
     renderPartner();
   }
@@ -11451,15 +11971,23 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
     try { ast = achStats(computeRanks(), computeXP()); } catch (e) { ast = null; }
     const n = ACH.filter((a) => got[a.id]).length;
     $("achCount").textContent = n + " von " + ACH.length;
+    // Kompakt: alle geschafften plus die vier, bei denen du am nächsten dran bist
+    const ratio = (a) => { try { if (!ast || !ACH_PROG[a.id]) return -1; const pr = ACH_PROG[a.id](ast); return Math.max(0, Math.min(1, (+pr[0] || 0) / pr[1])); } catch (e) { return -1; } };
+    const near = ACH.filter((a) => !got[a.id]).map((a) => ({ id: a.id, r: ratio(a) })).sort((x, y) => y.r - x.r).slice(0, 4).map((x) => x.id);
+    const showAll = !!S().achAll;
+    g.classList.toggle("all", showAll);
+    const hiddenN = ACH.length - n - near.length;
+    if ($("achMore")) { $("achMore").hidden = hiddenN <= 0; $("achMore").textContent = showAll ? "Weniger anzeigen" : "Alle " + ACH.length + " Erfolge anzeigen"; }
     g.innerHTML = ACH.map((a) => {
       const on = !!got[a.id], worn = on && a.title && m.title === a.title;
-      return '<button class="ach' + (on ? " on" : "") + (worn ? " worn" : "") + '" data-a="' + a.id + '"' + (on && a.title ? "" : " disabled") + ">" +
+      return '<button class="ach' + (on ? " on" : "") + (worn ? " worn" : "") + (!on && near.indexOf(a.id) < 0 ? " more" : "") + '" data-a="' + a.id + '"' + (on && a.title ? "" : " disabled") + ">" +
         '<span class="achic" aria-hidden="true">' + (on ? "★" : "?") + "</span><b>" + esc(on ? a.n : "???") + "</b><small>" + esc(a.d) + "</small>" +
         (!on && ast && ACH_PROG[a.id] ? (() => { const pr = ACH_PROG[a.id](ast), v = Math.max(0, Math.min(pr[1], Math.floor(+pr[0] || 0))); return '<span class="achp"><i style="width:' + Math.round((v / pr[1]) * 100) + '%"></i></span><small class="achpn">' + fmtG(v) + " / " + fmtG(pr[1]) + "</small>"; })() : "") +
         (a.title ? '<em>' + (on ? (worn ? "Getragen: " : "Titel: ") + esc(a.title) : "Schaltet einen Titel frei") + "</em>" : "") + "</button>";
     }).join("");
     try { renderTitleChips(); } catch (e) { /* ignore */ }
   }
+  if ($("achMore")) $("achMore").addEventListener("click", () => { S().achAll = !S().achAll; saveSettings(); hap("tap"); renderAch(); });
   if ($("achGrid")) $("achGrid").addEventListener("click", (ev) => {
     const b = ev.target.closest("button[data-a]");
     if (!b || b.disabled) return;
@@ -15525,6 +16053,40 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
     try { renderPass(); renderShop(); renderTitleChips(); renderInv(); } catch (e) { /* ignore */ }
     try { renderBestiary(); renderBounties(); } catch (e) { /* ignore */ }
     try { const dk = todayKey(); renderQuest(dk); renderGate(); renderJob(); renderHid(); renderRaid(); renderChest(); renderAdvent(); renderPerfect(); } catch (e) { /* ignore */ }
+    try { sysSegDots(); } catch (e) { /* ignore */ }
+  }
+  // ---- System in drei Bereiche: Heute (Aufgaben), Rang (Fortschritt), Sammlung ----
+  const SYS_SEGS = ["heute", "rang", "sammlung"];
+  function sysSegSet(seg, keep) {
+    if (SYS_SEGS.indexOf(seg) < 0) seg = "heute";
+    const v = $("sysView");
+    if (!v) return;
+    const changed = v.dataset.seg !== seg;
+    v.dataset.seg = seg;
+    document.querySelectorAll("#sysSeg .sysseg-b").forEach((b) => b.setAttribute("aria-selected", String(b.dataset.seg === seg)));
+    if (!keep && S().sysSeg !== seg) { S().sysSeg = seg; saveSettings(); }
+    if (changed && !keep && currentTab === "system") window.scrollTo(0, 0);
+  }
+  // Wer ein Element im System anspringt (Rang-Chip, Pass, Perfekter Tag …), landet im richtigen Bereich
+  const sysRevealFor = (el) => { const blk = el && el.closest && el.closest("#sysView > [data-seg]"); if (blk && $("sysView").dataset.seg !== blk.dataset.seg) sysSegSet(blk.dataset.seg, true); };
+  (function () {
+    const orig = Element.prototype.scrollIntoView;
+    Element.prototype.scrollIntoView = function (o) { try { sysRevealFor(this); } catch (e) { /* ignore */ } return orig.call(this, o); };
+  })();
+  if ($("sysSeg")) {
+    $("sysSeg").addEventListener("click", (ev) => { const b = ev.target.closest(".sysseg-b"); if (!b) return; hap("tab"); sysSegSet(b.dataset.seg); });
+    sysSegSet(S().sysSeg || "heute", true);
+  }
+  function sysSegDots() {
+    const dot = (seg, on) => { const b = document.querySelector('#sysSeg .sysseg-b[data-seg="' + seg + '"]'); if (b) b.classList.toggle("dot", !!on); };
+    let h = false, r = false, c = false;
+    try { h = h || bountyWeek().list.some((x) => x.done && !x.got); } catch (e) { /* ignore */ }
+    try { h = h || !chestInfo().done; } catch (e) { /* ignore */ }
+    try { const g = gMeta().cur; h = h || !!(g && !g.entered); } catch (e) { /* ignore */ }
+    try { h = h || !!hidMeta().cur; } catch (e) { /* ignore */ }
+    try { r = r || passState().claimable > 0; } catch (e) { /* ignore */ }
+    try { const sh = rankMeta().shadows; r = r || !!(sh && (sh.pend || []).length); } catch (e) { /* ignore */ }
+    dot("heute", h); dot("rang", r); dot("sammlung", c);
   }
   // Punkt am System-Tab, sobald dort etwas auf dich wartet
   function sysDot() {
@@ -15538,6 +16100,7 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
     try { on = on || !!hidMeta().cur; } catch (e) { /* ignore */ }
     try { const d = advDay(); on = on || (d >= 1 && d <= 24 && advState(d) === "ready"); } catch (e) { /* ignore */ }
     b.classList.toggle("hasdot", !!(window.__waGame && on));
+    try { sysSegDots(); } catch (e) { /* ignore */ }
   }
 
   // ================= v22: Android-App (Capacitor): Benachrichtigungen, Health Connect, Widget, Zurück-Taste, Updates =================
@@ -15618,12 +16181,16 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
       if (timer && !timer.finished && timer.end && timer.end > Date.now() + 1500 && !$("timer").hidden) {
         await NAT.LocalNotifications.schedule({ notifications: [natN(1, new Date(timer.end), "Pause vorbei", "Nächster Satz. Los geht's.", "timer")] });
       }
+      if (window.__waIr && typeof irBoundaries === "function") {
+        const list = irBoundaries().slice(0, 40).map((b, k) => natN(300 + k, new Date(b.at), b.title, b.body, "timer"));
+        if (list.length) await NAT.LocalNotifications.schedule({ notifications: list });
+      }
       if (cdt.run && !cdt.paused && cdt.end > Date.now() + 1500) {
         await NAT.LocalNotifications.schedule({ notifications: [natN(2, new Date(cdt.end), "Timer abgelaufen", "Deine Zeit ist um.", "timer")] });
       }
     } catch (e) { /* ignore */ }
   }
-  function natRestIn() { if (NAT) natCancel([1, 2]); }
+  function natRestIn() { if (NAT) natCancel([1, 2].concat(Array.from({ length: 40 }, (_, k) => 300 + k))); }
 
   // ---- Health Connect: Schritte, Schlaf, Ruhepuls ----
   const HC_TYPES = ["steps", "sleep", "restingHeartRate", "heartRate", "heartRateVariability", "vo2Max", "workouts"];
