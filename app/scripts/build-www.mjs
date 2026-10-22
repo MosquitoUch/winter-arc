@@ -12,7 +12,7 @@ const id = (process.env.BUILD_ID || "local").slice(0, 12);
 
 rmSync(www, { recursive: true, force: true });
 mkdirSync(www, { recursive: true });
-for (const f of ["manifest.webmanifest", "icon-192.png", "icon-512.png", "icon-maskable.png", "privacy.html"]) {
+for (const f of ["manifest.webmanifest", "icon-192.png", "icon-512.png", "icon-maskable.png", "privacy.html", "zxing.min.js"]) {
   try { cpSync(join(root, f), join(www, f)); } catch (e) { console.warn("fehlt:", f); }
 }
 let html = readFileSync(join(root, "index.html"), "utf8");
