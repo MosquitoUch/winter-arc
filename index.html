@@ -156,7 +156,30 @@ textarea, select, input.inp, input[type=range] { max-width: 100%; box-sizing: bo
 .pfood { min-height: 40px; padding: 7px 12px; border-radius: 12px; border: 1px solid var(--line-2); background: var(--surface); color: var(--ink-2); font-size: 14px; }
 .pfood b { color: var(--ice); font-weight: 600; margin-left: 4px; }
 .pfood:active { border-color: var(--ice-deep); }
-#pprods .pfood { -webkit-touch-callout: none; -webkit-user-select: none; user-select: none; touch-action: manipulation; }
+#pprods .pfood, #pmeals .pfood { -webkit-touch-callout: none; -webkit-user-select: none; user-select: none; touch-action: manipulation; }
+#pmeals .pfood.hold { border-color: var(--ice); background: rgba(var(--tint-rgb), 0.12); }
+.pmeals .pfood { border-color: var(--ice-deep); color: var(--ink); }
+.pmeals .pfood i { font-style: normal; color: var(--mute); font-size: 12px; margin-right: 6px; letter-spacing: .04em; text-transform: uppercase; }
+.plist { margin-top: 12px; border-top: 1px solid var(--line); padding-top: 8px; }
+.plist summary { cursor: pointer; color: var(--ink-2); font-size: 14px; padding: 6px 0; }
+.plist summary span { color: var(--mute); }
+.plistul { list-style: none; margin: 4px 0 0; padding: 0; display: grid; gap: 4px; }
+.prow { width: 100%; display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 10px; align-items: center; text-align: left; min-height: 44px; padding: 8px 10px; border: 1px solid var(--line); border-radius: 10px; background: transparent; color: var(--ink); font: inherit; font-size: 14px; }
+.prow .pl { min-width: 0; overflow-wrap: anywhere; }
+.prow .pl small { display: block; color: var(--mute); font-size: 12px; }
+.prow .pv { color: var(--ink-2); font-size: 13px; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.prow[aria-pressed="true"] { border-color: var(--ice); background: rgba(var(--tint-rgb), 0.10); }
+.pedit { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; padding: 8px 2px 4px; }
+.pedit .inp { width: 96px; min-height: 40px; }
+.pedit span { color: var(--ink-2); font-size: 13px; }
+.pmealmk { margin-top: 10px; }
+.mealparts { list-style: none; width: 100%; margin: 8px 0; padding: 0; display: grid; gap: 6px; text-align: left; }
+.mealparts li { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 8px; align-items: center; padding: 8px 10px; border: 1px solid var(--line-2); border-radius: 10px; font-size: 14px; }
+.mealparts li small { display: block; color: var(--mute); font-size: 12px; }
+.mealparts button { min-width: 40px; min-height: 40px; border-radius: 50%; border: 1px solid var(--line-2); background: transparent; color: var(--ink-2); }
+.exlist .set.lp { transform: scale(0.92); }
+.exlist .set { -webkit-touch-callout: none; -webkit-user-select: none; user-select: none; }
+#pprods .pfood { -webkit-user-select: none; user-select: none; touch-action: manipulation; }
 #pprods .pfood.hold { border-color: var(--ice); background: rgba(var(--tint-rgb), 0.12); }
 .pprodhint { margin: 6px 0 0; }
 
@@ -2319,9 +2342,10 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
             <div class="pmeter"><strong id="ptotal">0</strong><span id="punit">g von 120 g</span></div>
             <div class="pbar" id="pbar"><i></i></div>
             <p class="pkcal" id="pkcal"></p>
-            <div class="pfoods" id="pfoods"></div>
+            <div class="pfoods pmeals" id="pmeals" style="margin-top:8px" hidden></div>
             <div class="pfoods" id="pprods" style="margin-top:8px"></div>
-            <p class="fhint pprodhint" id="pprodHint" hidden>Antippen trägt deine gewohnte Menge ein. Gedrückt halten zum Ändern.</p>
+            <div class="pfoods" id="pfoods" style="margin-top:8px"></div>
+            <p class="fhint pprodhint" id="pprodHint" hidden>Antippen trägt ein. Deine Produkte und Kombis: gedrückt halten zum Ändern.</p>
             <div class="foodrow"><button class="btn small primary" id="fbar">Barcode scannen</button><button class="btn small" id="fscan">Etikett fotografieren</button><button class="btn small" id="fmeal">Essen schätzen (KI)</button><button class="btn small" id="fman">Produkt eintragen</button><input type="file" id="foodFile" accept="image/*" hidden><input type="file" id="mealFile" accept="image/*" hidden></div>
             <div class="pcustom">
               <label class="sr" for="pinput">Eigene Menge in Gramm Protein</label>
@@ -2331,7 +2355,17 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
               <button class="btn small" id="padd">Hinzufügen</button>
               <button class="btn small" id="pundo">Rückgängig</button>
             </div>
-            <p class="plog" id="plog"></p>
+            <p class="plog" id="plog" hidden></p>
+            <details class="plist" id="plist" hidden>
+              <summary>Heute gegessen <span id="plistN"></span></summary>
+              <ul class="plistul" id="plistUl"></ul>
+              <div class="pmealmk" id="pMealBar" hidden>
+                <p class="fhint" id="pMealHint">Tipp die Teile an, die zur Mahlzeit gehören.</p>
+                <div class="wtrow"><label class="sr" for="pMealName">Name der Mahlzeit</label><input class="inp" id="pMealName" maxlength="30" autocomplete="off" placeholder="z. B. Frühstück"><button class="btn small primary" id="pMealSave">Speichern</button></div>
+                <button class="btn small" id="pMealCancel">Abbrechen</button>
+              </div>
+              <div class="row" id="pListBar"><button class="btn small" id="pMealMake">Als Mahlzeit speichern</button></div>
+            </details>
           </div>
           <div class="drink" id="drinkCard" data-coll="drink">
             <div class="shead"><h2>Trinken</h2><span id="dstate"></span></div>
@@ -3129,6 +3163,19 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
     <button class="btn" id="scanGal">Galerie</button>
     <button class="scanshot" id="scanShot" aria-label="Foto aufnehmen"><i></i></button>
     <button class="btn" id="scanClose">Abbrechen</button>
+  </div>
+</div>
+
+<div class="sysov" id="mealWin" role="dialog" aria-modal="true" aria-labelledby="mealTitle" hidden>
+  <div class="sysbox clsbox foodbox">
+    <div class="systag"><span>!</span>System</div>
+    <h2 id="mealTitle">Mahlzeit</h2>
+    <div class="field full"><label for="mealName">Name</label><input class="inp" id="mealName" maxlength="30" autocomplete="off"></div>
+    <ul class="mealparts" id="mealParts"></ul>
+    <p class="foodsum" id="mealSum"></p>
+    <button class="btn primary" id="mealOk">Speichern</button>
+    <button class="btn" id="mealDel">Mahlzeit löschen</button>
+    <button class="btn" id="mealCancel">Abbrechen</button>
   </div>
 </div>
 
@@ -4650,17 +4697,21 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
     $("ptarget").innerHTML = total >= target ? "<b>Ziel erreicht</b>" : "noch " + Math.max(0, Math.round(target - total)) + " g";
     doneColl("protein", total >= target);
     const pf = $("pfoods");
-    if (!pf.dataset.built) {
-      pf.innerHTML = FOODS.map((f, i) => '<button class="pfood" data-f="' + i + '">' + esc(f.l) + "<b>+" + f.g + " g" + (f.k ? ", " + f.k + " kcal" : "") + "</b></button>").join("");
-      pf.dataset.built = "1";
+    let sc = {};
+    try { sc = foodScores(); } catch (e) { sc = {}; }
+    const fo = FOODS.map((f, i) => ({ f, i, s: sc["f:" + f.l] || 0 })).sort((a, b) => b.s - a.s || a.i - b.i);
+    const sigF = fo.map((x) => x.i).join(",");
+    if (pf.dataset.sig !== sigF) {
+      pf.innerHTML = fo.map(({ f, i }) => '<button class="pfood" data-f="' + i + '">' + esc(f.l) + "<b>+" + f.g + " g" + (f.k ? ", " + f.k + " kcal" : "") + "</b></button>").join("");
+      pf.dataset.sig = sigF;
     }
-    try { renderProds(); } catch (e) { /* ignore */ }
+    try { renderMeals(sc); renderProds(sc); } catch (e) { /* ignore */ }
     const list = (state.logs[dk] && state.logs[dk].protein) || [];
     const kt = +S().kcalTarget || 3200;
     const ksum = list.reduce((a, p) => a + (p.k || 0), 0), nk = list.filter((p) => !p.k).length;
     $("pkcal").textContent = list.length ? "Etwa " + Math.round(ksum).toLocaleString("de-DE") + " kcal von " + kt.toLocaleString("de-DE") + (nk ? ". " + nk + (nk === 1 ? " Eintrag" : " Einträge") + " ohne kcal" : "") + "." + fcSum(list) : "";
     $("pundo").disabled = !list.length;
-    $("plog").textContent = list.length ? "Heute: " + list.slice(-6).map((p) => p.l).join(", ") + (list.length > 6 ? " und mehr" : "") : "";
+    try { renderPList(dk); } catch (e) { /* ignore */ }
     if (typeof patchRestRing === "function" && restReady) patchRestRing(dk);
   }
 
@@ -4706,6 +4757,42 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
     return s ? s.exercises.find((x) => x.id === id) : null;
   }
 
+  // Satz gedrückt halten: Vorschlag (letztes Mal, sonst voriger Satz) ohne Zahlentastatur eintragen
+  const setLp = { t: 0, b: null, fired: false, x: 0, y: 0 };
+  const setLpClear = () => { clearTimeout(setLp.t); if (setLp.b) setLp.b.classList.remove("lp"); setLp.b = null; };
+  function setQuickFill(btn) {
+    const li = btn.closest(".ex"), dk = todayKey();
+    const e = todaySessionEx(li.dataset.id);
+    if (!e || isRun(e)) return;
+    if (btn.getAttribute("aria-pressed") === "true") { openPad(btn); return; }
+    const l = ensureLog(dk), before = l.exercises[e.id] ? JSON.parse(JSON.stringify(l.exercises[e.id])) : null;
+    const pnBefore = pendingNotes[dk] ? pendingNotes[dk][e.id] : undefined;
+    if (!openPad(btn)) return;
+    if (!numpad.val || !(+numpad.val > 0)) { toast("Für diesen Satz gibt es noch keinen Vorschlag. Trag ihn einmal ein."); return; }
+    const v = +numpad.val, i = numpad.i, src = numpad.sugSrc, unit = numpad.secs ? " s" : " Wdh.";
+    const kg = numpad.showKg && numpad.kg ? " mit " + (numpad.kg > 0 ? "+" : "") + fmtN(numpad.kg) + " kg" : "";
+    buzz(30);
+    savePad(true);
+    toast("Satz " + (i + 1) + ": " + v + unit + kg + (src === "last" ? ", wie letztes Mal" : src === "prev" ? ", wie Satz " + i : ""), { label: "Rückgängig", fn: () => {
+      const L = ensureLog(dk);
+      if (before) L.exercises[e.id] = before; else delete L.exercises[e.id];
+      if (pendingNotes[dk]) { if (pnBefore === undefined) delete pendingNotes[dk][e.id]; else pendingNotes[dk][e.id] = pnBefore; }
+      saveLog(dk); try { stopTimer(); } catch (er) { /* ignore */ }
+      todaySig = ""; renderToday();
+    } });
+  }
+  $("exlist").addEventListener("pointerdown", (ev) => {
+    const b = ev.target.closest(".set");
+    if (!b) return;
+    setLpClear(); setLp.fired = false; setLp.b = b; setLp.x = ev.clientX; setLp.y = ev.clientY;
+    setLp.t = setTimeout(() => { const bb = setLp.b; if (!bb) return; bb.classList.add("lp"); setLp.fired = true; setTimeout(() => { bb.classList.remove("lp"); }, 180); setLp.b = null; setQuickFill(bb); }, 450);
+  });
+  $("exlist").addEventListener("pointermove", (ev) => { if (setLp.b && (Math.abs(ev.clientX - setLp.x) > 10 || Math.abs(ev.clientY - setLp.y) > 10)) setLpClear(); });
+  ["pointerup", "pointercancel", "pointerleave"].forEach((t) => $("exlist").addEventListener(t, setLpClear));
+  $("exlist").addEventListener("contextmenu", (ev) => { if (ev.target.closest(".set")) ev.preventDefault(); });
+  $("exlist").addEventListener("click", (ev) => {
+    if (setLp.fired && ev.target.closest(".set")) { setLp.fired = false; ev.stopImmediatePropagation(); return; }
+  }, true);
   $("exlist").addEventListener("click", (ev) => {
     const btn = ev.target.closest(".set");
     if (btn) { if (trainMode && btn.getAttribute("aria-pressed") !== "true" && openPad(btn)) return; onSetClick(btn); return; }
@@ -4933,7 +5020,7 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
     const dk = todayKey();
     const l = ensureLog(dk);
     const before = proteinTotal(dk);
-    const en = { l: label, g };
+    const en = { l: label, g, t: Date.now() };
     if (k) en.k = k;
     if (fat > 0) en.f = fat;
     if (carb > 0) en.c = carb;
@@ -4981,10 +5068,171 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
   function renderProds() {
     const w = $("pprods");
     if (!w) return;
-    const L = prods();
-    w.innerHTML = L.map((p, i) => { const g = +p.g > 0 ? +p.g : 100; return '<button class="pfood" data-pi="' + i + '" aria-label="' + esc(p.n + ", " + Math.round(g) + " Gramm eintragen. Gedrückt halten zum Ändern.") + '">' + esc(p.n) + "<b>" + Math.round(g) + " g · " + Math.round((p.k * g) / 100) + " kcal</b></button>"; }).join("");
-    if ($("pprodHint")) $("pprodHint").hidden = !L.length;
+    const L = prods(), sc = arguments[0] || foodScores();
+    const order = L.map((p, i) => ({ p, i, s: sc["p:" + normName(p.n)] || 0 })).sort((a, b) => b.s - a.s || a.i - b.i);
+    w.innerHTML = order.map(({ p, i }) => { const g = +p.g > 0 ? +p.g : 100; return '<button class="pfood" data-pi="' + i + '" aria-label="' + esc(p.n + ", " + Math.round(g) + " Gramm eintragen. Gedrückt halten zum Ändern.") + '">' + esc(p.n) + "<b>" + Math.round(g) + " g · " + Math.round((p.k * g) / 100) + " kcal</b></button>"; }).join("");
+    if ($("pprodHint")) $("pprodHint").hidden = !L.length && !meals().length;
   }
+  // Häufigste zuerst: Einträge der letzten 3 Wochen, zur gleichen Tageszeit (±2 h) zählen dreifach
+  function foodScores() {
+    const out = {}, now = new Date(), hNow = now.getHours() + now.getMinutes() / 60, from = dateKey(addDays(today(), -21));
+    const P = prods().map((p) => ({ key: "p:" + normName(p.n), pre: p.n.toLowerCase() + " " }));
+    const fl = {}; FOODS.forEach((f) => { fl[f.l] = 1; });
+    Object.keys(state.logs).forEach((dk) => {
+      if (dk < from) return;
+      ((state.logs[dk] || {}).protein || []).forEach((en) => {
+        let w = 1;
+        if (en.t) { const d = new Date(en.t), h = d.getHours() + d.getMinutes() / 60, diff = Math.min(Math.abs(h - hNow), 24 - Math.abs(h - hNow)); if (diff <= 2) w = 3; }
+        let key = "";
+        if (en.meal) key = "m:" + normName(en.meal);
+        else if (fl[en.l]) key = "f:" + en.l;
+        else { const lab = String(en.l || "").toLowerCase(); const hit = P.find((x) => lab.indexOf(x.pre) === 0); if (hit) key = hit.key; }
+        if (key) out[key] = (out[key] || 0) + w;
+      });
+    });
+    return out;
+  }
+  const meals = () => { const m = rankMeta(); if (!Array.isArray(m.meals)) m.meals = []; return m.meals; };
+  const mealSum = (ml) => ml.items.reduce((a, x) => ({ g: a.g + (+x.g || 0), k: a.k + (+x.k || 0), f: a.f + (+x.f || 0), c: a.c + (+x.c || 0) }), { g: 0, k: 0, f: 0, c: 0 });
+  function renderMeals(sc) {
+    const w = $("pmeals");
+    if (!w) return;
+    sc = sc || foodScores();
+    const L = meals();
+    w.hidden = !L.length;
+    const order = L.map((m, i) => ({ m, i, s: sc["m:" + normName(m.n)] || 0 })).sort((a, b) => b.s - a.s || a.i - b.i);
+    w.innerHTML = order.map(({ m, i }) => { const t = mealSum(m); return '<button class="pfood" data-mi="' + i + '" aria-label="' + esc(m.n + ", " + m.items.length + " Teile eintragen. Gedrückt halten zum Bearbeiten.") + '"><i>Kombi</i>' + esc(m.n) + "<b>" + Math.round(t.k) + " kcal · " + Math.round(t.g) + " g</b></button>"; }).join("");
+  }
+  function mealQuickAdd(i) {
+    const m = meals()[i];
+    if (!m || !m.items.length) return;
+    const t = mealSum(m), dk = todayKey();
+    addProtein(m.n, Math.round(t.g * 10) / 10, Math.round(t.k), Math.round(t.f * 10) / 10, Math.round(t.c * 10) / 10);
+    const l = ensureLog(dk), en = l.protein[l.protein.length - 1];
+    if (en && en.l === m.n) { en.meal = m.n; en.parts = m.items.map((x) => x.l); saveLog(dk); renderPList(dk); }
+    hap("set");
+    toast(m.n + ": " + Math.round(t.k) + " kcal, " + Math.round(t.g) + " g Eiweiß", { label: "Rückgängig", fn: () => {
+      const L = ensureLog(dk), k = L.protein.map((x) => x.meal || "").lastIndexOf(m.n);
+      if (k < 0) return;
+      L.protein.splice(k, 1); syncProteinHabit(L, proteinTotal(dk)); saveLog(dk); renderProtein(dk); renderHabits(dk);
+    } });
+  }
+  // Heute gegessen: Tipp auf einen Eintrag öffnet Menge ändern und Löschen
+  const pl = { open: -1, pick: false, sel: {} };
+  const gramsOf = (lab) => { const m = /(\d+(?:[.,]\d+)?)\s*(g|ml)\b(?!.*\d\s*(g|ml)\b)/i.exec(String(lab || "")); return m ? { v: parseFloat(m[1].replace(",", ".")), u: m[2], m } : null; };
+  function renderPList(dk) {
+    const list = (state.logs[dk] && state.logs[dk].protein) || [];
+    const d = $("plist");
+    if (!d) return;
+    d.hidden = !list.length;
+    $("plistN").textContent = list.length ? "(" + list.length + ")" : "";
+    if (!list.length) { pl.open = -1; pl.pick = false; }
+    $("pMealBar").hidden = !pl.pick; $("pListBar").hidden = pl.pick;
+    $("plistUl").innerHTML = list.map((en, k) => {
+      const gm = gramsOf(en.l), isOpen = !pl.pick && pl.open === k;
+      const vals = fmtN(Math.round((+en.g || 0) * 10) / 10) + " g" + (en.k ? " · " + Math.round(en.k) + " kcal" : "");
+      return '<li><button class="prow" data-k="' + k + '"' + (pl.pick ? ' aria-pressed="' + !!pl.sel[k] + '"' : "") + '><span class="pl">' + esc(en.l) + (en.parts && en.parts.length ? "<small>" + esc(en.parts.join(", ")) + "</small>" : "") + '</span><span class="pv">' + vals + "</span></button>" +
+        (isOpen ? '<div class="pedit">' + (gm && !en.meal ? '<label class="sr" for="pEditG">Menge</label><input class="inp" id="pEditG" inputmode="decimal" value="' + esc(fmtN(gm.v)) + '"><span>' + esc(gm.u) + '</span><button class="btn small primary" data-pa="save" data-k="' + k + '">Ändern</button>' : "") + '<button class="btn small" data-pa="del" data-k="' + k + '">Löschen</button></div>' : "") + "</li>";
+    }).join("");
+  }
+  $("plistUl").addEventListener("click", (ev) => {
+    const dk = todayKey(), l = ensureLog(dk);
+    const a = ev.target.closest("[data-pa]");
+    if (a) {
+      const k = +a.dataset.k, en = l.protein[k];
+      if (!en) return;
+      if (a.dataset.pa === "del") {
+        const rem = l.protein.splice(k, 1)[0];
+        pl.open = -1; syncProteinHabit(l, proteinTotal(dk)); saveLog(dk); renderProtein(dk); renderHabits(dk); hap("tap");
+        toast(rem.l + " gelöscht", { label: "Rückgängig", fn: () => { const L = ensureLog(dk); L.protein.splice(Math.min(k, L.protein.length), 0, rem); syncProteinHabit(L, proteinTotal(dk)); saveLog(dk); renderProtein(dk); renderHabits(dk); } });
+        return;
+      }
+      const gm = gramsOf(en.l), nv = num($("pEditG").value);
+      if (!gm || !(nv > 0) || nv > 5000) { toast("Trag eine Menge ein."); return; }
+      const f = nv / gm.v, r1 = (v) => Math.round(v * f * 10) / 10;
+      en.g = r1(+en.g || 0); if (en.k) en.k = Math.round(en.k * f); if (en.f) en.f = r1(en.f); if (en.c) en.c = r1(en.c);
+      en.l = en.l.slice(0, gm.m.index) + fmtN(nv) + " " + gm.u + en.l.slice(gm.m.index + gm.m[0].length);
+      pl.open = -1; syncProteinHabit(l, proteinTotal(dk)); saveLog(dk); renderProtein(dk); renderHabits(dk); hap("set");
+      toast("Geändert: " + en.l);
+      return;
+    }
+    const b = ev.target.closest(".prow");
+    if (!b) return;
+    const k = +b.dataset.k;
+    if (pl.pick) { pl.sel[k] = !pl.sel[k]; b.setAttribute("aria-pressed", String(!!pl.sel[k])); buzz(8); return; }
+    pl.open = pl.open === k ? -1 : k;
+    renderPList(dk);
+    const inp = $("pEditG"); if (inp) inp.focus({ preventScroll: true });
+  });
+  $("plistUl").addEventListener("keydown", (ev) => { if (ev.key === "Enter" && ev.target.id === "pEditG") { const b = $("plistUl").querySelector('[data-pa="save"]'); if (b) b.click(); } });
+  $("pMealMake").addEventListener("click", () => {
+    const dk = todayKey(), list = (state.logs[dk] && state.logs[dk].protein) || [];
+    pl.pick = true; pl.open = -1; pl.sel = {};
+    // Einträge der letzten 90 Minuten sind wahrscheinlich die Mahlzeit, die du gerade gegessen hast
+    list.forEach((en, k) => { if (en.t && Date.now() - en.t < 90 * 60000 && !en.meal) pl.sel[k] = true; });
+    $("pMealName").value = "";
+    renderPList(dk);
+    $("plist").open = true;
+  });
+  $("pMealCancel").addEventListener("click", () => { pl.pick = false; pl.sel = {}; renderPList(todayKey()); });
+  $("pMealSave").addEventListener("click", () => {
+    const dk = todayKey(), list = (state.logs[dk] && state.logs[dk].protein) || [];
+    const name = $("pMealName").value.trim().slice(0, 30);
+    const picked = list.filter((_, k) => pl.sel[k]);
+    if (!picked.length) { toast("Tipp mindestens einen Eintrag an."); return; }
+    if (name.length < 2) { toast("Gib der Mahlzeit einen Namen, zum Beispiel Frühstück."); $("pMealName").focus(); return; }
+    const items = [];
+    picked.forEach((en) => { if (en.meal) { const mm = meals().find((x) => x.n === en.meal); if (mm) mm.items.forEach((x) => items.push(Object.assign({}, x))); else items.push({ l: en.l, g: en.g, k: en.k || 0, f: en.f || 0, c: en.c || 0 }); } else items.push({ l: en.l, g: +en.g || 0, k: +en.k || 0, f: +en.f || 0, c: +en.c || 0 }); });
+    const L = meals(), ex = L.findIndex((x) => x.n.toLowerCase() === name.toLowerCase());
+    const meal = { n: name, items };
+    if (ex >= 0) L[ex] = meal; else L.push(meal);
+    saveLocal();
+    pl.pick = false; pl.sel = {};
+    renderProtein(dk); hap("set");
+    toast("Mahlzeit „" + name + "“ gespeichert. Ab jetzt ein Tipp oben bei den Kombis.");
+  });
+  // Mahlzeit bearbeiten (gedrückt halten)
+  let mealCur = -1, mealDraft = null;
+  function mealOpen(i) {
+    const m = meals()[i];
+    if (!m) return;
+    mealCur = i; mealDraft = JSON.parse(JSON.stringify(m));
+    $("mealName").value = m.n;
+    mealRender();
+    $("mealWin").hidden = false; document.body.style.overflow = "hidden";
+  }
+  function mealRender() {
+    $("mealTitle").textContent = mealDraft.n || "Mahlzeit";
+    $("mealParts").innerHTML = mealDraft.items.map((x, k) => '<li><span>' + esc(x.l) + "<small>" + fmtN(Math.round((+x.g || 0) * 10) / 10) + " g Eiweiß" + (x.k ? " · " + Math.round(x.k) + " kcal" : "") + '</small></span><button data-mk="' + k + '" aria-label="' + esc(x.l) + ' entfernen">✕</button></li>').join("");
+    const t = mealSum(mealDraft);
+    $("mealSum").textContent = "Zusammen " + Math.round(t.k) + " kcal, " + Math.round(t.g) + " g Eiweiß.";
+  }
+  function mealClose() { $("mealWin").hidden = true; document.body.style.overflow = ""; mealCur = -1; mealDraft = null; }
+  $("mealParts").addEventListener("click", (ev) => { const b = ev.target.closest("[data-mk]"); if (!b || !mealDraft) return; mealDraft.items.splice(+b.dataset.mk, 1); mealRender(); });
+  $("mealOk").addEventListener("click", () => {
+    if (mealCur < 0 || !mealDraft) return;
+    const n = $("mealName").value.trim().slice(0, 30);
+    if (n.length >= 2) mealDraft.n = n;
+    if (!mealDraft.items.length) { meals().splice(mealCur, 1); } else meals()[mealCur] = mealDraft;
+    saveLocal(); mealClose(); renderProtein(todayKey());
+  });
+  $("mealDel").addEventListener("click", function () {
+    if (this.dataset.armed !== "1") { this.dataset.armed = "1"; this.textContent = "Wirklich löschen?"; setTimeout(() => { this.dataset.armed = ""; this.textContent = "Mahlzeit löschen"; }, 3000); return; }
+    this.dataset.armed = ""; this.textContent = "Mahlzeit löschen";
+    if (mealCur >= 0) meals().splice(mealCur, 1);
+    saveLocal(); mealClose(); renderProtein(todayKey());
+  });
+  $("mealCancel").addEventListener("click", mealClose);
+  (function () {
+    const w = $("pmeals");
+    let lp = { t: 0, b: null, fired: false, x: 0, y: 0 };
+    const clear = () => { clearTimeout(lp.t); if (lp.b) lp.b.classList.remove("hold"); lp.b = null; };
+    w.addEventListener("pointerdown", (ev) => { const b = ev.target.closest("[data-mi]"); if (!b) return; clear(); lp.fired = false; lp.b = b; lp.x = ev.clientX; lp.y = ev.clientY; b.classList.add("hold"); lp.t = setTimeout(() => { const bb = lp.b; clear(); if (bb) { lp.fired = true; buzz(30); mealOpen(+bb.dataset.mi); } }, 480); });
+    w.addEventListener("pointermove", (ev) => { if (lp.b && (Math.abs(ev.clientX - lp.x) > 10 || Math.abs(ev.clientY - lp.y) > 10)) clear(); });
+    ["pointerup", "pointercancel", "pointerleave"].forEach((t) => w.addEventListener(t, clear));
+    w.addEventListener("contextmenu", (ev) => { const b = ev.target.closest("[data-mi]"); if (!b) return; ev.preventDefault(); if (!lp.fired) { clear(); lp.fired = true; mealOpen(+b.dataset.mi); } });
+    w.addEventListener("click", (ev) => { const b = ev.target.closest("[data-mi]"); if (!b) return; if (lp.fired) { lp.fired = false; return; } mealQuickAdd(+b.dataset.mi); });
+  })();
   // Gemerktes Produkt: Antippen trägt die gewohnte Menge sofort ein, gedrückt halten öffnet das Bearbeiten
   function prodQuickAdd(i) {
     const pr = prods()[i];
@@ -10358,6 +10606,7 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
     if (rng && numpad.secs) [rng.low, rng.high].forEach((v) => quick.push(v));
     const uniq = quick.filter((v, k) => quick.indexOf(v) === k).slice(0, 7).sort((a, b) => a - b);
     const sug = cur.reps[i] != null ? cur.reps[i] : lastReps[i] != null ? lastReps[i] : i > 0 && cur.reps[i - 1] != null ? cur.reps[i - 1] : null;
+    numpad.sugSrc = cur.reps[i] != null ? "heute" : lastReps[i] != null ? "last" : i > 0 && cur.reps[i - 1] != null ? "prev" : "";
     if (sug != null && sug > 0) { numpad.val = String(sug); numpad.pre = true; }
     $("padQuick").innerHTML = uniq.map((v) => '<button data-v="' + v + '">' + v + "</button>").join("");
     $("padKg").hidden = !numpad.showKg;
