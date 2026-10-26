@@ -5692,16 +5692,27 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
   // ================= Body: constants =================
   const POSES = [
     { k: "front-r", l: "Vorne entspannt", g: "Vorne", t: "entspannt" },
-    { k: "front-f", l: "Vorne angespannt", g: "Vorne", t: "angespannt" },
+    { k: "front-f", l: "Front Double Biceps", g: "Front", t: "Double Biceps" },
+    { k: "abs-f", l: "Abs and Thigh", g: "Abs and", t: "Thigh" },
     { k: "side-r", l: "Seite entspannt", g: "Seite", t: "entspannt" },
-    { k: "side-f", l: "Seite angespannt", g: "Seite", t: "angespannt" },
+    { k: "side-f", l: "Seite angespannt (alt)", g: "Seite", t: "angespannt", legacy: true },
     { k: "back-r", l: "Rücken entspannt", g: "Rücken", t: "entspannt" },
-    { k: "back-f", l: "Rücken angespannt", g: "Rücken", t: "angespannt" }
+    { k: "back-f", l: "Back Double Biceps", g: "Back", t: "Double Biceps" }
   ];
-  const POSE_ORDER = ["front-r", "side-r", "back-r", "front-f", "side-f", "back-f"];
-  const SEQ_ORDER = ["front-r", "front-f", "side-r", "side-f", "back-r", "back-f"];
-  const DAILY_POSES = ["front-r", "front-f"];
-  const WEEKLY_POSES = ["side-r", "side-f", "back-r", "back-f"];
+  // Entspannt zeigt die echte Veränderung, die festen Bodybuilding-Posen zeigen einzelne Muskeln. Täglich nur ein Foto für den Zeitraffer, das volle Set einmal pro Woche.
+  const POSE_ORDER = ["front-r", "side-r", "back-r", "front-f", "abs-f", "back-f"];
+  const SEQ_ORDER = ["front-r", "front-f", "abs-f", "side-r", "back-r", "back-f"];
+  const DAILY_POSES = ["front-r"];
+  const WEEKLY_POSES = ["front-f", "abs-f", "side-r", "back-r", "back-f"];
+  const POSE_CUE = {
+    "front-r": "Gesicht zur Kamera, gerade stehen, Arme locker etwas vom Körper weg, Bauch nicht einziehen.",
+    "side-r": "Rechte Seite zur Kamera, Arme locker hängen lassen, Blick geradeaus, Bauch nicht einziehen.",
+    "back-r": "Rücken zur Kamera, Arme locker etwas vom Körper weg, Schultern entspannt.",
+    "front-f": "Front Double Biceps: Gesicht zur Kamera, Arme seitlich hoch, Ellbogen auf Schulterhöhe, Fäuste neben dem Kopf. Bizeps und Bauch anspannen.",
+    "abs-f": "Abs and Thigh: Gesicht zur Kamera, Hände hinter den Kopf, ein Bein leicht nach vorn. Ausatmen, Bauch und Oberschenkel fest anspannen.",
+    "back-f": "Back Double Biceps: Rücken zur Kamera, Arme wie vorne hoch. Schulterblätter breit machen statt zusammenkneifen, ein Bein leicht zurück, Wade anspannen.",
+    "side-f": ""
+  };
   const poseLabel = (k) => (k === "sleep" ? "Garmin-Werte" : (POSES.find((p) => p.k === k) || {}).l || k);
   const MEAS = [
     { k: "weight", l: "Gewicht", u: "kg", hint: "Morgens, nüchtern, nach dem Toilettengang", min: 30, max: 250 },
@@ -6046,14 +6057,14 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
     if (photosState === "ok") {
       const daily = DAILY_POSES.filter((p) => photoIdx[dk + "|" + p]).length;
       const wDue = dueWeeklyPoses(dk).length;
-      $("bcPhotos").textContent = daily + " von 2";
-      $("bcPhotos").classList.toggle("ok", daily === 2);
+      $("bcPhotos").textContent = daily + " von " + DAILY_POSES.length;
+      $("bcPhotos").classList.toggle("ok", daily === DAILY_POSES.length);
       $("bcWeekly").textContent = wDue ? wDue + " fällig" : "erledigt";
       $("bcWeekly").classList.toggle("ok", !wDue);
       const q = todayQueue(dk);
       $("bcCam").hidden = !q.length;
       $("bcCam").textContent = "Fotos aufnehmen (" + q.length + ")";
-      const open = (2 - daily) + (wDue ? 1 : 0) + (due ? 1 : 0);
+      const open = (DAILY_POSES.length - daily) + (wDue ? 1 : 0) + (due ? 1 : 0);
       $("bcstate").textContent = open ? open + " offen" : "alles erledigt";
       doneColl("body", !open);
     } else {
@@ -6090,7 +6101,7 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
     const q = todayQueue(dk);
     $("shootAll").disabled = !q.length;
     $("shootAll").textContent = q.length ? "Fällige Fotos aufnehmen (" + q.length + ")" : "Alle fälligen Fotos erledigt";
-    $("photoNote").textContent = "Heute " + done + " von 6 Fotos. " + photoCount() + " Fotos insgesamt auf diesem Handy.";
+    $("photoNote").textContent = "Heute " + done + (done === 1 ? " Foto" : " Fotos") + ". " + (q.length ? q.length + " noch fällig. " : "Alles Fällige erledigt. ") + "Täglich vorne entspannt, das volle Set einmal pro Woche, morgens vor dem Essen. " + photoCount() + " Fotos insgesamt auf diesem Handy.";
   }
   $("posegrid").addEventListener("click", (ev) => { const b = ev.target.closest(".pose"); if (b) openSheet(b.dataset.pose, todayKey()); });
   $("shootAll").addEventListener("click", () => { const q = todayQueue(todayKey()); if (q.length) openCam(q, todayKey()); });
@@ -6111,7 +6122,7 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
     if (!sheetCtx) return;
     const id = sheetCtx.date + "|" + sheetCtx.pose;
     const has = !!photoIdx[id];
-    $("sheetSub").textContent = has ? "Für diesen Tag ist schon ein Foto gespeichert. Ein neues ersetzt es." : "Für diesen Tag ist noch kein Foto gespeichert.";
+    $("sheetSub").textContent = (has ? "Für diesen Tag ist schon ein Foto gespeichert. Ein neues ersetzt es." : "Für diesen Tag ist noch kein Foto gespeichert.") + (POSE_CUE[sheetCtx.pose] ? " " + POSE_CUE[sheetCtx.pose] : "");
     $("sheetDel").hidden = !has;
     const img = $("sheetImg");
     if (has) { const u = await urlFor(id); if (u && sheetCtx && sheetCtx.date + "|" + sheetCtx.pose === id) { img.src = u; img.hidden = false; } } else img.hidden = true;
@@ -6209,7 +6220,7 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
       const u = await urlFor(last.id);
       if (u && cam.open && cam.queue[cam.i] === pose) { $("camGhost").src = u; $("camGhost").hidden = !cam.ghost; mirrorUpdate(); }
     }
-    $("camHint").textContent = last ? "Das Hilfsbild zeigt dein Foto vom " + shortDate(parseKey(last.date)) + ". Stell dich deckungsgleich hin." : "Stell das Handy fest hin. Ab dem nächsten Mal hilft dir ein Hilfsbild beim Ausrichten.";
+    $("camHint").textContent = (POSE_CUE[pose] ? POSE_CUE[pose] + " " : "") + (last ? "Das Hilfsbild zeigt dein Foto vom " + shortDate(parseKey(last.date)) + ". Stell dich deckungsgleich hin." : "Handy fest hinstellen, Hüft- bis Brusthöhe, 2 bis 3 m Abstand. Ab dem nächsten Mal hilft dir ein Hilfsbild beim Ausrichten.");
   }
   function closeCam() {
     cam.open = false;
@@ -6319,7 +6330,7 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
     const on = photosState === "ok";
     $("galleryBlock").hidden = !on;
     if (!on) return;
-    $("gChips").innerHTML = POSES.map((p) => '<button class="chip" data-pose="' + p.k + '" aria-pressed="' + (p.k === gPose) + '">' + esc(p.l) + " (" + listFor(p.k).length + ")</button>").join("");
+    $("gChips").innerHTML = POSES.filter((p) => !p.legacy || listFor(p.k).length).map((p) => '<button class="chip" data-pose="' + p.k + '" aria-pressed="' + (p.k === gPose) + '">' + esc(p.l) + " (" + listFor(p.k).length + ")</button>").join("");
     const list = listFor(gPose);
     $("gEmpty").hidden = list.length > 0;
     const newest = list.slice().reverse().slice(0, gLimit);
