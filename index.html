@@ -3434,7 +3434,7 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
     "",
     "Mittwoch — Winter B (Druck) — 19:00",
     "- Pike Push-ups: 4 × 6–10",
-    "- Chin-ups: 3 × 6–10",
+    "- Neutral Grip Pull-ups: 3 × 6–10",
     "- Push-ups erhöht: 3 × 10–15",
     "- Australian Rows: 2 × 8–12",
     "- Skull Crushers an Ringen: 3 × 8–12",
@@ -3473,7 +3473,7 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
     "",
     "Mittwoch — Winter B (Druck) — 19:00",
     "- Pike Push-ups (Deficit, wenn 10 sauber gehen): 5 × 6–10",
-    "- Chin-ups: 4 × 6–10",
+    "- Neutral Grip Pull-ups: 4 × 6–10",
     "- Push-ups erhöht: 4 × 10–15",
     "- Australian Rows: 3 × 8–12",
     "- Skull Crushers an Ringen: 3 × 8–12",
@@ -3514,7 +3514,7 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
     "",
     "Mittwoch — Winter B (Druck) — 19:00",
     "- Deficit Pike Push-ups: 5 × 6–10",
-    "- Chin-ups mit Gewicht: 4 × 6–10",
+    "- Neutral Grip Pull-ups mit Gewicht: 4 × 6–10",
     "- Push-ups mit Gewicht: 4 × 10–15",
     "- Australian Rows: 4 × 8–12",
     "- Skull Crushers an Ringen: 4 × 8–12",
@@ -3607,8 +3607,40 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
     state.meta.namesEn = 1;
     saveLocal();
   }
+  // Chin-ups → Neutral Grip Pull-ups (Handgelenke): einmalig im Plan umbenennen. Der Kelly-Fortschritt der Chin-ups zählt mit (siehe kellyKey).
+  const CHIN_RX = /^chin-?ups?(?=$|[\s,(])/i, CHIN_NEW_RX = /^Neutral Grip Pull-ups/;
+  const planAllDays = () => { const p = state.plan; if (!p) return []; return (p.days || []).concat(...(p.blocks || []).map((b) => b.days || [])); };
+  function migrateChinNeutral() {
+    state.meta = state.meta || {};
+    if (state.meta.chinNeutral) return;
+    const ren = [];
+    try {
+      planAllDays().forEach((d) => (d.exercises || []).forEach((e) => {
+        if (e && typeof e.name === "string" && CHIN_RX.test(e.name)) { ren.push([e.id, e.name]); e.name = e.name.replace(CHIN_RX, "Neutral Grip Pull-ups"); }
+      }));
+    } catch (e) { /* ignore */ }
+    state.meta.chinNeutral = { at: Date.now(), ren, shown: 0 };
+    saveLocal();
+  }
+  function chinNeutralUndo() {
+    const m = state.meta && state.meta.chinNeutral;
+    if (!m || !m.ren || !m.ren.length) return;
+    const by = {};
+    m.ren.forEach(([id, n]) => { by[id] = n; });
+    planAllDays().forEach((d) => (d.exercises || []).forEach((e) => { if (e && by[e.id] && CHIN_NEW_RX.test(e.name)) e.name = e.name.replace(CHIN_NEW_RX, by[e.id].replace(/^(chin-?ups?).*$/i, "$1")); }));
+    m.ren = [];
+    saveLocal(); try { savePlan(); } catch (e) { /* ignore */ }
+    todaySig = ""; renderAll();
+    toast("Zurück auf Chin-ups.");
+  }
+  function chinNeutralNote() {
+    const m = state.meta && state.meta.chinNeutral;
+    if (!m || m.shown || !m.ren || !m.ren.length) return;
+    m.shown = 1; saveLocal();
+    setTimeout(() => { try { toast("Chin-ups sind jetzt Neutral Grip Pull-ups. Dein Fortschritt zählt mit.", { label: "Rückgängig", fn: chinNeutralUndo }); } catch (e) { /* ignore */ } }, 1800);
+  }
   const clone = (o) => (o == null ? o : JSON.parse(JSON.stringify(o)));
-  const esc = (s) => String(s == null ? "" : s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  const esc =(s) => String(s == null ? "" : s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
   const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
   const reduced = () => !!(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches);
   // v7.1: Zahlen zählen hoch, Balken glänzen beim Füllen. Beim ersten Anzeigen (App-Start) passiert nichts.
@@ -3868,6 +3900,7 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
       }
     } catch (e) { /* storage unavailable */ }
     try { migrateNamesEn(); } catch (e) { /* ignore */ }
+    try { if (state.plan) { migrateChinNeutral(); chinNeutralNote(); } } catch (e) { /* ignore */ }
   }
   let saveWarned = false;
   function saveLocal() {
@@ -4091,16 +4124,18 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
 
   // Kelly-Einheiten steigern sich selbst: alle Wiederholungen geschafft → +1 pro Satz, ab 15 zurück auf die Basis mit +2,5 kg
   const KELLY_MAX = 15, KELLY_KG = 2.5;
+  // Chin-ups und Neutral Grip Pull-ups sind für die Kelly-Steigerung dieselbe Übung
+  const kellyKey = (n) => { const k = normName(n); return k === "chin-ups" ? "neutral-grip-pull-ups" : k; };
   function kellyProg(name, base, sets, dk, keys) {
     let reps = base, kg = 0, last = null;
-    const key = normName(name);
+    const key = kellyKey(name);
     Object.keys(state.logs).filter((k) => k < dk).sort().forEach((k) => {
       const exs = (state.logs[k] || {}).exercises || {};
       // Kelly-Tag: laut Plan, oder (nach einer Planänderung) mindestens drei der Kelly-Übungen an dem Tag eingetragen
       const s0 = baseEffSession(parseKey(k));
-      const have = new Set(Object.keys(exs).filter((i) => exs[i] && exs[i].note && exs[i].name).map((i) => normName(exs[i].name)));
+      const have = new Set(Object.keys(exs).filter((i) => exs[i] && exs[i].note && exs[i].name).map((i) => kellyKey(exs[i].name)));
       if (!(s0 && /kelly/i.test(s0.name || "")) && keys.filter((x) => have.has(x)).length < 3) return;
-      const id = Object.keys(exs).find((i) => exs[i] && exs[i].name && normName(exs[i].name) === key && exs[i].note);
+      const id = Object.keys(exs).find((i) => exs[i] && exs[i].name && kellyKey(exs[i].name) === key && exs[i].note);
       if (!id) return;
       const perf = parsePerf(exs[id].note);
       if (!perf || perf.secs || !perf.reps.length) return;
@@ -4115,7 +4150,7 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
   }
   function applyKelly(s, dk) {
     if (!s || s.deload || !/kelly/i.test(s.name || "")) return;
-    const keys = s.exercises.filter((e) => !isRun(e)).map((e) => normName(e.name));
+    const keys = s.exercises.filter((e) => !isRun(e)).map((e) => kellyKey(e.name));
     s.exercises.forEach((e) => {
       if (e.custom || isRun(e)) return;
       const r = parseRange(e.reps);
@@ -9189,7 +9224,7 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
     $("emPlan").hidden = !p;
     if (p) { $("emPlan").textContent = "Plan von heute: " + p.name + ", " + p.dur + " Min × " + p.reps; $("emPlan").dataset.name = p.name; $("emPlan").dataset.dur = p.dur; $("emPlan").dataset.reps = p.reps; }
   }
-  const EM_PICKS = ["Pull-ups", "Chin-ups", "Push-ups", "Dips", "Pike Push-ups", "Australian Rows", "Hanging Leg Raise", "Muscle-ups", "Squats", "Burpees"];
+  const EM_PICKS = ["Pull-ups", "Neutral Grip Pull-ups", "Chin-ups", "Push-ups", "Dips", "Pike Push-ups", "Australian Rows", "Hanging Leg Raise", "Muscle-ups", "Squats", "Burpees"];
   function renderEmomPicks() {
     const recent = [];
     Object.keys(state.logs).sort().reverse().forEach((dk) => { ((state.logs[dk] && state.logs[dk].emom) || []).forEach((r) => { if (r.name && recent.indexOf(r.name) < 0) recent.push(r.name); }); });
