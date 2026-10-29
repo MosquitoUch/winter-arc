@@ -2714,6 +2714,10 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
           <h2 class="bh">Dein Plan</h2>
           <p class="lead" id="plansumintro"></p>
           <ul class="plansum" id="plansum"></ul>
+          <div class="row" style="margin-top:12px">
+            <button class="btn" id="exportPlan">Plan als Textdatei sichern</button>
+            <button class="btn" id="copyPlan">Plan kopieren</button>
+          </div>
         </div>
 
         <div class="grps">
@@ -2937,7 +2941,6 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
               <div class="block sub">
                 <h3>Plan</h3>
                 <div class="row">
-                  <button class="btn" id="exportPlan" hidden>Plan als Textdatei sichern</button>
               <button class="btn" id="loadTemplate2">Winter-Plan wiederherstellen</button>
                 </div>
                 <div class="sync" id="sync"><i></i><span></span></div>
@@ -8412,17 +8415,37 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
     loadTemplate(); showTab("today");
   });
 
-  let downloadsNs = null;
+  function planTextOrToast() {
+    const t = state.plan ? planToText(state.plan) : "";
+    if (!t) toast("Es ist noch kein Plan geladen.");
+    return t;
+  }
   $("exportPlan").addEventListener("click", () => {
-    if (!downloadsNs || !state.plan) return;
-    downloadsNs.save({ filename: "winter-arc-plan.txt", data: planToText(state.plan) }).then((r) => {
-      if (r && r.status === "saved") toast("Plan gesichert");
-    }).catch((e) => {
-      const code = e && e.code;
-      if (code === "declined") return;
-      if (code === "rate_limited") { toast("Bitte kurz warten und erneut tippen."); return; }
-      $("exportPlan").hidden = true;
-    });
+    const t = planTextOrToast(); if (!t) return;
+    const name = "winter-arc-plan-" + todayKey() + ".txt";
+    let file = null;
+    try { file = new File([t], name, { type: "text/plain" }); } catch (e) { file = null; }
+    const dl = () => {
+      try {
+        const url = URL.createObjectURL(new Blob([t], { type: "text/plain" }));
+        const a = document.createElement("a");
+        a.href = url; a.download = name; document.body.appendChild(a); a.click(); a.remove();
+        setTimeout(() => URL.revokeObjectURL(url), 4000);
+        toast("Plan in deinen Downloads gespeichert");
+      } catch (e) { toast("Der Plan konnte nicht gespeichert werden. Nimm „Plan kopieren“."); }
+    };
+    if (file && navigator.canShare && navigator.canShare({ files: [file] }) && navigator.share) {
+      navigator.share({ files: [file], title: "Winter Arc Plan" }).then(() => toast("Plan geteilt")).catch((e) => { if (e && e.name === "AbortError") return; dl(); });
+    } else dl();
+  });
+  $("copyPlan").addEventListener("click", () => {
+    const t = planTextOrToast(); if (!t) return;
+    const ok = () => toast("Plan kopiert. Du kannst ihn jetzt einfügen.");
+    const fallback = () => {
+      try { const ta = document.createElement("textarea"); ta.value = t; ta.style.cssText = "position:fixed;opacity:0;top:0"; document.body.appendChild(ta); ta.select(); const r = document.execCommand("copy"); ta.remove(); r ? ok() : toast("Kopieren ging nicht. Nimm „Plan als Textdatei sichern“."); }
+      catch (e) { toast("Kopieren ging nicht. Nimm „Plan als Textdatei sichern“."); }
+    };
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(t).then(ok).catch(fallback); else fallback();
   });
 
   // ================= Tabs =================
