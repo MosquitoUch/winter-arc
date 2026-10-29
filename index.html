@@ -4161,13 +4161,15 @@ svg.clsic[viewBox="0 0 64 80"] { color: #07060d; --eye: #B48CFF; }
       const sets = setCount(e);
       const p = kellyProg(e.name, r.low, sets, dk, keys);
       e.kellyBase = r.low;
+      // Eigene Hinweise aus dem Plan (z. B. "mit Weste") bleiben stehen, die Steigerung kommt dahinter
+      const own = e.extra ? e.extra + " · " : "";
       if (p.reps === r.low && !p.kg) {
-        if (p.last) e.extra = "Ziel " + sets * r.low + " Wdh. Schaffst du sie, gibt es beim nächsten Mal 5 mehr.";
+        if (p.last) e.extra = own + "Ziel " + sets * r.low + " Wdh. Schaffst du sie, gibt es beim nächsten Mal " + sets + " mehr.";
         return;
       }
       e.reps = String(p.reps);
       const kgTxt = p.kg ? "+" + fmtN(p.kg) + " kg Weste · " : "";
-      e.extra = kgTxt + "Steigerung: " + sets + " × " + p.reps + " = " + sets * p.reps + " Wdh." + (p.last ? " Letztes Mal " + p.last.sum + " geschafft." : "");
+      e.extra = own + kgTxt + "Steigerung: " + sets + " × " + p.reps + " = " + sets * p.reps + " Wdh." + (p.last ? " Letztes Mal " + p.last.sum + " geschafft." : "");
     });
   }
   function effSession(date) {
